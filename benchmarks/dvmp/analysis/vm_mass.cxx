@@ -113,6 +113,7 @@ int vm_mass(const std::string& config_name)
   auto h_eta_rec = d_im.Histo1D({"h_eta_rec", ";#eta_{ll'};#", 1000, -5., 5.}, "eta_rec");
   auto h_eta_sim = d_im.Histo1D({"h_eta_sim", ";#eta_{ll'};#", 1000, -5., 5.}, "eta_sim");
 
+
   // Plot our histograms.
   // TODO: to start I'm explicitly plotting the histograms, but want to
   // factorize out the plotting code moving forward.
@@ -240,6 +241,7 @@ int vm_mass(const std::string& config_name)
     t4->Draw();
 
     c.Print(fmt::format("{}vm_mass_pt_phi_rapidity.png", output_prefix).c_str());
+
   }
 
   // TODO we're not actually doing an IM fit yet, so for now just return an
