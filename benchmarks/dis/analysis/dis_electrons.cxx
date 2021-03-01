@@ -24,7 +24,7 @@
 // Reconstuction functions
 bool mom_sort_recon(eic::ReconstructedParticleData& part1, eic::ReconstructedParticleData& part2)
 {
-  return (part1.p.x * part1.p.x + part1.p.y * part1.p.y + part1.p.z * part1.p.z >
+  return (part1.p.x * part1.p.x + part1.p.y * part1.p.y + part1.p.z * part1.p.z <
           part2.p.x * part2.p.x + part2.p.y * part2.p.y + part2.p.z * part2.p.z);
 }
 
@@ -50,7 +50,7 @@ inline auto Q2_from_recon(const std::vector<eic::ReconstructedParticleData>& par
 // Simulation functions
 bool mom_sort_sim(dd4pod::Geant4ParticleData& part1, dd4pod::Geant4ParticleData& part2)
 {
-  return (part1.psx * part1.psx + part1.psy * part1.psy + part1.psz * part1.psz >
+  return (part1.psx * part1.psx + part1.psy * part1.psy + part1.psz * part1.psz <
           part2.psx * part2.psx + part2.psy * part2.psy + part2.psz * part2.psz);
 }
 
