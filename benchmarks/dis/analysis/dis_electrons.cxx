@@ -21,6 +21,9 @@
 #include <utility>
 #include <vector>
 
+// Electron Beam energy
+double eBeamEnergy;
+
 // Get a vector of 4-momenta from the reconstructed data.
 inline auto momenta_from_reconstruction(const std::vector<eic::ReconstructedParticleData>& parts)
 {
@@ -32,101 +35,44 @@ inline auto momenta_from_reconstruction(const std::vector<eic::ReconstructedPart
   return momenta;
 }
 
-// Convert PxPyPzMVector to PxPyPzEVector
-inline auto convertMtoE(const std::vector<ROOT::Math::PxPyPzMVector>& mom)
+// Finds particle with highest momentum within the event and returns the 4 Vector
+inline auto find_scat_recon(const std::vector<ROOT::Math::PxPyPzEVector>& mom)
 {
-  std::vector<ROOT::Math::PxPyPzEVector> momenta{mom.size()};
-  std::transform(mom.begin(), mom.end(), momenta.begin(), [](const auto& part) {
-    return ROOT::Math::PxPyPzEVector{part.Px(), part.Py(), part.Pz(), part.energy()};
-  });
-  return momenta;
+  ROOT::Math::PxPyPzEVector elec_cand = {0, 0, 0, 0};
+  for (auto mom_cand : mom) {
+    if (mom_cand.E() > elec_cand.E()) {
+      elec_cand = mom_cand;
+    }
+  }
+  return elec_cand;
 }
 
-// Momentum sorting bool
-bool sort_mom_bool(ROOT::Math::PxPyPzEVector& mom1, ROOT::Math::PxPyPzEVector& mom2)
+// Finds particle with highest momentum within the event and returns the 4 Vector
+inline auto find_scat_sim(const std::vector<ROOT::Math::PxPyPzMVector>& mom)
 {
-  return mom1.energy() > mom2.energy();
-}
-
-// Momentunm sorting function
-inline auto sort_momenta(const std::vector<ROOT::Math::PxPyPzEVector>& mom)
-{
-  std::vector<ROOT::Math::PxPyPzEVector> sort_mom = mom;
-  sort(sort_mom.begin(), sort_mom.end(), sort_mom_bool);
-  return sort_mom;
+  ROOT::Math::PxPyPzMVector elec_cand = {0, 0, 0, 0};
+  for (auto mom_cand : mom) {
+    if (mom_cand.energy() > elec_cand.energy()) {
+      elec_cand = mom_cand;
+    }
+  }
+  return ROOT::Math::PxPyPzEVector{elec_cand.Px(), elec_cand.Py(), elec_cand.Pz(),
+                                   elec_cand.energy()};
 }
 
 // Q2 calculation from 4 Vector
-inline auto Q2(const std::vector<ROOT::Math::PxPyPzEVector>& mom)
+inline auto Q2(ROOT::Math::PxPyPzEVector& mom)
 {
-  std::vector<double>       Q2Vec(mom.size());
-  ROOT::Math::PxPyPzEVector beamMom = {0, 0, 18, 18};
-  std::transform(mom.begin(), mom.end(), Q2Vec.begin(),
-                 [beamMom](const auto& part) { return -(part - beamMom).M2(); });
-  return Q2Vec;
-}
-
-// Difference between two 4 Vectors
-inline auto sub(const std::vector<ROOT::Math::PxPyPzEVector>& mom1,
-                const std::vector<ROOT::Math::PxPyPzEVector>& mom2)
-{
-  std::vector<ROOT::Math::PxPyPzEVector> sub(mom1.size());
-  for (int i = 0; i < sub.size(); i++) {
-    sub[i] = mom1[i] - mom2[i];
-  }
-  return sub;
+  ROOT::Math::PxPyPzEVector beamMom = {0, 0, -eBeamEnergy, eBeamEnergy};
+  return -(mom - beamMom).M2();
 }
 
 // Multiplies a double by a gaussian distributed number
-inline auto randomize(const std::vector<double>& doubleVec)
+inline auto randomize(double& inDouble)
 {
-  std::vector<double> outVec(doubleVec.size());
-  TRandom3            rand;
-  std::transform(doubleVec.begin(), doubleVec.end(), outVec.begin(),
-                 [&rand](const auto& indouble) { return indouble * rand.Gaus(1.0, 0.2); });
-  return outVec;
+  TRandom3 rand;
+  return rand.Gaus(1.0, 0.2) * inDouble;
 }
-
-// Simulation functions
-/*
-bool mom_sort_sim(dd4pod::Geant4ParticleData& part1, dd4pod::Geant4ParticleData& part2)
-{
-  return (part1.psx*part1.psx + part1.psy*part1.psy + part1.psz*part1.psz >
-          part2.psx*part2.psx + part2.psy*part2.psy + part2.psz*part2.psz);
-}
-
-inline auto momenta_from_sim(const std::vector<dd4pod::Geant4ParticleData>& parts)
-{
-  std::vector<dd4pod::Geant4ParticleData> sort_parts = parts;
-  sort(sort_parts.begin(), sort_parts.end(), mom_sort_sim);
-  return sort_parts;
-}
-
-inline auto Q2_from_sim(const std::vector<dd4pod::Geant4ParticleData>& parts)
-{
-  std::vector<double> Q2Vec(parts.size());
-  double              beamEnergy = 18;
-  std::transform(parts.begin(), parts.end(), Q2Vec.begin(), [beamEnergy](const auto& part) {
-    double energy = sqrt(part.psx * part.psx + part.psy * part.psy + part.psz * part.psz +
-                         part.mass * part.mass);
-    double q2     = pow(beamEnergy - energy, 2.0) - part.psx * part.psx - part.psy * part.psy -
-                pow(part.psz - beamEnergy, 2.0);
-    return -q2;
-  });
-  return Q2Vec;
-}
-
-inline auto elec_PID_sim(const std::vector<dd4pod::Geant4ParticleData>& parts)
-{
-  std::vector<dd4pod::Geant4ParticleData> electrons;
-  for (auto part : parts) {
-    if (part.pdgID == 11) {
-      electrons.push_back(part);
-    }
-  }
-  return electrons;
-}
-*/
 
 int dis_electrons(const std::string& config_name)
 {
@@ -139,6 +85,7 @@ int dis_electrons(const std::string& config_name)
   const std::string detector      = config["detector"];
   std::string       output_prefix = config["output_prefix"];
   const std::string test_tag      = config["test_tag"];
+  eBeamEnergy                     = config["ebeam"];
 
   fmt::print(fmt::emphasis::bold | fg(fmt::color::forest_green),
              "Running DIS electron analysis...\n");
@@ -200,44 +147,33 @@ int dis_electrons(const std::string& config_name)
   */
 
   auto d0 = d.Define("p_recon", momenta_from_reconstruction, {"DummyReconstructedParticles"})
-                .Define("p_recon_sort", sort_momenta, {"p_recon"})
-                .Define("Q2_recon", Q2, {"p_recon_sort"})
-                .Define("Q2_recon_rand", randomize, {"Q2_recon"})
-                .Define("elec_Q2_recon_rand", "Q2_recon_rand[0]")
+                .Define("elec_recon", find_scat_recon, {"p_recon"})
+                .Define("elec_recon_Q2", Q2, {"elec_recon"})
+                .Define("elec_recon_Q2_rand", randomize, {"elec_recon_Q2"})
                 .Define("p_sim_M", util::momenta_from_simulation, {"mcparticles2"})
-                .Define("p_sim", convertMtoE, {"p_sim_M"})
-                .Define("p_sim_sort", sort_momenta, {"p_sim"})
-                .Define("Q2_sim", Q2, {"p_sim_sort"})
-                .Define("elec_Q2_sim", "Q2_sim[0]")
-                .Define("Q2_diff", "(elec_Q2_recon_rand - elec_Q2_sim)/elec_Q2_sim")
-                .Define("p_diff", sub, {"p_recon", "p_sim"});
-  /*
-  .Define("electrons_sim", elec_PID_sim, {"sorted_sim"})
-  .Define("Q2_sim_elec_pid", Q2_from_sim, {"electrons_sim"})
-  .Define("elec_Q2_sim_pid", "Q2_sim_elec_pid[0]");
-  */
+                .Define("elec_sim", find_scat_sim, {"p_sim_M"})
+                .Define("elec_sim_Q2", Q2, {"elec_sim"})
+                .Define("Q2_diff", "(elec_recon_Q2_rand - elec_sim_Q2)/elec_sim_Q2");
+
   // Testing script
   /*
-    auto dis = d0.Display({"p_diff"});
-    //dis -> Print();
-    cout << *d0.Max<double>("elec_Q2_recon_rand") << " " <<
-  *d0.Min<double>("elec_Q2_recon_rand") << endl; cout << *d0.Max<double>("elec_Q2_sim") << " "
-  << *d0.Min<double>("elec_Q2_sim") << endl;
+    auto dis = d0.Display({"elec_sim_Q2", "elec_recon_Q2"});
+    dis -> Print();
+    cout << *d0.Max<double>("elec_recon_Q2_rand") << " " << *d0.Min<double>("elec_recon_Q2_rand") <<
+  endl; cout << *d0.Max<double>("elec_sim_Q2") << " " << *d0.Min<double>("elec_sim_Q2") << endl;
+    cout << *d0.Max<double>("Q2_diff") << " " << *d0.Min<double>("Q2_diff") << endl;
   /**/
   // cout << *d0.Count() << endl;
   // Momentum
   // auto h_mom_sim = d0.Histo1D({"h_mom_sim", "; GeV; counts", 100, 0, 50}, "mom_sim");
   // auto h_mom_rec = d0.Histo1D({"h_mom_rec", "; GeV; counts", 100, 0, 50}, "mom_rec");
+
   // Q2
-  auto h_Q2_sim = d0.Histo1D({"h_Q2_sim", "; GeV; counts", 100, -5, 25}, "elec_Q2_sim");
-  auto h_Q2_rec = d0.Histo1D({"h_Q2_rec", "; GeV; counts", 100, -5, 25}, "elec_Q2_recon_rand");
+  auto h_Q2_sim = d0.Histo1D({"h_Q2_sim", "; GeV; counts", 100, 18000, 25000}, "elec_sim_Q2");
+  auto h_Q2_rec =
+      d0.Histo1D({"h_Q2_rec", "; GeV; counts", 100, 18000, 25000}, "elec_recon_Q2_rand");
   auto h_Q2_res = d0.Histo1D({"h_Q2_res", ";    ; counts", 100, -10, 10}, "Q2_diff");
-  /*
-    TH1D *h_Q2_res = (TH1D *)h_Q2_sim -> Clone();
-    TH1D *h_Q2_rec_copy = (TH1D *)h_Q2_rec -> Clone();
-    h_Q2_res -> Scale(1.0 / h_Q2_res -> Integral() );
-    h_Q2_res -> Add(h_Q2_rec_copy, -1.0 / h_Q2_rec_copy -> Integral() );
-   */
+
   TFitResultPtr f1 = h_Q2_res->Fit("gaus", "S");
   f1->Print("V");
   /*
