@@ -28,6 +28,51 @@ double pBeamEnergy;
 double gausMean;
 double gausSTD;
 
+// Makes Resolution plots from the input histograms
+void plot_resolutions(ROOT::RDF::RResultPtr<TH1D> h_res, ROOT::RDF::RResultPtr<TH1D> h_rel_res,
+                      std::string varName, std::string detName, std::string outputPREFIX)
+{
+  TCanvas c{"canvas", "canvas", 1200, 1200};
+  c.cd();
+  // gPad->SetLogx(false);
+  gPad->SetLogy(true);
+  auto& h1 = *h_res;
+  auto& h2 = *h_rel_res;
+  // histogram style
+  h1.SetLineColor(plot::kMpBlue);
+  h1.SetLineWidth(2);
+  h2.SetLineColor(plot::kMpOrange);
+  h2.SetLineWidth(2);
+  // axes
+  h1.GetXaxis()->CenterTitle();
+  h1.GetYaxis()->CenterTitle();
+  h2.GetXaxis()->CenterTitle();
+  h2.GetYaxis()->CenterTitle();
+  // draw h1
+  h1.DrawClone("hist");
+  plot::draw_label(eBeamEnergy, pBeamEnergy, detName);
+  TText* tptr1;
+  auto   t1 = new TPaveText(.6, .8417, .9, .925, "NB NDC");
+  t1->SetFillColorAlpha(kWhite, 0);
+  t1->SetTextFont(43);
+  t1->SetTextSize(25);
+  tptr1 = t1->AddText((varName + " Resolution").c_str());
+  tptr1->SetTextColor(plot::kMpBlue);
+  t1->Draw();
+  c.Print(fmt::format("{}{}_resolution.png", outputPREFIX, varName).c_str());
+  t1->Clear();
+  // draw h2
+  h2.DrawClone("hist");
+  plot::draw_label(eBeamEnergy, pBeamEnergy, detName);
+  t1->SetFillColorAlpha(kWhite, 0);
+  t1->SetTextFont(43);
+  t1->SetTextSize(25);
+  tptr1 = t1->AddText((varName + " Relative Resolution").c_str());
+  tptr1->SetTextColor(plot::kMpOrange);
+  t1->Draw();
+  c.Print(fmt::format("{}{}_rel_resolution.png", outputPREFIX, varName).c_str());
+}
+
 // Get a vector of 4-momenta from the reconstructed data.
 inline auto
 momenta_from_reconstruction_pid(const std::vector<eic::ReconstructedParticleData>& parts)
@@ -56,7 +101,7 @@ inline auto momenta_from_simulation_pid(const std::vector<dd4pod::Geant4Particle
 }
 
 // Finds particle with highest momentum within the event and returns the 4 Vector
-// Currentky there is a cut so that only electrons are retained, but that can be changed
+// Currently there is a cut so that only electrons are retained, but that can be changed
 // by chaning the PID
 inline auto find_scat(const std::vector<std::pair<ROOT::Math::PxPyPzEVector, int>>& mom)
 {
@@ -79,6 +124,7 @@ inline auto Q2(ROOT::Math::PxPyPzEVector& mom)
 }
 
 // Multiplies a double by a gaussian distributed number
+// The mean and sigma(STD) are set in teh code further down
 inline auto randomize(double& inDouble)
 {
   TRandom3 rand(0);
@@ -117,7 +163,7 @@ int dis_electrons(const std::string& config_name)
        {"target", "0.1"}}};
 
   // Run this in multi-threaded mode if desired
-  // ROOT::EnableImplicitMT(kNumThreads);
+  ROOT::EnableImplicitMT(kNumThreads);
 
   // PIDs for reference
   // electron = 11
@@ -132,7 +178,7 @@ int dis_electrons(const std::string& config_name)
 
   // Gausian variable declarations
   gausMean = 1.0;
-  gausSTD  = 0.2;
+  gausSTD  = 0.1;
 
   const double electron_mass = util::get_pdg_mass("electron");
 
@@ -169,7 +215,6 @@ int dis_electrons(const std::string& config_name)
                 .Define("elec_sim_Q2", Q2, {"elec_sim"})
                 .Define("dQ2", "elec_recon_Q2_rand - elec_sim_Q2")
                 .Define("dQ2_relative", "(elec_recon_Q2_rand - elec_sim_Q2)/elec_sim_Q2");
-
   // Testing script
   /*
     //auto dis = d0.Display({"pt_recon", "elec_sim_Q2", "elec_recon_Q2"});
@@ -185,15 +230,15 @@ int dis_electrons(const std::string& config_name)
   // auto h_mom_sim = d0.Histo1D({"h_mom_sim", "; GeV; counts", 100, 0, 50}, "mom_sim");
   // auto h_mom_rec = d0.Histo1D({"h_mom_rec", "; GeV; counts", 100, 0, 50}, "mom_rec");
 
-  // Q2
-  auto h_Q2_sim = d0.Histo1D({"h_Q2_sim", "; GeV^{2}; Counts", 50, 0, 25}, "elec_sim_Q2");
-  auto h_Q2_rec = d0.Histo1D({"h_Q2_rec", "; GeV^{2}; Counts", 50, 0, 25}, "elec_recon_Q2_rand");
+  // Q2 Histograms
+  // auto h_Q2_sim = d0.Histo1D({"h_Q2_sim", "; GeV^{2}; Counts", 50, 0, 25}, "elec_sim_Q2");
+  // auto h_Q2_rec = d0.Histo1D({"h_Q2_rec", "; GeV^{2}; Counts", 50, 0, 25}, "elec_recon_Q2_rand");
   auto h_Q2_res =
       d0.Histo1D({"h_Q2_res", "; Q^{2} Resolution (GeV^{2}); Counts", 50, -120, 120}, "dQ2");
   auto h_Q2_rel_res = d0.Histo1D(
       {"h_Q2_rel_res", "; Q^{2} Relative Resolution ; Counts", 50, -2, 2}, "dQ2_relative");
 
-  TFitResultPtr f1  = h_Q2_res->Fit("gaus", "S");
+  TFitResultPtr f1  = h_Q2_rel_res->Fit("gaus", "S");
   const double* res = f1->GetParams();
   if (res[2] <= 0.1) {
     dis_Q2_resolution.pass(res[2]);
@@ -207,6 +252,7 @@ int dis_electrons(const std::string& config_name)
   // Plot our histograms.
   // TODO: to start I'm explicitly plotting the histograms, but want to
   // factorize out the plotting code moving forward.
+  /*
   {
     TCanvas c{"canvas", "canvas", 1200, 1200};
     c.cd();
@@ -242,50 +288,9 @@ int dis_electrons(const std::string& config_name)
 
     c.Print(fmt::format("{}momentum.png", output_prefix).c_str());
   }
-  // Plot Q2 and Relatitive Q2
-  {
-    TCanvas c{"canvas", "canvas", 1200, 1200};
-    c.cd();
-    // gPad->SetLogx(false);
-    gPad->SetLogy(true);
-    // auto& h1 = *h_mom_sim;
-    // auto& h2 = *h_mom_rec;
-    auto& h1 = *h_Q2_res;
-    auto& h2 = *h_Q2_rel_res;
-    // histogram style
-    h1.SetLineColor(plot::kMpBlue);
-    h1.SetLineWidth(2);
-    h2.SetLineColor(plot::kMpOrange);
-    h2.SetLineWidth(2);
-    // axes
-    h1.GetXaxis()->CenterTitle();
-    h1.GetYaxis()->CenterTitle();
-    h2.GetXaxis()->CenterTitle();
-    h2.GetYaxis()->CenterTitle();
-    // draw everything
-    h1.DrawClone("hist");
-    plot::draw_label(eBeamEnergy, pBeamEnergy, detector);
-    TText* tptr1;
-    auto   t1 = new TPaveText(.6, .8417, .9, .925, "NB NDC");
-    t1->SetFillColorAlpha(kWhite, 0);
-    t1->SetTextFont(43);
-    t1->SetTextSize(25);
-    tptr1 = t1->AddText("Q^{2} Resolution");
-    tptr1->SetTextColor(plot::kMpBlue);
-    t1->Draw();
-    c.Print(fmt::format("{}Q2_resolution.png", output_prefix).c_str());
-    t1->Clear();
+  */
+  plot_resolutions(h_Q2_res, h_Q2_rel_res, "Q2", detector, output_prefix);
 
-    h2.DrawClone("hist");
-    plot::draw_label(eBeamEnergy, pBeamEnergy, detector);
-    t1->SetFillColorAlpha(kWhite, 0);
-    t1->SetTextFont(43);
-    t1->SetTextSize(25);
-    tptr1 = t1->AddText("Q^{2} Relative Resolution");
-    tptr1->SetTextColor(plot::kMpOrange);
-    t1->Draw();
-    c.Print(fmt::format("{}Q2_rel_resolution.png", output_prefix).c_str());
-  }
   eic::util::write_test({dis_Q2_resolution}, fmt::format("{}dis_electrons.json", output_prefix));
 
   return 0;
