@@ -236,7 +236,7 @@ int vm_invar(const std::string& config_name)
       TCanvas c3{"canvas3", "canvas3", 1200, 900};
       c3.Divide(2, 2, 0.0001, 0.0001);
       // pad 4 t
-      c2.cd(4);
+      c3.cd(4);
       auto& ht_delta_t = *ht_delta_t;
       // histogram style
       ht_delta_t.SetLineColor(plot::kMpOrange);
