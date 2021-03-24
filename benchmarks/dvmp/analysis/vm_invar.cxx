@@ -92,7 +92,8 @@ int vm_invar(const std::string& config_name)
                   .Define("y_sim", util::get_y, {"invariant_quantities_sim"})
                   .Define("Q2_sim", util::get_Q2, {"invariant_quantities_sim"})
                   .Define("x_sim", util::get_x, {"invariant_quantities_sim"})
-                  .Define("t_sim", util::get_t, {"invariant_quantities_sim"});
+                  .Define("t_sim", util::get_t, {"invariant_quantities_sim"})
+                  .Define("delta_t", "t_sim - t_rec");
                   
   //================================================================
 
@@ -111,6 +112,8 @@ int vm_invar(const std::string& config_name)
   auto h_y_rec  = d_im.Histo1D({"h_y_rec", ";y;#", 50, 0., 1.}, "y_rec");
   auto h_t_rec  = d_im.Histo1D({"h_t_rec", ";t;#", 50, -1., 0.}, "t_rec");
   
+  auto h_delta_t  = d_im.Histo1D({"h_t_sim", ";t_{sim}-t{rec};#", 100, -1., 1.}, "delta_t");
+    
   // Plot our histograms.
   // TODO: to start I'm explicitly plotting the histograms, but want to
   // factorize out the plotting code moving forward.
@@ -230,7 +233,30 @@ int vm_invar(const std::string& config_name)
     
     c.Print(fmt::format("{}InvariantQuantities.png", output_prefix).c_str());
     
-    
+      TCanvas c3{"canvas3", "canvas3", 1200, 900};
+      c3.Divide(2, 2, 0.0001, 0.0001);
+      // pad 4 t
+      c2.cd(4);
+      auto& ht_delta_t = *ht_delta_t;
+      // histogram style
+      ht_delta_t.SetLineColor(plot::kMpOrange);
+      ht_delta_t.SetLineWidth(1);
+      // axes
+      ht_delta_t.GetXaxis()->CenterTitle();
+      // draw everything
+      ht_delta_t.DrawClone("hist");
+      // FIXME hardcoded beam configuration
+      plot::draw_label(10, 100, detector);
+      TText* tptr5;
+      auto   t5 = new TPaveText(.6, .8417, .9, .925, "NB NDC");
+      t5->SetFillColorAlpha(kWhite, 0);
+      t5->SetTextFont(43);
+      t5->SetTextSize(25);
+      tptr5 = t4->AddText("rec-sim");
+      tptr5->SetTextColor(plot::kMpBlue);
+      t5->Draw();
+      c3.Print(fmt::format("{}Resolutions.png", output_prefix).c_str());
+
   }
 
   // TODO we're not actually getting the resolutions yet
