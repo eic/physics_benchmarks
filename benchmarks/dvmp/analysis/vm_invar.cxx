@@ -237,7 +237,7 @@ int vm_invar(const std::string& config_name)
       c3.Divide(2, 2, 0.0001, 0.0001);
       // pad 4 t
       c3.cd(4);
-      auto& ht_delta_t = *ht_delta_t;
+      auto& ht_delta_t = *h_delta_t;
       // histogram style
       ht_delta_t.SetLineColor(plot::kMpOrange);
       ht_delta_t.SetLineWidth(1);
