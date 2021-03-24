@@ -113,6 +113,7 @@ int vm_invar(const std::string& config_name)
   auto h_t_rec  = d_im.Histo1D({"h_t_rec", ";t;#", 50, -1., 0.}, "t_rec");
   
   auto h_delta_t  = d_im.Histo1D({"h_t_sim", ";t_{sim}-t{rec};#", 100, -1., 1.}, "delta_t");
+  auto h_t_2D  = d_im.Histo2D({"h_2D", ";t_{sim};t_{rec};#", 50, -1., 0., 50, -1, 0}, "t_sim", "t_rec");
     
   // Plot our histograms.
   // TODO: to start I'm explicitly plotting the histograms, but want to
@@ -235,6 +236,17 @@ int vm_invar(const std::string& config_name)
     
       TCanvas c3{"canvas3", "canvas3", 1200, 900};
       c3.Divide(2, 2, 0.0001, 0.0001);
+      // pad 4 t
+      c3.cd(3);
+      auto& ht_t_2D = *h_t_2D;
+      // axes
+      ht_t_2D.GetXaxis()->CenterTitle();
+      ht_t_2D.GetYaxis()->CenterTitle();
+      // draw everything
+      ht_t_2D.DrawClone("colz");
+      // FIXME hardcoded beam configuration
+      plot::draw_label(10, 100, detector);
+
       // pad 4 t
       c3.cd(4);
       auto& ht_delta_t = *h_delta_t;
