@@ -135,10 +135,23 @@ int vm_invar(const std::string& config_name)
   double hist_range_h[4] = {1., 15., 0.1, 0.};
   
   TString VarName[4] = {"y", "Q2", "x", "t"};
+  TString histName[4];
+  TString histTitle[4];
+  TString RawHist[4];
+  for(int i = 0 ; i < 4 ; i++){
+    histName[i] = "h_" + VarName[i] + "_sim";
+    if(i!=1){
+      histTitle[i] = ";" + VarName[i] + ";#";
+    }else{
+      histTitle[i] = ";Q^{2};#";
+    }
+    RawHist[i] = VarName[i] + "_sim";
+  }
+  
   TH1D* h_sim[4];
   
   {
-  auto h_tmp = d_im.Histo1D({VarName[0], VarName[0], 50, hist_range_l[0], hist_range_h[0]}, VarName[0] + "_sim");
+  auto h_tmp = d_im.Histo1D({histName[0], histTitle[0], 50, hist_range_l[0], hist_range_h[0]}, RawHist[4]);
   h_sim[0] = (TH1D*)h_tmp->Clone();
   }
   
