@@ -131,8 +131,13 @@ int vm_invar(const std::string& config_name)
   //================================================================
   //Factorized
   TString VarName[4] = {"y", "Q2", "x", "t"};
+  std::vector<ROOT::TH1D> h_sim;
+  {
+  auto h_tmp = d_im.Histo1D({"h_Q2_sim", ";Q^{2};#", 50, hist_range_l[0], hist_range_h[0]}, "Q2_sim");
+  h_sim.push_back(h_tmp);
+  }
   
-  TH1D h_sim[4];
+  //TH1D h_sim[4];
   //auto h_rec[4];
   //auto h_diff[4];
   
