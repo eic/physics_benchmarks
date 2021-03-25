@@ -140,7 +140,7 @@ int vm_invar(const std::string& config_name)
   double hist_range_l[4] = {0., 0., 0., -1.};
   double hist_range_h[4] = {1., 15., 0.1, 0.};
   
-  h_sim[0] = (TH1D*)d_im.Histo1D({"h_" + VarName[0] + "_sim", ";Q^{2};#", 50, hist_range_l[0], hist_range_h[0]}, VarName[0] + "_sim");
+  h_sim[0] = (TH1D*)d_im.Histo1D({"h_Q2_sim", ";Q^{2};#", 50, hist_range_l[0], hist_range_h[0]}, "Q2_sim");
   
   /*for(int i = 0 ; i < 4 ; i++){
     if(i==1){
