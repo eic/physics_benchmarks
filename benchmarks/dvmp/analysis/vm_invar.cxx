@@ -43,16 +43,46 @@ int vm_invar(const std::string& config_name)
   fmt::print(" - output prefix: {}\n", output_prefix);
 
   // create our test definition
-  // test_tag
+  std::vector<eic::util::Test> Tests;
+  eic::util::Test y_resolution_test{
+      {{"name", fmt::format("{}_y_resolution", test_tag)},
+       {"title",
+        fmt::format("y Resolution for {} -> {} events with {}", vm_name, decay_name, detector)},
+       {"description", "y resolution: relative difference with Gaussian fit"},
+       {"quantity", "resolution"},
+       {"target", ".4"}}};
+  Tests.push_back(y_resolution_test);
+  
   eic::util::Test Q2_resolution_test{
       {{"name", fmt::format("{}_Q2_resolution", test_tag)},
        {"title",
         fmt::format("Q^2 Resolution for {} -> {} events with {}", vm_name, decay_name, detector)},
-       {"description", "Invariant Mass Resolution calculated from raw "
-                       "tracking data using a Gaussian fit."},
+       {"description", "Q^2 resolution: relative difference with Gaussian fit"},
        {"quantity", "resolution"},
-       {"target", ".1"}}};
+       {"target", ".09"}}};
+  Tests.push_back(Q2_resolution_test);
+  
+  eic::util::Test x_resolution_test{
+      {{"name", fmt::format("{}_x_resolution", test_tag)},
+       {"title",
+        fmt::format("x Resolution for {} -> {} events with {}", vm_name, decay_name, detector)},
+       {"description", "x resolution: relative difference with Gaussian fit"},
+       {"quantity", "resolution"},
+       {"target", ".35"}}};
+  Tests.push_back(x_resolution_test);
+  
+  eic::util::Test t_resolution_test{
+      {{"name", fmt::format("{}_t_resolution", test_tag)},
+       {"title",
+        fmt::format("t Resolution for {} -> {} events with {}", vm_name, decay_name, detector)},
+       {"description", "t resolution: relative difference with Gaussian fit"},
+       {"quantity", "resolution"},
+       {"target", ".07"}}};
+  Tests.push_back(t_resolution_test);
 
+  double width_target[4] = {0.4, 0.09, 0.35, 0.07};
+  TH1::SetDefaultSumw2();
+  
   // Run this in multi-threaded mode if desired
   ROOT::EnableImplicitMT(kNumThreads);
 
@@ -92,7 +122,11 @@ int vm_invar(const std::string& config_name)
                   .Define("y_sim", util::get_y, {"invariant_quantities_sim"})
                   .Define("Q2_sim", util::get_Q2, {"invariant_quantities_sim"})
                   .Define("x_sim", util::get_x, {"invariant_quantities_sim"})
-                  .Define("t_sim", util::get_t, {"invariant_quantities_sim"});
+                  .Define("t_sim", util::get_t, {"invariant_quantities_sim"})
+                  .Define("y_diff", "(y_rec - y_sim)/y_sim")
+                  .Define("Q2_diff", "(Q2_rec - Q2_sim)/Q2_sim")
+                  .Define("x_diff", "(x_rec - x_sim)/x_sim")
+                  .Define("t_diff", "(t_rec - t_sim)/t_sim");
                   
   //================================================================
 
@@ -111,29 +145,51 @@ int vm_invar(const std::string& config_name)
   auto h_y_rec  = d_im.Histo1D({"h_y_rec", ";y;#", 50, 0., 1.}, "y_rec");
   auto h_t_rec  = d_im.Histo1D({"h_t_rec", ";t;#", 50, -1., 0.}, "t_rec");
   
+  double fun_range[4] = {1.5, 0.3, 1., 2.};
+  
+  auto h_y_diff   = d_im.Histo1D({"h_y_diff",  ";#Deltay/y;#",     50, -1.5, 1.5}, "y_diff");
+  auto h_Q2_diff  = d_im.Histo1D({"h_Q2_diff", ";#DeltaQ^{2}/Q^{2};#", 50, -0.3, 0.3}, "Q2_diff");
+  auto h_x_diff   = d_im.Histo1D({"h_x_diff",  ";#Deltax/x;#",     50, -1., 1.}, "x_diff");
+  auto h_t_diff   = d_im.Histo1D({"h_t_diff",  ";#Deltat/t;#",     50, -0.5, 0.5}, "t_diff");
+  
+  double nEvents = h_y_diff->Integral(0, -1);
   // Plot our histograms.
   // TODO: to start I'm explicitly plotting the histograms, but want to
   // factorize out the plotting code moving forward.
-  {
-
+    TFitResultPtr myFitPtr[4];
+    TF1* myf[4];
+    for(int i = 0 ; i < 4 ; i++){
+        myf[i] = new TF1(Form("myf_%d", i), "[2]*TMath::Gaus(x, [0], [1], 0)", -fun_range[i], fun_range[i]);
+        myf[i]->SetParameters(0., 0.25, nEvents/10.);
+        myf[i]->SetParLimits(0, -0.5, 0.5);
+        myf[i]->SetParLimits(1, 0., 1.0);
+        /*if(i==3){
+          myf[i]->SetParameter(1, 0.1);
+          //myf[i]->SetParameter(2, nEvents);
+        }*/
+        myf[i]->SetParLimits(2, 0., nEvents*10.);
+        myf[i]->SetNpx(1000);
+        myf[i]->SetLineColor(2);
+        myf[i]->SetLineStyle(7);
+    }
+    
+    
     // Print canvas to output file
-
     TCanvas c{"canvas2", "canvas2", 1200, 900};
     c.Divide(2, 2, 0.0001, 0.0001);
-    // pad 1 nu
+    //============================================================================
+    //pad 1 nu_diff
     c.cd(1);
-    auto& hy_rec = *h_y_rec;
-    auto& hy_sim = *h_y_sim;
+    auto& hy_diff = *h_y_diff;
     // histogram style
-    hy_rec.SetLineColor(plot::kMpOrange);
-    hy_rec.SetLineWidth(1);
-    hy_sim.SetLineColor(plot::kMpBlue);
-    hy_sim.SetLineWidth(2);
+    hy_diff.SetLineColor(plot::kMpOrange);
+    hy_diff.SetLineWidth(1);
     // axes
-    hy_sim.GetXaxis()->CenterTitle();
+    hy_diff.GetXaxis()->CenterTitle();
     // draw everything
-    hy_sim.DrawClone("hist");
-    hy_rec.DrawClone("hist same");
+    hy_diff.DrawClone("hist");
+    myFitPtr[0] = hy_diff.Fit(myf[0], "S 0", "", -fun_range[0], fun_range[0]);
+    myf[0]->Draw("same");
     // FIXME hardcoded beam configuration
     plot::draw_label(10, 100, detector);
     TText* tptr1;
@@ -141,26 +197,23 @@ int vm_invar(const std::string& config_name)
     t1->SetFillColorAlpha(kWhite, 0);
     t1->SetTextFont(43);
     t1->SetTextSize(25);
-    tptr1 = t1->AddText("simulated");
-    tptr1->SetTextColor(plot::kMpBlue);
-    tptr1 = t1->AddText("rec(PlaceHolder)");
+    tptr1 = t1->AddText("#Deltay/y");
     tptr1->SetTextColor(plot::kMpOrange);
     t1->Draw();
 
-    // pad 2 Q2
+
+    // pad 2 Q2_diff
     c.cd(2);
-    auto& hQ2_rec = *h_Q2_rec;
-    auto& hQ2_sim = *h_Q2_sim;
+    auto& hQ2_diff = *h_Q2_diff;
     // histogram style
-    hQ2_rec.SetLineColor(plot::kMpOrange);
-    hQ2_rec.SetLineWidth(1);
-    hQ2_sim.SetLineColor(plot::kMpBlue);
-    hQ2_sim.SetLineWidth(2);
+    hQ2_diff.SetLineColor(plot::kMpOrange);
+    hQ2_diff.SetLineWidth(1);
     // axes
-    hQ2_sim.GetXaxis()->CenterTitle();
+    hQ2_diff.GetXaxis()->CenterTitle();
     // draw everything
-    hQ2_sim.DrawClone("hist");
-    hQ2_rec.DrawClone("hist same");
+    hQ2_diff.DrawClone("hist");
+    myFitPtr[1] = hQ2_diff.Fit(myf[1], "S 0", "", -fun_range[1], fun_range[1]);
+    myf[1]->Draw("same");
     // FIXME hardcoded beam configuration
     plot::draw_label(10, 100, detector);
     TText* tptr2;
@@ -168,26 +221,22 @@ int vm_invar(const std::string& config_name)
     t2->SetFillColorAlpha(kWhite, 0);
     t2->SetTextFont(43);
     t2->SetTextSize(25);
-    tptr2 = t2->AddText("simulated");
-    tptr2->SetTextColor(plot::kMpBlue);
-    tptr2 = t2->AddText("rec(PlaceHolder)");
+    tptr2 = t2->AddText("#DeltaQ^{2}/Q^{2}");
     tptr2->SetTextColor(plot::kMpOrange);
     t2->Draw();
     
-    // pad 3 x
+    // pad 3 x_diff
     c.cd(3);
-    auto& hx_rec = *h_x_rec;
-    auto& hx_sim = *h_x_sim;
+    auto& hx_diff = *h_x_diff;
     // histogram style
-    hx_rec.SetLineColor(plot::kMpOrange);
-    hx_rec.SetLineWidth(1);
-    hx_sim.SetLineColor(plot::kMpBlue);
-    hx_sim.SetLineWidth(2);
+    hx_diff.SetLineColor(plot::kMpOrange);
+    hx_diff.SetLineWidth(1);
     // axes
-    hx_sim.GetXaxis()->CenterTitle();
+    hx_diff.GetXaxis()->CenterTitle();
     // draw everything
-    hx_sim.DrawClone("hist");
-    hx_rec.DrawClone("hist same");
+    hx_diff.DrawClone("hist");
+    myFitPtr[2] = hx_diff.Fit(myf[2], "S 0", "", -fun_range[2], fun_range[2]);
+    myf[2]->Draw("same");
     // FIXME hardcoded beam configuration
     plot::draw_label(10, 100, detector);
     TText* tptr3;
@@ -195,26 +244,22 @@ int vm_invar(const std::string& config_name)
     t3->SetFillColorAlpha(kWhite, 0);
     t3->SetTextFont(43);
     t3->SetTextSize(25);
-    tptr3 = t3->AddText("simulated");
-    tptr3->SetTextColor(plot::kMpBlue);
-    tptr3 = t3->AddText("rec(PlaceHolder)");
+    tptr3 = t3->AddText("#Deltax/x");
     tptr3->SetTextColor(plot::kMpOrange);
     t3->Draw();
     
-    // pad 4 t
+    // pad 4 t_diff
     c.cd(4);
-    auto& ht_rec = *h_t_rec;
-    auto& ht_sim = *h_t_sim;
+    auto& ht_diff = *h_t_diff;
     // histogram style
-    ht_rec.SetLineColor(plot::kMpOrange);
-    ht_rec.SetLineWidth(1);
-    ht_sim.SetLineColor(plot::kMpBlue);
-    ht_sim.SetLineWidth(2);
+    ht_diff.SetLineColor(plot::kMpOrange);
+    ht_diff.SetLineWidth(1);
     // axes
-    ht_sim.GetXaxis()->CenterTitle();
+    ht_diff.GetXaxis()->CenterTitle();
     // draw everything
-    ht_sim.DrawClone("hist");
-    ht_rec.DrawClone("hist same");
+    ht_diff.DrawClone("hist");
+    myFitPtr[3] = ht_diff.Fit(myf[3], "S 0", "", -fun_range[3], fun_range[3]);
+    myf[3]->Draw("same");
     // FIXME hardcoded beam configuration
     plot::draw_label(10, 100, detector);
     TText* tptr4;
@@ -222,23 +267,25 @@ int vm_invar(const std::string& config_name)
     t4->SetFillColorAlpha(kWhite, 0);
     t4->SetTextFont(43);
     t4->SetTextSize(25);
-    tptr4 = t4->AddText("simulated");
-    tptr4->SetTextColor(plot::kMpBlue);
-    tptr4 = t4->AddText("rec(PlaceHolder)");
+    tptr4 = t4->AddText("#Deltat/t");
     tptr4->SetTextColor(plot::kMpOrange);
     t4->Draw();
-    
+    //============================================================================
     c.Print(fmt::format("{}InvariantQuantities.png", output_prefix).c_str());
-    
-    
+
+  for(int i = 0 ; i < 4 ; i++){
+    double width = myf[i]->GetParameter(1);
+    if(myFitPtr[i]->Status()!=0){
+      Tests[i].error(-1);
+    }else if(width > width_target[i]){
+      Tests[i].fail(width);
+    }else{
+      Tests[i].pass(width);
+    }
   }
-
-  // TODO we're not actually getting the resolutions yet
-  // error for the test result
-  Q2_resolution_test.error(-1);
-
+  
   // write out our test data
-  eic::util::write_test(Q2_resolution_test, fmt::format("{}invar.json", output_prefix));
+  eic::util::write_test(Tests, fmt::format("{}invar.json", output_prefix));
 
   // That's all!
   return 0;

@@ -69,7 +69,8 @@ int vm_mass(const std::string& config_name)
                        "tracking data using a Gaussian fit."},
        {"quantity", "resolution"},
        {"target", ".2"}}};      //these 2 need to be consistent 
-  double width_target = 0.2;    //going to find a way to use the same variable
+  double width_target = 0.21;    //going to find a way to use the same variable
+  TH1::SetDefaultSumw2();
   // Run this in multi-threaded mode if desired
   ROOT::EnableImplicitMT(kNumThreads);
 
@@ -124,12 +125,13 @@ int vm_mass(const std::string& config_name)
   auto h_eta_rec = d_im.Histo1D({"h_eta_rec", ";#eta_{ll'};#", 50, -2., 2.}, "eta_rec");
   auto h_eta_sim = d_im.Histo1D({"h_eta_sim", ";#eta_{ll'};#", 50, -2., 2.}, "eta_sim");
 
+  double nEvents = h_im_rec->Integral(0, -1);
   // Plot our histograms.
   // TODO: to start I'm explicitly plotting the histograms, but want to
   // factorize out the plotting code moving forward.
-  //{
     TCanvas c{"canvas", "canvas", 1200, 1200};
     c.Divide(2, 2, 0.0001, 0.0001);
+    //============================================================================
     // pad 1 mass
     c.cd(1);
     // gPad->SetLogx(false);
@@ -149,11 +151,11 @@ int vm_mass(const std::string& config_name)
     h12.DrawClone("hist same");
     
     //Fit
-    TF1* mfMass = new TF1("mfMass", "[2]*TMath::Gaus(x, [0], [1], kFALSE)", 1.5, 4.5);
-    mfMass->SetParameters(3.096, 0.1, 100.);
+    TF1* mfMass = new TF1("mfMass", "[2]*TMath::Gaus(x, [0], [1], 0)", 1.5, 4.5);
+    mfMass->SetParameters(3.096, 0.1, nEvents/10.);
     mfMass->SetParLimits(0, 3.0, 3.2);
     mfMass->SetParLimits(1, 0., 10.);
-    mfMass->SetParLimits(2, 0., 1000.);
+    mfMass->SetParLimits(2, 0., nEvents*10.);
     mfMass->SetNpx(1000);
     mfMass->SetLineColor(2);
     mfMass->SetLineStyle(7);
@@ -264,9 +266,9 @@ int vm_mass(const std::string& config_name)
     tptr4 = t4->AddText("reconstructed");
     tptr4->SetTextColor(plot::kMpOrange);
     t4->Draw();
-
+    //============================================================================
     c.Print(fmt::format("{}vm_mass_pt_phi_rapidity.png", output_prefix).c_str());
-  //}
+  
 
   // TODO we're not actually doing an IM fit yet, so for now just return an
   // error for the test result

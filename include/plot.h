@@ -22,9 +22,10 @@ namespace plot {
   const int kMpGrey   = TColor::GetColor(0x7f, 0x7f, 0x7f);
   const int kMpMoss   = TColor::GetColor(0xbc, 0xbd, 0x22);
   const int kMpCyan   = TColor::GetColor(0x17, 0xbe, 0xcf);
+  const int kMpBlack  = 1;
 
   const std::vector<int> kPalette = {kMpBlue,  kMpOrange, kMpGreen, kMpRed,  kMpPurple,
-                                     kMpBrown, kMpPink,   kMpGrey,  kMpMoss, kMpCyan};
+                                     kMpBrown, kMpPink,   kMpGrey,  kMpMoss, kMpCyan, kMpBlack};
 
   void draw_label(int ebeam, int pbeam, const std::string_view detector)
   {
