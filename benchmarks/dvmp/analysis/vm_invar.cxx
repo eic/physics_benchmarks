@@ -130,6 +130,10 @@ int vm_invar(const std::string& config_name)
                   
   //================================================================
   //Factorized
+  double fun_range[4] = {1.5, 0.3, 1., 2.};
+  double hist_range_l[4] = {0., 0., 0., -1.};
+  double hist_range_h[4] = {1., 15., 0.1, 0.};
+  
   TString VarName[4] = {"y", "Q2", "x", "t"};
   std::vector<::TH1D> h_sim;
   {
@@ -141,9 +145,7 @@ int vm_invar(const std::string& config_name)
   //auto h_rec[4];
   //auto h_diff[4];
   
-  double fun_range[4] = {1.5, 0.3, 1., 2.};
-  double hist_range_l[4] = {0., 0., 0., -1.};
-  double hist_range_h[4] = {1., 15., 0.1, 0.};
+  
   
   h_sim[0] = d_im.Histo1D({"h_Q2_sim", ";Q^{2};#", 50, hist_range_l[0], hist_range_h[0]}, "Q2_sim");
   
