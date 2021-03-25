@@ -14,6 +14,7 @@
 #include "TFitResult.h"
 #include "TFitResultPtr.h"
 #include "TString.h"
+#include "TH1.h"
 
 #include <Math/Vector4D.h>
 
