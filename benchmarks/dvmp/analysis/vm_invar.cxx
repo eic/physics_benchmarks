@@ -135,10 +135,10 @@ int vm_invar(const std::string& config_name)
   double hist_range_h[4] = {1., 15., 0.1, 0.};
   
   TString VarName[4] = {"y", "Q2", "x", "t"};
-  std::vector<::TH1D> h_sim;
+  TH1D* h_sim[4];
   {
-  TH1D h_tmp = (TH1D)d_im.Histo1D({"h_Q2_sim", ";Q^{2};#", 50, hist_range_l[0], hist_range_h[0]}, "Q2_sim");
-  h_sim.push_back(h_tmp);
+  auto h_tmp = d_im.Histo1D({"h_Q2_sim", ";Q^{2};#", 50, hist_range_l[0], hist_range_h[0]}, "Q2_sim");
+  h_sim[0] = &h_tmp;
   }
   
   //TH1D h_sim[4];
