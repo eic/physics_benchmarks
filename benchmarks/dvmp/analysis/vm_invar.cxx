@@ -132,22 +132,23 @@ int vm_invar(const std::string& config_name)
   //Factorized
   TString VarName[4] = {"y", "Q2", "x", "t"};
   
-  TH1D h_sim[4];
-  TH1D h_rec[4];
-  TH1D h_diff[4];
+  auto h_sim[4];
+  auto h_rec[4];
+  auto h_diff[4];
   
   double fun_range[4] = {1.5, 0.3, 1., 2.};
   double hist_range_l[4] = {0., 0., 0., -1.};
   double hist_range_h[4] = {1., 15., 0.1, 0.};
   
+  h_sim[0] = (TH1D*)d_im.Histo1D({"h_" + VarName[0] + "_sim", ";Q^{2};#", 50, hist_range_l[0], hist_range_h[0]}, VarName[0] + "_sim");
   
-  for(int i = 0 ; i < 4 ; i++){
+  /*for(int i = 0 ; i < 4 ; i++){
     if(i==1){
-      h_sim[i] = d_im.Histo1D({"h_" + VarName[i] + "_sim", ";Q^{2};#", 50, hist_range_l[i], hist_range_h[i]}, VarName[i] + "_sim");
+      h_sim[i] = (TH1D*)d_im.Histo1D({"h_" + VarName[i] + "_sim", ";Q^{2};#", 50, hist_range_l[i], hist_range_h[i]}, VarName[i] + "_sim");
     }else{
-      h_sim[i] = d_im.Histo1D({"h_" + VarName[i] + "_sim", ";" + VarName[i] + ";#", 50, hist_range_l[i], hist_range_h[i]}, VarName[i] + "_sim");
+      h_sim[i] = (TH1D*)d_im.Histo1D({"h_" + VarName[i] + "_sim", ";" + VarName[i] + ";#", 50, hist_range_l[i], hist_range_h[i]}, VarName[i] + "_sim");
     }
-  }
+  }*/
   //==================================================================
   
   
