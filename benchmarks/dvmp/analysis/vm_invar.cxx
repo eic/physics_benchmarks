@@ -138,7 +138,9 @@ int vm_invar(const std::string& config_name)
   TH1D* h_sim[4];
   {
   auto h_tmp = d_im.Histo1D({"h_Q2_sim", ";Q^{2};#", 50, hist_range_l[0], hist_range_h[0]}, "Q2_sim");
-  h_sim[0] = &h_tmp;
+  //auto& h_tmp = *h_tmp;
+  
+  h_sim[0] = h_tmp;
   }
   
   //TH1D h_sim[4];
@@ -147,7 +149,7 @@ int vm_invar(const std::string& config_name)
   
   
   
-  h_sim[0] = d_im.Histo1D({"h_Q2_sim", ";Q^{2};#", 50, hist_range_l[0], hist_range_h[0]}, "Q2_sim");
+  //h_sim[0] = d_im.Histo1D({"h_Q2_sim", ";Q^{2};#", 50, hist_range_l[0], hist_range_h[0]}, "Q2_sim");
   
   /*for(int i = 0 ; i < 4 ; i++){
     if(i==1){
