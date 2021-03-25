@@ -129,9 +129,31 @@ int vm_invar(const std::string& config_name)
                   .Define("t_diff", "(t_rec - t_sim)/t_sim");
                   
   //================================================================
-
+  //Factorized
+  TString VarName[4] = {"y", "Q2", "x", "t"};
+  
+  auto h_sim[4];
+  auto h_rec[4];
+  auto h_diff[4];
+  
+  double fun_range[4] = {1.5, 0.3, 1., 2.};
+  double hist_range_l[4] = {0., 0., 0., -1.};
+  double hist_range_h[4] = {1., 15., 0.1, 0.};
+  
+  
+  for(int i = 0 ; i < 4 ; i++){
+    if(i==1){
+      h_sim[i] = d_im.Histo1D({"h_" + VarName[i] + "_sim", ";Q^{2};#", 50, hist_range_l[i], hist_range_h[i]}, Name[i] + "_sim");
+    }else{
+      h_sim[i] = d_im.Histo1D({"h_" + VarName[i] + "_sim", ";" + VarName[i] + ";#", 50, hist_range_l[i], hist_range_h[i]}, Name[i] + "_sim");
+    }
+  }
+  //==================================================================
+  
+  
+  
+  
   // Define output histograms
-
   //auto h_nu_sim = d_im.Histo1D({"h_nu_sim", ";#nu/1000;#", 100, 0., 2.}, "nu_sim");
   auto h_Q2_sim = d_im.Histo1D({"h_Q2_sim", ";Q^{2};#", 50, 0., 15.}, "Q2_sim");
   auto h_x_sim  = d_im.Histo1D({"h_x_sim", ";x;#", 50, 0., 0.1}, "x_sim");
@@ -145,7 +167,7 @@ int vm_invar(const std::string& config_name)
   auto h_y_rec  = d_im.Histo1D({"h_y_rec", ";y;#", 50, 0., 1.}, "y_rec");
   auto h_t_rec  = d_im.Histo1D({"h_t_rec", ";t;#", 50, -1., 0.}, "t_rec");
   
-  double fun_range[4] = {1.5, 0.3, 1., 2.};
+  
   
   auto h_y_diff   = d_im.Histo1D({"h_y_diff",  ";#Deltay/y;#",     50, -1.5, 1.5}, "y_diff");
   auto h_Q2_diff  = d_im.Histo1D({"h_Q2_diff", ";#DeltaQ^{2}/Q^{2};#", 50, -0.3, 0.3}, "Q2_diff");

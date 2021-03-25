@@ -268,7 +268,6 @@ int vm_mass(const std::string& config_name)
     t4->Draw();
     //============================================================================
     c.Print(fmt::format("{}vm_mass_pt_phi_rapidity.png", output_prefix).c_str());
-    c.Print(fmt::format("{}vm_mass_pt_phi_rapidity2.png", output_prefix).c_str());
   
 
   // TODO we're not actually doing an IM fit yet, so for now just return an

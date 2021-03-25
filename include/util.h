@@ -13,6 +13,7 @@
 #include "TF1.h"
 #include "TFitResult.h"
 #include "TFitResultPtr.h"
+#include "TString.h"
 
 #include <Math/Vector4D.h>
 
