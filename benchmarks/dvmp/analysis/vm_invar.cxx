@@ -152,7 +152,9 @@ int vm_invar(const std::string& config_name)
   
   {
   int i = 0;
-  auto h_tmp = d_im.Histo1D({histName[i], histTitle[i], 50, hist_range_l[i], hist_range_h[i]}, RawHist[i]);
+  cout<<"================"<<histName[i]<<"================"<<endl;
+  //auto h_tmp = d_im.Histo1D({histName[i], histTitle[i], 50, hist_range_l[i], hist_range_h[i]}, RawHist[i]);
+  
   //auto h_tmp = d_im.Histo1D({"", "", 50, hist_range_l[0], hist_range_h[0]}, "");
   //h_sim[0] = (TH1D*)h_tmp->Clone();
   }
