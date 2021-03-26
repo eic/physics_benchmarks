@@ -151,7 +151,7 @@ int vm_invar(const std::string& config_name)
   TH1D* h_sim[4];
   
   {
-  auto h_tmp = d_im.Histo1D({histName[0], histTitle[0], 50, hist_range_l[0], hist_range_h[0]}, RawHist[4]);
+  auto h_tmp = d_im.Histo1D({histName[0].View(), histTitle[0].View(), 50, hist_range_l[0], hist_range_h[0]}, RawHist[0].View());
   h_sim[0] = (TH1D*)h_tmp->Clone();
   }
   
