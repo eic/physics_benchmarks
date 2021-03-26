@@ -134,10 +134,10 @@ int vm_invar(const std::string& config_name)
   double hist_range_l[4] = {0., 0., 0., -1.};
   double hist_range_h[4] = {1., 15., 0.1, 0.};
   
-  TString VarName[4] = {"y", "Q2", "x", "t"};
-  TString histName[4];
-  TString histTitle[4];
-  TString RawHist[4];
+  std::string VarName[4] = {"y", "Q2", "x", "t"};
+  std::string histName[4];
+  std::string histTitle[4];
+  std::string RawHist[4];
   for(int i = 0 ; i < 4 ; i++){
     histName[i] = "h_" + VarName[i] + "_sim";
     if(i!=1){
@@ -151,11 +151,8 @@ int vm_invar(const std::string& config_name)
   TH1D* h_sim[4];
   
   {
-  std::string_view histName_view = histName[0].View();
-  std::string_view histTitle_view = histTitle[0].View();
-  std::string_view RawHist_view = RawHist[0].View();
-  cout<<"==="<<histName_view<<"==="<<histTitle_view<<"==="<<RawHist_view<<"==="<<endl;
-  //auto h_tmp = d_im.Histo1D({histName_view, histTitle_view, 50, hist_range_l[0], hist_range_h[0]}, RawHist_view);
+  int i = 0;
+  auto h_tmp = d_im.Histo1D({histName[i], histTitle[i], 50, hist_range_l[i], hist_range_h[i]}, RawHist[i]);
   //auto h_tmp = d_im.Histo1D({"", "", 50, hist_range_l[0], hist_range_h[0]}, "");
   //h_sim[0] = (TH1D*)h_tmp->Clone();
   }
