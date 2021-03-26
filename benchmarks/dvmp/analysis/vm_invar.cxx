@@ -139,7 +139,7 @@ int vm_invar(const std::string& config_name)
   std::string histTitle[4];
   std::string RawHist[4];
   for(int i = 0 ; i < 4 ; i++){
-    histName[i] = "h_" + VarName[i] + "_sim";
+    histName[i] = "h_" + VarName[i] + "_sim_test";
     if(i!=1){
       histTitle[i] = ";" + VarName[i] + ";#";
     }else{
@@ -153,7 +153,7 @@ int vm_invar(const std::string& config_name)
   {
   int i = 0;
   cout<<"================"<<histName[i]<<"================"<<endl;
-  //auto h_tmp = d_im.Histo1D({histName[i], histTitle[i], 50, hist_range_l[i], hist_range_h[i]}, RawHist[i]);
+  //auto h_tmp = d_im.Histo1D({histName[i], ";y;#", 50, hist_range_l[i], hist_range_h[i]}, "y_sim");
   
   //auto h_tmp = d_im.Histo1D({"", "", 50, hist_range_l[0], hist_range_h[0]}, "");
   //h_sim[0] = (TH1D*)h_tmp->Clone();
