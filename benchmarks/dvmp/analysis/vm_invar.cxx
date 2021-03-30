@@ -210,7 +210,7 @@ int vm_invar(const std::string& config_name)
     
     //factorized part
     for(int j = 0 ; j < 2 ; j++){
-      ctmp->cd(j);
+      ctmp->cd(j+1);
       t[i][j] = new TPaveText(.6, .8417, .9, .925, "NB NDC");
       t[i][j]->SetFillColorAlpha(kWhite, 0);
       t[i][j]->SetTextFont(43);
@@ -236,7 +236,7 @@ int vm_invar(const std::string& config_name)
       tptr[i][j]->SetTextColor(plot::kMpOrange);
       t[i][j]->Draw();
     }
-    ctmp->Print(fmt::format("{}_{}.png", output_prefix, VarName[i]).c_str());
+    ctmp->Print(fmt::format("{}-{}.png", output_prefix, VarName[i]).c_str());
     delete ctmp;
   }
   
