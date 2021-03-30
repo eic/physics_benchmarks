@@ -219,13 +219,17 @@ int vm_invar(const std::string& config_name)
         case 0:
           hist_sim[i]->Draw("hist");
           hist_rec[i]->Draw("hist same");
-          tptr[i][j] = t[i][j]->AddText(VarName[i].c_str());
+          tptr[i][j] = t[i][j]->AddText("simulation");
+          tptr[i][j]->SetTextColor(plot::kMpBlue);
+          tptr[i][j] = t[i][j]->AddText("reconstructed");
+          tptr[i][j]->SetTextColor(plot::kMpOrange);
           break;
         case 1:
           hist_dif[i]->Draw("hist");
           myFitPtr[i] = hist_dif[i]->Fit(myf[i], "S 0", "", -func_range[i], func_range[i]);
           myf[i]->Draw("same");
           tptr[i][j] = t[i][j]->AddText(fmt::format("#Delta{}/{}", VarName[i], VarName[i]).c_str());
+          tptr[i][j]->SetTextColor(1);
           break;
         case 2:
           break;
@@ -233,10 +237,9 @@ int vm_invar(const std::string& config_name)
           break;
       }
       plot::draw_label(10, 100, detector);
-      tptr[i][j]->SetTextColor(plot::kMpOrange);
       t[i][j]->Draw();
     }
-    ctmp->Print(fmt::format("{}-{}.png", output_prefix, VarName[i]).c_str());
+    ctmp->Print(fmt::format("{}{}.png", output_prefix, VarName[i]).c_str());
     delete ctmp;
   }
   
