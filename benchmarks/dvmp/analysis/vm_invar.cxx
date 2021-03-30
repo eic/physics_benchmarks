@@ -129,8 +129,8 @@ int vm_invar(const std::string& config_name)
                   .Define("t_diff", "(t_rec - t_sim)/t_sim");
                   
   //================================================================
-  //Factorized
-  double fun_range[4] = {1.5, 0.3, 1., 2.};
+  //Factorizeation
+  double func_range[4] = {1.5, 0.3, 1., 2.};
   double hist_range_l[4] = {0., 0., 0., -1.};
   double hist_range_h[4] = {1., 15., 0.1, 0.};
   
@@ -156,10 +156,7 @@ int vm_invar(const std::string& config_name)
     //auto h_tmp = d_im.Histo1D({"h_y_sim_test", ";y;#", 50, hist_range_l[i], hist_range_h[i]}, "y_sim");       //directly quote the string
   }*/
   //==================================================================
-  
-  
-  
-  
+
   // Define output histograms
   //auto h_nu_sim = d_im.Histo1D({"h_nu_sim", ";#nu/1000;#", 100, 0., 2.}, "nu_sim");
   auto h_Q2_sim = d_im.Histo1D({"h_Q2_sim", ";Q^{2};#", 50, 0., 15.}, "Q2_sim");
@@ -167,14 +164,11 @@ int vm_invar(const std::string& config_name)
   auto h_y_sim  = d_im.Histo1D({"h_y_sim", ";y;#", 50, 0., 1.}, "y_sim");
   auto h_t_sim  = d_im.Histo1D({"h_t_sim", ";t;#", 50, -1., 0.}, "t_sim");
   
-  
   //auto h_nu_rec = d_im.Histo1D({"h_nu_rec", ";#nu/1000;#", 100, 0., 2.}, "nu_rec");
   auto h_Q2_rec = d_im.Histo1D({"h_Q2_rec", ";Q^{2};#", 50, 0., 15.}, "Q2_rec");
   auto h_x_rec  = d_im.Histo1D({"h_x_rec", ";x;#", 50, 0., 0.1}, "x_rec");
   auto h_y_rec  = d_im.Histo1D({"h_y_rec", ";y;#", 50, 0., 1.}, "y_rec");
   auto h_t_rec  = d_im.Histo1D({"h_t_rec", ";t;#", 50, -1., 0.}, "t_rec");
-  
-  
   
   auto h_y_diff   = d_im.Histo1D({"h_y_diff",  ";#Deltay/y;#",     50, -1.5, 1.5}, "y_diff");
   auto h_Q2_diff  = d_im.Histo1D({"h_Q2_diff", ";#DeltaQ^{2}/Q^{2};#", 50, -0.3, 0.3}, "Q2_diff");
@@ -182,13 +176,19 @@ int vm_invar(const std::string& config_name)
   auto h_t_diff   = d_im.Histo1D({"h_t_diff",  ";#Deltat/t;#",     50, -0.5, 0.5}, "t_diff");
   
   double nEvents = h_y_diff->Integral(0, -1);
+  
+  TH1D* histtest = (TH1D*)d_im.Histo1D({"h_Q2_sim_test", ";Q^{2};#", 50, 0., 15.}, "Q2_sim");
+  TCanvas c{"ctest", "ctest", 1200, 900};
+  histtest->Draw("hist e");
+  c.Print(fmt::format("{}test.png", output_prefix).c_str());
+    
   // Plot our histograms.
   // TODO: to start I'm explicitly plotting the histograms, but want to
   // factorize out the plotting code moving forward.
     TFitResultPtr myFitPtr[4];
     TF1* myf[4];
     for(int i = 0 ; i < 4 ; i++){
-        myf[i] = new TF1(Form("myf_%d", i), "[2]*TMath::Gaus(x, [0], [1], 0)", -fun_range[i], fun_range[i]);
+        myf[i] = new TF1(Form("myf_%d", i), "[2]*TMath::Gaus(x, [0], [1], 0)", -func_range[i], func_range[i]);
         myf[i]->SetParameters(0., 0.25, nEvents/10.);
         myf[i]->SetParLimits(0, -0.5, 0.5);
         myf[i]->SetParLimits(1, 0., 1.0);
@@ -217,7 +217,7 @@ int vm_invar(const std::string& config_name)
     hy_diff.GetXaxis()->CenterTitle();
     // draw everything
     hy_diff.DrawClone("hist");
-    myFitPtr[0] = hy_diff.Fit(myf[0], "S 0", "", -fun_range[0], fun_range[0]);
+    myFitPtr[0] = hy_diff.Fit(myf[0], "S 0", "", -func_range[0], func_range[0]);
     myf[0]->Draw("same");
     // FIXME hardcoded beam configuration
     plot::draw_label(10, 100, detector);
@@ -241,7 +241,7 @@ int vm_invar(const std::string& config_name)
     hQ2_diff.GetXaxis()->CenterTitle();
     // draw everything
     hQ2_diff.DrawClone("hist");
-    myFitPtr[1] = hQ2_diff.Fit(myf[1], "S 0", "", -fun_range[1], fun_range[1]);
+    myFitPtr[1] = hQ2_diff.Fit(myf[1], "S 0", "", -func_range[1], func_range[1]);
     myf[1]->Draw("same");
     // FIXME hardcoded beam configuration
     plot::draw_label(10, 100, detector);
@@ -264,7 +264,7 @@ int vm_invar(const std::string& config_name)
     hx_diff.GetXaxis()->CenterTitle();
     // draw everything
     hx_diff.DrawClone("hist");
-    myFitPtr[2] = hx_diff.Fit(myf[2], "S 0", "", -fun_range[2], fun_range[2]);
+    myFitPtr[2] = hx_diff.Fit(myf[2], "S 0", "", -func_range[2], func_range[2]);
     myf[2]->Draw("same");
     // FIXME hardcoded beam configuration
     plot::draw_label(10, 100, detector);
@@ -287,7 +287,7 @@ int vm_invar(const std::string& config_name)
     ht_diff.GetXaxis()->CenterTitle();
     // draw everything
     ht_diff.DrawClone("hist");
-    myFitPtr[3] = ht_diff.Fit(myf[3], "S 0", "", -fun_range[3], fun_range[3]);
+    myFitPtr[3] = ht_diff.Fit(myf[3], "S 0", "", -func_range[3], func_range[3]);
     myf[3]->Draw("same");
     // FIXME hardcoded beam configuration
     plot::draw_label(10, 100, detector);
