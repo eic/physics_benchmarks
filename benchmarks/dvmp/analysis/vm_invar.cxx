@@ -130,11 +130,11 @@ int vm_invar(const std::string& config_name)
                   
   //================================================================
   //Factorized
-  /*double fun_range[4] = {1.5, 0.3, 1., 2.};
+  double fun_range[4] = {1.5, 0.3, 1., 2.};
   double hist_range_l[4] = {0., 0., 0., -1.};
   double hist_range_h[4] = {1., 15., 0.1, 0.};
   
-  std::string VarName[4] = {"y", "Q2", "x", "t"};
+  /*std::string VarName[4] = {"y", "Q2", "x", "t"};
   std::string histName[4];
   std::string histTitle[4];
   std::string RawHist[4];
