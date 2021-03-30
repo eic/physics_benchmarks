@@ -219,13 +219,13 @@ int vm_invar(const std::string& config_name)
         case 0:
           hist_sim[i]->Draw("hist");
           hist_rec[i]->Draw("hist same");
-          tptr[i][j] = t[i][j]->AddText(VarName[i]);
+          tptr[i][j] = t[i][j]->AddText(VarName[i].c_str());
           break;
         case 1:
           hist_dif[i]->Draw("hist");
           myFitPtr[i] = hist_dif[i].Fit(myf[i], "S 0", "", -func_range[i], func_range[i]);
           myf[i]->Draw("same");
-          tptr[i][j] = t[i][j]->AddText(fmt::format("#Delta{}/{}", VarName[i], VarName[i]));
+          tptr[i][j] = t[i][j]->AddText(fmt::format("#Delta{}/{}", VarName[i], VarName[i]).c_str());
           break;
         case 2:
           break;
