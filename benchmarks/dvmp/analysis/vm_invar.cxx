@@ -177,10 +177,12 @@ int vm_invar(const std::string& config_name)
   
   double nEvents = h_y_diff->Integral(0, -1);
   
-  TH1D* histtest = (TH1D*)d_im.Histo1D({"h_Q2_sim_test", ";Q^{2};#", 50, 0., 15.}, "Q2_sim");
-  TCanvas c{"ctest", "ctest", 1200, 900};
+  TH1D* histtest = d_im.Histo1D({"h_Q2_sim_test", ";Q^{2};#", 50, 0., 15.}, "Q2_sim");
+  
+  
+  TCanvas ctest{"ctest", "ctest", 1200, 900};
   histtest->Draw("hist e");
-  c.Print(fmt::format("{}test.png", output_prefix).c_str());
+  ctest.Print(fmt::format("{}test.png", output_prefix).c_str());
     
   // Plot our histograms.
   // TODO: to start I'm explicitly plotting the histograms, but want to
