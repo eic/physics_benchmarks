@@ -135,7 +135,7 @@ int vm_invar(const std::string& config_name)
   double hist_range_h[4] = {1., 15., 0.1, 0.};
   
   std::string VarName[4] = {"y", "Q2", "x", "t"};
-  /*std::string histName[4];
+  std::string histName[4];
   std::string histTitle[4];
   std::string RawHist[4];
   for(int i = 0 ; i < 4 ; i++){
@@ -152,9 +152,9 @@ int vm_invar(const std::string& config_name)
   {
     int i = 0;
     cout<<"================"<<histName[i]<<"================"<<endl;
-    //auto h_tmp = d_im.Histo1D({histName[i], ";y;#", 50, hist_range_l[i], hist_range_h[i]}, "y_sim");          //using string variable
+    auto h_tmp = d_im.Histo1D({histName[i].c_str(), ";y;#", 50, hist_range_l[i], hist_range_h[i]}, "y_sim");          //using string variable
     //auto h_tmp = d_im.Histo1D({"h_y_sim_test", ";y;#", 50, hist_range_l[i], hist_range_h[i]}, "y_sim");       //directly quote the string
-  }*/
+  }
   //==================================================================
 
   // Define output histograms
@@ -177,7 +177,7 @@ int vm_invar(const std::string& config_name)
   
   double nEvents = h_y_dif->Integral(0, -1);
   
-  TH1D* hist_sim[4] = {&(*h_y_sim), &(*h_Q2_sim), &(*h_x_sim), &(*h_t_sim)};
+  /*TH1D* hist_sim[4] = {&(*h_y_sim), &(*h_Q2_sim), &(*h_x_sim), &(*h_t_sim)};
   TH1D* hist_rec[4] = {&(*h_y_rec), &(*h_Q2_rec), &(*h_x_rec), &(*h_t_rec)};
   TH1D* hist_dif[4] = {&(*h_y_dif), &(*h_Q2_dif), &(*h_x_dif), &(*h_t_dif)};
   TFitResultPtr myFitPtr[4];
@@ -242,13 +242,13 @@ int vm_invar(const std::string& config_name)
     ctmp->Print(fmt::format("{}{}.png", output_prefix, VarName[i]).c_str());
     delete ctmp;
   }
-  
+  */
     
   // Plot our histograms.
   // TODO: to start I'm explicitly plotting the histograms, but want to
   // factorize out the plotting code moving forward.
   //Before factorizing==========================================================================================
-    /*TFitResultPtr myFitPtr[4];
+    TFitResultPtr myFitPtr[4];
     TF1* myf[4];
     for(int i = 0 ; i < 4 ; i++){
         myf[i] = new TF1(Form("myf_%d", i), "[2]*TMath::Gaus(x, [0], [1], 0)", -func_range[i], func_range[i]);
@@ -360,7 +360,7 @@ int vm_invar(const std::string& config_name)
     tptr4->SetTextColor(plot::kMpOrange);
     t4->Draw();
     //============================================================================
-    c.Print(fmt::format("{}InvariantQuantities.png", output_prefix).c_str());*/
+    c.Print(fmt::format("{}InvariantQuantities.png", output_prefix).c_str());
     
   //Before factorizing==========================================================================================
 
