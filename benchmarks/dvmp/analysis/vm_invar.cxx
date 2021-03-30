@@ -263,7 +263,7 @@ int vm_invar(const std::string& config_name)
     
     
     // Print canvas to output file
-    /*
+    
     TCanvas c{"canvas2", "canvas2", 1200, 900};
     c.Divide(2, 2, 0.0001, 0.0001);
     //============================================================================
