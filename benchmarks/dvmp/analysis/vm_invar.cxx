@@ -223,7 +223,7 @@ int vm_invar(const std::string& config_name)
           break;
         case 1:
           hist_dif[i]->Draw("hist");
-          myFitPtr[i] = hist_dif[i].Fit(myf[i], "S 0", "", -func_range[i], func_range[i]);
+          myFitPtr[i] = hist_dif[i]->Fit(myf[i], "S 0", "", -func_range[i], func_range[i]);
           myf[i]->Draw("same");
           tptr[i][j] = t[i][j]->AddText(fmt::format("#Delta{}/{}", VarName[i], VarName[i]).c_str());
           break;
@@ -236,7 +236,7 @@ int vm_invar(const std::string& config_name)
       tptr[i][j]->SetTextColor(plot::kMpOrange);
       t[i][j]->Draw();
     }
-    ctmp->Print(fmt::format("{}_{}.png", output_prefix).c_str(), VarName[i]);
+    ctmp->Print(fmt::format("{}_{}.png", output_prefix, VarName[i]).c_str());
     delete ctmp;
   }
   
