@@ -177,7 +177,7 @@ int vm_invar(const std::string& config_name)
   
   double nEvents = h_y_diff->Integral(0, -1);
   
-  TH1D* histtest = *h_Q2_sim;
+  TH1D* histtest = &(*h_Q2_sim);
   
   
   TCanvas ctest{"ctest", "ctest", 1200, 900};
