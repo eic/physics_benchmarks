@@ -151,7 +151,8 @@ int vm_invar(const std::string& config_name)
   TH1D* h_sim[4];
   for(int i = 0 ; i < 4 ; i++){
     auto h_tmp = d_im.Histo1D({histName[i].c_str(), histTitle[i].c_str(), 50, hist_range_l[i], hist_range_h[i]}, RawHist[i].c_str());       //directly quote the string
-    h_sim[i] = (&(*h_tmp))->Clone();
+    h_sim[i] = &(*h_tmp);
+    h_sim[i] = (TH1D*)h_sim[i]->Clone();
   }
   TCanvas* ctest = new TCanvas("test", "test", 800, 800);
   h_sim[2]->Draw("hist");
