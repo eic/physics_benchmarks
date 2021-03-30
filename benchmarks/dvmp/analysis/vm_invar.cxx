@@ -149,12 +149,15 @@ int vm_invar(const std::string& config_name)
   }
   
   TH1D* h_sim[4];
-  {
-    int i = 0;
-    cout<<"================"<<histName[i]<<"================"<<endl;
-    //auto h_tmp = d_im.Histo1D({histName[i], ";y;#", 50, hist_range_l[i], hist_range_h[i]}, "y_sim");          //using string variable
-    auto h_tmp = d_im.Histo1D({"h_y_sim_test", ";y;#", 50, hist_range_l[i], hist_range_h[i]}, RawHist[i].c_str());       //directly quote the string
+  for(int i = 0 ; i < 4 ; i++){
+    auto h_tmp = d_im.Histo1D({histName[i].c_str(), histTitle[i].c_str(), 50, hist_range_l[i], hist_range_h[i]}, RawHist[i].c_str());       //directly quote the string
+    h_sim[i] = &(*h_tmp);
   }
+  TCanvas* ctest = new ctest("test", "test", 800, 800);
+  h_sim[2]->Draw("hist");
+  ctest->Print(fmt::format("{}test.png", output_prefix).c_str());
+  delete ctest;
+  
   //==================================================================
 
   // Define output histograms
