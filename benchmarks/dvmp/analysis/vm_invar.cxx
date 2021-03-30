@@ -152,8 +152,8 @@ int vm_invar(const std::string& config_name)
   {
     int i = 0;
     cout<<"================"<<histName[i]<<"================"<<endl;
-    auto h_tmp = d_im.Histo1D({histName[i].c_str(), ";y;#", 50, hist_range_l[i], hist_range_h[i]}, "y_sim");          //using string variable
-    //auto h_tmp = d_im.Histo1D({"h_y_sim_test", ";y;#", 50, hist_range_l[i], hist_range_h[i]}, "y_sim");       //directly quote the string
+    //auto h_tmp = d_im.Histo1D({histName[i], ";y;#", 50, hist_range_l[i], hist_range_h[i]}, "y_sim");          //using string variable
+    auto h_tmp = d_im.Histo1D({"h_y_sim_test", ";y;#", 50, hist_range_l[i], hist_range_h[i]}, RawHist[i].c_str());       //directly quote the string
   }
   //==================================================================
 
