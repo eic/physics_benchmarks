@@ -259,7 +259,7 @@ int vm_invar(const std::string& config_name)
         myf[i]->SetNpx(1000);
         myf[i]->SetLineColor(2);
         myf[i]->SetLineStyle(7);
-    }*/
+    }
     
     
     // Print canvas to output file
