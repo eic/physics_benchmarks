@@ -123,10 +123,10 @@ int vm_invar(const std::string& config_name)
                   .Define("Q2_sim", util::get_Q2, {"invariant_quantities_sim"})
                   .Define("x_sim", util::get_x, {"invariant_quantities_sim"})
                   .Define("t_sim", util::get_t, {"invariant_quantities_sim"})
-                  .Define("y_diff", "(y_rec - y_sim)/y_sim")
-                  .Define("Q2_diff", "(Q2_rec - Q2_sim)/Q2_sim")
-                  .Define("x_diff", "(x_rec - x_sim)/x_sim")
-                  .Define("t_diff", "(t_rec - t_sim)/t_sim");
+                  .Define("y_dif", "(y_rec - y_sim)/y_sim")
+                  .Define("Q2_dif", "(Q2_rec - Q2_sim)/Q2_sim")
+                  .Define("x_dif", "(x_rec - x_sim)/x_sim")
+                  .Define("t_dif", "(t_rec - t_sim)/t_sim");
                   
   //================================================================
   //Factorizeation
@@ -134,15 +134,15 @@ int vm_invar(const std::string& config_name)
   double hist_range_l[4] = {0., 0., 0., -1.};
   double hist_range_h[4] = {1., 15., 0.1, 0.};
   
-  /*std::string VarName[4] = {"y", "Q2", "x", "t"};
-  std::string histName[4];
+  std::string VarName[4] = {"y", "Q2", "x", "t"};
+  /*std::string histName[4];
   std::string histTitle[4];
   std::string RawHist[4];
   for(int i = 0 ; i < 4 ; i++){
     histName[i] = "h_" + VarName[i] + "_sim_test";
     if(i!=1){
-      histTitle[i] = ";" + VarName[i] + ";#";
     }else{
+      histTitle[i] = ";" + VarName[i] + ";#";
       histTitle[i] = ";Q^{2};#";
     }
     RawHist[i] = VarName[i] + "_sim";
@@ -170,56 +170,111 @@ int vm_invar(const std::string& config_name)
   auto h_y_rec  = d_im.Histo1D({"h_y_rec", ";y;#", 50, 0., 1.}, "y_rec");
   auto h_t_rec  = d_im.Histo1D({"h_t_rec", ";t;#", 50, -1., 0.}, "t_rec");
   
-  auto h_y_diff   = d_im.Histo1D({"h_y_diff",  ";#Deltay/y;#",     50, -1.5, 1.5}, "y_diff");
-  auto h_Q2_diff  = d_im.Histo1D({"h_Q2_diff", ";#DeltaQ^{2}/Q^{2};#", 50, -0.3, 0.3}, "Q2_diff");
-  auto h_x_diff   = d_im.Histo1D({"h_x_diff",  ";#Deltax/x;#",     50, -1., 1.}, "x_diff");
-  auto h_t_diff   = d_im.Histo1D({"h_t_diff",  ";#Deltat/t;#",     50, -0.5, 0.5}, "t_diff");
+  auto h_y_dif   = d_im.Histo1D({"h_y_dif",  ";#Deltay/y;#",     50, -1.5, 1.5}, "y_dif");
+  auto h_Q2_dif  = d_im.Histo1D({"h_Q2_dif", ";#DeltaQ^{2}/Q^{2};#", 50, -0.3, 0.3}, "Q2_dif");
+  auto h_x_dif   = d_im.Histo1D({"h_x_dif",  ";#Deltax/x;#",     50, -1., 1.}, "x_dif");
+  auto h_t_dif   = d_im.Histo1D({"h_t_dif",  ";#Deltat/t;#",     50, -0.5, 0.5}, "t_dif");
   
-  double nEvents = h_y_diff->Integral(0, -1);
+  double nEvents = h_y_dif->Integral(0, -1);
   
-  TH1D* histtest = &(*d_im.Histo1D({"h_Q2_sim_TEST", ";Q^{2};#", 50, 0., 15.}, "Q2_sim"));
+  TH1D* hist_sim[4] = {&(*h_y_sim), &(*h_Q2_sim), &(*h_x_sim), &(*h_t_sim)};
+  TH1D* hist_rec[4] = {&(*h_y_rec), &(*h_Q2_rec), &(*h_x_rec), &(*h_t_rec)};
+  TH1D* hist_dif[4] = {&(*h_y_dif), &(*h_Q2_dif), &(*h_x_dif), &(*h_t_dif)};
+  TFitResultPtr myFitPtr[4];
+  TF1* myf[4];
+  TText* tptr[4][3];
+  TPaveText* t[4][3];
   
+  for(int i = 0 ; i < 4 ; i++){
+    TCanvas* ctmp = new TCanvas("ctmp", "ctmp", 1800, 600);
+    ctmp->Divide(3, 1, 0.001, 0.001);
+    //for pad 1
+    hist_sim[i]->SetLineColor(plot::kMpBlue);
+    hist_sim[i]->SetLineWidth(2);
+    hist_sim[i]->GetXaxis()->CenterTitle();
+    hist_rec[i]->SetLineColor(plot::kMpOrange);
+    hist_rec[i]->SetLineWidth(1);
+    //for pad 2
+    hist_dif[i]->SetLineColor(plot::kMpGrey);
+    hist_dif[i]->SetLineWidth(1);
+    hist_dif[i]->GetXaxis()->CenterTitle();
+    myf[i] = new TF1(Form("myf_%d", i), "[2]*TMath::Gaus(x, [0], [1], 0)", -func_range[i], func_range[i]);
+    myf[i]->SetParameters(0., 0.25, nEvents/10.);
+    myf[i]->SetParLimits(0, -0.5, 0.5);
+    myf[i]->SetParLimits(1, 0., 1.0);
+    myf[i]->SetParLimits(2, 0., nEvents*10.);
+    myf[i]->SetNpx(1000);
+    myf[i]->SetLineColor(plot::kMpRed);
+    myf[i]->SetLineStyle(7);
+    //for pad 3
+    
+    //factorized part
+    for(int j = 0 ; j < 2 ; j++){
+      ctmp->cd(j);
+      t[i][j] = new TPaveText(.6, .8417, .9, .925, "NB NDC");
+      t[i][j]->SetFillColorAlpha(kWhite, 0);
+      t[i][j]->SetTextFont(43);
+      t[i][j]->SetTextSize(25);
+      switch(j){
+        case 0:
+          hist_sim[i]->Draw("hist");
+          hist_rec[i]->Draw("hist same");
+          tptr[i][j] = t[i][j]->AddText(VarName[i]);
+          break;
+        case 1:
+          hist_dif[i]->Draw("hist");
+          myFitPtr[i] = hist_dif[i].Fit(myf[i], "S 0", "", -func_range[i], func_range[i]);
+          myf[i]->Draw("same");
+          tptr[i][j] = t[i][j]->AddText(fmt::format("#Delta{}/{}", VarName[i], VarName[i]));
+          break;
+        case 2:
+          break;
+        default:
+          break;
+      }
+      plot::draw_label(10, 100, detector);
+      tptr[i][j]->SetTextColor(plot::kMpOrange);
+      t[i][j]->Draw();
+    }
+    ctmp->Print(fmt::format("{}_{}.png", output_prefix).c_str(), VarName[i]);
+    delete ctmp;
+  }
   
-  TCanvas ctest{"ctest", "ctest", 1200, 900};
-  histtest->Draw("hist e");
-  ctest.Print(fmt::format("{}test.png", output_prefix).c_str());
     
   // Plot our histograms.
   // TODO: to start I'm explicitly plotting the histograms, but want to
   // factorize out the plotting code moving forward.
-    TFitResultPtr myFitPtr[4];
+  //Before factorizing==========================================================================================
+    /*TFitResultPtr myFitPtr[4];
     TF1* myf[4];
     for(int i = 0 ; i < 4 ; i++){
         myf[i] = new TF1(Form("myf_%d", i), "[2]*TMath::Gaus(x, [0], [1], 0)", -func_range[i], func_range[i]);
         myf[i]->SetParameters(0., 0.25, nEvents/10.);
         myf[i]->SetParLimits(0, -0.5, 0.5);
         myf[i]->SetParLimits(1, 0., 1.0);
-        /*if(i==3){
-          myf[i]->SetParameter(1, 0.1);
-          //myf[i]->SetParameter(2, nEvents);
-        }*/
         myf[i]->SetParLimits(2, 0., nEvents*10.);
         myf[i]->SetNpx(1000);
         myf[i]->SetLineColor(2);
         myf[i]->SetLineStyle(7);
-    }
+    }*/
     
     
     // Print canvas to output file
+    /*
     TCanvas c{"canvas2", "canvas2", 1200, 900};
     c.Divide(2, 2, 0.0001, 0.0001);
     //============================================================================
-    //pad 1 nu_diff
+    //pad 1 nu_dif
     c.cd(1);
-    auto& hy_diff = *h_y_diff;
+    auto& hy_dif = *h_y_dif;
     // histogram style
-    hy_diff.SetLineColor(plot::kMpOrange);
-    hy_diff.SetLineWidth(1);
+    hy_dif.SetLineColor(plot::kMpOrange);
+    hy_dif.SetLineWidth(1);
     // axes
-    hy_diff.GetXaxis()->CenterTitle();
+    hy_dif.GetXaxis()->CenterTitle();
     // draw everything
-    hy_diff.DrawClone("hist");
-    myFitPtr[0] = hy_diff.Fit(myf[0], "S 0", "", -func_range[0], func_range[0]);
+    hy_dif.DrawClone("hist");
+    myFitPtr[0] = hy_dif.Fit(myf[0], "S 0", "", -func_range[0], func_range[0]);
     myf[0]->Draw("same");
     // FIXME hardcoded beam configuration
     plot::draw_label(10, 100, detector);
@@ -233,17 +288,17 @@ int vm_invar(const std::string& config_name)
     t1->Draw();
 
 
-    // pad 2 Q2_diff
+    // pad 2 Q2_dif
     c.cd(2);
-    auto& hQ2_diff = *h_Q2_diff;
+    auto& hQ2_dif = *h_Q2_dif;
     // histogram style
-    hQ2_diff.SetLineColor(plot::kMpOrange);
-    hQ2_diff.SetLineWidth(1);
+    hQ2_dif.SetLineColor(plot::kMpOrange);
+    hQ2_dif.SetLineWidth(1);
     // axes
-    hQ2_diff.GetXaxis()->CenterTitle();
+    hQ2_dif.GetXaxis()->CenterTitle();
     // draw everything
-    hQ2_diff.DrawClone("hist");
-    myFitPtr[1] = hQ2_diff.Fit(myf[1], "S 0", "", -func_range[1], func_range[1]);
+    hQ2_dif.DrawClone("hist");
+    myFitPtr[1] = hQ2_dif.Fit(myf[1], "S 0", "", -func_range[1], func_range[1]);
     myf[1]->Draw("same");
     // FIXME hardcoded beam configuration
     plot::draw_label(10, 100, detector);
@@ -256,17 +311,17 @@ int vm_invar(const std::string& config_name)
     tptr2->SetTextColor(plot::kMpOrange);
     t2->Draw();
     
-    // pad 3 x_diff
+    // pad 3 x_dif
     c.cd(3);
-    auto& hx_diff = *h_x_diff;
+    auto& hx_dif = *h_x_dif;
     // histogram style
-    hx_diff.SetLineColor(plot::kMpOrange);
-    hx_diff.SetLineWidth(1);
+    hx_dif.SetLineColor(plot::kMpOrange);
+    hx_dif.SetLineWidth(1);
     // axes
-    hx_diff.GetXaxis()->CenterTitle();
+    hx_dif.GetXaxis()->CenterTitle();
     // draw everything
-    hx_diff.DrawClone("hist");
-    myFitPtr[2] = hx_diff.Fit(myf[2], "S 0", "", -func_range[2], func_range[2]);
+    hx_dif.DrawClone("hist");
+    myFitPtr[2] = hx_dif.Fit(myf[2], "S 0", "", -func_range[2], func_range[2]);
     myf[2]->Draw("same");
     // FIXME hardcoded beam configuration
     plot::draw_label(10, 100, detector);
@@ -279,17 +334,17 @@ int vm_invar(const std::string& config_name)
     tptr3->SetTextColor(plot::kMpOrange);
     t3->Draw();
     
-    // pad 4 t_diff
+    // pad 4 t_dif
     c.cd(4);
-    auto& ht_diff = *h_t_diff;
+    auto& ht_dif = *h_t_dif;
     // histogram style
-    ht_diff.SetLineColor(plot::kMpOrange);
-    ht_diff.SetLineWidth(1);
+    ht_dif.SetLineColor(plot::kMpOrange);
+    ht_dif.SetLineWidth(1);
     // axes
-    ht_diff.GetXaxis()->CenterTitle();
+    ht_dif.GetXaxis()->CenterTitle();
     // draw everything
-    ht_diff.DrawClone("hist");
-    myFitPtr[3] = ht_diff.Fit(myf[3], "S 0", "", -func_range[3], func_range[3]);
+    ht_dif.DrawClone("hist");
+    myFitPtr[3] = ht_dif.Fit(myf[3], "S 0", "", -func_range[3], func_range[3]);
     myf[3]->Draw("same");
     // FIXME hardcoded beam configuration
     plot::draw_label(10, 100, detector);
@@ -302,7 +357,9 @@ int vm_invar(const std::string& config_name)
     tptr4->SetTextColor(plot::kMpOrange);
     t4->Draw();
     //============================================================================
-    c.Print(fmt::format("{}InvariantQuantities.png", output_prefix).c_str());
+    c.Print(fmt::format("{}InvariantQuantities.png", output_prefix).c_str());*/
+    
+  //Before factorizing==========================================================================================
 
   for(int i = 0 ; i < 4 ; i++){
     double width = myf[i]->GetParameter(1);
