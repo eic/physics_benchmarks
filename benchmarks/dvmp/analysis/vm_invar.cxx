@@ -175,7 +175,8 @@ int vm_invar(const std::string& config_name)
     h_Var1D[i][1]->SetLineWidth(1);
     
     //for pad 2: sim~rec 2d
-    //place holder
+    h_Var2D[i]->GetXaxis()->CenterTitle();
+    h_Var2D[i]->GetYaxis()->CenterTitle();
     
     //for pad 3: rec - sim
     h_Var1D[i][2]->SetLineColor(plot::kMpGrey);
@@ -214,8 +215,11 @@ int vm_invar(const std::string& config_name)
           tptr[i][j]->SetTextColor(plot::kMpBlue);
           tptr[i][j] = t[i][j]->AddText("reconstructed");
           tptr[i][j]->SetTextColor(plot::kMpOrange);
+          plot::draw_label(10, 100, detector);
           break;
         case 1:
+          gPad->SetLogz();
+          h_Var2D[i]->Draw("colz");
           break;//2d
         case 2://dx
           h_Var1D[i][2]->Draw("hist");
@@ -226,7 +230,7 @@ int vm_invar(const std::string& config_name)
           }else{
             tptr[i][j] = t[i][j]->AddText(fmt::format("#Delta{}", VarName[i]).c_str());
           }
-          tptr[i][j]->SetTextColor(1);
+          tptr[i][j]->SetTextColor(plot::kMpGrey);
           break;
         case 3://dx/x
           h_Var1D[i][3]->Draw("hist");
@@ -237,12 +241,11 @@ int vm_invar(const std::string& config_name)
           }else{
             tptr[i][j] = t[i][j]->AddText(fmt::format("#Delta{}/{}", VarName[i], VarName[i]).c_str());
           }
-          tptr[i][j]->SetTextColor(1);
+          tptr[i][j]->SetTextColor(plot::kMpGrey);
           break;
         default:
           break;
       }
-      plot::draw_label(10, 100, detector);
       t[i][j]->Draw();
     }
     ctmp->Print(fmt::format("{}{}.png", output_prefix, VarName[i]).c_str());
