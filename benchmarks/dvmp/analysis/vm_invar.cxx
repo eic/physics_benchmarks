@@ -151,6 +151,11 @@ int vm_invar(const std::string& config_name)
       h_Var1D[i][j] = (TH1D*)htmp.Clone(histName[i][j].c_str());
       //delete hptr_tmp;
       
+      
+    }
+  }
+  for(int i = 0 ; i < 4 ; i++){
+    for(int j = 0 ; j < 4 ; j++){
       TCanvas* ctest = new TCanvas("ctest", "ctest", 800,600);
       h_Var1D[i][j]->Draw("hist");
       htmp.Draw("hist");
@@ -158,6 +163,7 @@ int vm_invar(const std::string& config_name)
       delete ctest;
     }
   }
+  
   
   //double nEvents = h_Var1D[0][0]->Integral(0, -1);
   
