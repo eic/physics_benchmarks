@@ -41,9 +41,22 @@ int vm_invar(const std::string& config_name)
   fmt::print(" - Detector package: {}\n", detector);
   fmt::print(" - input file: {}\n", rec_file);
   fmt::print(" - output prefix: {}\n", output_prefix);
-
+  
+  std::string VarName[4] = {"y", "Q2", "x", "t"};
+  double width_target[4] = {.4, .09, .35, .07};
   // create our test definition
   std::vector<eic::util::Test> Tests;
+  for(int i = 0 ; i < 4 ; i++){
+    eic::util::Test resolution_test_tmp{
+      {{"name", fmt::format("{}_{}_resolution", test_tag, VarName[i])},
+       {"title",
+        fmt::format("{} Resolution for {} -> {} events with {}", VarName[i], vm_name, decay_name, detector)},
+       {"description", fmt::format("{} resolution: relative difference with Gaussian fit", VarName[i])},
+       {"quantity", "resolution"},
+       {"target", fmt::format("{}", width_target[i])}}};
+    Tests.push_back(resolution_test_tmp);
+  }
+  /*
   eic::util::Test y_resolution_test{
       {{"name", fmt::format("{}_y_resolution", test_tag)},
        {"title",
@@ -78,9 +91,8 @@ int vm_invar(const std::string& config_name)
        {"description", "t resolution: relative difference with Gaussian fit"},
        {"quantity", "resolution"},
        {"target", ".07"}}};
-  Tests.push_back(t_resolution_test);
+  Tests.push_back(t_resolution_test);*/
 
-  double width_target[4] = {0.4, 0.09, 0.35, 0.07};
   TH1::SetDefaultSumw2();
   
   // Run this in multi-threaded mode if desired
@@ -123,119 +135,157 @@ int vm_invar(const std::string& config_name)
                   .Define("Q2_sim", util::get_Q2, {"invariant_quantities_sim"})
                   .Define("x_sim", util::get_x, {"invariant_quantities_sim"})
                   .Define("t_sim", util::get_t, {"invariant_quantities_sim"})
-                  .Define("y_dif", "(y_rec - y_sim)/y_sim")
-                  .Define("Q2_dif", "(Q2_rec - Q2_sim)/Q2_sim")
-                  .Define("x_dif", "(x_rec - x_sim)/x_sim")
-                  .Define("t_dif", "(t_rec - t_sim)/t_sim");
+                  .Define("y_dif", "y_rec - y_sim")
+                  .Define("Q2_dif", "Q2_rec - Q2_sim")
+                  .Define("x_dif", "x_rec - x_sim")
+                  .Define("t_dif", "t_rec - t_sim");
+                  .Define("y_rdf", "(y_rec - y_sim)/y_sim")
+                  .Define("Q2_rdf", "(Q2_rec - Q2_sim)/Q2_sim")
+                  .Define("x_rdf", "(x_rec - x_sim)/x_sim")
+                  .Define("t_rdf", "(t_rec - t_sim)/t_sim");
                   
   //================================================================
   //Factorizeation
-  double func_range[4] = {1.5, 0.3, 1., 2.};
-  double hist_range_l[4] = {0., 0., 0., -1.};
-  double hist_range_h[4] = {1., 15., 0.1, 0.};
+  double range_l[4][4] = {{0., 0., -2., -1.5}, { 0.,  0., -0.3, -30.}, {0.0, 0.0, -0.2, -1.}, {-1., -1., -2., -0.5}};
+  double range_h[4][4] = {{1., 1.,  2.,  1.5}, {15., 15.,  0.3,  30.}, {0.1, 0.1,  0.2,  1.}, { 0.,  0.,  2.,  0.5}};
   
-  std::string VarName[4] = {"y", "Q2", "x", "t"};
-  std::string histName[4];
-  std::string histTitle[4];
-  std::string RawHist[4];
+  
+  std::string VarCate[4] = {"sim", "rec", "dif", "rdf"};
+  std::string histName[4][4];
+  std::string histTitles[4][4];
+  std::string RawhistName[4][4];
+  
+  TH1D* h_Var1D[4][4];
   for(int i = 0 ; i < 4 ; i++){
-    histName[i] = "h_" + VarName[i] + "_sim_test";
-    if(i!=1){
-    }else{
-      histTitle[i] = ";" + VarName[i] + ";#";
-      histTitle[i] = ";Q^{2};#";
+    for(int j = 0 ; j < 4 ; j++){
+      //construct histName
+      histName[i][j] = "h_" + VarName[i] + VarCate[j];
+      //construct histTitles
+      histTitles[i][j] = ";";
+      if(j > 1) histTitles[i][j] = histTitles[i][j] + "#Delta";
+      if(i==1){
+        histTitles[i][j] = histTitles[i][j] + "Q^{2}";
+      }else{
+        histTitles[i][j] = histTitles[i][j] + VarName[i];
+      }
+      if(j==3){
+        histTitles[i][j] = histTitles[i][j] + "/";
+        if(i==1){
+          histTitles[i][j] = histTitles[i][j] + "Q^{2}";
+        }else{
+          histTitles[i][j] = histTitles[i][j] + VarName[i];
+        }
+      }
+      histTitles[i][j] = histTitles[i][j] + ";#";
+      //construct RawhistName
+      RawhistName[i] = VarName[i] + "_" + VarCate[j];
+      //get histograms
+      auto h_tmp = d_im.Histo1D({fmt::format("{}_tmp", histName[i][j]).c_str(), histTitles[i][j].c_str(), 50, range_l[i][j], range_h[i][j]}, RawhistName[i][j].c_str());
+      TH1D* hptr_tmp = &(*h_tmp);
+      h_Var1D[i][j] = (TH1D*)hptr_tmp->Clone(histName[i][j]);
+      delete hptr_tmp;
     }
-    RawHist[i] = VarName[i] + "_sim";
   }
-  
-  TH1D* h_sim[4];
-  for(int i = 0 ; i < 4 ; i++){
-    auto h_tmp = d_im.Histo1D({(fmt::format("{}_test", VarName[i])).c_str(), histTitle[i].c_str(), 50, hist_range_l[i], hist_range_h[i]}, RawHist[i].c_str());       //directly quote the string
-    h_sim[i] = &(*h_tmp);
-    h_sim[i] = (TH1D*)h_sim[i]->Clone();
-  }
-  TCanvas* ctest = new TCanvas("test", "test", 800, 800);
-  h_sim[2]->Draw("hist");
-  ctest->Print(fmt::format("{}test.png", output_prefix).c_str());
-  delete ctest;
-  
+  double nEvents = h_Var1D[0][0]->Integral(0, -1);
   //==================================================================
 
   // Define output histograms
   //auto h_nu_sim = d_im.Histo1D({"h_nu_sim", ";#nu/1000;#", 100, 0., 2.}, "nu_sim");
+  /*auto h_y_sim  = d_im.Histo1D({"h_y_sim", ";y;#", 50, 0., 1.}, "y_sim");
   auto h_Q2_sim = d_im.Histo1D({"h_Q2_sim", ";Q^{2};#", 50, 0., 15.}, "Q2_sim");
   auto h_x_sim  = d_im.Histo1D({"h_x_sim", ";x;#", 50, 0., 0.1}, "x_sim");
-  auto h_y_sim  = d_im.Histo1D({"h_y_sim", ";y;#", 50, 0., 1.}, "y_sim");
   auto h_t_sim  = d_im.Histo1D({"h_t_sim", ";t;#", 50, -1., 0.}, "t_sim");
   
   //auto h_nu_rec = d_im.Histo1D({"h_nu_rec", ";#nu/1000;#", 100, 0., 2.}, "nu_rec");
+  auto h_y_rec  = d_im.Histo1D({"h_y_rec", ";y;#", 50, 0., 1.}, "y_rec");
   auto h_Q2_rec = d_im.Histo1D({"h_Q2_rec", ";Q^{2};#", 50, 0., 15.}, "Q2_rec");
   auto h_x_rec  = d_im.Histo1D({"h_x_rec", ";x;#", 50, 0., 0.1}, "x_rec");
-  auto h_y_rec  = d_im.Histo1D({"h_y_rec", ";y;#", 50, 0., 1.}, "y_rec");
   auto h_t_rec  = d_im.Histo1D({"h_t_rec", ";t;#", 50, -1., 0.}, "t_rec");
   
   auto h_y_dif   = d_im.Histo1D({"h_y_dif",  ";#Deltay/y;#",     50, -1.5, 1.5}, "y_dif");
   auto h_Q2_dif  = d_im.Histo1D({"h_Q2_dif", ";#DeltaQ^{2}/Q^{2};#", 50, -0.3, 0.3}, "Q2_dif");
   auto h_x_dif   = d_im.Histo1D({"h_x_dif",  ";#Deltax/x;#",     50, -1., 1.}, "x_dif");
-  auto h_t_dif   = d_im.Histo1D({"h_t_dif",  ";#Deltat/t;#",     50, -0.5, 0.5}, "t_dif");
+  auto h_t_dif   = d_im.Histo1D({"h_t_dif",  ";#Deltat/t;#",     50, -0.5, 0.5}, "t_dif");*/
   
-  double nEvents = h_y_dif->Integral(0, -1);
-  
-  /*TH1D* hist_sim[4] = {&(*h_y_sim), &(*h_Q2_sim), &(*h_x_sim), &(*h_t_sim)};
-  TH1D* hist_rec[4] = {&(*h_y_rec), &(*h_Q2_rec), &(*h_x_rec), &(*h_t_rec)};
-  TH1D* hist_dif[4] = {&(*h_y_dif), &(*h_Q2_dif), &(*h_x_dif), &(*h_t_dif)};
-  TFitResultPtr myFitPtr[4];
-  TF1* myf[4];
-  TText* tptr[4][3];
-  TPaveText* t[4][3];
+  TFitResultPtr myFitPtr[4][2];
+  TF1* myf[4][2];
+  TText* tptr[4][4];
+  TPaveText* t[4][4];
   
   for(int i = 0 ; i < 4 ; i++){
-    TCanvas* ctmp = new TCanvas("ctmp", "ctmp", 1800, 600);
-    ctmp->Divide(3, 1, 0.001, 0.001);
-    //for pad 1
-    hist_sim[i]->SetLineColor(plot::kMpBlue);
-    hist_sim[i]->SetLineWidth(2);
-    hist_sim[i]->GetXaxis()->CenterTitle();
-    hist_rec[i]->SetLineColor(plot::kMpOrange);
-    hist_rec[i]->SetLineWidth(1);
-    //for pad 2
-    hist_dif[i]->SetLineColor(plot::kMpGrey);
-    hist_dif[i]->SetLineWidth(1);
-    hist_dif[i]->GetXaxis()->CenterTitle();
-    myf[i] = new TF1(Form("myf_%d", i), "[2]*TMath::Gaus(x, [0], [1], 0)", -func_range[i], func_range[i]);
-    myf[i]->SetParameters(0., 0.25, nEvents/10.);
-    myf[i]->SetParLimits(0, -0.5, 0.5);
-    myf[i]->SetParLimits(1, 0., 1.0);
-    myf[i]->SetParLimits(2, 0., nEvents*10.);
-    myf[i]->SetNpx(1000);
-    myf[i]->SetLineColor(plot::kMpRed);
-    myf[i]->SetLineStyle(7);
-    //for pad 3
+    TCanvas* ctmp = new TCanvas("ctmp", "ctmp", 1200, 900);
+    ctmp->Divide(2, 2, 0.001, 0.001);
+    //for pad 1: sim rec overlay
+    h_Var1D[i][0]->SetLineColor(plot::kMpBlue);
+    h_Var1D[i][0]->SetLineWidth(2);
+    h_Var1D[i][0]->GetXaxis()->CenterTitle();
+    h_Var1D[i][1]->SetLineColor(plot::kMpOrange);
+    h_Var1D[i][1]->SetLineWidth(1);
+    
+    //for pad 2: sim~rec 2d
+    //place holder
+    
+    //for pad 3: rec - sim
+    h_Var1D[i][2]->SetLineColor(plot::kMpGrey);
+    h_Var1D[i][2]->SetLineWidth(1);
+    h_Var1D[i][2]->GetXaxis()->CenterTitle();
+    
+    //for pad 4: (rec - sim)/sim
+    h_Var1D[i][3]->SetLineColor(plot::kMpGrey);
+    h_Var1D[i][3]->SetLineWidth(1);
+    h_Var1D[i][3]->GetXaxis()->CenterTitle();
+    
+    
+    //initialize myf
+    for(int j = 0 ; j < 2 ; j++){
+      myf[i][j] = new TF1(Form("myf_%d_%d", i, j), "[2]*TMath::Gaus(x, [0], [1], 0)", range_l[i][j+2], range_h[i][j+2]);
+      myf[i][j]->SetParameters(0., 0.25, nEvents/10.);
+      myf[i][j]->SetParLimits(0, -0.5, 0.5);
+      myf[i][j]->SetParLimits(1, 0., 1.0);
+      myf[i][j]->SetParLimits(2, 0., nEvents*10.);
+      myf[i][j]->SetNpx(1000);
+      myf[i][j]->SetLineColor(plot::kMpRed);
+      myf[i][j]->SetLineStyle(7);
+    }
     
     //factorized part
-    for(int j = 0 ; j < 2 ; j++){
+    for(int j = 0 ; j < 4 ; j++){
       ctmp->cd(j+1);
       t[i][j] = new TPaveText(.6, .8417, .9, .925, "NB NDC");
       t[i][j]->SetFillColorAlpha(kWhite, 0);
       t[i][j]->SetTextFont(43);
       t[i][j]->SetTextSize(25);
       switch(j){
-        case 0:
-          hist_sim[i]->Draw("hist");
-          hist_rec[i]->Draw("hist same");
+        case 0://sim rec overlay
+          h_Var1D[i][0]->Draw("hist");
+          h_Var1D[i][1]->Draw("hist same");
           tptr[i][j] = t[i][j]->AddText("simulation");
           tptr[i][j]->SetTextColor(plot::kMpBlue);
           tptr[i][j] = t[i][j]->AddText("reconstructed");
           tptr[i][j]->SetTextColor(plot::kMpOrange);
           break;
         case 1:
-          hist_dif[i]->Draw("hist");
-          myFitPtr[i] = hist_dif[i]->Fit(myf[i], "S 0", "", -func_range[i], func_range[i]);
-          myf[i]->Draw("same");
-          tptr[i][j] = t[i][j]->AddText(fmt::format("#Delta{}/{}", VarName[i], VarName[i]).c_str());
+          break;//2d
+        case 2://dx
+          h_Var1D[i][2]->Draw("hist");
+          myFitPtr[i][0] = h_Var1D[i][2]->Fit(myf[i][1], "S 0", "", range_l[i][j], range_h[i][j]);
+          myf[i][0]->Draw("same");
+          if(i==1){
+            tptr[i][j] = t[i][j]->AddText("#DeltaQ^{2}");
+          }else{
+            tptr[i][j] = t[i][j]->AddText(fmt::format("#Delta{}", VarName[i]).c_str());
+          }
           tptr[i][j]->SetTextColor(1);
-          break;
-        case 2:
+        case 3://dx/x
+          h_Var1D[i][3]->Draw("hist");
+          myFitPtr[i][1] = h_Var1D[i][3]->Fit(myf[i][1], "S 0", "", range_l[i][j], range_h[i][j]);
+          myf[i][1]->Draw("same");
+          if(i==1){
+            tptr[i][j] = t[i][j]->AddText("#DeltaQ^{2}/Q^{2}");
+          }else{
+            tptr[i][j] = t[i][j]->AddText(fmt::format("#Delta{}/{}", VarName[i], VarName[i]).c_str());
+          }
+          tptr[i][j]->SetTextColor(1);
           break;
         default:
           break;
@@ -246,8 +296,8 @@ int vm_invar(const std::string& config_name)
     ctmp->Print(fmt::format("{}{}.png", output_prefix, VarName[i]).c_str());
     delete ctmp;
   }
-  */
-    
+  
+  /*  
   // Plot our histograms.
   // TODO: to start I'm explicitly plotting the histograms, but want to
   // factorize out the plotting code moving forward.
@@ -364,13 +414,13 @@ int vm_invar(const std::string& config_name)
     tptr4->SetTextColor(plot::kMpOrange);
     t4->Draw();
     //============================================================================
-    c.Print(fmt::format("{}InvariantQuantities.png", output_prefix).c_str());
+    c.Print(fmt::format("{}InvariantQuantities.png", output_prefix).c_str());*/
     
   //Before factorizing==========================================================================================
 
   for(int i = 0 ; i < 4 ; i++){
-    double width = myf[i]->GetParameter(1);
-    if(myFitPtr[i]->Status()!=0){
+    double width = myf[i][1]->GetParameter(1);
+    if(myFitPtr[i][1]->Status()!=0){
       Tests[i].error(-1);
     }else if(width > width_target[i]){
       Tests[i].fail(width);
