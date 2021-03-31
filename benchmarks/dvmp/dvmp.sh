@@ -126,11 +126,11 @@ EOF
 #cat ${CONFIG}
 
 ## run the analysis script with this configuration
-#root -b -q "benchmarks/dvmp/analysis/vm_mass.cxx+(\"${CONFIG}\")"
-#if [ "$?" -ne "0" ] ; then
-#  echo "ERROR running vm_mass script"
-#  exit 1
-#fi
+root -b -q "benchmarks/dvmp/analysis/vm_mass.cxx+(\"${CONFIG}\")"
+if [ "$?" -ne "0" ] ; then
+  echo "ERROR running vm_mass script"
+  exit 1
+fi
 root -b -q "benchmarks/dvmp/analysis/vm_invar.cxx+(\"${CONFIG}\")"
 if [ "$?" -ne "0" ] ; then
   echo "ERROR running vm_invar script"
