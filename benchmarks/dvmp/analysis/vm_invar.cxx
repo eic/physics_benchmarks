@@ -191,10 +191,10 @@ int vm_invar(const std::string& config_name)
     //initialize myf
     for(int j = 0 ; j < 2 ; j++){
       myf[i][j] = new TF1(Form("myf_%d_%d", i, j), "[2]*TMath::Gaus(x, [0], [1], 0)", range_l[i][j+2], range_h[i][j+2]);
-      myf[i][j]->SetParameters(0., 0.25, nEvents/10.);
+      myf[i][j]->SetParameters(0., (range_h[i][j+2]-range_l[i][j+2])/4., nEvents/20.);
       myf[i][j]->SetParLimits(0, -0.5, 0.5);
       myf[i][j]->SetParLimits(1, 0., 1.0);
-      myf[i][j]->SetParLimits(2, 0., nEvents*10.);
+      myf[i][j]->SetParLimits(2, 0., nEvents*1000.);
       myf[i][j]->SetNpx(1000);
       myf[i][j]->SetLineColor(plot::kMpRed);
       myf[i][j]->SetLineStyle(7);
