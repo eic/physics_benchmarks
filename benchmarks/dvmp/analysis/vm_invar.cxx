@@ -44,7 +44,7 @@ int vm_invar(const std::string& config_name)
   
   std::string VarName[4] = {"y", "Q2", "x", "t"};
   double width_target[4] = {.4, .09, .35, .07};
-  // create our test definition
+  //============================== test definition ==============================
   std::vector<eic::util::Test> Tests;
   for(int i = 0 ; i < 4 ; i++){
     eic::util::Test resolution_test_tmp{
@@ -56,6 +56,7 @@ int vm_invar(const std::string& config_name)
        {"target", fmt::format("{}", width_target[i])}}};
     Tests.push_back(resolution_test_tmp);
   }
+  //============================== test definition ==============================
   /*
   eic::util::Test y_resolution_test{
       {{"name", fmt::format("{}_y_resolution", test_tag)},
@@ -92,12 +93,13 @@ int vm_invar(const std::string& config_name)
        {"quantity", "resolution"},
        {"target", ".07"}}};
   Tests.push_back(t_resolution_test);*/
-
-  TH1::SetDefaultSumw2();
   
+  
+  //==============================general settings==============================
   // Run this in multi-threaded mode if desired
   ROOT::EnableImplicitMT(kNumThreads);
-
+  TH1::SetDefaultSumw2();
+  
   // The particles we are looking for. E.g. J/psi decaying into e+e-
   const double vm_mass    = util::get_pdg_mass(vm_name);
   const double decay_mass = util::get_pdg_mass(decay_name);
@@ -109,17 +111,16 @@ int vm_invar(const std::string& config_name)
 
   // Open our input file file as a dataframe
   ROOT::RDataFrame d{"events", rec_file};
-
-  // utility lambda functions to bind the vector meson and decay particle
-  // types
+  //==============================general settings==============================
   
+  //==============================redef function==============================
   auto momenta_sort_sim = [vm_name, decay_name](const std::vector<dd4pod::Geant4ParticleData>& parts){
     return util::momenta_sort_sim(parts, vm_name, decay_name);
   };
   auto momenta_sort_rec = [vm_name, decay_name](const std::vector<eic::ReconstructedParticleData>& parts){
     return util::momenta_sort_rec(parts, vm_name, decay_name);
   };
-  //====================================================================
+  //==============================redef function==============================
 
   // Define analysis flow
   auto d_im = d.Define("p_rec_sorted", momenta_sort_rec, {"DummyReconstructedParticles"})
@@ -144,18 +145,17 @@ int vm_invar(const std::string& config_name)
                   .Define("x_rdf", "(x_rec - x_sim)/x_sim")
                   .Define("t_rdf", "(t_rec - t_sim)/t_sim");
                   
-  //================================================================
-  //Factorizeation
+  //ranges
   double range_l[4][4] = {{0., 0., -2., -1.5}, { 0.,  0., -0.3, -30.}, {0.0, 0.0, -0.2, -1.}, {-1., -1., -2., -0.5}};
   double range_h[4][4] = {{1., 1.,  2.,  1.5}, {15., 15.,  0.3,  30.}, {0.1, 0.1,  0.2,  1.}, { 0.,  0.,  2.,  0.5}};
-  
   
   std::string VarCate[4] = {"sim", "rec", "dif", "rdf"};
   std::string histName[4][4];
   std::string histTitles[4][4];
   std::string RawhistName[4][4];
   
-  TH1D* h_Var1D[4][4];
+  //==============================hist def==============================
+  /*TH1D* h_Var1D[4][4];
   for(int i = 0 ; i < 4 ; i++){
     for(int j = 0 ; j < 4 ; j++){
       //construct histName
@@ -186,8 +186,8 @@ int vm_invar(const std::string& config_name)
       delete hptr_tmp;
     }
   }
-  double nEvents = h_Var1D[0][0]->Integral(0, -1);
-  //==================================================================
+  double nEvents = h_Var1D[0][0]->Integral(0, -1);*/
+  //==============================hist def==============================
 
   // Define output histograms
   //auto h_nu_sim = d_im.Histo1D({"h_nu_sim", ";#nu/1000;#", 100, 0., 2.}, "nu_sim");
@@ -207,11 +207,11 @@ int vm_invar(const std::string& config_name)
   auto h_x_dif   = d_im.Histo1D({"h_x_dif",  ";#Deltax/x;#",     50, -1., 1.}, "x_dif");
   auto h_t_dif   = d_im.Histo1D({"h_t_dif",  ";#Deltat/t;#",     50, -0.5, 0.5}, "t_dif");*/
   
-  TFitResultPtr myFitPtr[4][2];
+  //==============================fit and plot==============================
+  /*TFitResultPtr myFitPtr[4][2];
   TF1* myf[4][2];
   TText* tptr[4][4];
   TPaveText* t[4][4];
-  
   for(int i = 0 ; i < 4 ; i++){
     TCanvas* ctmp = new TCanvas("ctmp", "ctmp", 1200, 900);
     ctmp->Divide(2, 2, 0.001, 0.001);
@@ -296,6 +296,8 @@ int vm_invar(const std::string& config_name)
     ctmp->Print(fmt::format("{}{}.png", output_prefix, VarName[i]).c_str());
     delete ctmp;
   }
+  */
+  //==============================fit and plot==============================
   
   /*  
   // Plot our histograms.
@@ -416,17 +418,16 @@ int vm_invar(const std::string& config_name)
     //============================================================================
     c.Print(fmt::format("{}InvariantQuantities.png", output_prefix).c_str());*/
     
-  //Before factorizing==========================================================================================
 
   for(int i = 0 ; i < 4 ; i++){
-    double width = myf[i][1]->GetParameter(1);
-    if(myFitPtr[i][1]->Status()!=0){
+    //double width = myf[i][1]->GetParameter(1);
+    //if(myFitPtr[i][1]->Status()!=0){
       Tests[i].error(-1);
-    }else if(width > width_target[i]){
-      Tests[i].fail(width);
-    }else{
-      Tests[i].pass(width);
-    }
+    //}else if(width > width_target[i]){
+    //  Tests[i].fail(width);
+    //}else{
+    //  Tests[i].pass(width);
+    //}
   }
   
   // write out our test data
