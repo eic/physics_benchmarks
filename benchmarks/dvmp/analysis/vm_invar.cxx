@@ -148,13 +148,14 @@ int vm_invar(const std::string& config_name)
       auto& htmp = *h_tmp;
       //TH1D* hptr_tmp = &(*h_tmp);
       //h_Var1D[i][j] = (TH1D*)hptr_tmp->Clone(histName[i][j].c_str());
+      h_Var1D[i][j] = (TH1D*)htmp.Clone(histName[i][j].c_str());
       //delete hptr_tmp;
       
-      TCanvas* ctest = new TCanvas("ctest", "ctest", 800,600);
+      //TCanvas* ctest = new TCanvas("ctest", "ctest", 800,600);
       //h_Var1D[i][j]->Draw("hist");
-      htmp.Draw("hist");
-      ctest->Print(fmt::format("{}{}{}test.png", output_prefix, i, j).c_str());
-      delete ctest;
+      //htmp.Draw("hist");
+      //ctest->Print(fmt::format("{}{}{}test.png", output_prefix, i, j).c_str());
+      //delete ctest;
     }
   }
   
