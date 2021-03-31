@@ -138,7 +138,7 @@ int vm_invar(const std::string& config_name)
                   .Define("y_dif", "y_rec - y_sim")
                   .Define("Q2_dif", "Q2_rec - Q2_sim")
                   .Define("x_dif", "x_rec - x_sim")
-                  .Define("t_dif", "t_rec - t_sim");
+                  .Define("t_dif", "t_rec - t_sim")
                   .Define("y_rdf", "(y_rec - y_sim)/y_sim")
                   .Define("Q2_rdf", "(Q2_rec - Q2_sim)/Q2_sim")
                   .Define("x_rdf", "(x_rec - x_sim)/x_sim")
