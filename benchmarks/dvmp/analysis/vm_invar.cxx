@@ -147,13 +147,13 @@ int vm_invar(const std::string& config_name)
       h_Var1D[i][j] = (TH1D*)htmp.Clone(histName[i][j].c_str());
     }
     //2d histogram
-    /*histName[i][4] = "h_" + VarName[i] + "_" + VarCate[4];
+    histName[i][4] = "h_" + VarName[i] + "_" + VarCate[4];
     if(i==1){
       histTitles[i][4] = ";Q^{2}_{sim};Q^{2}_{rec};#";
     }else{
      histTitles[i][4] = fmt::format(";{}_{sim};{}_{rec};#", VarName[i], VarName[i]); 
     }
-    auto h_tmp = d_im.Histo2D({fmt::format("{}_tmp", histName[i][4]).c_str(), histTitles[i][4].c_str(), 50, range_l[i][0], range_h[i][0], 50, range_l[i][0], range_h[i][0]}, RawhistName[i][0].c_str(), RawhistName[i][1].c_str());
+    /*auto h_tmp = d_im.Histo2D({fmt::format("{}_tmp", histName[i][4]).c_str(), histTitles[i][4].c_str(), 50, range_l[i][0], range_h[i][0], 50, range_l[i][0], range_h[i][0]}, RawhistName[i][0].c_str(), RawhistName[i][1].c_str());
     auto& htmp = *h_tmp;
     h_Var2D[i] = (TH2D*)htmp.Clone(histName[i][4].c_str());*/
   }
