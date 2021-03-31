@@ -268,7 +268,7 @@ int vm_invar(const std::string& config_name)
           break;//2d
         case 2://dx
           h_Var1D[i][2]->Draw("hist");
-          myFitPtr[i][0] = h_Var1D[i][2]->Fit(myf[i][1], "S 0", "", range_l[i][j], range_h[i][j]);
+          myFitPtr[i][0] = h_Var1D[i][2]->Fit(myf[i][0], "S 0", "", range_l[i][j], range_h[i][j]);
           myf[i][0]->Draw("same");
           if(i==1){
             tptr[i][j] = t[i][j]->AddText("#DeltaQ^{2}");
