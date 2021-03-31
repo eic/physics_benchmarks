@@ -148,16 +148,15 @@ int vm_invar(const std::string& config_name)
       TH1D* hptr_tmp = &(*h_tmp);
       h_Var1D[i][j] = (TH1D*)hptr_tmp->Clone(histName[i][j].c_str());
       delete hptr_tmp;
+      TCanvas* ctest = new TCanvas("ctest", "ctest", 800,600);
+      h_Var1D[i][j]->Draw("hist");
+      ctest->Print(fmt::format("{}{}{}test.png", output_prefix).c_str(), i, j);
+      delete ctest;
     }
   }
-  double nEvents = h_Var1D[0][0]->Integral(0, -1);
-  TCanvas* ctest = new TCanvas("ctest", "ctest", 600,900);
-  ctest->Divide(1,2,0.001,0.001);
-  ctest->cd(1);
-  h_Var1D[0][0]->Draw("hist");
-  ctest->cd(2);
-  h_Var1D[0][1]->Draw("hist");
-  ctest->Print(fmt::format("{}test.png", output_prefix).c_str());
+  
+  //double nEvents = h_Var1D[0][0]->Integral(0, -1);
+  
   
   //==============================hist def==============================
 
