@@ -43,7 +43,7 @@ int vm_invar(const std::string& config_name)
   fmt::print(" - output prefix: {}\n", output_prefix);
   
   std::string VarName[4] = {"y", "Q2", "x", "t"};
-  double width_target[4] = {.4, .09, .35, .07};
+  double width_target[4] = {.42, .093, .34, .071};
   //============================== test definition ==============================
   std::vector<eic::util::Test> Tests;
   for(int i = 0 ; i < 4 ; i++){
