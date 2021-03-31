@@ -158,7 +158,6 @@ int vm_invar(const std::string& config_name)
     for(int j = 0 ; j < 4 ; j++){
       TCanvas* ctest = new TCanvas("ctest", "ctest", 800,600);
       h_Var1D[i][j]->Draw("hist");
-      htmp.Draw("hist");
       ctest->Print(fmt::format("{}{}{}test.png", output_prefix, i, j).c_str());
       delete ctest;
     }
