@@ -146,49 +146,14 @@ int vm_invar(const std::string& config_name)
       //get histograms
       auto h_tmp = d_im.Histo1D({fmt::format("{}_tmp", histName[i][j]).c_str(), histTitles[i][j].c_str(), 50, range_l[i][j], range_h[i][j]}, RawhistName[i][j].c_str());
       auto& htmp = *h_tmp;
-      //TH1D* hptr_tmp = &(*h_tmp);
-      //h_Var1D[i][j] = (TH1D*)hptr_tmp->Clone(histName[i][j].c_str());
       h_Var1D[i][j] = (TH1D*)htmp.Clone(histName[i][j].c_str());
-      //delete hptr_tmp;
-      
-      
     }
   }
-  for(int i = 0 ; i < 4 ; i++){
-    for(int j = 0 ; j < 4 ; j++){
-      TCanvas* ctest = new TCanvas("ctest", "ctest", 800,600);
-      h_Var1D[i][j]->Draw("hist");
-      ctest->Print(fmt::format("{}{}{}test.png", output_prefix, i, j).c_str());
-      delete ctest;
-    }
-  }
-  
-  
-  //double nEvents = h_Var1D[0][0]->Integral(0, -1);
-  
-  
+  double nEvents = h_Var1D[0][0]->Integral(0, -1);
   //==============================hist def==============================
-
-  // Define output histograms
-  //auto h_nu_sim = d_im.Histo1D({"h_nu_sim", ";#nu/1000;#", 100, 0., 2.}, "nu_sim");
-  /*auto h_y_sim  = d_im.Histo1D({"h_y_sim", ";y;#", 50, 0., 1.}, "y_sim");
-  auto h_Q2_sim = d_im.Histo1D({"h_Q2_sim", ";Q^{2};#", 50, 0., 15.}, "Q2_sim");
-  auto h_x_sim  = d_im.Histo1D({"h_x_sim", ";x;#", 50, 0., 0.1}, "x_sim");
-  auto h_t_sim  = d_im.Histo1D({"h_t_sim", ";t;#", 50, -1., 0.}, "t_sim");
-  
-  //auto h_nu_rec = d_im.Histo1D({"h_nu_rec", ";#nu/1000;#", 100, 0., 2.}, "nu_rec");
-  auto h_y_rec  = d_im.Histo1D({"h_y_rec", ";y;#", 50, 0., 1.}, "y_rec");
-  auto h_Q2_rec = d_im.Histo1D({"h_Q2_rec", ";Q^{2};#", 50, 0., 15.}, "Q2_rec");
-  auto h_x_rec  = d_im.Histo1D({"h_x_rec", ";x;#", 50, 0., 0.1}, "x_rec");
-  auto h_t_rec  = d_im.Histo1D({"h_t_rec", ";t;#", 50, -1., 0.}, "t_rec");
-  
-  auto h_y_dif   = d_im.Histo1D({"h_y_dif",  ";#Deltay/y;#",     50, -1.5, 1.5}, "y_dif");
-  auto h_Q2_dif  = d_im.Histo1D({"h_Q2_dif", ";#DeltaQ^{2}/Q^{2};#", 50, -0.3, 0.3}, "Q2_dif");
-  auto h_x_dif   = d_im.Histo1D({"h_x_dif",  ";#Deltax/x;#",     50, -1., 1.}, "x_dif");
-  auto h_t_dif   = d_im.Histo1D({"h_t_dif",  ";#Deltat/t;#",     50, -0.5, 0.5}, "t_dif");*/
   
   //==============================fit and plot==============================
-  /*TFitResultPtr myFitPtr[4][2];
+  TFitResultPtr myFitPtr[4][2];
   TF1* myf[4][2];
   TText* tptr[4][4];
   TPaveText* t[4][4];
@@ -276,7 +241,7 @@ int vm_invar(const std::string& config_name)
     ctmp->Print(fmt::format("{}{}.png", output_prefix, VarName[i]).c_str());
     delete ctmp;
   }
-  */
+  
   //==============================fit and plot==============================
   
   /*  
