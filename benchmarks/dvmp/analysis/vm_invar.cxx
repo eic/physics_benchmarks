@@ -151,7 +151,7 @@ int vm_invar(const std::string& config_name)
     if(i==1){
       histTitles[i][4] = ";Q^{2}_{sim};Q^{2}_{rec};#";
     }else{
-      //histTitles[i][4] = fmt::format(";{}_{sim};{}_{rec};#", VarName[i], VarName[i]); 
+      histTitles[i][4] = ";" + VarName[i] + "_{sim};" + VarName[i] + "_{rec};#";
     }
     /*auto h_tmp = d_im.Histo2D({fmt::format("{}_tmp", histName[i][4]).c_str(), histTitles[i][4].c_str(), 50, range_l[i][0], range_h[i][0], 50, range_l[i][0], range_h[i][0]}, RawhistName[i][0].c_str(), RawhistName[i][1].c_str());
     auto& htmp = *h_tmp;
