@@ -182,7 +182,7 @@ int vm_invar(const std::string& config_name)
       //get histograms
       auto h_tmp = d_im.Histo1D({fmt::format("{}_tmp", histName[i][j]).c_str(), histTitles[i][j].c_str(), 50, range_l[i][j], range_h[i][j]}, RawhistName[i][j].c_str());
       TH1D* hptr_tmp = &(*h_tmp);
-      h_Var1D[i][j] = (TH1D*)hptr_tmp->Clone(histName[i][j]);
+      h_Var1D[i][j] = (TH1D*)hptr_tmp->Clone(histName[i][j].c_str());
       delete hptr_tmp;
     }
   }
