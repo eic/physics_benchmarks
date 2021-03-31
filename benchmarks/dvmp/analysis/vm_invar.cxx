@@ -56,10 +56,8 @@ int vm_invar(const std::string& config_name)
        {"target", fmt::format("{}", width_target[i])}}};
     Tests.push_back(resolution_test_tmp);
   }
-  //============================== test definition ==============================
-
   
-  //==============================general settings==============================
+  //============================== general settings ==============================
   // Run this in multi-threaded mode if desired
   ROOT::EnableImplicitMT(kNumThreads);
   TH1::SetDefaultSumw2();
@@ -75,18 +73,16 @@ int vm_invar(const std::string& config_name)
 
   // Open our input file file as a dataframe
   ROOT::RDataFrame d{"events", rec_file};
-  //==============================general settings==============================
   
-  //==============================redef function==============================
+  //============================== redef functions ==============================
   auto momenta_sort_sim = [vm_name, decay_name](const std::vector<dd4pod::Geant4ParticleData>& parts){
     return util::momenta_sort_sim(parts, vm_name, decay_name);
   };
   auto momenta_sort_rec = [vm_name, decay_name](const std::vector<eic::ReconstructedParticleData>& parts){
     return util::momenta_sort_rec(parts, vm_name, decay_name);
   };
-  //==============================redef function==============================
 
-  // Define analysis flow
+  //============================== Define analysis flow ==============================
   auto d_im = d.Define("p_rec_sorted", momenta_sort_rec, {"DummyReconstructedParticles"})
                   .Define("p_sim_sorted", momenta_sort_sim, {"mcparticles2"})
                   .Define("N", "p_rec_sorted.size()")
@@ -108,17 +104,18 @@ int vm_invar(const std::string& config_name)
                   .Define("Q2_rdf", "(Q2_rec - Q2_sim)/Q2_sim")
                   .Define("x_rdf", "(x_rec - x_sim)/x_sim")
                   .Define("t_rdf", "(t_rec - t_sim)/t_sim");
-                  
-  //ranges
-  double range_l[4][4] = {{0., 0., -2., -1.5}, { 0.,  0., -0.3, -30.}, {0.0, 0.0, -0.2, -1.}, {-1., -1., -2., -0.5}};
-  double range_h[4][4] = {{1., 1.,  2.,  1.5}, {15., 15.,  0.3,  30.}, {0.1, 0.1,  0.2,  1.}, { 0.,  0.,  2.,  0.5}};
   
+  //==============================hist def==============================                
+  //ranges
+  double range_l[4][4] = {{0., 0., -0.3, -1.5}, { 0.,  0., -30., -0.3}, {0.0, 0.0, -0.04, -1.}, {-1., -1., -0.15, -0.5}};
+  double range_h[4][4] = {{1., 1.,  0.3,  1.5}, {15., 15.,  30.,  0.3}, {0.1, 0.1,  0.04,  1.}, { 0.,  0.,  0.15,  0.5}};
+  
+  //strings used
   std::string VarCate[4] = {"sim", "rec", "dif", "rdf"};
   std::string histName[4][4];
   std::string histTitles[4][4];
   std::string RawhistName[4][4];
   
-  //==============================hist def==============================
   TH1D* h_Var1D[4][4];
   for(int i = 0 ; i < 4 ; i++){
     for(int j = 0 ; j < 4 ; j++){
@@ -150,7 +147,6 @@ int vm_invar(const std::string& config_name)
     }
   }
   double nEvents = h_Var1D[0][0]->Integral(0, -1);
-  //==============================hist def==============================
   
   //==============================fit and plot==============================
   TFitResultPtr myFitPtr[4][2];
@@ -180,7 +176,6 @@ int vm_invar(const std::string& config_name)
     h_Var1D[i][3]->SetLineWidth(1);
     h_Var1D[i][3]->GetXaxis()->CenterTitle();
     
-    
     //initialize myf
     for(int j = 0 ; j < 2 ; j++){
       myf[i][j] = new TF1(Form("myf_%d_%d", i, j), "[2]*TMath::Gaus(x, [0], [1], 0)", range_l[i][j+2], range_h[i][j+2]);
@@ -193,7 +188,7 @@ int vm_invar(const std::string& config_name)
       myf[i][j]->SetLineStyle(7);
     }
     
-    //factorized part
+    //fit and plot
     for(int j = 0 ; j < 4 ; j++){
       ctmp->cd(j+1);
       t[i][j] = new TPaveText(.6, .8417, .9, .925, "NB NDC");
@@ -243,142 +238,20 @@ int vm_invar(const std::string& config_name)
     delete ctmp;
   }
   
-  //==============================fit and plot==============================
-  
-  /*  
-  // Plot our histograms.
-  // TODO: to start I'm explicitly plotting the histograms, but want to
-  // factorize out the plotting code moving forward.
-  //Before factorizing==========================================================================================
-    TFitResultPtr myFitPtr[4];
-    TF1* myf[4];
-    for(int i = 0 ; i < 4 ; i++){
-        myf[i] = new TF1(Form("myf_%d", i), "[2]*TMath::Gaus(x, [0], [1], 0)", -func_range[i], func_range[i]);
-        myf[i]->SetParameters(0., 0.25, nEvents/10.);
-        myf[i]->SetParLimits(0, -0.5, 0.5);
-        myf[i]->SetParLimits(1, 0., 1.0);
-        myf[i]->SetParLimits(2, 0., nEvents*10.);
-        myf[i]->SetNpx(1000);
-        myf[i]->SetLineColor(2);
-        myf[i]->SetLineStyle(7);
-    }
-    
-    
-    // Print canvas to output file
-    
-    TCanvas c{"canvas2", "canvas2", 1200, 900};
-    c.Divide(2, 2, 0.0001, 0.0001);
-    //============================================================================
-    //pad 1 nu_dif
-    c.cd(1);
-    auto& hy_dif = *h_y_dif;
-    // histogram style
-    hy_dif.SetLineColor(plot::kMpOrange);
-    hy_dif.SetLineWidth(1);
-    // axes
-    hy_dif.GetXaxis()->CenterTitle();
-    // draw everything
-    hy_dif.DrawClone("hist");
-    myFitPtr[0] = hy_dif.Fit(myf[0], "S 0", "", -func_range[0], func_range[0]);
-    myf[0]->Draw("same");
-    // FIXME hardcoded beam configuration
-    plot::draw_label(10, 100, detector);
-    TText* tptr1;
-    auto   t1 = new TPaveText(.6, .8417, .9, .925, "NB NDC");
-    t1->SetFillColorAlpha(kWhite, 0);
-    t1->SetTextFont(43);
-    t1->SetTextSize(25);
-    tptr1 = t1->AddText("#Deltay/y");
-    tptr1->SetTextColor(plot::kMpOrange);
-    t1->Draw();
-
-
-    // pad 2 Q2_dif
-    c.cd(2);
-    auto& hQ2_dif = *h_Q2_dif;
-    // histogram style
-    hQ2_dif.SetLineColor(plot::kMpOrange);
-    hQ2_dif.SetLineWidth(1);
-    // axes
-    hQ2_dif.GetXaxis()->CenterTitle();
-    // draw everything
-    hQ2_dif.DrawClone("hist");
-    myFitPtr[1] = hQ2_dif.Fit(myf[1], "S 0", "", -func_range[1], func_range[1]);
-    myf[1]->Draw("same");
-    // FIXME hardcoded beam configuration
-    plot::draw_label(10, 100, detector);
-    TText* tptr2;
-    auto   t2 = new TPaveText(.6, .8417, .9, .925, "NB NDC");
-    t2->SetFillColorAlpha(kWhite, 0);
-    t2->SetTextFont(43);
-    t2->SetTextSize(25);
-    tptr2 = t2->AddText("#DeltaQ^{2}/Q^{2}");
-    tptr2->SetTextColor(plot::kMpOrange);
-    t2->Draw();
-    
-    // pad 3 x_dif
-    c.cd(3);
-    auto& hx_dif = *h_x_dif;
-    // histogram style
-    hx_dif.SetLineColor(plot::kMpOrange);
-    hx_dif.SetLineWidth(1);
-    // axes
-    hx_dif.GetXaxis()->CenterTitle();
-    // draw everything
-    hx_dif.DrawClone("hist");
-    myFitPtr[2] = hx_dif.Fit(myf[2], "S 0", "", -func_range[2], func_range[2]);
-    myf[2]->Draw("same");
-    // FIXME hardcoded beam configuration
-    plot::draw_label(10, 100, detector);
-    TText* tptr3;
-    auto   t3 = new TPaveText(.6, .8417, .9, .925, "NB NDC");
-    t3->SetFillColorAlpha(kWhite, 0);
-    t3->SetTextFont(43);
-    t3->SetTextSize(25);
-    tptr3 = t3->AddText("#Deltax/x");
-    tptr3->SetTextColor(plot::kMpOrange);
-    t3->Draw();
-    
-    // pad 4 t_dif
-    c.cd(4);
-    auto& ht_dif = *h_t_dif;
-    // histogram style
-    ht_dif.SetLineColor(plot::kMpOrange);
-    ht_dif.SetLineWidth(1);
-    // axes
-    ht_dif.GetXaxis()->CenterTitle();
-    // draw everything
-    ht_dif.DrawClone("hist");
-    myFitPtr[3] = ht_dif.Fit(myf[3], "S 0", "", -func_range[3], func_range[3]);
-    myf[3]->Draw("same");
-    // FIXME hardcoded beam configuration
-    plot::draw_label(10, 100, detector);
-    TText* tptr4;
-    auto   t4 = new TPaveText(.6, .8417, .9, .925, "NB NDC");
-    t4->SetFillColorAlpha(kWhite, 0);
-    t4->SetTextFont(43);
-    t4->SetTextSize(25);
-    tptr4 = t4->AddText("#Deltat/t");
-    tptr4->SetTextColor(plot::kMpOrange);
-    t4->Draw();
-    //============================================================================
-    c.Print(fmt::format("{}InvariantQuantities.png", output_prefix).c_str());*/
-    
-
+  //============================== pass the test results ==============================
   for(int i = 0 ; i < 4 ; i++){
-    //double width = myf[i][1]->GetParameter(1);
-    //if(myFitPtr[i][1]->Status()!=0){
+    double width = myf[i][1]->GetParameter(1);
+    if(myFitPtr[i][1]->Status()!=0){
       Tests[i].error(-1);
-    //}else if(width > width_target[i]){
-    //  Tests[i].fail(width);
-    //}else{
-    //  Tests[i].pass(width);
-    //}
+    }else if(width > width_target[i]){
+      Tests[i].fail(width);
+    }else{
+      Tests[i].pass(width);
+    }
   }
   
   // write out our test data
   eic::util::write_test(Tests, fmt::format("{}invar.json", output_prefix));
-
-  // That's all!
+  
   return 0;
 }
