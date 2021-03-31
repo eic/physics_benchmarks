@@ -107,16 +107,17 @@ int vm_invar(const std::string& config_name)
   
   //==============================hist def==============================                
   //ranges
-  double range_l[4][4] = {{0., 0., -0.3, -1.5}, { 0.,  0., -4., -0.3}, {0.0, 0.0, -0.02, -1.}, {-1., -1., -0.1, -0.5}};
-  double range_h[4][4] = {{1., 1.,  0.3,  1.5}, {15., 15.,  4.,  0.3}, {0.1, 0.1,  0.02,  1.}, { 0.,  0.,  0.1,  0.5}};
+  double range_l[4][4] = {{0., 0., -0.3, -1.5}, { 0.,  0., -1., -0.3}, {0.0, 0.0, -0.01, -1.}, {-1., -1., -0.1, -0.5}};
+  double range_h[4][4] = {{1., 1.,  0.3,  1.5}, {15., 15.,  1.,  0.3}, {0.1, 0.1,  0.01,  1.}, { 0.,  0.,  0.1,  0.5}};
   
   //strings used
-  std::string VarCate[4] = {"sim", "rec", "dif", "rdf"};
-  std::string histName[4][4];
-  std::string histTitles[4][4];
+  std::string VarCate[5] = {"sim", "rec", "dif", "rdf", "svr"};
+  std::string histName[4][5];
+  std::string histTitles[4][5];
   std::string RawhistName[4][4];
   
   TH1D* h_Var1D[4][4];
+  TH2D* h_Var2D[4];
   for(int i = 0 ; i < 4 ; i++){
     for(int j = 0 ; j < 4 ; j++){
       //construct histName
@@ -145,6 +146,16 @@ int vm_invar(const std::string& config_name)
       auto& htmp = *h_tmp;
       h_Var1D[i][j] = (TH1D*)htmp.Clone(histName[i][j].c_str());
     }
+    //2d histogram
+    histName[i][4] = "h_" + VarName[i] + "_" + VarCate[4];
+    if(i==1){
+      histTitles[i][4] = ";Q^{2}_{sim};Q^{2}_{rec};#";
+    }else{
+     histTitles[i][4] = fmt::format(";{}_{sim};{}_{rec};#", VarName[i], VarName[i]); 
+    }
+    auto h_tmp = d_im.Histo2D({fmt::format("{}_tmp", histName[i][4]).c_str(), histTitles[i][4].c_str(), 50, range_l[i][j], range_h[i][j], 50, range_l[i][j], range_h[i][j]}, RawhistName[i][0].c_str(), RawhistName[i][1].c_str());
+    auto& htmp = *h_tmp;
+    h_Var2D[i] = (TH2D*)htmp.Clone(histName[i][4].c_str());
   }
   double nEvents = h_Var1D[0][0]->Integral(0, -1);
   
