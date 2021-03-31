@@ -221,8 +221,9 @@ int vm_invar(const std::string& config_name)
             tptr[i][j] = t[i][j]->AddText(fmt::format("#Delta{}", VarName[i]).c_str());
           }
           tptr[i][j]->SetTextColor(1);
+          break;
         case 3://dx/x
-          /*h_Var1D[i][3]->Draw("hist");
+          h_Var1D[i][3]->Draw("hist");
           myFitPtr[i][1] = h_Var1D[i][3]->Fit(myf[i][1], "S 0", "", range_l[i][j], range_h[i][j]);
           myf[i][1]->Draw("same");
           if(i==1){
@@ -230,7 +231,7 @@ int vm_invar(const std::string& config_name)
           }else{
             tptr[i][j] = t[i][j]->AddText(fmt::format("#Delta{}/{}", VarName[i], VarName[i]).c_str());
           }
-          tptr[i][j]->SetTextColor(1);*/
+          tptr[i][j]->SetTextColor(1);
           break;
         default:
           break;
