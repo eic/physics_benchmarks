@@ -57,43 +57,7 @@ int vm_invar(const std::string& config_name)
     Tests.push_back(resolution_test_tmp);
   }
   //============================== test definition ==============================
-  /*
-  eic::util::Test y_resolution_test{
-      {{"name", fmt::format("{}_y_resolution", test_tag)},
-       {"title",
-        fmt::format("y Resolution for {} -> {} events with {}", vm_name, decay_name, detector)},
-       {"description", "y resolution: relative difference with Gaussian fit"},
-       {"quantity", "resolution"},
-       {"target", ".4"}}};
-  Tests.push_back(y_resolution_test);
-  
-  eic::util::Test Q2_resolution_test{
-      {{"name", fmt::format("{}_Q2_resolution", test_tag)},
-       {"title",
-        fmt::format("Q^2 Resolution for {} -> {} events with {}", vm_name, decay_name, detector)},
-       {"description", "Q^2 resolution: relative difference with Gaussian fit"},
-       {"quantity", "resolution"},
-       {"target", ".09"}}};
-  Tests.push_back(Q2_resolution_test);
-  
-  eic::util::Test x_resolution_test{
-      {{"name", fmt::format("{}_x_resolution", test_tag)},
-       {"title",
-        fmt::format("x Resolution for {} -> {} events with {}", vm_name, decay_name, detector)},
-       {"description", "x resolution: relative difference with Gaussian fit"},
-       {"quantity", "resolution"},
-       {"target", ".35"}}};
-  Tests.push_back(x_resolution_test);
-  
-  eic::util::Test t_resolution_test{
-      {{"name", fmt::format("{}_t_resolution", test_tag)},
-       {"title",
-        fmt::format("t Resolution for {} -> {} events with {}", vm_name, decay_name, detector)},
-       {"description", "t resolution: relative difference with Gaussian fit"},
-       {"quantity", "resolution"},
-       {"target", ".07"}}};
-  Tests.push_back(t_resolution_test);*/
-  
+
   
   //==============================general settings==============================
   // Run this in multi-threaded mode if desired
@@ -155,11 +119,11 @@ int vm_invar(const std::string& config_name)
   std::string RawhistName[4][4];
   
   //==============================hist def==============================
-  /*TH1D* h_Var1D[4][4];
+  TH1D* h_Var1D[4][4];
   for(int i = 0 ; i < 4 ; i++){
     for(int j = 0 ; j < 4 ; j++){
       //construct histName
-      histName[i][j] = "h_" + VarName[i] + VarCate[j];
+      histName[i][j] = "h_" + VarName[i] + "_" + VarCate[j];
       //construct histTitles
       histTitles[i][j] = ";";
       if(j > 1) histTitles[i][j] = histTitles[i][j] + "#Delta";
@@ -186,7 +150,15 @@ int vm_invar(const std::string& config_name)
       delete hptr_tmp;
     }
   }
-  double nEvents = h_Var1D[0][0]->Integral(0, -1);*/
+  double nEvents = h_Var1D[0][0]->Integral(0, -1);
+  TCanvas* ctest = new TCanvas("ctest", "ctest", 600,900);
+  ctest->Divide(1,2,0.001,0.001);
+  ctest->cd(1);
+  h_Var1D[0][0]->Draw("hist");
+  ctest->cd(2);
+  h_Var1D[0][1]->Draw("hist");
+  ctest->Print(fmt::format("{}test.png", output_prefix).c_str());
+  
   //==============================hist def==============================
 
   // Define output histograms
