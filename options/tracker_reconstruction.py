@@ -94,7 +94,7 @@ ecal_reco = EMCalReconstruction("ecal_reco",
 
 simple_cluster = SimpleClustering("simple_cluster", 
         inputHitCollection="RecEcalBarrelHits", 
-        outputClusterCollection="SimpleClusters",
+        outputClusters="SimpleClusters",
         minModuleEdep=1.0*units.MeV,
         maxDistance=50.0*units.cm,
         OutputLevel=DEBUG)
