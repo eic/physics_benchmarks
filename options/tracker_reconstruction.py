@@ -18,7 +18,7 @@ if "DETECTOR_PATH" in os.environ :
     detector_path = str(os.environ["DETECTOR_PATH"])
 
 geo_service  = GeoSvc("GeoSvc",
-        detectors=["{}/{}.xml".format(detector_path, detector_name)])
+        detectors=["{}/{}.xml".format(detector_path, detector_name)], OutputLevel=INFO)
 podioevent   = EICDataSvc("EventDataSvc", inputs=[input_sim_file], OutputLevel=DEBUG)
 
 from Configurables import PodioInput
@@ -94,7 +94,7 @@ ecal_reco = EMCalReconstruction("ecal_reco",
 
 simple_cluster = SimpleClustering("simple_cluster", 
         inputHitCollection="RecEcalBarrelHits", 
-        outputClusters="SimpleClusters",
+        outputClusterCollection="SimpleClusters",
         minModuleEdep=1.0*units.MeV,
         maxDistance=50.0*units.cm,
         OutputLevel=DEBUG)
