@@ -18,8 +18,8 @@ if "DETECTOR_PATH" in os.environ :
     detector_path = str(os.environ["DETECTOR_PATH"])
 
 geo_service  = GeoSvc("GeoSvc",
-        detectors=["{}/{}.xml".format(detector_path, detector_name)])
-podioevent   = EICDataSvc("EventDataSvc", inputs=[input_sim_file], OutputLevel=DEBUG)
+        detectors=["{}/{}.xml".format(detector_path, detector_name)], OutputLevel=INFO)
+podioevent   = EICDataSvc("EventDataSvc", inputs=[input_sim_file], OutputLevel=INFO)
 
 from Configurables import PodioInput
 from Configurables import Jug__Base__InputCopier_dd4pod__Geant4ParticleCollection_dd4pod__Geant4ParticleCollection_ as MCCopier
