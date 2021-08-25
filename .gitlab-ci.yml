@@ -60,7 +60,7 @@ common:detector:
 
 include:
   - local: 'benchmarks/dis/config.yml'
-    #- local: 'benchmarks/dvmp/config.yml'
+  - local: 'benchmarks/dvmp/config.yml'
   - local: 'benchmarks/dvcs/config.yml'
 
 summary:
