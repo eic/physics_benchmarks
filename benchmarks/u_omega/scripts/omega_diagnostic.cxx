@@ -20,7 +20,8 @@ R__LOAD_LIBRARY(libDD4pod.so)
 #include "eicd/ClusterCollection.h"
 #include "eicd/ReconstructedParticleCollection.h"
 #include "eicd/BasicParticleCollection.h"
-#include "eicd/CalorimeterHitCollection.h"
+//#include "eicd/CalorimeterHitCollection.h"
+#include "eicd/ClusterCollection.h"
 
 using ROOT::RDataFrame;
 using namespace ROOT::VecOps;
@@ -85,7 +86,7 @@ auto delta_p = [](const std::vector<double>& tracks, const std::vector<double>& 
   return res;
 };
 
-auto ecalnhits = [](std::vector<eic::CalorimeterHitData> const& in) {
+auto ecalnhits = [](std::vector<eic::ClusterData> const& in) {
   //int result;
   //result=in.size();
   //return result;
