@@ -87,11 +87,12 @@ auto delta_p = [](const std::vector<double>& tracks, const std::vector<double>& 
 };
 
 auto ecalnhits = [](std::vector<eic::ClusterData> const& in) {
-  //int result;
-  //result=in.size();
-  //return result;
+  int result;
+  result=in.size();
+  return result;
+};
+auto ecalenergydep = [](std::vector<eic::ClusterData> const& in) {
   std::vector<float> result;
-  std::cout<<"ECal NHits: "<< in.size() << std::endl;
   for (size_t i = 0; i < in.size(); ++i) {
     result.push_back(in[i].energy);
   }
@@ -135,9 +136,11 @@ void omega_diagnostic(const char* fname = "rec_dvcs.root"){
                  .Define("eprime", eprime, {"thrownParticles"})
                  .Define("q",  q_vec, {"eprime"})
                  .Define("Q2", "-1.0*(q.Dot(q))")
-		 .Define("numEcalHits", ecalnhits, {"EcalEndcapPClusters"});
+		 .Define("numEcalHits", ecalnhits, {"EcalEndcapPClusters"})
+		 .Define("EcalHitsEDep", ecalenergydep, {"EcalEndcapPClusters"});
 
-  auto h_nHits   = df0.Histo1D({"h_nHits", "; Energy Deposition in ECal", 100, 0, 5}, "numEcalHits");
+  auto h_nHits   = df0.Histo1D({"h_nHits", "; Number of Hits in ECal", 100, 0, 5}, "numEcalHits");
+  auto h_EDep   = df0.Histo1D({"h_EDep", "; Energy Deposition in ECal", 100, 0, 10}, "EcalHitsEDep");
   auto h_Q2      = df0.Histo1D({"h_Q2", "; Q^{2} [GeV^{2}/c^{2}]", 100, 0, 30}, "Q2");
   auto n_Q2      = df0.Filter("Q2>1").Count();
   auto n_tracks  = df0.Mean("nTracks");
@@ -156,5 +159,9 @@ void omega_diagnostic(const char* fname = "rec_dvcs.root"){
   h_nHits->DrawCopy();
   c->SaveAs("results/u_omega/n_nHits.png");
   //c->SaveAs("results/u_omega/n_nHits.pdf");
+  
+  c = new TCanvas();
+  h_EDep->DrawCopy();
+  c->SaveAs("results/u_omega/n_eDep.png");
 
 }
