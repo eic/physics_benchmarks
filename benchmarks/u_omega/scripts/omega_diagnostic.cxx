@@ -127,10 +127,10 @@ void omega_diagnostic(const char* fname = "rec_dvcs.root"){
                  .Define("delta_p",delta_p, {"p_track", "p_thrown"})
                  .Define("eprime", eprime, {"thrownParticles"})
                  .Define("q",  q_vec, {"eprime"})
-                 .Define("Q2", "-1.0*(q.Dot(q))")
-		 .Define("numEcalHits", ecalnhits, {"EcalEndcapPClusters"});
+                 .Define("Q2", "-1.0*(q.Dot(q))");
+//		 .Define("numEcalHits", ecalnhits, {"EcalEndcapPClusters"});
 
-  auto h_nHits   = df0.Histo1D({"h_nHits", "; Number of Hits in ECal", 100, 0, 100}, "numEcalHits");
+//  auto h_nHits   = df0.Histo1D({"h_nHits", "; Number of Hits in ECal", 100, 0, 100}, "numEcalHits");
   auto h_Q2      = df0.Histo1D({"h_Q2", "; Q^{2} [GeV^{2}/c^{2}]", 100, 0, 30}, "Q2");
   auto n_Q2      = df0.Filter("Q2>1").Count();
   auto n_tracks  = df0.Mean("nTracks");
@@ -145,9 +145,9 @@ void omega_diagnostic(const char* fname = "rec_dvcs.root"){
   fmt::print("{} u_omega events\n",*n_Q2);
   fmt::print("{} tracks per event\n",*n_tracks);
 
-  c = new TCanvas();
-  h_nHits->DrawCopy();
-  c->SaveAs("results/u_omega/n_nHits.png");
+//  c = new TCanvas();
+//  h_nHits->DrawCopy();
+//  c->SaveAs("results/u_omega/n_nHits.png");
   //c->SaveAs("results/u_omega/n_nHits.pdf");
 
 }
