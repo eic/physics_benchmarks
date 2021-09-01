@@ -146,7 +146,7 @@ void omega_diagnostic(const char* fname = "rec_dvcs.root"){
   fmt::print("{} tracks per event\n",*n_tracks);
 
   c = new TCanvas();
-  h_n_dummy->DrawCopy();
+  h_nHits->DrawCopy();
   c->SaveAs("results/u_omega/n_nHits.png");
   //c->SaveAs("results/u_omega/n_nHits.pdf");
 
