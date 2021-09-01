@@ -101,8 +101,8 @@ void omega_diagnostic(const char* fname = "rec_dvcs.root"){
   ROOT::RDataFrame df("events", fname);
 
   using ROOT::Math::PxPyPzMVector;
-  PxPyPzMVector p_ebeam = {0,0,-5, 0.000511};
-  PxPyPzMVector p_pbeam = {0,0,41,  0.938 };
+  PxPyPzMVector p_ebeam = {0,0,-10, 0.000511};
+  PxPyPzMVector p_pbeam = {0,0,275,  0.938 };
 
   auto eprime = [](ROOT::VecOps::RVec<dd4pod::Geant4ParticleData> const& in) {
     for(const auto& p : in){
