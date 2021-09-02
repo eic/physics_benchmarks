@@ -12,6 +12,7 @@ function print_the_help {
   exit 
 }
 
+JUGGLER_N_EVENTS=300
 DO_ALL=1
 DATA_INIT=
 DO_SIM=
@@ -67,7 +68,7 @@ do
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-source benchmarks/u_omega/env.sh 
+#source benchmarks/u_omega/env.sh 
 # assuming something like .local/bin/env.sh has already been sourced.
 print_env.sh
 
