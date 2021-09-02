@@ -12,7 +12,7 @@ function print_the_help {
   exit 
 }
 
-JUGGLER_N_EVENTS=5000
+JUGGLER_N_EVENTS=1000
 DO_ALL=1
 DATA_INIT=
 DO_SIM=
