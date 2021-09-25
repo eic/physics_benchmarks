@@ -71,7 +71,8 @@ from Configurables import Jug__Reco__TrackParamClusterInit as TrackParamClusterI
 from Configurables import Jug__Reco__TrackParamVertexClusterInit as TrackParamVertexClusterInit
 from Configurables import Jug__Reco__TrackFindingAlgorithm as TrackFindingAlgorithm
 from Configurables import Jug__Reco__ParticlesFromTrackFit as ParticlesFromTrackFit
-from Configurables import Jug__Reco__ParticlesWithTruthPID as ParticlesWithTruthPID
+
+from Configurables import Jug__Fast__ParticlesWithTruthPID as ParticlesWithTruthPID
 
 from Configurables import Jug__Reco__CalorimeterHitReco as CalHitReco
 from Configurables import Jug__Reco__CalorimeterHitsMerger as CalHitsMerger
