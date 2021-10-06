@@ -58,7 +58,7 @@ from Configurables import Jug__Base__InputCopier_dd4pod__PhotoMultiplierHitColle
 
 from Configurables import Jug__Fast__MC2SmearedParticle as MC2DummyParticle
 from Configurables import Jug__Fast__ParticlesWithTruthPID as ParticlesWithTruthPID
-from Configurables import Jug__Fast__SmearedFarForwardParticles as SmearedFarForwardParticles
+from Configurables import Jug__Fast__SmearedFarForwardParticles as FFSmearedParticles
 from Configurables import Jug__Fast__MatchClusters as MatchClusters
 from Configurables import Jug__Fast__ClusterMerger as ClusterMerger
 from Configurables import Jug__Fast__TruthEnergyPositionClusterMerger as EnergyPositionClusterMerger
@@ -93,6 +93,8 @@ from Configurables import Jug__Reco__ImagingClusterReco as ImagingClusterReco
 
 from Configurables import Jug__Reco__PhotoMultiplierReco as PhotoMultiplierReco
 from Configurables import Jug__Reco__PhotoRingClusters as PhotoRingClusters
+
+from Configurables import Jug__Reco__ParticleCollector as ParticleCollector
 
 # branches needed from simulation root file
 sim_coll = [
@@ -595,6 +597,19 @@ match_clusters = MatchClusters("match_clusters",
         outputParticles = "ReconstructedParticles",
         outputRelations = "ReconstructedParticleRelations")
 algorithms.append(match_clusters)
+
+## Far Forward for now stored separately
+fast_ff = FFSmearedParticles("fast_ff",
+        inputMCParticles = "mcparticles",
+        outputParticles  = "ReconstructedFFParticles",
+        outputRelations  = "ReconstructedFFParticleRelations",
+        enableZDC        = True,
+        enableB0         = True,
+        enableRP         = True,
+        enableOMD        = True,
+        ionBeamEnergy    = 100,
+        crossingAngle    = -0.025)
+algorithms.append(fast_ff)
 
 # DRICH
 drich_digi = PhotoMultiplierDigi("drich_digi",
