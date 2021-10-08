@@ -132,7 +132,7 @@ algorithms.append(dummy)
 
 # Truth level kinematics
 truth_incl_kin = InclusiveKinematicsTruth("InclusiveKinematicsTruth",
-        inputParticles="mcparticles",
+        inputMCParticles="mcparticles",
         outputData="InclusiveKinematicsTruth"
 )
 algorithms.append(truth_incl_kin)
