@@ -131,7 +131,7 @@ dummy = MC2DummyParticle("dummy",
 algorithms.append(dummy)
 
 # Truth level kinematics
-truth_incl_kin = InclusiveKinematicsTruth("InclusiveKinematicsTruth",
+truth_incl_kin = InclusiveKinematicsTruth("truth_incl_kin",
         inputMCParticles="mcparticles",
         outputData="InclusiveKinematicsTruth"
 )
