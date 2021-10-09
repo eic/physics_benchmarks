@@ -1,3 +1,7 @@
+#include "TH2F.h"
+#include "TLorentzVector.h"
+#include "TGenPhaseSpace.h"
+
 void dvcs_ps_gen() {
   double E_p = 100.0;
   double M_p = 0.938;
