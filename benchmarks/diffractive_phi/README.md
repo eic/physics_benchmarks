@@ -84,5 +84,3 @@ This analysis code lives in `benchmarks/diffractive_phi/analysis/diffractive_phi
 
 The output root file will be under `results/diffractive_phi/18on110/barrel_output.root`
 Note "barrel" is the config one can choose since the beginning.
-
-
