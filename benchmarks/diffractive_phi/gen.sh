@@ -1,8 +1,5 @@
 #!/bin/bash
 
-## Kong's dummy generator step. The generator files are all produced 
-## Here we run this gen.sh step is to match the tags,paths,and formats for later steps.
-
 ## =============================================================================
 ## Standin for a proper pythia generation process, similar to how we
 ## generate events for DVMP
@@ -54,27 +51,37 @@ GEN_TAG=gen-${CONFIG}_${JUGGLER_N_EVENTS} ## Generic file prefix
 ## =============================================================================
 ## Step 2: Check if we really need to run, or can use the cache.
 if [ -f "${INPUT_PATH}/${GEN_TAG}.hepmc" ]; then
-  echo "Found cached generator output for $GEN_TAG, no need to look for where the input file"
+  echo "Found cached generator output for $GEN_TAG, no need to rerun"
   exit 0
 fi
 
-echo "Generator output for $GEN_TAG not found in cache, need to copy generator files over"
+echo "Generator output for $GEN_TAG not found in cache, need to run generator"
 
 ## =============================================================================
 ## Step 3: Build generator exe 
 ##         TODO: need to configurability to the generator exe 
 
-echo "copying from /gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_ep_Oct_14/ ..."
-
-## =============================================================================
-## Step 4: Copy the event generator file over
-echo "Copying the generator file. Warning: this is a local BNL directory of Kong's. "
-cp /gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_ep_Oct_14/ep_vm.hepmc ${TMP_PATH}/${GEN_TAG}.hepmc
-# cp /gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_Oct_5/Output_input_temp_189.hepmc ${TMP_PATH}/${GEN_TAG}.hepmc
+echo "Compiling   benchmarks/dis/generator/pythia_dis.cxx ..."
+g++ benchmarks/dis/generator/pythia_dis.cxx -o ${TMP_PATH}/pythia_dis  \
+   -I/usr/local/include  -I${LOCAL_PREFIX}/include \
+   -O2 -std=c++11 -pedantic -W -Wall -Wshadow -fPIC  \
+   -L/usr/local/lib -Wl,-rpath,/usr/local/lib -lpythia8 -ldl \
+   -L/usr/local/lib -Wl,-rpath,/usr/local/lib -lHepMC3
 if [[ "$?" -ne "0" ]] ; then
-  echo "ERROR copying BeAGLE"
+  echo "ERROR compiling pythia"
   exit 1
 fi
+echo "done"
+
+## =============================================================================
+## Step 4: Run the event generator
+echo "Running the generator"
+${TMP_PATH}/pythia_dis ${TMP_PATH}/${GEN_TAG}.hepmc
+if [[ "$?" -ne "0" ]] ; then
+  echo "ERROR running pythia"
+  exit 1
+fi
+
 
 ## =============================================================================
 ## Step 5: Finally, move relevant output into the artifacts directory and clean up
