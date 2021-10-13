@@ -1,5 +1,8 @@
 #!/bin/bash
 
+## Kong's dummy generator step. The generator files are all produced 
+## Here we run this gen.sh step is to match the tags,paths,and formats for later steps.
+
 ## =============================================================================
 ## Standin for a proper pythia generation process, similar to how we
 ## generate events for DVMP
@@ -51,34 +54,24 @@ GEN_TAG=gen-${CONFIG}_${JUGGLER_N_EVENTS} ## Generic file prefix
 ## =============================================================================
 ## Step 2: Check if we really need to run, or can use the cache.
 if [ -f "${INPUT_PATH}/${GEN_TAG}.hepmc" ]; then
-  echo "Found cached generator output for $GEN_TAG, no need to rerun"
+  echo "Found cached generator output for $GEN_TAG, no need to look for where the input file"
   exit 0
 fi
 
-echo "Generator output for $GEN_TAG not found in cache, need to run generator"
+echo "Generator output for $GEN_TAG not found in cache, need to copy generator files over"
 
 ## =============================================================================
 ## Step 3: Build generator exe 
 ##         TODO: need to configurability to the generator exe 
 
-echo "Compiling   benchmarks/dis/generator/pythia_dis.cxx ..."
-g++ benchmarks/dis/generator/pythia_dis.cxx -o ${TMP_PATH}/pythia_dis  \
-   -I/usr/local/include  -I${LOCAL_PREFIX}/include \
-   -O2 -std=c++11 -pedantic -W -Wall -Wshadow -fPIC  \
-   -L/usr/local/lib -Wl,-rpath,/usr/local/lib -lpythia8 -ldl \
-   -L/usr/local/lib -Wl,-rpath,/usr/local/lib -lHepMC3
-if [[ "$?" -ne "0" ]] ; then
-  echo "ERROR compiling pythia"
-  exit 1
-fi
-echo "done"
+echo "copying from /gpfs02/eic/ztu/ATHENA/detectorSimulations/Sartre/hepmc3_prod_Oct_11/ ..."
 
 ## =============================================================================
-## Step 4: Run the event generator
-echo "Running the generator"
-${TMP_PATH}/pythia_dis ${TMP_PATH}/${GEN_TAG}.hepmc
+## Step 4: Copy the event generator file over
+echo "Copying the generator file"
+cp /gpfs02/eic/ztu/ATHENA/detectorSimulations/Sartre/hepmc3_prod_Oct_11/sartre_bnonsat_Au_phi_1.hepmc ${TMP_PATH}/${GEN_TAG}.hepmc
 if [[ "$?" -ne "0" ]] ; then
-  echo "ERROR running pythia"
+  echo "ERROR copying sartre"
   exit 1
 fi
 
