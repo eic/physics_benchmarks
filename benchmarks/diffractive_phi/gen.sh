@@ -68,13 +68,12 @@ echo "copying from /gpfs02/eic/ztu/ATHENA/detectorSimulations/Sartre/hepmc3_prod
 
 ## =============================================================================
 ## Step 4: Copy the event generator file over
-echo "Copying the generator file"
+echo "Copying the generator file. Warning: this is a local BNL directory of Kong's. "
 cp /gpfs02/eic/ztu/ATHENA/detectorSimulations/Sartre/hepmc3_prod_Oct_11/sartre_bnonsat_Au_phi_1.hepmc ${TMP_PATH}/${GEN_TAG}.hepmc
 if [[ "$?" -ne "0" ]] ; then
   echo "ERROR copying sartre"
   exit 1
 fi
-
 
 ## =============================================================================
 ## Step 5: Finally, move relevant output into the artifacts directory and clean up
