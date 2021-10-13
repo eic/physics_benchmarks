@@ -46,7 +46,7 @@ source parse_cmd.sh $@
 ## - TMP_PATH:      Path for temporary data (not exported as artifacts)
 ##
 ## You can read dvmp/env.sh for more in-depth explanations of the variables.
-source benchmarks/dis/env.sh
+source benchmarks/diffractive_phi/env.sh
 
 ## Get a unique file name prefix based on the configuration options
 GEN_TAG=gen-${CONFIG}_${JUGGLER_N_EVENTS} ## Generic file prefix
@@ -68,13 +68,12 @@ echo "copying from /gpfs02/eic/ztu/ATHENA/detectorSimulations/Sartre/hepmc3_prod
 
 ## =============================================================================
 ## Step 4: Copy the event generator file over
-echo "Copying the generator file"
+echo "Copying the generator file. Warning: this is a local BNL directory of Kong's. "
 cp /gpfs02/eic/ztu/ATHENA/detectorSimulations/Sartre/hepmc3_prod_Oct_11/sartre_bnonsat_Au_phi_1.hepmc ${TMP_PATH}/${GEN_TAG}.hepmc
 if [[ "$?" -ne "0" ]] ; then
   echo "ERROR copying sartre"
   exit 1
 fi
-
 
 ## =============================================================================
 ## Step 5: Finally, move relevant output into the artifacts directory and clean up
