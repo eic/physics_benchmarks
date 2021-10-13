@@ -655,7 +655,8 @@ algorithms.append(mrich_reco)
 electron_incl_kin = InclusiveKinematicsElectron("electron_incl_kin",
         inputMCParticles="mcparticles",
         inputParticles="ReconstructedParticles",
-        outputData="InclusiveKinematicsElectron"
+        outputData="InclusiveKinematicsElectron",
+        OutputLevel=DEBUG
 )
 algorithms.append(electron_incl_kin)
 
