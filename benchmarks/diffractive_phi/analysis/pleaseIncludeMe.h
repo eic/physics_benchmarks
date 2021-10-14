@@ -87,6 +87,7 @@ auto sort_momenta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
 auto findScatElec(const std::vector<eic::ReconstructedParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
+    //how to find scatElec...goodElect Cut here:
     if(part.mass<0.1||part.pid==11) return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
     else return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
   });
@@ -127,15 +128,13 @@ auto getMass(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
 auto giveme_t = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
    std::vector<ROOT::Math::PxPyPzMVector> scatElec){
   std::vector<double > t_vec;
-  std::cout << "scatElec " << scatElec[0].Px() << std::endl;
   if(scatElec[0].Px()<-1e9||vm.size()<1) {
     t_vec.push_back(-99.);
     return t_vec;
   }
   for(auto& i1: vm){
-    // if(fabs(i1.Rapidity())>4.0||fabs(i1.M()-1.019)>0.02) continue;
+    if(fabs(i1.Rapidity())>4.0||fabs(i1.M()-1.019)>0.02) continue;
     TVector2 sum_pt(i1.Px()+scatElec[0].Px(), i1.Py()+scatElec[0].Py());
-    std::cout << "t_rec " << sum_pt.Mod2() << std::endl;
     t_vec.push_back( sum_pt.Mod2() );
   }
   return t_vec;
