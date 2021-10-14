@@ -1,5 +1,37 @@
+<<<<<<< HEAD
 #include "pleaseIncludeMe.h"
 int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1)
+=======
+#include "common_bench/benchmark.h"
+#include "common_bench/mt.h"
+#include "common_bench/util.h"
+#include "common_bench/plot.h"
+
+#include <cmath>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <utility>
+
+#include "ROOT/RDataFrame.hxx"
+#include <TH1D.h>
+#include <TFitResult.h>
+#include <TRandom3.h>
+#include <TCanvas.h>
+
+#include "TFile.h"
+
+#include "fmt/color.h"
+#include "fmt/core.h"
+
+#include "nlohmann/json.hpp"
+#include "eicd/InclusiveKinematicsData.h"
+#include "eicd/ReconstructedParticleData.h"
+
+int diffractive_phi_analysis(const std::string& config_name)
+>>>>>>> adding analysis
 {
   // read our configuration
   std::ifstream  config_file{config_name};
@@ -33,6 +65,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   ROOT::EnableImplicitMT(kNumThreads);
   ROOT::RDataFrame d("events", rec_file);
 
+<<<<<<< HEAD
   //CHOOSE which VM, 0 = rho, 1 = phi, 2 = j/psi
   which_vm = vm_type;
 
@@ -42,6 +75,23 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   */
 
   //event kinematics
+=======
+  auto combinatorial_diff_ratio = [] (
+      const ROOT::VecOps::RVec<float>& v1,
+      const ROOT::VecOps::RVec<float>& v2
+  ) {
+    std::vector<float> v;
+    for (auto& i1: v1) {
+      for (auto& i2: v2) {
+        if (i1 != 0) {
+          v.push_back((i1-i2)/i1);
+        }
+      }
+    }
+    return v;
+  };
+
+>>>>>>> adding analysis
   auto d0 = d.Define("Q2_sim", "InclusiveKinematicsTruth.Q2")
              .Define("Q2_rec", "InclusiveKinematicsElectron.Q2")
              .Define("Q2_res", combinatorial_diff_ratio, {"Q2_sim", "Q2_rec"})
@@ -58,6 +108,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   auto h_x_sim = d0.Histo1D({"h_x_sim", "; ; counts", 100, 0, +1}, "x_sim");
   auto h_x_rec = d0.Histo1D({"h_x_rec", "; ; counts", 100, 0, +1}, "x_rec");
   auto h_x_res = d0.Histo1D({"h_x_res", "; ; counts", 100, -1, 1}, "x_res");
+<<<<<<< HEAD
   
   /*
   Block 2
@@ -248,6 +299,12 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   output->Write();
   output->Close();
 
+=======
+
+  TFile* output = new TFile(output_prefix.c_str()+"_output.root","RECREATE");
+  h_Q2_sim.Write();
+  
+>>>>>>> adding analysis
   // common_bench::write_test({dis_Q2_resolution}, fmt::format("{}dis_electrons.json", output_prefix));
 
   return 0;
