@@ -34,13 +34,14 @@ TH1D* h_mass = new TH1D("h_mass",";mass",200,0.,3.5);
 auto momenta_from_reconstruction(const std::vector<eic::ReconstructedParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzEVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
+      TLorentzVector cand(part.p.x, part.p.y, part.p.z, part.energy);
+      if(part.charge>0) daug_cand_1.push_back(cand);
+      else if(part.charge<0) daug_cand_2.push_back(cand);
+      else{
+        //do something for neutrals.
+      }
     return ROOT::Math::PxPyPzEVector{part.p.x, part.p.y, part.p.z, part.energy};
-    TLorentzVector cand(part.p.x, part.p.y, part.p.z, part.energy);
-    if(part.charge>0) daug_cand_1.push_back(cand);
-    else if(part.charge<0) daug_cand_2.push_back(cand);
-    else{
-      //do something for neutrals.
-    }
+
   });
   return momenta;
 }
