@@ -92,9 +92,12 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto h_x_rec = d0.Histo1D({"h_x_rec", "; ; counts", 100, 0, +1}, "x_rec");
   auto h_x_res = d0.Histo1D({"h_x_res", "; ; counts", 100, -1, 1}, "x_res");
 
-  TFile* output = new TFile(output_prefix.c_str()+"_output.root","RECREATE");
-  h_Q2_sim.Write();
-  
+  TString output_name_dir = output_prefix.c_str();
+  TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
+  h_Q2_sim->Write();
+  output->Write();
+  output->Close();
+
   // common_bench::write_test({dis_Q2_resolution}, fmt::format("{}dis_electrons.json", output_prefix));
 
   return 0;
