@@ -110,9 +110,9 @@ cat << EOF > ${CONFIG}
 }
 EOF
 #cat ${CONFIG}
-root -b -q "benchmarks/diffractive_phi/analysis/dis_electrons.cxx+(\"${CONFIG}\")"
+root -b -q "benchmarks/diffractive_phi/analysis/diffractive_phi_analysis.cxx+(\"${CONFIG}\")"
 if [[ "$?" -ne "0" ]] ; then
-  echo "ERROR running rec_dis_electron script"
+  echo "ERROR running rec_diffractive_phi_analysis script"
   exit 1
 fi
 
