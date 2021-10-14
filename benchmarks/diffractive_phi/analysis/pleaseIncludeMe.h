@@ -27,27 +27,32 @@
 #include "eicd/InclusiveKinematicsData.h"
 #include "eicd/ReconstructedParticleData.h"
 
+#define PI            3.1415926
+#define MASS_PION     0.13957
+#define MASS_KAON     0.493667
+#define MASS_AU197    183.45406466643374
+
 //particles properties
 auto momenta_from_reconstruction_plus(const std::vector<eic::ReconstructedParticleData>& parts) {
-  std::vector<ROOT::Math::PxPyPzEVector> momenta{parts.size()};
+  std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
     if(part.charge>0){
-      return ROOT::Math::PxPyPzEVector{part.p.x, part.p.y, part.p.z, part.energy};
+      return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_KAON};
     }
     else{
-      return ROOT::Math::PxPyPzEVector{-1e10, -1e10, -1e10, -1e10};
+      return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
     }
   });
   return momenta;
 }
 auto momenta_from_reconstruction_minus(const std::vector<eic::ReconstructedParticleData>& parts) {
-  std::vector<ROOT::Math::PxPyPzEVector> momenta{parts.size()};
+  std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
-     if(part.charge>0){
-      return ROOT::Math::PxPyPzEVector{part.p.x, part.p.y, part.p.z, part.energy};
+     if(part.charge<0){
+      return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_KAON};
     }
     else{
-      return ROOT::Math::PxPyPzEVector{-1e10, -1e10, -1e10, -1e10};
+      return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
     }
   });
   return momenta;
@@ -61,7 +66,7 @@ auto vector_sum = [](std::vector<ROOT::Math::PxPyPzEVector> p1,
     for(auto& i2: p2){
       if(i2.Px()<-1e9) continue;
       //pt cut
-      if(i1.Pt()<0.15||i2.Pt()<0.15) continue;
+      // if(i1.Pt()<0.15||i2.Pt()<0.15) continue;
       //eta cut
       //...
       vm.push_back(i1+i2);
