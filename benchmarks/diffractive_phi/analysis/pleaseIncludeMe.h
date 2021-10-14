@@ -92,8 +92,8 @@ auto momenta_from_reconstruction_plus(const std::vector<eic::ReconstructedPartic
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
     return ROOT::Math::PxPyPzEVector{part.p.x, part.p.y, part.p.z, part.energy};
     TLorentzVector cand(part.p.x, part.p.y, part.p.z, part.energy);
-    if(parts.charge>0) daug_cand_1.push_back(cand);
-    else if(parts.charge<0) daug_cand_2.push_back(cand);
+    if(part.charge>0) daug_cand_1.push_back(cand);
+    else if(part.charge<0) daug_cand_2.push_back(cand);
     else{
       return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
     }
