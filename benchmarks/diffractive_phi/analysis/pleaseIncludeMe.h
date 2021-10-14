@@ -127,6 +127,7 @@ auto getMass(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
 auto giveme_t = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
    std::vector<ROOT::Math::PxPyPzMVector> scatElec){
   std::vector<double > t_vec;
+  std::cout << "scatElec " << scatElec[0].Px() << std::endl;
   if(scatElec[0].Px()<-1e9||vm.size()<1) {
     t_vec.push_back(-99.);
     return t_vec;
