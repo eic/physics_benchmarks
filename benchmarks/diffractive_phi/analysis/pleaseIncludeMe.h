@@ -58,7 +58,7 @@ auto vector_sum = [](std::vector<ROOT::Math::PxPyPzEVector> p1,
     }
   }
   return vm;
-}
+};
 
 auto getPt(const std::vector<ROOT::Math::PxPyPzEVector>& mom) {
   std::vector<double> PtVec(mom.size() );
