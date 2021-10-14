@@ -26,6 +26,23 @@
 #include "eicd/InclusiveKinematicsData.h"
 #include "eicd/ReconstructedParticleData.h"
 
+//particles properties
+  auto momenta_from_reconstruction(const std::vector<eic::ReconstructedParticleData>& parts) {
+    std::vector<ROOT::Math::PxPyPzEVector> momenta{parts.size()};
+    std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
+      return ROOT::Math::PxPyPzEVector{part.p.x, part.p.y, part.p.z, part.energy};
+    });
+    return momenta;
+  }
+  auto getPt(const std::vector<ROOT::Math::PxPyPzEVector>& mom) {
+    std::vector<double> PtVec(mom.size() );
+    ROOT::Math::PxPyPzEVector beamMom = {0, 0, -18, 18};
+    std::transform(mom.begin(), mom.end(), PtVec.begin(), [beamMom](const auto& part) {
+      return part.Pt();
+    });
+    return PtVec;
+  }
+
 int diffractive_phi_analysis(const std::string& config_name)
 {
   // read our configuration
@@ -279,27 +296,9 @@ int diffractive_phi_analysis(const std::string& config_name)
   //Block 6
   h_t_rec_veto->Write();
 
-  //particles properties
-  auto momenta_from_reconstruction(const std::vector<eic::ReconstructedParticleData>& parts) {
-    std::vector<ROOT::Math::PxPyPzEVector> momenta{parts.size()};
-    std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
-      return ROOT::Math::PxPyPzEVector{part.p.x, part.p.y, part.p.z, part.energy};
-    });
-    return momenta;
-  }
-  auto getPt(const std::vector<ROOT::Math::PxPyPzEVector>& mom) {
-    std::vector<double> PtVec(mom.size() );
-    ROOT::Math::PxPyPzEVector beamMom = {0, 0, -18, 18};
-    std::transform(mom.begin(), mom.end(), PtVec.begin(), [beamMom](const auto& part) {
-      return part.Pt();
-    });
-    return PtVec;
-  }
+  
   auto d1 = d.Define("p", momenta_from_reconstruction, {"ReconstructedChargedParticleData"}).Define("Pt", getPt, {"p"});
   auto h_Pt_rec = d1.Histo1D({"h_Pt_rec", "; GeV; counts", 100, 0, 25}, "Pt");
-
-
-  // }
 
 
   TString output_name_dir = output_prefix.c_str();
