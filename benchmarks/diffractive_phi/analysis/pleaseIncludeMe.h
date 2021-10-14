@@ -31,15 +31,24 @@
 auto momenta_from_reconstruction_plus(const std::vector<eic::ReconstructedParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzEVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
-    if(part.charge<0) continue;
-    return ROOT::Math::PxPyPzEVector{part.p.x, part.p.y, part.p.z, part.energy};
+    if(part.charge>0){
+      return ROOT::Math::PxPyPzEVector{part.p.x, part.p.y, part.p.z, part.energy};
+    }
+    else{
+      return ROOT::Math::PxPyPzEVector{-1e10, -1e10, -1e10, -1e10};
+    }
   });
   return momenta;
 }
 auto momenta_from_reconstruction_minus(const std::vector<eic::ReconstructedParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzEVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
-    if(part.charge<0) {return ROOT::Math::PxPyPzEVector{part.p.x, part.p.y, part.p.z, part.energy};}
+     if(part.charge<0){
+      return ROOT::Math::PxPyPzEVector{part.p.x, part.p.y, part.p.z, part.energy};
+    }
+    else{
+      return ROOT::Math::PxPyPzEVector{-1e10, -1e10, -1e10, -1e10};
+    }
   });
   return momenta;
 }
