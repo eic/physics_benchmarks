@@ -69,7 +69,7 @@ include:
     #- local: 'benchmarks/dvmp/config.yml'
   - local: 'benchmarks/dvcs/config.yml'
   - local: 'benchmarks/u_omega/config.yml'
-  - local: 'benchmarks/diffractive_phi/config.yml'
+  # - local: 'benchmarks/diffractive_phi/config.yml'
   - local: 'benchmarks/single/config.yml'
   - local: 'benchmarks/synchrotron/config.yml'
 
