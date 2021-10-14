@@ -69,7 +69,8 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto d1 = d.Define("p", momenta_from_reconstruction, {"ReconstructedChargedParticles"}).Define("Pt", getPt, {"p"});
   auto h_Pt_rec = d1.Histo1D({"h_Pt_rec", "; GeV; counts", 100, 0, 25}, "Pt");
 
-  h_mass->Fill(1.019);
+  auto d2 = d.Define("Q2_test", [&x] { return ++x; }).Define("xx", [&x] { return x*x; });
+  d2.Snapshot("eictree","newfile.root");
 
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
