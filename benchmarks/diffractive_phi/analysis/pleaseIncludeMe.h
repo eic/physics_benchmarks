@@ -19,6 +19,7 @@
 
 #include "TFile.h"
 #include "TLorentzVector.h"
+#include "TVector2.h"
 
 #include "fmt/color.h"
 #include "fmt/core.h"
@@ -28,6 +29,7 @@
 #include "eicd/ReconstructedParticleData.h"
 
 #define PI            3.1415926
+#define MASS_ELECTRON 0.00051
 #define MASS_PION     0.13957
 #define MASS_KAON     0.493667
 #define MASS_AU197    183.45406466643374
@@ -58,6 +60,22 @@ auto momenta_from_reconstruction_minus(const std::vector<eic::ReconstructedParti
   return momenta;
 }
 
+bool sort_mom_bool(ROOT::Math::PxPyPzMVector &mom1, ROOT::Math::PxPyPzMVector &mom2) {
+  return  mom1.energy() > mom2.energy(); 
+}
+auto sort_momenta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
+  std::vector <ROOT::Math::PxPyPzMVector> sort_mom = mom;
+  sort(sort_mom.begin(), sort_mom.end(), sort_mom_bool);
+  return sort_mom;
+}
+auto findScatElec(const std::vector<eic::ReconstructedParticleData>& parts) {
+  std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
+  std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
+    if(part.pid==11) return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
+    else return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
+  });
+  return momenta;
+}
 auto vector_sum = [](std::vector<ROOT::Math::PxPyPzMVector> p1, 
   std::vector<ROOT::Math::PxPyPzMVector> p2 ){
   std::vector<ROOT::Math::PxPyPzMVector> vm;
@@ -66,9 +84,9 @@ auto vector_sum = [](std::vector<ROOT::Math::PxPyPzMVector> p1,
     for(auto& i2: p2){
       if(i2.Px()<-1e9) continue;
       //pt cut
-      if(i1.Pt()<0.15||i2.Pt()<0.15) continue;
+      if(i1.Pt()<0.05||i2.Pt()<0.05) continue;
       //eta cut
-      if(fabs(i1.Eta())>3.5||fabs(i2.Eta())>3.5) continue;
+      if(fabs(i1.Eta())>4.0||fabs(i2.Eta())>4.0) continue;
       vm.push_back(i1+i2);
     }
   }
@@ -90,3 +108,13 @@ auto getMass(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   });
   return massVec;
 }
+auto giveme_t = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
+   std::vector<ROOT::Math::PxPyPzMVector> scatElec){
+  std::vector<double > t_vec;
+  for(auto& i1: vm){
+    if(fabs(vm.Rapidity())>4.0||fabs(part.M()-1.019)>0.02) continue;
+    TVector2 sum_pt(vm.Px()+scatElec[0].Px(), vm.Py()+scatElec[0].Py());
+    t_vec.push_back( sum_pt.Mod2() );
+  }
+  return t_vec;
+};
