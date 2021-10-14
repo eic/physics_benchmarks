@@ -75,9 +75,7 @@ int diffractive_phi_analysis(const std::string& config_name)
     return v;
   };
 
-  TString output_name_dir = output_prefix.c_str();
-  TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
-
+  //event kinematics
   auto d0 = d.Define("Q2_sim", "InclusiveKinematicsTruth.Q2")
              .Define("Q2_rec", "InclusiveKinematicsElectron.Q2")
              .Define("Q2_res", combinatorial_diff_ratio, {"Q2_sim", "Q2_rec"})
@@ -280,6 +278,31 @@ int diffractive_phi_analysis(const std::string& config_name)
 
   //Block 6
   h_t_rec_veto->Write();
+
+  //particles properties
+  // auto vm_inv_mass = [](
+  //     std::vector<ROOT::Math::PxPyPzEVector> p1, 
+  //     std::vector<ROOT::Math::PxPyPzEVector> p2
+  // ){
+
+  //   std::vector<ROOT::Math::PxPyPzEVector> sum;
+  //   for(auto& i1: p1){
+      
+  //   }
+
+
+  // }
+
+
+  TString output_name_dir = output_prefix.c_str();
+  TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
+  h_Q2_sim->Write();
+  h_Q2_rec->Write();
+  h_Q2_res->Write();
+
+  h_x_sim->Write();
+  h_x_rec->Write();
+  h_x_res->Write();
 
   output->Write();
   output->Close();
