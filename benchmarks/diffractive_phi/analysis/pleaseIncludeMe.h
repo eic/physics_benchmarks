@@ -29,67 +29,37 @@
 
 TH1D* h_mass = new TH1D("h_mass",";mass",200,0.,3.5);
 
-
-int which_vm = 1;
-double vm_pid[3]={113,333,443};
-double vm_mass[3]={0.77545,1.019,3.0969};
-double vm_mass_width[3]={0.15,0.02,0.03};
-double vm_daug_pid[3]={211,321,11};
-double vm_daug_mass[3]={MASS_PION,MASS_KAON,MASS_ELECTRON};
-
-//resolution.
-auto combinatorial_diff_ratio = [] (
-    const ROOT::VecOps::RVec<float>& v1,
-    const ROOT::VecOps::RVec<float>& v2
-) {
-  std::vector<float> v;
-  for (auto& i1: v1) {
-    for (auto& i2: v2) {
-      if (i1 != 0) {
-        v.push_back((i1-i2)/i1);
-      }
-    }
-  }
-  return v;
-};
-
-auto giveme_resolution = [] (
-    const std::vector<double> v1,
-    const std::vector<double> v2
-) {
-  std::vector<float> v;
-  for (auto& i1: v1) {
-    if (v2.size()>0) {
-      v.push_back((i1-v2[0])/i1);
-    }
-    else{
-      v.push_back(-99);
-    }
-  }
-  return v;
-};
-
-auto matchVectKine(ROOT::Math::PxPyPzMVector v1, ROOT::Math::PxPyPzMVector v2){
-  TLorentzVector v1_L(v1.Px(),v1.Py(),v1.Pz(),v1.E());
-  TLorentzVector v2_L(v2.Px(),v2.Py(),v2.Pz(),v2.E());
-
-  if(v1_L.DeltaR(v2_L)>0.3e-1) return false;
-  else return true;
-}
-
-auto scatID_cand_value = [](const ROOT::VecOps::RVec<int>& x){
-  std::vector<int> value;
-  for(auto& i1 : x) {value.push_back( i1 );}
-  return value;
-};
-
+//particles properties
 auto momenta_from_reconstruction_plus(const std::vector<eic::ReconstructedParticleData>& parts) {
-  std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
+  std::vector<ROOT::Math::PxPyPzEVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
-    return ROOT::Math::PxPyPzEVector{part.p.x, part.p.y, part.p.z, part.energy};
+    if(part.charge>0) return ROOT::Math::PxPyPzEVector{part.p.x, part.p.y, part.p.z, part.energy};
   });
   return momenta;
 }
+auto momenta_from_reconstruction_minus(const std::vector<eic::ReconstructedParticleData>& parts) {
+  std::vector<ROOT::Math::PxPyPzEVector> momenta{parts.size()};
+  std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
+    if(part.charge<0)return ROOT::Math::PxPyPzEVector{part.p.x, part.p.y, part.p.z, part.energy};
+  });
+  return momenta;
+}
+
+auto vector_sum = [](std::vector<ROOT::Math::PxPyPzEVector> p1, 
+  std::vector<ROOT::Math::PxPyPzEVector> p2 ){
+  std::vector<ROOT::Math::PxPyPzEVector> vm;
+  for(auto& i1: p1){
+    for(auto& i2: p2){
+      //pt cut
+      if(i1.Pt()<0.15||i2.Pt()<0.15) continue;
+      //eta cut
+      //...
+      vm.push_back(i1+i2);
+    }
+  }
+  return vm;
+};
+
 auto getPt(const std::vector<ROOT::Math::PxPyPzEVector>& mom) {
   std::vector<double> PtVec(mom.size() );
   ROOT::Math::PxPyPzEVector beamMom = {0, 0, -18, 18};
@@ -98,3 +68,4 @@ auto getPt(const std::vector<ROOT::Math::PxPyPzEVector>& mom) {
   });
   return PtVec;
 }
+const Double_t dxbin = (0.17 - 0.13) / 40; // Bin-width
