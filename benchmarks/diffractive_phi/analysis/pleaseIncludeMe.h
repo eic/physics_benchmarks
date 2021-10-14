@@ -27,11 +27,8 @@
 #include "eicd/InclusiveKinematicsData.h"
 #include "eicd/ReconstructedParticleData.h"
 
-#define PI            3.1415926
-#define MASS_ELECTRON 0.00051
-#define MASS_PION     0.13957
-#define MASS_KAON     0.493667
-#define MASS_AU197    183.45406466643374
+vector<TLorentzVector > daug_cand_1,daug_cand_2;
+TH1D* h_mass = new TH1D("h_mass",";mass",200,0.,3.5);
 
 
 int which_vm = 1;
