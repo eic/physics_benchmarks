@@ -69,6 +69,10 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto d1 = d.Define("p", momenta_from_reconstruction, {"ReconstructedChargedParticles"}).Define("Pt", getPt, {"p"});
   auto h_Pt_rec = d1.Histo1D({"h_Pt_rec", "; GeV; counts", 100, 0, 25}, "Pt");
 
+  auto sqrtSum = [](double x, double y) { return sqrt(x*x + y*y); };
+  auto zMean = d.Define("z", sqrtSum, {"Q2_sim","Q2_res"}).Mean("z");
+  std::cout << *zMean << std::endl;
+  int x = -1;
   auto d2 = d.Define("Q2_test", [&x] { return ++x; }).Define("xx", [&x] { return x*x; });
   d2.Snapshot("eictree","newfile.root");
 
