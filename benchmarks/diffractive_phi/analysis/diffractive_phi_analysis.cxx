@@ -1,5 +1,4 @@
 #include "pleaseIncludeMe.h"
-
 int diffractive_phi_analysis(const std::string& config_name)
 {
   // read our configuration
@@ -260,8 +259,8 @@ int diffractive_phi_analysis(const std::string& config_name)
   TH1D* h_mass = new TH1D("h_mass",";mass",200,0.,3.5);
   for(unsigned icand=0;icand<daug_cand_1.size();icand++){
     for(unsigned jcand=0;icand<daug_cand_2.size();jcand++){
-      TLorentzVector vm_vect = daug_cand_1[icand]+daug_cand_2[jcand];
-      h_mass->Fill(vm_vect.M());
+      TLorentzVector vm_cand = daug_cand_1[icand]+daug_cand_2[jcand];
+      h_mass->Fill(vm_cand.M());
     }
   }
 
