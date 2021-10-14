@@ -69,7 +69,7 @@ int diffractive_phi_analysis(const std::string& config_name)
 
   auto d1 = d.Define("p1", momenta_from_reconstruction_plus, {"ReconstructedChargedParticles"})
              .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedChargedParticles"})
-             .Define("vm", vector_sum, {"p1","p2"}).Define("Pt",getPt,"vm");
+             .Define("vm", vector_sum, {"p1","p2"}).Define("Pt",getPt,{"vm"});
 
   auto h_Pt_rec = d1.Histo1D({"h_Pt_rec", "; GeV; counts", 100, 0, 25}, "Pt");
 
