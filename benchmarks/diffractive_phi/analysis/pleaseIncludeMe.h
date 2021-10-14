@@ -34,6 +34,22 @@
 #define MASS_KAON     0.493667
 #define MASS_AU197    183.45406466643374
 
+//resolution.
+auto combinatorial_diff_ratio = [] (
+    const ROOT::VecOps::RVec<float>& v1,
+    const ROOT::VecOps::RVec<float>& v2
+) {
+  std::vector<float> v;
+  for (auto& i1: v1) {
+    for (auto& i2: v2) {
+      if (i1 != 0) {
+        v.push_back((i1-i2)/i1);
+      }
+    }
+  }
+  return v;
+};
+
 //particles properties
 auto momenta_from_reconstruction_plus(const std::vector<eic::ReconstructedParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
@@ -111,10 +127,14 @@ auto getMass(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
 auto giveme_t = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
    std::vector<ROOT::Math::PxPyPzMVector> scatElec){
   std::vector<double > t_vec;
+  if(scatElec[0].Px()<-1e9||vm.size()<1) {
+    t_vec.push_back(-99.);
+    return t_vec;
+  }
   for(auto& i1: vm){
     // if(fabs(i1.Rapidity())>4.0||fabs(i1.M()-1.019)>0.02) continue;
-    std::cout << "mass " << i1.M() << std::endl;
     TVector2 sum_pt(i1.Px()+scatElec[0].Px(), i1.Py()+scatElec[0].Py());
+    std::cout << "t_rec " << sum_pt.Mod2() << std::endl;
     t_vec.push_back( sum_pt.Mod2() );
   }
   return t_vec;
