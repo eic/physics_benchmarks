@@ -69,7 +69,6 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto d1 = d.Define("p", momenta_from_reconstruction, {"ReconstructedChargedParticles"}).Define("Pt", getPt, {"p"});
   auto h_Pt_rec = d1.Histo1D({"h_Pt_rec", "; GeV; counts", 100, 0, 25}, "Pt");
 
-  TH1D* h_mass = new TH1D("h_mass",";mass",200,0.,3.5);
   h_mass->Fill(1.019);
 
   TString output_name_dir = output_prefix.c_str();
