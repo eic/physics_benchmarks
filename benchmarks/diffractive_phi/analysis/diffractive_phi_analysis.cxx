@@ -73,8 +73,8 @@ int diffractive_phi_analysis(const std::string& config_name)
 
   TH1D* h_mass = new TH1D("h_mass",";mass",200,0.,3.5);
   for(unsigned icand=0;icand<daug_cand_1.size();icand++){
-    for(unsigned jcand=0;icand<daug_cand_j.size();jcand++){
-      TLorentzVector vm_vect = daug_cand_1[icand]+daug_cand_j[jcand];
+    for(unsigned jcand=0;icand<daug_cand_2.size();jcand++){
+      TLorentzVector vm_vect = daug_cand_1[icand]+daug_cand_2[jcand];
       h_mass->Fill(vm_vect.M());
     }
   }
