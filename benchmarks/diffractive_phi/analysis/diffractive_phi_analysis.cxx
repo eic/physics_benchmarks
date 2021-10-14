@@ -75,6 +75,9 @@ int diffractive_phi_analysis(const std::string& config_name)
     return v;
   };
 
+  TString output_name_dir = output_prefix.c_str();
+  TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
+
   auto d0 = d.Define("Q2_sim", "InclusiveKinematicsTruth.Q2")
              .Define("Q2_rec", "InclusiveKinematicsElectron.Q2")
              .Define("Q2_res", combinatorial_diff_ratio, {"Q2_sim", "Q2_rec"})
