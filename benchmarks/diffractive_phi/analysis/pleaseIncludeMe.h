@@ -112,7 +112,8 @@ auto giveme_t = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
    std::vector<ROOT::Math::PxPyPzMVector> scatElec){
   std::vector<double > t_vec;
   for(auto& i1: vm){
-    if(fabs(i1.Rapidity())>4.0||fabs(i1.M()-1.019)>0.02) continue;
+    // if(fabs(i1.Rapidity())>4.0||fabs(i1.M()-1.019)>0.02) continue;
+    std::cout << "mass " << i1.M() << std::endl;
     TVector2 sum_pt(i1.Px()+scatElec[0].Px(), i1.Py()+scatElec[0].Py());
     t_vec.push_back( sum_pt.Mod2() );
   }
