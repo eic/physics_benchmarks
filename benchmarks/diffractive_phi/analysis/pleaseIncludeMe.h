@@ -28,6 +28,7 @@
 #include "eicd/ReconstructedParticleData.h"
 
 vector<TLorentzVector > daug_cand_1,daug_cand_2;
+TH1D* h_mass = new TH1D("h_mass",";mass",200,0.,3.5);
 
 //particles properties
 auto momenta_from_reconstruction(const std::vector<eic::ReconstructedParticleData>& parts) {
