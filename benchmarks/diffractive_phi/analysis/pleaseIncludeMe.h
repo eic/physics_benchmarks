@@ -78,7 +78,7 @@ auto vector_sum = [](std::vector<ROOT::Math::PxPyPzMVector> p1,
 auto getPt2OfPhi(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> PtVec(mom.size() );
   std::transform(mom.begin(), mom.end(), PtVec.begin(), [](const auto& part) {
-    if(fabs(part.M()-1.019)>0.02||fabs(part.Rapidity())>3.5) return -99.
+    if(fabs(part.M()-1.019)>0.02||fabs(part.Rapidity())>3.5) return -99.;
     else return part.Pt()*part.Pt();
   });
   return PtVec;
