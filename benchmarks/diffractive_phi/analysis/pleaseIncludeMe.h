@@ -66,19 +66,20 @@ auto vector_sum = [](std::vector<ROOT::Math::PxPyPzMVector> p1,
     for(auto& i2: p2){
       if(i2.Px()<-1e9) continue;
       //pt cut
-      // if(i1.Pt()<0.15||i2.Pt()<0.15) continue;
+      if(i1.Pt()<0.15||i2.Pt()<0.15) continue;
       //eta cut
-      //...
+      if(fbs(i1.Eta())>3.5||fbs(i2.Eta())>3.5) continue;
       vm.push_back(i1+i2);
     }
   }
   return vm;
 };
-
-auto getPt2(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
+//cut on phi mass region and rapidity phase space
+auto getPt2OfPhi(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> PtVec(mom.size() );
   std::transform(mom.begin(), mom.end(), PtVec.begin(), [](const auto& part) {
-    return part.Pt()*part.Pt();
+    if(fbs(part.M()-1.019)>0.02||fbs(part.Rapidity())>3.5) return -99.
+    else return part.Pt()*part.Pt();
   });
   return PtVec;
 }
