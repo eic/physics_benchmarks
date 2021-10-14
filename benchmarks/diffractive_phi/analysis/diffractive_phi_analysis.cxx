@@ -111,7 +111,7 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto h_x_res = d0.Histo1D({"h_x_res", "; ; counts", 100, -1, 1}, "x_res");
 
   
-  auto d1 = d.Define("p", momenta_from_reconstruction, {"ReconstructedChargedParticleData"}).Define("Pt", getPt, {"p"});
+  auto d1 = d.Define("p", momenta_from_reconstruction, {"ReconstructedChargedParticles"}).Define("Pt", getPt, {"p"});
   auto h_Pt_rec = d1.Histo1D({"h_Pt_rec", "; GeV; counts", 100, 0, 25}, "Pt");
 
 
