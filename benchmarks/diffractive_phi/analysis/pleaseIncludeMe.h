@@ -58,9 +58,9 @@ auto momenta_from_reconstruction_minus(const std::vector<eic::ReconstructedParti
   return momenta;
 }
 
-auto vector_sum = [](std::vector<ROOT::Math::PxPyPzEVector> p1, 
-  std::vector<ROOT::Math::PxPyPzEVector> p2 ){
-  std::vector<ROOT::Math::PxPyPzEVector> vm;
+auto vector_sum = [](std::vector<ROOT::Math::PxPyPzMVector> p1, 
+  std::vector<ROOT::Math::PxPyPzMVector> p2 ){
+  std::vector<ROOT::Math::PxPyPzMVector> vm;
   for(auto& i1: p1){
     if(i1.Px()<-1e9) continue;
     for(auto& i2: p2){
@@ -75,20 +75,17 @@ auto vector_sum = [](std::vector<ROOT::Math::PxPyPzEVector> p1,
   return vm;
 };
 
-auto getPt2(const std::vector<ROOT::Math::PxPyPzEVector>& mom) {
+auto getPt2(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> PtVec(mom.size() );
   std::transform(mom.begin(), mom.end(), PtVec.begin(), [](const auto& part) {
     return part.Pt()*part.Pt();
   });
   return PtVec;
 }
-auto getMass(const std::vector<ROOT::Math::PxPyPzEVector>& mom) {
+auto getMass(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> massVec(mom.size() );
   std::transform(mom.begin(), mom.end(), massVec.begin(), [](const auto& part) {
     return part.M();
   });
   return massVec;
 }
-
-
-const Double_t dxbin = (0.17 - 0.13) / 40; // Bin-width
