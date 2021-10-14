@@ -1,47 +1,4 @@
-#include "common_bench/benchmark.h"
-#include "common_bench/mt.h"
-#include "common_bench/util.h"
-#include "common_bench/plot.h"
-
-#include <cmath>
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <vector>
-#include <algorithm>
-#include <utility>
-
-#include "ROOT/RDataFrame.hxx"
-#include <TH1D.h>
-#include <TFitResult.h>
-#include <TRandom3.h>
-#include <TCanvas.h>
-
-#include "TFile.h"
-
-#include "fmt/color.h"
-#include "fmt/core.h"
-
-#include "nlohmann/json.hpp"
-#include "eicd/InclusiveKinematicsData.h"
-#include "eicd/ReconstructedParticleData.h"
-
-//particles properties
-  auto momenta_from_reconstruction(const std::vector<eic::ReconstructedParticleData>& parts) {
-    std::vector<ROOT::Math::PxPyPzEVector> momenta{parts.size()};
-    std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
-      return ROOT::Math::PxPyPzEVector{part.p.x, part.p.y, part.p.z, part.energy};
-    });
-    return momenta;
-  }
-  auto getPt(const std::vector<ROOT::Math::PxPyPzEVector>& mom) {
-    std::vector<double> PtVec(mom.size() );
-    ROOT::Math::PxPyPzEVector beamMom = {0, 0, -18, 18};
-    std::transform(mom.begin(), mom.end(), PtVec.begin(), [beamMom](const auto& part) {
-      return part.Pt();
-    });
-    return PtVec;
-  }
+#include "pleaseIncludeMe.h"
 
 int diffractive_phi_analysis(const std::string& config_name)
 {
@@ -300,6 +257,13 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto d1 = d.Define("p", momenta_from_reconstruction, {"ReconstructedChargedParticles"}).Define("Pt", getPt, {"p"});
   auto h_Pt_rec = d1.Histo1D({"h_Pt_rec", "; GeV; counts", 100, 0, 25}, "Pt");
 
+  TH1D* h_mass = new TH1D("h_mass",";mass",200,0.,3.5);
+  for(unsigned icand=0;icand<daug_cand_1.size();icand++){
+    for(unsigned jcand=0;icand<daug_cand_j.size();jcand++){
+      TLorentzVector vm_vect = daug_cand_1[icand]+daug_cand_j[jcand];
+      h_mass->Fill(vm_vect.M());
+    }
+  }
 
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
@@ -312,6 +276,7 @@ int diffractive_phi_analysis(const std::string& config_name)
   h_x_res->Write();
 
   h_Pt_rec->Write();
+  h_mass->Write();
 
   output->Write();
   output->Close();
