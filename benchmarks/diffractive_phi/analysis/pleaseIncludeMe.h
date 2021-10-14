@@ -112,8 +112,8 @@ auto giveme_t = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
    std::vector<ROOT::Math::PxPyPzMVector> scatElec){
   std::vector<double > t_vec;
   for(auto& i1: vm){
-    if(fabs(vm.Rapidity())>4.0||fabs(part.M()-1.019)>0.02) continue;
-    TVector2 sum_pt(vm.Px()+scatElec[0].Px(), vm.Py()+scatElec[0].Py());
+    if(fabs(i1.Rapidity())>4.0||fabs(i1.M()-1.019)>0.02) continue;
+    TVector2 sum_pt(i1.Px()+scatElec[0].Px(), i1.Py()+scatElec[0].Py());
     t_vec.push_back( sum_pt.Mod2() );
   }
   return t_vec;
