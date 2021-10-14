@@ -94,7 +94,7 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto h_x_res = d0.Histo1D({"h_x_res", "; ; counts", 100, -1, 1}, "x_res");
 
   //particles properties
-  auto momenta_from_reconstruction(const std::vector<eic::ReconstructedChargedParticleData>& parts) {
+  auto momenta_from_reconstruction(const std::vector<eic::ReconstructedParticleData>& parts) {
     std::vector<ROOT::Math::PxPyPzEVector> momenta{parts.size()};
     std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
       return ROOT::Math::PxPyPzEVector{part.p.x, part.p.y, part.p.z, part.energy};
