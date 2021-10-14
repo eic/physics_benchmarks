@@ -70,7 +70,6 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto d1 = d.Define("p", momenta_from_reconstruction, {"ReconstructedChargedParticles"}).Define("Pt", getPt, {"p"});
   auto h_Pt_rec = d1.Histo1D({"h_Pt_rec", "; GeV; counts", 100, 0, 25}, "Pt");
 
-  TH1D* h_mass = new TH1D("h_mass",";mass",200,0.,3.5);
   for(unsigned icand=0;icand<daug_cand_1.size();icand++){
     for(unsigned jcand=0;icand<daug_cand_2.size();jcand++){
       TLorentzVector vm_cand = daug_cand_1[icand]+daug_cand_2[jcand];
