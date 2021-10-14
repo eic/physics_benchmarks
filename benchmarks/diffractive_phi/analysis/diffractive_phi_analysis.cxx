@@ -75,8 +75,7 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedChargedParticles"})
              .Define("elec", findScatElec, {"ReconstructedChargedParticles"}).Define("scatElect",sort_momenta,{"elec"})
              .Define("vm", vector_sum, {"p1","p2"}).Define("Pt2",getPt2OfPhi,{"vm"}).Define("Mass",getMass,{"vm"})
-             .Define("trec", giveme_t, {"vm","scatElect"})
-             .Filter("InclusiveKinematicsElectron.Q2>1 && InclusiveKinematicsElectron.y>0.01 && InclusiveKinematicsElectron.y<0.95");
+             .Define("trec", giveme_t, {"vm","scatElect"});
 
   auto h_Pt2_rec = d1.Histo1D({"h_Pt2_rec", "; GeV; counts", 200, 0, 2}, "Pt2");
   auto h_Mass_rec = d1.Histo1D({"h_Mass_rec", "; GeV; counts", 1000, 0, 4}, "Mass");
