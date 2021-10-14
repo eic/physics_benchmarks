@@ -280,7 +280,7 @@ int diffractive_phi_analysis(const std::string& config_name)
   h_t_rec_veto->Write();
 
   //particles properties
-  auto momenta_from_reconstruction(const std::vector<eic::ReconstructedChargedParticleData>& parts) {
+  auto momenta_from_reconstruction(const std::vector<eic::ReconstructedParticleData>& parts) {
     std::vector<ROOT::Math::PxPyPzEVector> momenta{parts.size()};
     std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
       return ROOT::Math::PxPyPzEVector{part.p.x, part.p.y, part.p.z, part.energy};
