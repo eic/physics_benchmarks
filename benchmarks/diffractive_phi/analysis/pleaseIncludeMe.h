@@ -68,7 +68,7 @@ auto vector_sum = [](std::vector<ROOT::Math::PxPyPzMVector> p1,
       //pt cut
       if(i1.Pt()<0.15||i2.Pt()<0.15) continue;
       //eta cut
-      if(fbs(i1.Eta())>3.5||fbs(i2.Eta())>3.5) continue;
+      if(fabs(i1.Eta())>3.5||fabs(i2.Eta())>3.5) continue;
       vm.push_back(i1+i2);
     }
   }
@@ -78,7 +78,7 @@ auto vector_sum = [](std::vector<ROOT::Math::PxPyPzMVector> p1,
 auto getPt2OfPhi(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> PtVec(mom.size() );
   std::transform(mom.begin(), mom.end(), PtVec.begin(), [](const auto& part) {
-    if(fbs(part.M()-1.019)>0.02||fbs(part.Rapidity())>3.5) return -99.
+    if(fabs(part.M()-1.019)>0.02||fabs(part.Rapidity())>3.5) return -99.
     else return part.Pt()*part.Pt();
   });
   return PtVec;
