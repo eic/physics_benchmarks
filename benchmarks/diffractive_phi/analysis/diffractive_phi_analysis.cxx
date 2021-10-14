@@ -69,9 +69,10 @@ int diffractive_phi_analysis(const std::string& config_name)
 
   auto d1 = d.Define("p1", momenta_from_reconstruction_plus, {"ReconstructedChargedParticles"})
              .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedChargedParticles"})
-             .Define("vm", vector_sum, {"p1","p2"}).Define("Pt",getPt,{"vm"});
+             .Define("vm", vector_sum, {"p1","p2"}).Define("Pt2",getPt2,{"vm"}).Define("Mass",getMass,{"vm"});
 
-  auto h_Pt_rec = d1.Histo1D({"h_Pt_rec", "; GeV; counts", 100, 0, 25}, "Pt");
+  auto h_Pt_rec = d1.Histo1D({"h_Pt_rec", "; GeV; counts", 100, 0, 25}, "Pt2");
+  auto h_Mass_rec = d1.Histo1D({"h_Mass_rec", "; GeV; counts", 100, 0, 4}, "Mass");
 
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
@@ -84,7 +85,7 @@ int diffractive_phi_analysis(const std::string& config_name)
   h_x_res->Write();
 
   h_Pt_rec->Write();
-  h_mass->Write();
+  h_Mass_rec->Write();
 
   output->Write();
   output->Close();
