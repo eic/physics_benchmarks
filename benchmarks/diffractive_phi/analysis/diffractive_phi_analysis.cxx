@@ -94,15 +94,23 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto h_x_res = d0.Histo1D({"h_x_res", "; ; counts", 100, -1, 1}, "x_res");
 
   //particles properties
-  // auto vm_inv_mass = [](
-  //     std::vector<ROOT::Math::PxPyPzEVector> p1, 
-  //     std::vector<ROOT::Math::PxPyPzEVector> p2
-  // ){
-
-  //   std::vector<ROOT::Math::PxPyPzEVector> sum;
-  //   for(auto& i1: p1){
-      
-  //   }
+  auto momenta_from_reconstruction(const std::vector<eic::ReconstructedChargedParticleData>& parts) {
+    std::vector<ROOT::Math::PxPyPzEVector> momenta{parts.size()};
+    std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
+      return ROOT::Math::PxPyPzEVector{part.p.x, part.p.y, part.p.z, part.energy};
+    });
+    return momenta;
+  }
+  auto getPt(const std::vector<ROOT::Math::PxPyPzEVector>& mom) {
+    std::vector<double> PtVec(mom.size() );
+    ROOT::Math::PxPyPzEVector beamMom = {0, 0, -18, 18};
+    std::transform(mom.begin(), mom.end(), PtVec.begin(), [beamMom](const auto& part) {
+      return part.Pt();
+    });
+    return PtVec;
+  }
+  auto d1 = d.Define("p", momenta_from_reconstruction, {"ReconstructedChargedParticleData"}).Define("Pt", getPt, {"p"});
+  auto h_Pt_rec = d1.Histo1D({"h_Pt_rec", "; GeV; counts", 100, 0, 25}, "Pt");
 
 
   // }
@@ -117,6 +125,8 @@ int diffractive_phi_analysis(const std::string& config_name)
   h_x_sim->Write();
   h_x_rec->Write();
   h_x_res->Write();
+
+  h_Pt_rec->Write();
 
   output->Write();
   output->Close();
