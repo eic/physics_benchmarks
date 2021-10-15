@@ -158,14 +158,11 @@ auto getMass(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
 }
 
 auto getEta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
-
-  std::vector<double> etaVec( mom.size() );
-  std::cout << "size = " << mom.size() << std::endl;
-  std::transform(mom.begin(), mom.end(), etaVec.begin(), [](const auto& part) {
-    std::cout << "eta = " << part.Eta() << std::endl;
-    return part.Eta();
-  });
-  return etaVec;
+  for(auto& i1 : mom){
+    double eta = i1.Eta();
+    if(eta<-1e9) return -10.
+      else return eta;
+  }
 }
 
 auto giveme_t = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
