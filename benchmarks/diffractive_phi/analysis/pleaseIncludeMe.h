@@ -61,8 +61,8 @@ auto scatElecCand = [](
     bool id_match=false;
     bool source_match=false;
     
-    for (auto& i1: v1) { id_match=true;}
-    for (auto& i2: v2) { source_match=true;}
+    // for (auto& i1: v1) { id_match=true;}
+    // for (auto& i2: v2) { source_match=true;}
     
     if(id_match&&source_match){
       return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
