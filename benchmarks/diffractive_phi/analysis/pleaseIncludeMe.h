@@ -50,10 +50,10 @@ auto combinatorial_diff_ratio = [] (
   return v;
 };
 
-auto scatElecCand = (const std::vector<eic::ReconstructedParticleData>& parts,
+auto scatElecCand(const std::vector<eic::ReconstructedParticleData>& parts,
                        const ROOT::VecOps::RVec<int>& v1,
-                       const ROOT::VecOps::RVec<int>& v2
-){
+                       const ROOT::VecOps::RVec<int>& v2)
+{
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
     
@@ -69,7 +69,6 @@ auto scatElecCand = (const std::vector<eic::ReconstructedParticleData>& parts,
     }
   });
   return momenta;
-
 }
 
 //particles properties
