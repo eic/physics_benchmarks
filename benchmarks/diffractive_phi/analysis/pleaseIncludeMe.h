@@ -129,11 +129,11 @@ auto findScatElec(const std::vector<eic::ReconstructedParticleData>& parts) {
   });
   return momenta;
 }
-auto tmp_findScat(const std::vector<eic::ReconstructedParticleData>& parts, std::vector<int> scat_id) {
+auto tmp_findScat(const std::vector<eic::ReconstructedParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
   for(auto& i1 : parts){
     // if(i1.ID.value>-1) {
-      std::cout << "i1.ID.value = " << i1.ID.value << " scat_id[0] = " <<  scat_id[0] << std::endl;
+      std::cout << "i1.ID.value = " << i1.ID.value << " scat_id[0] = " <<  2 << std::endl;
       auto scat = ROOT::Math::PxPyPzMVector{i1.p.x, i1.p.y, i1.p.z, MASS_ELECTRON};
       momenta.push_back(scat);
     // }
