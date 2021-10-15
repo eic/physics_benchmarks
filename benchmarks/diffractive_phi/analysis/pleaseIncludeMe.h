@@ -51,16 +51,14 @@ auto combinatorial_diff_ratio = [] (
 };
 
 auto scatElecCand(const std::vector<eic::ReconstructedParticleData>& parts,
-                       const ROOT::VecOps::RVec<int>& v1,
-                       const ROOT::VecOps::RVec<int>& v2)
+                       const std::vector<eic::ReconstructedParticleData>& kines)
 {
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
-    
     bool id_match=false;
     bool source_match=false;
-    for(auto& i1: v1){if(part.ID.value==i1)id_match=true;}
-      for(auto& i2: v2){if(part.ID.source==i2)source_match=true;}
+    if(part.ID.value==kines[0].scatID.value) id_match=true;
+    if(part.ID.source==kines[0].scatID.source)  source_match=true;
     if(id_match&&source_match){
       return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
     }
