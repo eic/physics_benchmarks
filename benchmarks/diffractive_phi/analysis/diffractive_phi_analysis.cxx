@@ -58,7 +58,7 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("y_elec", "InclusiveKinematicsElectron.y")
              .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedChargedParticles"})
              .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedChargedParticles"})
-             .Define("elec", findScatElec, {"ReconstructedChargedParticles"}).Define("scatElect",sort_momenta,{"elec"})
+             .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
              .Define("vm", vector_sum, {"p1","p2"}).Define("Pt2",getPt2OfPhi,{"vm"}).Define("Mass",getMass,{"vm"})
              .Define("trec", giveme_t, {"vm","scatElect"});
 
@@ -75,7 +75,7 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("scatID_source","InclusiveKinematicsElectron.scatID.source")
              .Define("scatID_cand_value",scatID_cand_value, {"scatID_value"})
              .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
-             .Define("scatElec",tmp_findScat,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
+             .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
              .Define("etaElec",getEta,{"scatElec"});
              
   auto h_scatElec_eta = d2.Histo1D({"h_scatElec_eta",";eta; counts",100,-9,9}, "etaElec");
