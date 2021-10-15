@@ -110,6 +110,9 @@ auto tmp_findScat(const std::vector<eic::ReconstructedParticleData>& parts,
       auto scat = ROOT::Math::PxPyPzMVector{i1.p.x, i1.p.y, i1.p.z, MASS_ELECTRON};
       momenta.push_back(scat);
     }
+    else{
+      return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
+    }
   
   }
   // std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part, auto ) {
@@ -156,11 +159,8 @@ auto getMass(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
 
 auto getEta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
 
-  auto size=1;
-  if(mom.size()>0) size=mom.size();
-  std::vector<double> etaVec( size );
-  if(mom.size()==0) etaVec.push_back(-10.);
-
+  std::vector<double> etaVec( mom.size() );
+  std::cout << "size = " << mom.size() << std::endl;
   std::transform(mom.begin(), mom.end(), etaVec.begin(), [](const auto& part) {
     std::cout << "eta = " << part.Eta() << std::endl;
     return part.Eta();
