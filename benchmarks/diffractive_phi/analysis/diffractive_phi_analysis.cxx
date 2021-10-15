@@ -67,8 +67,10 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto h_t_rec = d1.Histo1D({"h_t_rec", "; GeV^{2}; counts", 200, 0, 2}, "trec");
 
 
-  auto d2 = d.Define("scatElec",momenta_from_reconstruction_elect,{"ReconstructedChargedParticles"})
-             .Filter("InclusiveKinematicsElectron.scatID.value>1")
+  auto d2 = d.Define("scatID_value","InclusiveKinematicsElectron.scatID.value")
+             .Define("scatID_source","InclusiveKinematicsElectron.scatID.source")
+             .Define("scatElec",momenta_from_reconstruction_elect,{"ReconstructedChargedParticles"})
+             .Filter("scatID_value[scatID_value>1]")
              .Define("etaElec",getEta,{"scatElec"});
              
   auto h_scatElec_eta = d2.Histo1D({"h_scatElec_eta",";eta; counts",100,0,PI}, "etaElec");
