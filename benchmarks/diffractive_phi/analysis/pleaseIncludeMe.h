@@ -131,13 +131,16 @@ auto findScatElec(const std::vector<eic::ReconstructedParticleData>& parts) {
 }
 auto tmp_findScat(const std::vector<eic::ReconstructedParticleData>& parts, std::vector<int> scat_id) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
-  std::vector<int> tmp = scat_id;
-  std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
-    for(auto& i1 : tmp){
-      if(i1==part.ID.value) return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
-      else return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
-    } 
-  });
+  for(auto& i1 : parts){
+    if(i1.ID.value==scat_id[0]) {
+      auto scat = ROOT::Math::PxPyPzMVector{i1.p.x, i1.p.y, i1.p.z, MASS_ELECTRON};
+      momenta.push_back(scat);
+    }
+  }
+  // std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part, auto ) {
+  //   if(tmp==part.ID.value) return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
+  //   else return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
+  // });
   return momenta;
 }
 auto vector_sum = [](std::vector<ROOT::Math::PxPyPzMVector> p1, 
