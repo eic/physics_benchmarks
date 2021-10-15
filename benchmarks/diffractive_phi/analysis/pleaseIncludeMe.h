@@ -51,7 +51,7 @@ auto combinatorial_diff_ratio = [] (
 };
 
 auto scatElecCand(const std::vector<eic::ReconstructedParticleData>& parts,
-                       const std::vector<eic::ReconstructedParticleData>& kines)
+                       const std::vector<Jug::Reco::InclusiveKinematicsElectron>& kines)
 {
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
