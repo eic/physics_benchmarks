@@ -77,7 +77,7 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("scatElec",tmp_findScat,{"ReconstructedChargedParticles","scatID_cand_value"})
              .Define("etaElec",getEta,{"scatElec"});
              
-  auto h_scatElec_eta = d2.Histo1D({"h_scatElec_eta",";eta; counts",100,0,PI}, "etaElec");
+  auto h_scatElec_eta = d2.Histo1D({"h_scatElec_eta",";eta; counts",100,-9,9}, "etaElec");
   auto h_index = d2.Histo1D({"h_index","",10,0,10},"scatID_cand_value");
 
   TString output_name_dir = output_prefix.c_str();
