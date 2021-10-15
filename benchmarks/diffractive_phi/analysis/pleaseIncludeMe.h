@@ -50,15 +50,14 @@ auto combinatorial_diff_ratio = [] (
   return v;
 };
 
-auto scatElecCand(const std::vector<eic::ReconstructedParticleData>& parts,
-                       const std::vector<Jug::Reco::InclusiveKinematicsElectron>& kines)
+auto scatElecCand(const std::vector<eic::ReconstructedParticleData>& parts, int v1, int v2)
 {
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
     bool id_match=false;
     bool source_match=false;
-    if(part.ID.value==kines[0].scatID.value) id_match=true;
-    if(part.ID.source==kines[0].scatID.source)  source_match=true;
+    if(part.ID.value==v1) id_match=true;
+    if(part.ID.source==v2)  source_match=true;
     if(id_match&&source_match){
       return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
     }
