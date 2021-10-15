@@ -67,7 +67,10 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto h_t_rec = d1.Histo1D({"h_t_rec", "; GeV^{2}; counts", 200, 0, 2}, "trec");
 
   auto metCut = [](const ROOT::VecOps::RVec<int>& x) { 
-    for(auto&i1 : x){if(i1>1) return 1;}; 
+    for(auto&i1 : x){
+      if(i1>1) return 1;
+      else return 0;
+    }; 
   };
   auto d2 = d.Define("scatID_value","InclusiveKinematicsElectron.scatID.value")
              .Define("scatID_source","InclusiveKinematicsElectron.scatID.source")
