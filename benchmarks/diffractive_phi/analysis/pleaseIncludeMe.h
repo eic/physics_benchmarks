@@ -56,7 +56,11 @@ auto scatElecCand = [](const std::vector<eic::ReconstructedParticleData>& parts,
 {
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
-    if(part.ID.value==v1[0] && part.ID.source==v2[0]){
+    bool id_match=false;
+    bool source_match=false;
+    for(auto& i1: v1){if(part.ID.value==i1)id_match=true;}
+      for(auto& i2: v2){if(part.ID.source==i2)source_match=true;}
+    if(id_match&&source_match){
       return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
     }
     else{
