@@ -68,10 +68,9 @@ int diffractive_phi_analysis(const std::string& config_name)
 
 
   auto d2 = d.Define("scatID_value","InclusiveKinematicsElectron.scatID.value")
-             .Define("scatID_source","InclusiveKinematicsElectron.scatID.source")  
-             .Define("elecCand", scatElecCand, {"ReconstructedParticles","scatID_value","scatID_source"}).Define("elecEta",getEta,"elecCand");
+             .Define("scatID_source","InclusiveKinematicsElectron.scatID.source"); 
 
-  auto h_scatElec_eta = d2.Histo1D({"h_scatElec_eta",";eta; counts",100,0,PI}, "elecEta");
+  auto h_scatElec_eta = d2.Histo1D({"h_scatElec_eta",";eta; counts",100,0,100}, "scatID_value");
 
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
