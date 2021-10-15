@@ -66,12 +66,14 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto h_Mass_rec = d1.Histo1D({"h_Mass_rec", "; GeV; counts", 1000, 0, 4}, "Mass");
   auto h_t_rec = d1.Histo1D({"h_t_rec", "; GeV^{2}; counts", 200, 0, 2}, "trec");
 
-  // auto metCut = [](const ROOT::VecOps::RVec<float>& x) { 
-  //   for(auto&i1 : x){
-  //     if(i1>0.25) return 1;
-  //     else return 0;
-  //   }; 
-  // };
+  auto tmp_findScat(const std::vector<eic::ReconstructedParticleData>& parts,std::vector<int> scat_id) {
+    std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
+    std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
+      if(part.ID.value==scat_id[0]) return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
+      else return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
+    });
+    return momenta;
+  }
   auto scatID_cand_value = [](const ROOT::VecOps::RVec<int>& x){
     std::vector<int> value;
     for(auto& i1 : x) {value.push_back( i1 );}
@@ -79,10 +81,11 @@ int diffractive_phi_analysis(const std::string& config_name)
   };
   auto d2 = d.Define("scatID_value","InclusiveKinematicsElectron.scatID.value")
              .Define("scatID_source","InclusiveKinematicsElectron.scatID.source")
-             .Define("scatID_cand_value",scatID_cand_value, {"scatID_value"});
-             // .Define("etaElec",getEta,{"scatElec"});
+             .Define("scatID_cand_value",scatID_cand_value, {"scatID_value"})
+             .Define("scatElec",tmp_findScat,{"ReconstructedChargedParticles","scatID_cand_value"})
+             .Define("etaElec",getEta,{"scatElec"});
              
-  // auto h_scatElec_eta = d2.Histo1D({"h_scatElec_eta",";eta; counts",100,0,PI}, "etaElec");
+  auto h_scatElec_eta = d2.Histo1D({"h_scatElec_eta",";eta; counts",100,0,PI}, "etaElec");
   auto h_index = d2.Histo1D({"h_index","",10,0,10},"scatID_cand_value");
 
   TString output_name_dir = output_prefix.c_str();
