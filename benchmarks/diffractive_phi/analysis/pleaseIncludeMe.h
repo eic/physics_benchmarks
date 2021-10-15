@@ -159,10 +159,10 @@ auto getMass(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
 
 auto getEta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> etaVec;
-  for(auto& i1 : mom){
+  for(auto& i1 : mom/4){
     double eta = i1.Eta();
     std::cout << "eta = " << eta << std::endl;
-    if(eta<-1e9) etaVec.push_back(-10.);
+    if(i1.Px()<-1e9) etaVec.push_back(-10.);
     else etaVec.push_back(eta);
   }
   return etaVec;
