@@ -99,19 +99,6 @@ auto momenta_from_reconstruction_minus(const std::vector<eic::ReconstructedParti
   });
   return momenta;
 }
-auto momenta_from_reconstruction_elect(const std::vector<eic::ReconstructedParticleData>& parts) {
-  std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
-  std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
-     if(part.charge<0){
-      return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
-    }
-    else{
-      return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
-    }
-  });
-  return momenta;
-}
-
 bool sort_mom_bool(ROOT::Math::PxPyPzMVector &mom1, ROOT::Math::PxPyPzMVector &mom2) {
   return  mom1.energy() > mom2.energy(); 
 }
@@ -184,7 +171,8 @@ auto getMass(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
 auto getEta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> etaVec(mom.size() );
   std::transform(mom.begin(), mom.end(), etaVec.begin(), [](const auto& part) {
-    return part.Eta();
+    if(part.Px()<-1e9) return -10;
+    else return part.Eta();
   });
   return etaVec;
 }
