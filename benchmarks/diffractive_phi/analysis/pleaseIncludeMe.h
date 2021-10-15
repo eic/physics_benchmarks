@@ -162,8 +162,8 @@ auto getEta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   for(auto& i1 : mom){
     double eta = i1.Eta();
     std::cout << "eta = " << eta << std::endl;
-    if(eta<-1e9) etaVec.push_back{-10.};
-    else etaVec.push_back{eta};
+    if(eta<-1e9) etaVec.push_back(-10.);
+    else etaVec.push_back(eta);
   }
   return etaVec;
 }
