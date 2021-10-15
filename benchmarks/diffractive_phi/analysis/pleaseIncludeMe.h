@@ -119,6 +119,8 @@ auto tmp_findScat(const std::vector<eic::ReconstructedParticleData>& parts,
   //   if(tmp==part.ID.value) return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
   //   else return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
   // });
+  
+  std::cout << "size size = " << momenta.size() << std::endl;
   return momenta;
 }
 
