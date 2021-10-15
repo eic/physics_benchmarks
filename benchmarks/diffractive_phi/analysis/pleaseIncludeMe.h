@@ -161,7 +161,7 @@ auto getMass(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
 auto getEta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
 
   auto size=1;
-  if(mom.size()>0) size=mom.size()
+  if(mom.size()>0) size=mom.size();
   std::vector<double> etaVec( size );
   if(mom.size()==0) etaVec.push_back(-10.);
 
