@@ -50,6 +50,12 @@ auto combinatorial_diff_ratio = [] (
   return v;
 };
 
+auto scatID_cand_value = [](const ROOT::VecOps::RVec<int>& x){
+  std::vector<int> value;
+  for(auto& i1 : x) {value.push_back( i1 );}
+  return value;
+};
+
 auto momenta_from_reconstruction_plus(const std::vector<eic::ReconstructedParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
