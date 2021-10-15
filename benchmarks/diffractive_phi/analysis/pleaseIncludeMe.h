@@ -86,17 +86,7 @@ auto sort_momenta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return sort_mom;
 }
 
-auto findScatElec(const std::vector<eic::ReconstructedParticleData>& parts) {
-  std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
-  std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
-    //how to find scatElec...goodElect Cut here:
-    if(part.mass<0.1||part.pid==11) return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
-    else return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
-  });
-  return momenta;
-}
-
-auto tmp_findScat(const std::vector<eic::ReconstructedParticleData>& parts, 
+auto findScatElec(const std::vector<eic::ReconstructedParticleData>& parts, 
       std::vector<int> scat_id,
     std::vector<int> scat_source) 
 {
@@ -115,12 +105,8 @@ auto tmp_findScat(const std::vector<eic::ReconstructedParticleData>& parts,
     }
   
   }
-  // std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part, auto ) {
-  //   if(tmp==part.ID.value) return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
-  //   else return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
-  // });
-  
-  std::cout << "size size = " << momenta.size() << std::endl;
+  //vector size mostly 4 sometimes 3 and 5, need to find out.  
+  // std::cout << "size size = " << momenta.size() << std::endl;
   return momenta;
 }
 
