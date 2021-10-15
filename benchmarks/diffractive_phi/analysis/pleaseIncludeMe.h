@@ -111,7 +111,7 @@ auto tmp_findScat(const std::vector<eic::ReconstructedParticleData>& parts,
       momenta.push_back(scat);
     }
     else{
-      return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
+      momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});
     }
   
   }
