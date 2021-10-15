@@ -87,7 +87,7 @@ int diffractive_phi_analysis(const std::string& config_name)
 
   h_Pt2_rec->Write();
   h_Mass_rec->Write();
-  h_scatElec_eta->Write();
+  // h_scatElec_eta->Write();
   h_t_rec->Write();
 
   output->Write();
