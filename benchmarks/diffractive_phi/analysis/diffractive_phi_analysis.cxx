@@ -58,6 +58,10 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("y_elec", "InclusiveKinematicsElectron.y")
              .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedChargedParticles"})
              .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedChargedParticles"})
+             .Define("scatID_value","InclusiveKinematicsElectron.scatID.value")
+             .Define("scatID_source","InclusiveKinematicsElectron.scatID.source")
+             .Define("scatID_cand_value",scatID_cand_value, {"scatID_value"})
+             .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
              .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
              .Define("vm", vector_sum, {"p1","p2"}).Define("Pt2",getPt2OfPhi,{"vm"}).Define("Mass",getMass,{"vm"})
              .Define("trec", giveme_t, {"vm","scatElect"});
@@ -66,11 +70,6 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto h_Mass_rec = d1.Histo1D({"h_Mass_rec", "; GeV; counts", 1000, 0, 4}, "Mass");
   auto h_t_rec = d1.Histo1D({"h_t_rec", "; GeV^{2}; counts", 200, 0, 2}, "trec");
 
-  auto scatID_cand_value = [](const ROOT::VecOps::RVec<int>& x){
-    std::vector<int> value;
-    for(auto& i1 : x) {value.push_back( i1 );}
-    return value;
-  };
   auto d2 = d.Define("scatID_value","InclusiveKinematicsElectron.scatID.value")
              .Define("scatID_source","InclusiveKinematicsElectron.scatID.source")
              .Define("scatID_cand_value",scatID_cand_value, {"scatID_value"})
@@ -79,7 +78,7 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("etaElec",getEta,{"scatElec"});
              
   auto h_scatElec_eta = d2.Histo1D({"h_scatElec_eta",";eta; counts",100,-9,9}, "etaElec");
-  auto h_index = d2.Histo1D({"h_index","",10,0,10},"scatID_cand_value");
+  auto h_scatID = d2.Histo1D({"h_scatID","",10,0,10},"scatID_cand_value");
 
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
@@ -93,7 +92,7 @@ int diffractive_phi_analysis(const std::string& config_name)
 
   h_Pt2_rec->Write();
   h_Mass_rec->Write();
-  h_index->Write();
+  h_scatID->Write();
   h_scatElec_eta->Write();
   h_t_rec->Write();
 
