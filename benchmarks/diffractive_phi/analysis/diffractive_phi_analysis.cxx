@@ -66,14 +66,6 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto h_Mass_rec = d1.Histo1D({"h_Mass_rec", "; GeV; counts", 1000, 0, 4}, "Mass");
   auto h_t_rec = d1.Histo1D({"h_t_rec", "; GeV^{2}; counts", 200, 0, 2}, "trec");
 
-  auto tmp_findScat(const std::vector<eic::ReconstructedParticleData>& parts,std::vector<int> scat_id) {
-    std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
-    std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
-      if(part.ID.value==scat_id[0]) return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
-      else return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
-    });
-    return momenta;
-  }
   auto scatID_cand_value = [](const ROOT::VecOps::RVec<int>& x){
     std::vector<int> value;
     for(auto& i1 : x) {value.push_back( i1 );}
