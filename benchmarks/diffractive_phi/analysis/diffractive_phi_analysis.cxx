@@ -68,7 +68,7 @@ int diffractive_phi_analysis(const std::string& config_name)
 
 
   auto d2 = d.Define("scatID_value","InclusiveKinematicsElectron.scatID.value")
-             .Define("scatID_source","InclusiveKinematicsElectron.scatID.source"); 
+             .Define("scatID_source","InclusiveKinematicsElectron.scatID.source")
              .Define("scatElec",combinatorial_diff_ratio,{"scatID_value","scatID_source"});
              // .Define("elctEta",getEta, "scatElec");
 
