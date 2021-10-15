@@ -164,14 +164,18 @@ auto getEta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
 auto giveme_t = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
    std::vector<ROOT::Math::PxPyPzMVector> scatElec){
   std::vector<double > t_vec;
-  if(scatElec[0].Px()<-1e9||vm.size()<1) {
+  if(vm.size()<1||scatElec.size()<1) {
     t_vec.push_back(-99.);
     return t_vec;
   }
-  for(auto& i1: vm){
-    if(fabs(i1.Rapidity())>4.0||fabs(i1.M()-1.019)>0.02) continue;
-    TVector2 sum_pt(i1.Px()+scatElec[0].Px(), i1.Py()+scatElec[0].Py());
-    t_vec.push_back( sum_pt.Mod2() );
+  for(auto& i2: scatElec){
+    for(auto& i1: vm){
+      if(fabs(i1.Rapidity())>4.0||fabs(i1.M()-1.019)>0.02) continue;
+      if(i2.Px()<-1e9) continue;
+      TVector2 sum_pt(i1.Px()+i2.Px(), i1.Py()+i2.Py());
+      t_vec.push_back( sum_pt.Mod2() );
+    }
   }
+  
   return t_vec;
 };
