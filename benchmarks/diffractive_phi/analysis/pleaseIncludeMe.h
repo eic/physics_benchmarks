@@ -133,13 +133,14 @@ auto tmp_findScat(const std::vector<eic::ReconstructedParticleData>& parts, std:
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
   for(auto& i1 : parts){
     if(scat_id.size()>0&&i1.ID.value==scat_id[0]){
+      std::cout << "scatID = " << scat_id[0] << std::endl;
       auto scat = ROOT::Math::PxPyPzMVector{i1.p.x, i1.p.y, i1.p.z, MASS_ELECTRON};
       momenta.push_back(scat);
+      std::cout << "Eta = " << scat.Eta() << std::endl;
     }
     else{
       auto scat = ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
       momenta.push_back(scat);
-
     }
   }
   // std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part, auto ) {
