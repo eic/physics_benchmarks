@@ -100,7 +100,7 @@ auto tmp_findScat(const std::vector<eic::ReconstructedParticleData>& parts,
       std::vector<int> scat_id,
     std::vector<int> scat_source) 
 {
-  std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
+  std::vector<ROOT::Math::PxPyPzMVector> momenta{1};
   for(auto& i1 : parts){
     if(scat_id.size()>0 
         && scat_source.size()>0
