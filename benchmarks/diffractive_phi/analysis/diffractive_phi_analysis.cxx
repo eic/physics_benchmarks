@@ -63,7 +63,7 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("scatID_cand_value",scatID_cand_value, {"scatID_value"})
              .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
              .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
-             .Define("etaElec",getEta,{"scatElec"});
+             .Define("etaElec",getEta,{"scatElec"})
              .Define("vm", vector_sum, {"p1","p2"}).Define("Pt2",getPt2OfPhi,{"vm"}).Define("Mass",getMass,{"vm"})
              .Define("trec", giveme_t, {"vm","scatElec"});
 
