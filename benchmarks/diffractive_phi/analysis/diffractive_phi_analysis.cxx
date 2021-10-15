@@ -63,22 +63,16 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("scatID_cand_value",scatID_cand_value, {"scatID_value"})
              .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
              .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
+             .Define("etaElec",getEta,{"scatElec"});
              .Define("vm", vector_sum, {"p1","p2"}).Define("Pt2",getPt2OfPhi,{"vm"}).Define("Mass",getMass,{"vm"})
-             .Define("trec", giveme_t, {"vm","scatElect"});
+             .Define("trec", giveme_t, {"vm","scatElec"});
 
   auto h_Pt2_rec = d1.Histo1D({"h_Pt2_rec", "; GeV; counts", 200, 0, 2}, "Pt2");
   auto h_Mass_rec = d1.Histo1D({"h_Mass_rec", "; GeV; counts", 1000, 0, 4}, "Mass");
   auto h_t_rec = d1.Histo1D({"h_t_rec", "; GeV^{2}; counts", 200, 0, 2}, "trec");
 
-  auto d2 = d.Define("scatID_value","InclusiveKinematicsElectron.scatID.value")
-             .Define("scatID_source","InclusiveKinematicsElectron.scatID.source")
-             .Define("scatID_cand_value",scatID_cand_value, {"scatID_value"})
-             .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
-             .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
-             .Define("etaElec",getEta,{"scatElec"});
-             
-  auto h_scatElec_eta = d2.Histo1D({"h_scatElec_eta",";eta; counts",100,-9,9}, "etaElec");
-  auto h_scatID = d2.Histo1D({"h_scatID","",10,0,10},"scatID_cand_value");
+  auto h_scatElec_eta = d1.Histo1D({"h_scatElec_eta",";eta; counts",100,-9,9}, "etaElec");
+  auto h_scatID = d1.Histo1D({"h_scatID","",10,0,10},"scatID_cand_value");
 
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
