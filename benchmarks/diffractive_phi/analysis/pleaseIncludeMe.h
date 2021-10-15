@@ -132,8 +132,10 @@ auto findScatElec(const std::vector<eic::ReconstructedParticleData>& parts) {
 auto tmp_findScat(const std::vector<eic::ReconstructedParticleData>& parts, std::vector<int> scat_id) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
-    if(part.ID.value==1) return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
-    else return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
+    for(auto& i1 : scat_id){
+      if(i1==part.ID.value) return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
+      else return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
+    } 
   });
   return momenta;
 }
