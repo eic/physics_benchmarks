@@ -33,21 +33,6 @@ int diffractive_phi_analysis(const std::string& config_name)
   ROOT::EnableImplicitMT(kNumThreads);
   ROOT::RDataFrame d("events", rec_file);
 
-  auto combinatorial_diff_ratio = [] (
-      const ROOT::VecOps::RVec<float>& v1,
-      const ROOT::VecOps::RVec<float>& v2
-  ) {
-    std::vector<float> v;
-    for (auto& i1: v1) {
-      for (auto& i2: v2) {
-        if (i1 != 0) {
-          v.push_back((i1-i2)/i1);
-        }
-      }
-    }
-    return v;
-  };
-
   //event kinematics
   auto d0 = d.Define("Q2_sim", "InclusiveKinematicsTruth.Q2")
              .Define("Q2_rec", "InclusiveKinematicsElectron.Q2")
@@ -81,6 +66,13 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto h_Mass_rec = d1.Histo1D({"h_Mass_rec", "; GeV; counts", 1000, 0, 4}, "Mass");
   auto h_t_rec = d1.Histo1D({"h_t_rec", "; GeV^{2}; counts", 200, 0, 2}, "trec");
 
+
+  auto d2 = d.Define("scatID_value","InclusiveKinematicsElectron.scatID.value")
+             .Define("scatID_source","InclusiveKinematicsElectron.scatID.source")  
+             .Define("elecCand", scatElecCand, {"ReconstructedParticles","scatID_value","scatID_source"}).Define("elecEta",getEta,"elecCand");
+
+  auto h_scatElec_eta = d2.Histo1D({"h_scatElec_eta",";eta; counts",100,0,PI}, "elecEta");
+
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
   h_Q2_sim->Write();
@@ -93,6 +85,7 @@ int diffractive_phi_analysis(const std::string& config_name)
 
   h_Pt2_rec->Write();
   h_Mass_rec->Write();
+  h_scatElec_eta->Write();
   h_t_rec->Write();
 
   output->Write();

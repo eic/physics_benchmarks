@@ -50,6 +50,22 @@ auto combinatorial_diff_ratio = [] (
   return v;
 };
 
+auto scatElecCand = [](const std::vector<eic::ReconstructedParticleData>& parts,
+                       const ROOT::VecOps::RVec<float>& v1,
+                       const ROOT::VecOps::RVec<float>& v2)
+{
+  std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
+  std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
+    if(part.ID.value==v1[0] && part.ID.source==v2[0]){
+      return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
+    }
+    else{
+      return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
+    }
+  });
+  return momenta;
+};
+
 //particles properties
 auto momenta_from_reconstruction_plus(const std::vector<eic::ReconstructedParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
@@ -124,6 +140,13 @@ auto getMass(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
     return part.M();
   });
   return massVec;
+}
+auto getEta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
+  std::vector<double> etaVec(mom.size() );
+  std::transform(mom.begin(), mom.end(), etaVec.begin(), [](const auto& part) {
+    return part.Eta();
+  });
+  return etaVec;
 }
 auto giveme_t = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
    std::vector<ROOT::Math::PxPyPzMVector> scatElec){
