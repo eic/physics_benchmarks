@@ -50,28 +50,29 @@ auto combinatorial_diff_ratio = [] (
   return v;
 };
 
-auto scatElecCand(
-  const ROOT::VecOps::RVec<int>& v1, 
-  const ROOT::VecOps::RVec<int>& v2,
-  const std::vector<eic::ReconstructedParticleData>& parts)
-{
+// auto scatElecCand(
+//   const ROOT::VecOps::RVec<int>& v1, 
+//   const ROOT::VecOps::RVec<int>& v2,
+//   const ROOT::VecOps::RVec<int>& ll1, 
+//   const ROOT::VecOps::RVec<int>& ll2)
+// {
 
-  std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
-  std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
-  //   // bool id_match=false;
-  //   // bool source_match=false; 
-  //   // for (auto& i1: v1) { id_match=true;}
-  //   // for (auto& i2: v2) { source_match=true;}
+//   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
+//   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
+//   //   // bool id_match=false;
+//   //   // bool source_match=false; 
+//   //   // for (auto& i1: v1) { id_match=true;}
+//   //   // for (auto& i2: v2) { source_match=true;}
     
-  //   // if(id_match&&source_match){
-  //     return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
-  //   // }
-  //   // else{
-      return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
-  //   // }
-  });
-  return momenta;
-}
+//   //   // if(id_match&&source_match){
+//   //     return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
+//   //   // }
+//   //   // else{
+//       return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
+//   //   // }
+//   });
+//   return momenta;
+// }
 
 //particles properties
 auto momenta_from_reconstruction_plus(const std::vector<eic::ReconstructedParticleData>& parts) {
@@ -91,6 +92,18 @@ auto momenta_from_reconstruction_minus(const std::vector<eic::ReconstructedParti
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
      if(part.charge<0){
       return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_KAON};
+    }
+    else{
+      return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
+    }
+  });
+  return momenta;
+}
+auto momenta_from_reconstruction_elect(const std::vector<eic::ReconstructedParticleData>& parts) {
+  std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
+  std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
+     if(part.charge<0){
+      return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_ELECTRON};
     }
     else{
       return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
