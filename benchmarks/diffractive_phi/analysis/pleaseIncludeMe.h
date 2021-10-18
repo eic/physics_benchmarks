@@ -120,7 +120,7 @@ auto findScatElecMC(const std::vector<dd4pod::Geant4ParticleData>& parts)
 {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
-    if(i1.ID==4) {
+    if(i1.genStatus==21&&i1.pdgID==11) {
       auto scatMC = ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,i1.mass};
       std::cout << "eta = " << i1.ps.x << std::endl;
       std::cout << "mass = " << i1.mass << std::endl;
