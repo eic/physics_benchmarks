@@ -103,9 +103,17 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("y_elec", "InclusiveKinematicsElectron.y")
              .Define("scatElecMC",findScatElecMC, {"mcparticles"})
              .Define("etaElecMC",getEtaMC,{"scatElecMC"})
+             .Define("phiMC",findPhiMC,{"mcparticles"})
+             .Define("phiMassMC",getMass,{"phiMC"})
+             .Define("tMC",giveme_t,{"phiMC","scatElecMC"})
+             .Define("phiMC_daugPlus",findPhi_DaugPlus_MC,{"mcparticles"})
+             .Define("etaPhiMC_daugPlus",getEtaMC,{"phiMC_daugPlus"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
   auto h_scatElecMC_eta = d2.Histo1D({"h_scatElecMC_eta",";eta; counts",100,-11,9}, "etaElecMC");
+  auto h_phiMass_MC = d2.Histo1D({"h_phiMass_MC",";Mass; counts",100,0,4}, "phiMassMC");
+  auto h_t_MC = d2.Histo1D({"h_t_MC",";t; counts",200,0,2}, "tMC");
+  auto h_etaPhiMC_daugPlus = d2.Histo1D({"h_etaPhiMC_daugPlus",";eta; counts",100,-11,9}, "etaPhiMC_daugPlus");
 
 
   TString output_name_dir = output_prefix.c_str();
@@ -133,7 +141,10 @@ int diffractive_phi_analysis(const std::string& config_name)
 
   //Block 3
   h_scatElecMC_eta->Write();
-
+  h_phiMass_MC->Write();
+  h_t_MC->Write();
+  h_etaPhiMC_daugPlus->Write();
+  
   output->Write();
   output->Close();
 

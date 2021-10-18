@@ -121,9 +121,39 @@ auto findScatElecMC(const std::vector<dd4pod::Geant4ParticleData>& parts)
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
     if(i1.genStatus==21&&i1.pdgID==11) {
-      auto scatMC = ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,i1.mass};
-      std::cout << "eta = " << i1.ps.x << std::endl;
-      std::cout << "mass = " << i1.mass << std::endl;
+      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,i1.mass});
+    }
+    else {momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});}
+  }
+  return momenta;
+}
+
+auto findPhiMC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
+  std::vector<ROOT::Math::PxPyPzMVector> momenta;
+  for(auto& i1 : parts){
+    if(i1.genStatus==2&&i1.pdgID==333) {
+      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,i1.mass});
+    }
+    else {momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});}
+  }
+  return momenta;
+}
+
+auto findPhi_DaugPlus_MC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
+  std::vector<ROOT::Math::PxPyPzMVector> momenta;
+  for(auto& i1 : parts){
+    if(i1.genStatus==1&&i1.pdgID==321) {
+      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,i1.mass});
+    }
+    else {momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});}
+  }
+  return momenta;
+}
+
+auto findPhi_DaugMinus_MC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
+  std::vector<ROOT::Math::PxPyPzMVector> momenta;
+  for(auto& i1 : parts){
+    if(i1.genStatus==1&&i1.pdgID==-321) {
       momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,i1.mass});
     }
     else {momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});}
@@ -135,7 +165,6 @@ auto getEtaMC(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> etaVec(mom.size() );
   std::transform(mom.begin(), mom.end(), etaVec.begin(), [](const auto& part) {
     if(part.Px()<-1e9) return -99.;
-    else {std::cout << "eta 2="<<part.Eta()<<std::endl;return part.Eta();}
   });
   return etaVec;
 }
