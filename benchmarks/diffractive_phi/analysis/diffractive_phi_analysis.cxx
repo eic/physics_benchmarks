@@ -99,6 +99,12 @@ int diffractive_phi_analysis(const std::string& config_name)
   - Kong's examples on gen particles
   */
 
+  auto d2 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
+             .Define("y_elec", "InclusiveKinematicsElectron.y")
+             .Define("scatElecMC",findScatElecMC, {"mcparticles"})
+             .Define("etaElecMC",getEta,{"scatElecMC"})
+             .Filter(kineCut,{"Q2_elec","y_elec"});
+
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
   h_Q2_sim->Write();
