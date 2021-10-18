@@ -130,7 +130,7 @@ auto getEtaMC(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> etaVec(mom.size() );
   std::transform(mom.begin(), mom.end(), etaVec.begin(), [](const auto& part) {
     if(part.Px()<-1e9) return -99.;
-    else return part.Eta();
+    else {std::cout << "eta="<<part.Eta()<<std::endl;return part.Eta();}
   });
   return etaVec;
 }
