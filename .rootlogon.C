@@ -44,7 +44,7 @@
   // use large fonts
   // Int_t font=72; // Helvetica italics
   Int_t    font  = 43; // Helvetica
-  Double_t tsize = 26;
+  Double_t tsize = 20;
   s->SetTextFont(font);
 
   s->SetTextSize(tsize);
@@ -74,7 +74,7 @@
   // do not display any of the standard histogram decorations
   s->SetOptTitle(0);
   // s->SetOptStat(1111);
-  s->SetOptStat(0);
+  s->SetOptStat(1);
   // s->SetOptFit(1111);
   s->SetOptFit(0);
 
