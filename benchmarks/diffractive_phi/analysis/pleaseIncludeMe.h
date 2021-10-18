@@ -50,6 +50,21 @@ auto combinatorial_diff_ratio = [] (
   return v;
 };
 
+auto giveme_resolution = [] (
+    const std::vector<double> v1,
+    const std::vector<double> v2
+) {
+  std::vector<float> v;
+  for (auto& i1: v1) {
+    for (auto& i2: v2) {
+      if (i1 != 0) {
+        v.push_back((i1-i2)/i1);
+      }
+    }
+  }
+  return v;
+};
+
 auto scatID_cand_value = [](const ROOT::VecOps::RVec<int>& x){
   std::vector<int> value;
   for(auto& i1 : x) {value.push_back( i1 );}
