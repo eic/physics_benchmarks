@@ -120,8 +120,12 @@ auto findScatElecMC(const std::vector<dd4pod::Geant4ParticleData>& parts)
 {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
-    if(i1.ID==4) momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,MASS_ELECTRON});
-    else momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});
+    if(i1.ID==4) {
+      auto scatMC = ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,i1.mass};
+      std::cout << "eta = " << scatMC.Eta() << std::endl;
+      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,i1.mass});
+    }
+    else {momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});}
   }
   return momenta;
 }
@@ -130,7 +134,7 @@ auto getEtaMC(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> etaVec(mom.size() );
   std::transform(mom.begin(), mom.end(), etaVec.begin(), [](const auto& part) {
     if(part.Px()<-1e9) return -99.;
-    else {std::cout << "eta="<<part.Eta()<<std::endl;return part.Eta();}
+    else {std::cout << "eta 2="<<part.Eta()<<std::endl;return part.Eta();}
   });
   return etaVec;
 }
