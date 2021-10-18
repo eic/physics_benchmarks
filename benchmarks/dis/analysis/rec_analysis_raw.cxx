@@ -59,6 +59,75 @@ int rec_analysis_raw(const std::string& config_name)
              .Define("n_HcalEndcapNRawHits",       "HcalEndcapNRawHits.size()")
              ;
 
+  std::vector<std::string> collections{"EcalEndcapPRawHits"};
+  std::vector<RResultPtr<ROOT::TH1D>> h_n, h_adc, h_tdc;
+  for (auto& c: collections) {
+    h_n.emplace_back(d.Histo1D({fmt::format("h_n_{}", c), fmt::format("{}; {} hits; counts", c), 100, 0, 10000}, fmt::format("{}.size()", c)));
+    h_adc.emplace_back(d.Histo1D({fmt::format("h_adc_{}", c), fmt::format("{}; {} channel; counts", c), 1024, 0, 32768}, fmt::format("{}.adc", c)));
+    h_tdc.emplace_back(d.Histo1D({fmt::format("h_tdc_{}", c), fmt::format("{}; {} channel; counts", c), 1024, 0, 32768}, fmt::format("{}.tdc", c)));
+  }
+
+  for (auto& h: h_n) {
+    fmt::print("HcalEndcapNRawHits:");
+    auto stats = d0.Stats(fmt::format("{}.size()", c));
+    stats->Print();
+
+    TCanvas c("c", "c", 1200, 1200);
+    c.Divide(2,2);
+
+    c.cd(1);
+    gPad->SetLogy(true);
+    auto& h1 = *h_n_EcalEndcapPRawHits;
+    // histogram style
+    h1.SetLineColor(common_bench::plot::kMpBlue);
+    h1.SetLineWidth(2);
+    // axes
+    h1.GetXaxis()->CenterTitle();
+    h1.GetYaxis()->CenterTitle();
+    // draw everything
+    h1.DrawClone("hist");
+
+    c.cd(2);
+    gPad->SetLogy(true);
+    auto& h2 = *h_n_EcalEndcapNRawHits;
+    // histogram style
+    h2.SetLineColor(common_bench::plot::kMpBlue);
+    h2.SetLineWidth(2);
+    // axes
+    h2.GetXaxis()->CenterTitle();
+    h2.GetYaxis()->CenterTitle();
+    // draw everything
+    h2.DrawClone("hist");
+    common_bench::plot::draw_label(ebeam, pbeam, detector);
+
+    c.cd(3);
+    gPad->SetLogy(true);
+    auto& h3 = *h_n_EcalBarrelImagingRawHits;
+    // histogram style
+    h3.SetLineColor(common_bench::plot::kMpBlue);
+    h3.SetLineWidth(2);
+    // axes
+    h3.GetXaxis()->CenterTitle();
+    h3.GetYaxis()->CenterTitle();
+    // draw everything
+    h3.DrawClone("hist");
+
+    c.cd(4);
+    gPad->SetLogy(true);
+    auto& h4 = *h_n_EcalBarrelScFiRawHits;
+    // histogram style
+    h4.SetLineColor(common_bench::plot::kMpBlue);
+    h4.SetLineWidth(2);
+    // axes
+    h4.GetXaxis()->CenterTitle();
+    h4.GetYaxis()->CenterTitle();
+    // draw everything
+    h4.DrawClone("hist");
+
+    c.Print(fmt::format("{}_EcalRawHits_n.png", output_prefix).c_str());
+ 
+  }
+
   // Ecal hits
   auto h_n_EcalEndcapPRawHits = d0.Histo1D({"h_n_EcalEndcapPRawHits", "EcalEndcapP; hits; counts", 100, 0, 1000}, "n_EcalEndcapPRawHits");
   auto h_n_EcalBarrelImagingRawHits = d0.Histo1D({"h_n_EcalBarrelImagingRawHits", "EcalBarrelImaging; hits; counts", 100, 0, 1000}, "n_EcalBarrelImagingRawHits");
