@@ -52,7 +52,9 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto h_x_res = d0.Histo1D({"h_x_res", "; ; counts", 100, -1, 1}, "x_res");
   
   //y,Q2 cuts 
-  // auto kineCut = [](double qsq, double y_rec) { return (qsq > 1. && y_rec < 0.95 && y_rec > 0.01); };
+  auto kineCut = [](const ROOT::VecOps::RVec<float>& qsq, const ROOT::VecOps::RVec<float>& y_rec) { 
+    return (qsq > 1. && qsq < 2. && y_rec < 0.95 && y_rec > 0.01); 
+  };
   //all analysis defines~
   auto d1 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
              .Define("y_elec", "InclusiveKinematicsElectron.y")
@@ -65,7 +67,8 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
              .Define("etaElec",getEta,{"scatElec"})
              .Define("vm", vector_sum, {"p1","p2"}).Define("Pt2",getPt2OfPhi,{"vm"}).Define("Mass",getMass,{"vm"})
-             .Define("trec", giveme_t, {"vm","scatElec"});
+             .Define("trec", giveme_t, {"vm","scatElec"})
+             .Filter(kineCut,{"Q2_elec","y_elec"});
 
   auto h_Pt2_rec = d1.Histo1D({"h_Pt2_rec", "; GeV; counts", 200, 0, 2}, "Pt2");
   auto h_Mass_rec = d1.Histo1D({"h_Mass_rec", "; GeV; counts", 1000, 0, 4}, "Mass");
