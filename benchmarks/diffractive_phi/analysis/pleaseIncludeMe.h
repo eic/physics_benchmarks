@@ -169,6 +169,14 @@ auto getEtaMC(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   });
   return etaVec;
 }
+auto getPtMC(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
+  std::vector<double> ptVec(mom.size() );
+  std::transform(mom.begin(), mom.end(), ptVec.begin(), [](const auto& part) {
+    if(part.Px()<-1e9) return -99.;
+    else return part.Pt();
+  });
+  return ptVec;
+}
 
 auto vector_sum = [](std::vector<ROOT::Math::PxPyPzMVector> p1, 
   std::vector<ROOT::Math::PxPyPzMVector> p2 ){

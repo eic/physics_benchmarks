@@ -89,7 +89,7 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto h_y_elec = d1.Histo1D({"h_y_elec", "; ; counts", 100, 0, 1}, "y_elec");
   auto h_Pt2_rec = d1.Histo1D({"h_Pt2_rec", "; GeV; counts", 200, 0, 2}, "Pt2");
   auto h_Mass_rec = d1.Histo1D({"h_Mass_rec", "; GeV; counts", 1000, 0, 4}, "Mass");
-  auto h_t_rec = d1.Histo1D({"h_t_rec", "; GeV^{2}; counts", 200, 0, 2}, "trec");
+  auto h_t_rec = d1.Histo1D({"h_t_rec", "; GeV^{2}; counts", 20, 0, 2}, "trec");
 
   auto h_scatElec_eta = d1.Histo1D({"h_scatElec_eta",";eta; counts",100,-9,9}, "etaElec");
   auto h_scatID = d1.Histo1D({"h_scatID","",10,0,10},"scatID_cand_value");
@@ -108,12 +108,14 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("tMC",giveme_t,{"phiMC","scatElecMC"})
              .Define("phiMC_daugPlus",findPhi_DaugPlus_MC,{"mcparticles"})
              .Define("etaPhiMC_daugPlus",getEtaMC,{"phiMC_daugPlus"})
+             .Define("ptPhiMC_daugPlus",getPtMC,{"phiMC_daugPlus"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
   auto h_scatElecMC_eta = d2.Histo1D({"h_scatElecMC_eta",";eta; counts",100,-11,9}, "etaElecMC");
   auto h_phiMass_MC = d2.Histo1D({"h_phiMass_MC",";Mass; counts",100,0,4}, "phiMassMC");
-  auto h_t_MC = d2.Histo1D({"h_t_MC",";t; counts",200,0,2}, "tMC");
+  auto h_t_MC = d2.Histo1D({"h_t_MC",";t; counts",20,0,2}, "tMC");
   auto h_etaPhiMC_daugPlus = d2.Histo1D({"h_etaPhiMC_daugPlus",";eta; counts",100,-11,9}, "etaPhiMC_daugPlus");
+  auto h_ptPhiMC_daugPlus = d2.Histo1D({"h_ptPhiMC_daugPlus",";pt; counts",100,0,9}, "ptPhiMC_daugPlus");
 
 
   TString output_name_dir = output_prefix.c_str();
@@ -144,7 +146,7 @@ int diffractive_phi_analysis(const std::string& config_name)
   h_phiMass_MC->Write();
   h_t_MC->Write();
   h_etaPhiMC_daugPlus->Write();
-  
+
   output->Write();
   output->Close();
 
