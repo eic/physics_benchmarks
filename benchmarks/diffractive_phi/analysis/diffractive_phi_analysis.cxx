@@ -83,6 +83,10 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("etaElec",getEta,{"scatElec"})
              .Define("vm", vector_sum, {"p1","p2"}).Define("Pt2",getPt2OfPhi,{"vm"}).Define("Mass",getMass,{"vm"})
              .Define("trec", giveme_t, {"vm","scatElec"})
+             .Define("scatElecMC",findScatElecMC, {"mcparticles"})
+             .Define("phiMC",findPhiMC,{"mcparticles"})
+             .Define("tMC",giveme_t,{"phiMC","scatElecMC"})
+             .Define("t_res",giveme_resolution,{"tMC","trec"})     
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
   auto h_Q2_elec = d1.Histo1D({"h_Q2_elec", "; GeV^2; counts", 100, -5, 25}, "Q2_elec");
@@ -93,6 +97,7 @@ int diffractive_phi_analysis(const std::string& config_name)
 
   auto h_scatElec_eta = d1.Histo1D({"h_scatElec_eta",";eta; counts",100,-9,9}, "etaElec");
   auto h_scatID = d1.Histo1D({"h_scatID","",10,0,10},"scatID_cand_value");
+  auto h_t_res = d1.Histo1D({"h_t_res",";res; counts",100,-1,1},"t_res");
 
   /*
   Block 3
@@ -140,12 +145,14 @@ int diffractive_phi_analysis(const std::string& config_name)
   h_scatID->Write();
   h_scatElec_eta->Write();
   h_t_rec->Write();
+  h_t_res->Write();
 
   //Block 3
   h_scatElecMC_eta->Write();
   h_phiMass_MC->Write();
   h_t_MC->Write();
   h_etaPhiMC_daugPlus->Write();
+  h_ptPhiMC_daugPlus->Write();
 
   output->Write();
   output->Close();
