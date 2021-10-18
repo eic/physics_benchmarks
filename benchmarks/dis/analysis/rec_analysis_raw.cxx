@@ -111,6 +111,9 @@ int rec_analysis_raw(const std::string& config_name)
   fmt::print("HcalEndcapNRawHits:");
   stats_n_HcalEndcapNRawHits->Print();
 
+
+  gStyle->SetOptTitle(kTRUE);
+
   // Ecal nhits
   {
     TCanvas c("c", "c", 1200, 1200);
@@ -344,7 +347,6 @@ int rec_analysis_raw(const std::string& config_name)
     h1.GetYaxis()->CenterTitle();
     // draw everything
     h1.DrawClone("hist");
-    common_bench::plot::draw_label(ebeam, pbeam, detector);
 
     c.cd(2);
     gPad->SetLogy(true);
@@ -357,6 +359,7 @@ int rec_analysis_raw(const std::string& config_name)
     h2.GetYaxis()->CenterTitle();
     // draw everything
     h2.DrawClone("hist");
+    common_bench::plot::draw_label(ebeam, pbeam, detector);
 
     c.cd(3);
     gPad->SetLogy(true);
