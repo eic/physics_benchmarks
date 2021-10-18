@@ -33,6 +33,11 @@ int diffractive_phi_analysis(const std::string& config_name)
   ROOT::EnableImplicitMT(kNumThreads);
   ROOT::RDataFrame d("events", rec_file);
 
+  /*
+  Block 1
+  - default defines examples, filling Q2/x sim,rec res.
+  */
+
   //event kinematics
   auto d0 = d.Define("Q2_sim", "InclusiveKinematicsTruth.Q2")
              .Define("Q2_rec", "InclusiveKinematicsElectron.Q2")
@@ -51,6 +56,14 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto h_x_rec = d0.Histo1D({"h_x_rec", "; ; counts", 100, 0, +1}, "x_rec");
   auto h_x_res = d0.Histo1D({"h_x_res", "; ; counts", 100, -1, 1}, "x_res");
   
+  /*
+  Block 2
+  - Kong's examples on filtering events
+  - Reconstruct VM (phi) thru decays, inv_mass vs t 
+  - scattered electron finder.
+  - t reconstructed distributions. 
+  */
+
   //y,Q2 cuts 
   auto kineCut = [](const ROOT::VecOps::RVec<float>& qsq, const ROOT::VecOps::RVec<float>& y_rec) { 
     if(qsq.size()<1||y_rec.size()<1) return 0;
@@ -81,6 +94,10 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto h_scatElec_eta = d1.Histo1D({"h_scatElec_eta",";eta; counts",100,-9,9}, "etaElec");
   auto h_scatID = d1.Histo1D({"h_scatID","",10,0,10},"scatID_cand_value");
 
+  /*
+  Block 3
+  - Kong's examples on gen particles
+  */
 
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
@@ -93,6 +110,7 @@ int diffractive_phi_analysis(const std::string& config_name)
   h_x_res->Write();
 
   h_Q2_elec->Write();
+  h_y_elec->Write();
   h_Pt2_rec->Write();
   h_Mass_rec->Write();
   h_scatID->Write();
