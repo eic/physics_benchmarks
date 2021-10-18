@@ -102,7 +102,7 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto d2 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
              .Define("y_elec", "InclusiveKinematicsElectron.y")
              .Define("scatElecMC",findScatElecMC, {"mcparticles"})
-             .Define("etaElecMC",getEta,{"scatElecMC"})
+             .Define("etaElecMC",getEtaMC,{"scatElecMC"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
   auto h_scatElecMC_eta = d2.Histo1D({"h_scatElecMC_eta",";eta; counts",100,-9,9}, "etaElecMC");
