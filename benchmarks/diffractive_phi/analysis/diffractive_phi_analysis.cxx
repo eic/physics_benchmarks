@@ -53,7 +53,8 @@ int diffractive_phi_analysis(const std::string& config_name)
   
   //y,Q2 cuts 
   auto kineCut = [](const ROOT::VecOps::RVec<float>& qsq, const ROOT::VecOps::RVec<float>& y_rec) { 
-    return (qsq > 1. && qsq < 2. && y_rec < 0.95 && y_rec > 0.01); 
+    if(qsq > 1. && qsq < 2. && y_rec < 0.95 && y_rec > 0.01) return 1;
+    else return 0;
   };
   //all analysis defines~
   auto d1 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
