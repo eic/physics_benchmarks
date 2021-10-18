@@ -105,7 +105,7 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("etaElecMC",getEtaMC,{"scatElecMC"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
-  auto h_scatElecMC_eta = d2.Histo1D({"h_scatElecMC_eta",";eta; counts",100,-9,9}, "etaElecMC");
+  auto h_scatElecMC_eta = d2.Histo1D({"h_scatElecMC_eta",";eta; counts",100,-11,9}, "etaElecMC");
 
 
   TString output_name_dir = output_prefix.c_str();
