@@ -54,7 +54,7 @@ int diffractive_phi_analysis(const std::string& config_name)
   //y,Q2 cuts 
   auto kineCut = [](const ROOT::VecOps::RVec<float>& qsq, const ROOT::VecOps::RVec<float>& y_rec) { 
     if(qsq.size()<1||y_rec.size()<1) return 0;
-    if(qsq[0] > 1. && qsq[0] < 2. && y_rec[0] < 0.95 && y_rec[0] > 0.01) return 1;
+    if(qsq[0] > 1. && qsq[0] < 10. && y_rec[0] < 0.95 && y_rec[0] > 0.01) return 1;
     else return 0;
   };
   //all analysis defines~
@@ -73,6 +73,7 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
   auto h_Q2_elec = d1.Histo1D({"h_Q2_elec", "; GeV^2; counts", 100, -5, 25}, "Q2_elec");
+  auto h_y_elec = d1.Histo1D({"h_y_elec", "; ; counts", 100, 0, 1}, "y_elec");
   auto h_Pt2_rec = d1.Histo1D({"h_Pt2_rec", "; GeV; counts", 200, 0, 2}, "Pt2");
   auto h_Mass_rec = d1.Histo1D({"h_Mass_rec", "; GeV; counts", 1000, 0, 4}, "Mass");
   auto h_t_rec = d1.Histo1D({"h_t_rec", "; GeV^{2}; counts", 200, 0, 2}, "trec");
