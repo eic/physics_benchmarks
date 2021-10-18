@@ -119,12 +119,20 @@ auto findScatElec(const std::vector<eic::ReconstructedParticleData>& parts,
 auto findScatElecMC(const std::vector<dd4pod::Geant4ParticleData>& parts)
 {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
-  std::cout <<" size = " << parts.size() << std::endl;
   for(auto& i1 : parts){
     if(i1.ID==4) momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,MASS_ELECTRON});
     else momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});
   }
   return momenta;
+}
+//TEMP
+auto getEtaMC(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
+  std::vector<double> etaVec(mom.size() );
+  std::transform(mom.begin(), mom.end(), etaVec.begin(), [](const auto& part) {
+    if(part.Px()<-1e9) return -99.;
+    else return part.Eta();
+  });
+  return etaVec;
 }
 
 auto vector_sum = [](std::vector<ROOT::Math::PxPyPzMVector> p1, 
