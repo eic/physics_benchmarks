@@ -105,8 +105,14 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("etaElecMC",getEta,{"scatElecMC"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
+  auto h_scatElecMC_eta = d2.Histo1D({"h_scatElecMC_eta",";eta; counts",100,-9,9}, "etaElecMC");
+
+
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
+  
+  //Block 1
+  
   h_Q2_sim->Write();
   h_Q2_rec->Write();
   h_Q2_res->Write();
@@ -115,6 +121,8 @@ int diffractive_phi_analysis(const std::string& config_name)
   h_x_rec->Write();
   h_x_res->Write();
 
+  //Block 2
+
   h_Q2_elec->Write();
   h_y_elec->Write();
   h_Pt2_rec->Write();
@@ -122,6 +130,9 @@ int diffractive_phi_analysis(const std::string& config_name)
   h_scatID->Write();
   h_scatElec_eta->Write();
   h_t_rec->Write();
+
+  //Block 3
+  h_scatElecMC_eta->Write();
 
   output->Write();
   output->Close();
