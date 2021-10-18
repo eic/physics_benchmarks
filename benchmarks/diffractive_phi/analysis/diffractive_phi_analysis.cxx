@@ -72,12 +72,14 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("trec", giveme_t, {"vm","scatElec"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
+  auto h_Q2_elec = d1.Histo1D({"h_Q2_elec", "; GeV^2; counts", 100, -5, 25}, "Q2_elec")
   auto h_Pt2_rec = d1.Histo1D({"h_Pt2_rec", "; GeV; counts", 200, 0, 2}, "Pt2");
   auto h_Mass_rec = d1.Histo1D({"h_Mass_rec", "; GeV; counts", 1000, 0, 4}, "Mass");
   auto h_t_rec = d1.Histo1D({"h_t_rec", "; GeV^{2}; counts", 200, 0, 2}, "trec");
 
   auto h_scatElec_eta = d1.Histo1D({"h_scatElec_eta",";eta; counts",100,-9,9}, "etaElec");
   auto h_scatID = d1.Histo1D({"h_scatID","",10,0,10},"scatID_cand_value");
+
 
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
@@ -89,6 +91,7 @@ int diffractive_phi_analysis(const std::string& config_name)
   h_x_rec->Write();
   h_x_res->Write();
 
+  h_Q2_elec->Write();
   h_Pt2_rec->Write();
   h_Mass_rec->Write();
   h_scatID->Write();
