@@ -34,6 +34,14 @@
 #define MASS_KAON     0.493667
 #define MASS_AU197    183.45406466643374
 
+
+int which_vm = 1;
+double vm_pid[3]={113,333,443};
+double vm_mass[3]={0.77545,1.019,3.0969};
+double vm_mass_width[3]={0.04,0.02,0.03};
+double vm_daug_pid[3]={211,321,11};
+double vm_daug_mass[3]={MASS_PION,MASS_KAON,MASS_ELECTRON};
+
 //resolution.
 auto combinatorial_diff_ratio = [] (
     const ROOT::VecOps::RVec<float>& v1,
@@ -75,7 +83,7 @@ auto momenta_from_reconstruction_plus(const std::vector<eic::ReconstructedPartic
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
     if(part.charge>0){
-      return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_KAON};
+      return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, vm_daug_mass[which_vm]};
     }
     else{
       return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
@@ -88,7 +96,7 @@ auto momenta_from_reconstruction_minus(const std::vector<eic::ReconstructedParti
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
      if(part.charge<0){
-      return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, MASS_KAON};
+      return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, vm_daug_mass[which_vm]};
     }
     else{
       return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
@@ -146,7 +154,7 @@ auto findScatElecMC(const std::vector<dd4pod::Geant4ParticleData>& parts)
 auto findPhiMC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
-    if(i1.genStatus==2&&i1.pdgID==333) {
+    if(i1.genStatus==2&&i1.pdgID==vm_pid[which_vm]) {
       momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,i1.mass});
     }
     else {momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});}
@@ -157,7 +165,7 @@ auto findPhiMC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
 auto findPhi_DaugPlus_MC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
-    if(i1.genStatus==1&&i1.pdgID==321) {
+    if(i1.genStatus==1&&i1.pdgID==vm_daug_pid[which_vm]) {
       momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,i1.mass});
     }
     else {momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});}
@@ -168,7 +176,7 @@ auto findPhi_DaugPlus_MC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
 auto findPhi_DaugMinus_MC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
-    if(i1.genStatus==1&&i1.pdgID==-321) {
+    if(i1.genStatus==1&&i1.pdgID==-vm_daug_pid[which_vm]) {
       momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,i1.mass});
     }
     else {momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});}
@@ -201,9 +209,9 @@ auto vector_sum = [](std::vector<ROOT::Math::PxPyPzMVector> p1,
     for(auto& i2: p2){
       if(i2.Px()<-1e9) continue;
       //pt cut
-      if(i1.Pt()<0.05||i2.Pt()<0.05) continue;
+      // if(i1.Pt()<0.05||i2.Pt()<0.05) continue;
       //eta cut
-      if(fabs(i1.Eta())>4.0||fabs(i2.Eta())>4.0) continue;
+      // if(fabs(i1.Eta())>4.0||fabs(i2.Eta())>4.0) continue;
       vm.push_back(i1+i2);
     }
   }
@@ -214,7 +222,7 @@ auto vector_sum = [](std::vector<ROOT::Math::PxPyPzMVector> p1,
 auto getPt2OfPhi(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> PtVec(mom.size() );
   std::transform(mom.begin(), mom.end(), PtVec.begin(), [](const auto& part) {
-    if(fabs(part.M()-1.019)>0.02||fabs(part.Rapidity())>3.5) return -99.;
+    if(fabs(part.M()-vm_mass[which_vm])>vm_mass_width[which_vm]||fabs(part.Rapidity())>3.5) return -99.;
     else return part.Pt()*part.Pt();
   });
   return PtVec;
@@ -247,17 +255,15 @@ auto giveme_t = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
   }
   for(auto& i2: scatElec){
     for(auto& i1: vm){
-      if(fabs(i1.Rapidity())>4.0||fabs(i1.M()-1.019)>0.02) continue;
-            // if(fabs(i1.Rapidity())>4.0||fabs(i1.M()-3.09)>0.02) continue;
-
+      if(fabs(i1.Rapidity())>4.0||fabs(i1.M()-vm_mass[which_vm])>vm_mass_width[which_vm]) continue;
       if(i2.Px()<-1e9) continue;
-      TLorentzVector eIn(0,0,-18,18);
-      TLorentzVector eOut;eOut.SetPxPyPzE(i2.Px(),i2.Py(),i2.Pz(),i2.E());
-      TLorentzVector vmOut;vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
-      double method_E = (eIn-eOut-vmOut).Mag2();
+      // TLorentzVector eIn(0,0,-18,18);
+      // TLorentzVector eOut;eOut.SetPxPyPzE(i2.Px(),i2.Py(),i2.Pz(),i2.E());
+      // TLorentzVector vmOut;vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
+      // double method_E = (eIn-eOut-vmOut).Mag2();
+      // t_vec.push_back( -method_E );
       TVector2 sum_pt(i1.Px()+i2.Px(), i1.Py()+i2.Py());
-      // t_vec.push_back( sum_pt.Mod2() );
-      t_vec.push_back( -method_E );
+      t_vec.push_back( sum_pt.Mod2() );
     }
   }
   

@@ -33,6 +33,8 @@ int diffractive_phi_analysis(const std::string& config_name)
   ROOT::EnableImplicitMT(kNumThreads);
   ROOT::RDataFrame d("events", rec_file);
 
+  which_vm = 0;
+
   /*
   Block 1
   - default defines examples, filling Q2/x sim,rec res.
