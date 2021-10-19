@@ -244,6 +244,27 @@ auto findVM_REC_NOT_match_MC(const std::vector<ROOT::Math::PxPyPzMVector> REC,
   return vm_not_match;
 }
 
+auto resolution_REC_match_MC(const std::vector<ROOT::Math::PxPyPzMVector> REC, 
+  const std::vector<ROOT::Math::PxPyPzMVector> MC)
+{
+  std::vector<double > resolution;
+  for(auto& i1:REC){
+    double res = -1.e-10;
+    //here not cutting on rec mass yet.
+    bool VM_interested = true; 
+    if(fabs(i1.M()-vm_mass[which_vm])>vm_mass_width[which_vm]) VM_interested=false;
+    for(auto& i2:MC){
+      if(i2.Px()<-1e-9) continue;
+      if(matchVectKine(i1,i2)&&VM_interested) {
+        //use pt resolution as an example;
+        res = (i1.Pt()-i2.Pt())/i2.Pt();
+      }
+    }
+    resolution.push_back(res);
+  }
+  return resolution;
+}
+
 auto getMass(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> massVec(mom.size() );
   std::transform(mom.begin(), mom.end(), massVec.begin(), [](const auto& part) {
