@@ -1,5 +1,5 @@
 #include "pleaseIncludeMe.h"
-int diffractive_phi_analysis(const std::string& config_name)
+int diffractive_phi_analysis(const std::string& config_name, const vm_type=1)
 {
   // read our configuration
   std::ifstream  config_file{config_name};
@@ -34,7 +34,7 @@ int diffractive_phi_analysis(const std::string& config_name)
   ROOT::RDataFrame d("events", rec_file);
 
   //CHOOSE which VM, 0 = rho, 1 = phi, 2 = j/psi
-  which_vm = 0;
+  which_vm = vm_type;
 
   /*
   Block 1
