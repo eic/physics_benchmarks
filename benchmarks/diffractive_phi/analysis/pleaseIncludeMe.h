@@ -63,10 +63,10 @@ auto giveme_resolution = [] (
     const std::vector<double> v2
 ) {
   std::vector<float> v;
-  
+
   for (auto& i1: v1) {
     // for (auto& i2: v2) {
-      if (i1 != 0) {
+      if (i1 != 0&&v2.size()>0) {
         v.push_back((i1-v2[0])/i1);
       }
       else{
