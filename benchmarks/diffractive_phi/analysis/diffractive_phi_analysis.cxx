@@ -169,17 +169,17 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   - t rec with veto conditions applied, including FF detectors
   */
 
-  auto eventVetoCut = [](const ROOT::VecOps::RVec<int>& FF_status,
+  auto eventVetoCut = [](const ROOT::VecOps::RVec<float>& FF_momentum,
     const std::vector<eic::ReconstructedParticleData>& parts)
   { 
-    int keepThisEvent_ = 1;
-    if(FF_status.size()>0) keepThisEvent_ = 0;
+    bool keepThisEvent_ = true;
+    if(FF_momentum.size()>0) keepThisEvent_ = false;
     int mult=0;
     for(auto&i1 : parts){
       TLorentzVector p(i1.p.x,i1.p.y,i1.p.z,i1.mass);
       if(p.Pt()>0.05&&fabs(p.Eta())<3.5) mult++;
     }
-    if(mult>3) keepThisEvent_ = 0;
+    if(mult>3) keepThisEvent_ = false;
 
     return keepThisEvent_;
   };
@@ -195,7 +195,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
              .Define("vm", vector_sum, {"p1","p2"})
              .Define("t_rec", giveme_t, {"vm","scatElec"})
-             .Filter(eventVetoCut,{"ReconstructedFFParticles.status","ReconstructedChargedParticles"})
+             .Filter(eventVetoCut,{"ReconstructedFFParticles.momentum","ReconstructedChargedParticles"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
   auto h_t_rec_veto = d5.Histo1D({"h_t_rec_veto", "; GeV^{2}; counts",50,0,2}, "t_rec");
