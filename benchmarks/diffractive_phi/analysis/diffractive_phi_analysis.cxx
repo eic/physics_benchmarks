@@ -131,15 +131,15 @@ int diffractive_phi_analysis(const std::string& config_name)
   {
 
     bool matchElectron=false;
-    for(auto e1& scatElec_REC){
-      for(auto e2& scatElec_MC){
+    for(auto e1: scatElec_REC){
+      for(auto e2: scatElec_MC){
         if( e1.DeltaR(e2)<1e-1 ) matchElectron=true ;
       }
     }
 
     bool matchVM=false;
-    for(auto v1& vm_REC){
-      for(auto v2& vm_MC){
+    for(auto v1: vm_REC){
+      for(auto v2: vm_MC){
         if( v1.DeltaR(v2)<1e-1 ) matchVM=true ;
       }
     }
