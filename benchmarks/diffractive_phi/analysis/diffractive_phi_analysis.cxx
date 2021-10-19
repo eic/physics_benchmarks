@@ -83,25 +83,20 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("etaElec",getEta,{"scatElec"})
              .Define("vm", vector_sum, {"p1","p2"}).Define("Pt2",getPt2OfPhi,{"vm"}).Define("Mass",getMass,{"vm"})
              .Define("trec", giveme_t, {"vm","scatElec"})
-             .Define("scatElecMC",findScatElecMC, {"mcparticles"})
-             .Define("phiMC",findPhiMC,{"mcparticles"})
-             .Define("tMC",giveme_t,{"phiMC","scatElecMC"})
-             .Define("t_res",giveme_resolution,{"tMC","trec"})     
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
   auto h_Q2_elec = d1.Histo1D({"h_Q2_elec", "; GeV^2; counts", 100, -5, 25}, "Q2_elec");
   auto h_y_elec = d1.Histo1D({"h_y_elec", "; ; counts", 100, 0, 1}, "y_elec");
   auto h_Pt2_rec = d1.Histo1D({"h_Pt2_rec", "; GeV; counts", 200, 0, 2}, "Pt2");
   auto h_Mass_rec = d1.Histo1D({"h_Mass_rec", "; GeV; counts", 1000, 0, 4}, "Mass");
-  auto h_t_rec = d1.Histo1D({"h_t_rec", "; GeV^{2}; counts", 20, 0, 2}, "trec");
+  auto h_t_rec = d1.Histo1D({"h_t_rec", "; GeV^{2}; counts", 50, 0, 2}, "trec");
 
   auto h_scatElec_eta = d1.Histo1D({"h_scatElec_eta",";eta; counts",100,-9,9}, "etaElec");
   auto h_scatID = d1.Histo1D({"h_scatID","",10,0,10},"scatID_cand_value");
-  auto h_t_res = d1.Histo1D({"h_t_res",";res; counts",100,-1,1},"t_res");
 
   /*
   Block 3
-  - Kong's examples on gen particles
+  - Kong's examples on gen particles distributions
   */
 
   auto d2 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
@@ -118,10 +113,64 @@ int diffractive_phi_analysis(const std::string& config_name)
 
   auto h_scatElecMC_eta = d2.Histo1D({"h_scatElecMC_eta",";eta; counts",100,-11,9}, "etaElecMC");
   auto h_phiMass_MC = d2.Histo1D({"h_phiMass_MC",";Mass; counts",100,0,4}, "phiMassMC");
-  auto h_t_MC = d2.Histo1D({"h_t_MC",";t; counts",20,0,2}, "tMC");
+  auto h_t_MC = d2.Histo1D({"h_t_MC",";t; counts",50,0,2}, "tMC");
   auto h_etaPhiMC_daugPlus = d2.Histo1D({"h_etaPhiMC_daugPlus",";eta; counts",100,-11,9}, "etaPhiMC_daugPlus");
   auto h_ptPhiMC_daugPlus = d2.Histo1D({"h_ptPhiMC_daugPlus",";pt; counts",100,0,9}, "ptPhiMC_daugPlus");
 
+  /*
+  Block 4 
+  - resolution on t with matching
+  - efficiency and fakes, etc
+
+  */
+
+  auto genMatch = [](std::vector<ROOT::Math::PxPyPzMVector> scatElec_REC,
+                    std::vector<ROOT::Math::PxPyPzMVector> scatElec_MC,
+                  std::vector<ROOT::Math::PxPyPzMVector> vm_REC,
+                std::vector<ROOT::Math::PxPyPzMVector> vm_MC )
+  {
+
+    bool matchElectron=false;
+    for(auto e1& scatElec_REC){
+      for(auto e2& scatElec_MC){
+        if( e1.DeltaR(e2)<1e-1 ) matchElectron=true ;
+      }
+    }
+
+    bool matchVM=false;
+    for(auto v1& vm_REC){
+      for(auto v2& vm_MC){
+        if( v1.DeltaR(v2)<1e-1 ) matchVM=true ;
+      }
+    }
+
+    if( matchVM && matchElectron ) return 1;
+    else return 0;
+
+  };
+
+  auto d4 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
+             .Define("y_elec", "InclusiveKinematicsElectron.y")
+             .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedChargedParticles"})
+             .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedChargedParticles"})
+             .Define("scatID_value","InclusiveKinematicsElectron.scatID.value")
+             .Define("scatID_source","InclusiveKinematicsElectron.scatID.source")
+             .Define("scatID_cand_value",scatID_cand_value, {"scatID_value"})
+             .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
+             .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
+             .Define("etaElec",getEta,{"scatElec"})
+             .Define("vm", vector_sum, {"p1","p2"}).Define("Pt2",getPt2OfPhi,{"vm"}).Define("Mass",getMass,{"vm"})
+             .Define("trec_d4", giveme_t, {"vm","scatElec"})
+             .Define("scatElecMC",findScatElecMC, {"mcparticles"})
+             .Define("vmMC",findPhiMC,{"mcparticles"})
+             .Define("tMC_d4",giveme_t,{"vmMC","scatElecMC"})
+             .Define("t_res",giveme_resolution,{"tMC_d4","trec_d4"})     
+             .Filter(kineCut,{"Q2_elec","y_elec"})
+             .Filter(genMatch,{"scatElec","scatElecMC","vm","vmMC"});
+
+  auto h_t_rec_d4 = d4.Histo1D({"h_t_rec_d4", "; GeV^{2}; counts", 50, 0, 2}, "trec_d4");
+  auto h_t_MC_d4 = d4.Histo1D({"h_t_MC_d4",";t; counts",50,0,2}, "tMC_d4");
+  auto h_t_res = d4.Histo1D({"h_t_res",";res; counts",100,-1,1},"t_res");
 
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
@@ -145,7 +194,6 @@ int diffractive_phi_analysis(const std::string& config_name)
   h_scatID->Write();
   h_scatElec_eta->Write();
   h_t_rec->Write();
-  h_t_res->Write();
 
   //Block 3
   h_scatElecMC_eta->Write();
@@ -153,6 +201,11 @@ int diffractive_phi_analysis(const std::string& config_name)
   h_t_MC->Write();
   h_etaPhiMC_daugPlus->Write();
   h_ptPhiMC_daugPlus->Write();
+
+  //Block 4
+  h_t_rec_d4->Write();
+  h_t_MC_d4->Write();
+  h_t_res->Write();
 
   output->Write();
   output->Close();
