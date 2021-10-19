@@ -61,9 +61,9 @@ int diffractive_phi_analysis(const std::string& config_name)
   
   /*
   Block 2
-  - Kong's examples on filtering events
+  - Kong's examples on filtering events on the REC level
   - Reconstruct VM (e.g., phi) thru decays, inv_mass, pt, eta 
-  - scattered electron finder. 
+  - scattered electron finder.
   */
 
   //y,Q2 cuts 
@@ -94,7 +94,8 @@ int diffractive_phi_analysis(const std::string& config_name)
 
   /*
   Block 3
-  - Kong's examples on gen particles distributions
+  - Kong's examples on gen particles distributions, including 
+  - e', VM, and VM daughters
   */
 
   auto d2 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
@@ -106,18 +107,18 @@ int diffractive_phi_analysis(const std::string& config_name)
 
   auto h_Eta_scatElec_MC = d2.Histo1D({"h_Eta_scatElec_MC",";eta; counts",100,-11,9}, "etaElecMC");
   auto h_Mass_MC = d2.Histo1D({"h_Mass_MC",";Mass; counts",100,0,4}, "MassMC");
-  auto h_Pt_VM_MC = d1.Histo1D({"h_Pt_VM_MC", "; GeV; counts", 50, 0, 2}, "vm_mc_pt");
-  auto h_Eta_VM_MC = d1.Histo1D({"h_Eta_VM_MC", "; ; counts", 100, -11, 9}, "vm_mc_eta");
+  auto h_Pt_VM_MC = d2.Histo1D({"h_Pt_VM_MC", "; GeV; counts", 50, 0, 2}, "vm_mc_pt");
+  auto h_Eta_VM_MC = d2.Histo1D({"h_Eta_VM_MC", "; ; counts", 100, -11, 9}, "vm_mc_eta");
   auto h_Pt_VMdaugPlus_MC = d2.Histo1D({"h_Pt_VMdaugPlus_MC",";pt; counts",100,0,9}, "ptVMMC_daugPlus");
   auto h_Eta_VMdaugPlus_MC = d2.Histo1D({"h_Eta_VMdaugPlus_MC",";eta; counts",100,-11,9}, "etaVMMC_daugPlus");
 
   /*
   Block 4 
-  - resolution on t with matching
+  - resolution on t
   - efficiency and fakes, etc
-
   */
-  auto d4 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
+
+  auto d3 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
              .Define("y_elec", "InclusiveKinematicsElectron.y")
              .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedChargedParticles"})
              .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedChargedParticles"})
@@ -134,10 +135,10 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("t_res",giveme_resolution,{"t_MC","t_rec"})     
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
-  auto h_t_rec = d4.Histo1D({"h_t_rec", "; GeV^{2}; counts",50,0,2}, "t_rec");
-  auto h_t_MC = d4.Histo1D({"h_t_MC",";t; counts",50,0,2}, "t_MC");
-  auto h_t_res = d4.Histo1D({"h_t_res",";res; counts",100,-1,1},"t_res");
-  auto h_t_res_2D = d4.Histo2D({"h_t_res_2D",";-t;res",50,0,2,100,-1,1},"t_MC","t_res");
+  auto h_t_rec = d3.Histo1D({"h_t_rec", "; GeV^{2}; counts",50,0,2}, "t_rec");
+  auto h_t_MC = d3.Histo1D({"h_t_MC",";t; counts",50,0,2}, "t_MC");
+  auto h_t_res = d3.Histo1D({"h_t_res",";res; counts",100,-1,1},"t_res");
+  auto h_t_res_2D = d3.Histo2D({"h_t_res_2D",";-t;res",50,0,2,100,-1,1},"t_MC","t_res");
 
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
