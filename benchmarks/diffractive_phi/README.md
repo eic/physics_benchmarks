@@ -18,6 +18,7 @@ Go to your working dir, e.g., /gpfs02/eic/YOUR_NAME/ATHENA/
 ## Getting the container
 
 `curl -L get.athena-eic.org | bash`
+
 `./eic-shell`
 
 this command put you in the "container".
@@ -30,9 +31,9 @@ this command put you in the "container".
 `git checkout diffractive-phi-benchmarks`
 
 - local setup
-`export JUGGLER_INSTALL_PREFIX=$HOME/stow/juggler # if developing algorithms
-export JUGGLER_DETECTOR=athena   # athena is the default
-export BEAMLINE_CONFIG=ip6       # ip6 is the default
+`export JUGGLER_INSTALL_PREFIX=$HOME/stow/juggler # if developing algorithms\\
+export JUGGLER_DETECTOR=athena   # athena is the default\\
+export BEAMLINE_CONFIG=ip6       # ip6 is the default\\
 `
 `cd physics_benchmarks
 git clone https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git setup
