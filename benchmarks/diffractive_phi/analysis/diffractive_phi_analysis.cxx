@@ -200,7 +200,9 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   //Block 5
   h_Pt_VM_MC_total->Write();
   h_Pt_VM_MC_match->Write();
-
+  h_Pt_VM_REC_total->Write();
+  h_Pt_VM_REC_not_match->Write();
+  
   output->Write();
   output->Close();
 
