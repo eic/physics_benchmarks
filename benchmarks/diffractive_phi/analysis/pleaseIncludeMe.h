@@ -251,8 +251,11 @@ auto giveme_t = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
             if(fabs(i1.Rapidity())>4.0||fabs(i1.M()-3.09)>0.02) continue;
 
       if(i2.Px()<-1e9) continue;
+      TLorentzVector eIn(0,0,-18,18);
+      double method_E = (eIn-i1-i2).Mag2()
       TVector2 sum_pt(i1.Px()+i2.Px(), i1.Py()+i2.Py());
-      t_vec.push_back( sum_pt.Mod2() );
+      // t_vec.push_back( sum_pt.Mod2() );
+      t_vec.push_back( -method_E );
     }
   }
   
