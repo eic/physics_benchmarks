@@ -251,6 +251,7 @@ auto findVM_REC_NOT_match_MC(const std::vector<ROOT::Math::PxPyPzMVector> REC,
     bool VM_interested = true; 
     if(fabs(i1.M()-vm_mass[which_vm])>vm_mass_width[which_vm]) VM_interested=false;
     for(auto& i2:MC){
+      if(i2.Px()<-1e-9||fabs(i2.M()-vm_mass[which_vm])>vm_mass_width[which_vm]) continue;
       if(!matchVectKine(i1,i2)&&VM_interested) v=i1;
     }
     vm_not_match.push_back(v);
