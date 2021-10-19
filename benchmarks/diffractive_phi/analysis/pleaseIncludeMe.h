@@ -57,7 +57,7 @@ auto giveme_resolution = [] (
   std::vector<float> v;
   for (auto& i1: v1) {
     for (auto& i2: v2) {
-      if (i1 != 0 && i1<0.6) {
+      if (i1 != 0 && i2<0.6) {
         v.push_back((i1-i2)/i1);
       }
     }
