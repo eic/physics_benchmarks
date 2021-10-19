@@ -72,7 +72,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
     if(qsq[0] > 1. && qsq[0] < 10. && y_rec[0] < 0.95 && y_rec[0] > 0.01) return 1;
     else return 0;
   };
-  //all analysis defines~
+
   auto d1 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
              .Define("y_elec", "InclusiveKinematicsElectron.y")
              .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedChargedParticles"})
@@ -164,6 +164,42 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   auto h_Pt_VM_REC_not_match = d4.Histo1D({"h_Pt_VM_REC_not_match", "; GeV; counts", 50, 0, 2}, "vm_recNMmc_pt");
   auto h_Pt_VM_MC_res = d4.Histo2D({"h_Pt_VM_MC_res",";pt;res",50,0,2,100,-1,1},"vm_mc_pt","vm_res_pt");
 
+  /*
+  Block 6
+  - t rec with veto conditions applied, including FF detectors
+  */
+
+  auto eventVetoCut[](const ROOT::VecOps::RVec<int>& FF_status,
+    const std::vector<eic::ReconstructedParticleData>& parts)
+  { 
+    bool keepThisEvent_ = true
+    if(FF_status.size()>0) keepThisEvent_ = false;
+    int mult=0;
+    for(auto&i1 : parts){
+      TLorentzVector p(i1.p.x,i1.p.y,i1.p.z,i1.mass);
+      if(p.Pt()>0.05&&fabs(p.Eta())<3.5) mult++;
+    }
+    if(mult>3) keepThisEvent_ = false;
+
+    return keepThisEvent_;
+  };
+
+  auto d5 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
+             .Define("y_elec", "InclusiveKinematicsElectron.y")
+             .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedChargedParticles"})
+             .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedChargedParticles"})
+             .Define("scatID_value","InclusiveKinematicsElectron.scatID.value")
+             .Define("scatID_source","InclusiveKinematicsElectron.scatID.source")
+             .Define("scatID_cand_value",scatID_cand_value, {"scatID_value"})
+             .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
+             .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
+             .Define("vm", vector_sum, {"p1","p2"})
+             .Define("t_rec", giveme_t, {"vm","scatElec"})
+             .Filter(eventVetoCut,{"ReconstructedFFParticles.status","ReconstructedChargedParticles"})
+             .Filter(kineCut,{"Q2_elec","y_elec"});
+
+  auto h_t_rec_veto = d5.Histo1D({"h_t_rec_veto", "; GeV^{2}; counts",50,0,2}, "t_rec");
+
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
   
@@ -205,6 +241,9 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   h_Pt_VM_REC_total->Write();
   h_Pt_VM_REC_not_match->Write();
   h_Pt_VM_MC_res->Write();
+
+  //Block 6
+  h_t_rec_veto->Write();
 
   output->Write();
   output->Close();
