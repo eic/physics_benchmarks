@@ -183,16 +183,8 @@ auto findVM_DaugMinus_MC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
   }
   return momenta;
 }
-//TEMP
-auto getEtaMC(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
-  std::vector<double> etaVec(mom.size() );
-  std::transform(mom.begin(), mom.end(), etaVec.begin(), [](const auto& part) {
-    if(part.Px()<-1e9) return -99.;
-    else return part.Eta();
-  });
-  return etaVec;
-}
-auto getPtMC(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
+
+auto getPt(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> ptVec(mom.size() );
   std::transform(mom.begin(), mom.end(), ptVec.begin(), [](const auto& part) {
     if(part.Px()<-1e9) return -99.;
@@ -217,7 +209,7 @@ auto vector_sum = [](std::vector<ROOT::Math::PxPyPzMVector> p1,
 };
 
 //cut on phi mass region and rapidity phase space
-auto getPt2OfPhi(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
+auto getPt2OfVM(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> PtVec(mom.size() );
   std::transform(mom.begin(), mom.end(), PtVec.begin(), [](const auto& part) {
     if(fabs(part.M()-vm_mass[which_vm])>vm_mass_width[which_vm]||fabs(part.Rapidity())>3.5) return -99.;
@@ -236,13 +228,11 @@ auto getMass(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
 
 auto getEta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> etaVec;
-  // if(mom.size()>0){
   for(auto& i1:mom){
     double eta = i1.Eta();
     if(i1.Px()<-1e9){eta=-10.;}
     etaVec.push_back(eta);
   }
-  // }
   return etaVec;
 }
 
