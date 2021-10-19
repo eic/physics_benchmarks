@@ -23,15 +23,16 @@ Go to your working dir, e.g., /gpfs02/eic/YOUR_NAME/ATHENA/
 
 this command put you in the "container".
 
-## Getting the repo
+## Getting the repo and setups
 
 `git clone git@eicweb.phy.anl.gov:EIC/benchmarks/physics_benchmarks.git`
 
-switch to branch "diffractive-phi-benchmarks"
+switch to branch "diffractive-phi-benchmarks"; however, you should create your own branch, own folder, so later can be merged to the master. Mine was created by Wouter Deconinck. Ask him if you are not sure.
 
 `git checkout diffractive-phi-benchmarks`
 
-local setup
+
+local setup (similar to setup codes two levels up.)
 
 ```
 export JUGGLER_INSTALL_PREFIX=$HOME/stow/juggler # if developing algorithms
@@ -56,7 +57,26 @@ mkdir -p config
 
 `bash bin/get_calibrations`
 
-## GEN-SIM-DIGI/RECO-Analysis
+## Performing GEN-SIM-DIGI/RECO-Analysis steps
 
+- Gen step:
+In this example, I have my ready-to-use MC hepmc file, so no need to generate MC. I made this step simply for just doing a copy. Do the following:
 
+`bash benchmarks/diffractive_phi/gen.sh --ebeam 18 --pbeam 110 --config barrel `
 
+You can see from gen.sh, line 73:
+`cp /gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_Oct_5/Output_input_temp_189.hepmc ${TMP_PATH}/${GEN_TAG}.hepmc`
+
+Besides those printout, you only need to replace this line to copy the hepmc file to `${TMP_PATH}/${GEN_TAG}.hepmc`
+
+- SIM-DIGI-RECO step:
+
+If the first step was done correctly, then this step should work out of the box. Currently ep works, eA still has issue. 
+
+`bash benchmarks/diffractive_phi/reco_local.sh --ebeam 18 --pbeam 110 --config barrel `
+
+- Analysis step:
+
+This analysis code lives in `benchmarks/diffractive_phi/analysis/diffractive_phi_analysis.cxx` and to run it, simply do:
+
+`bash benchmarks/diffractive_phi/analysis-only.sh --ebeam 18 --pbeam 109 --config barrel`
