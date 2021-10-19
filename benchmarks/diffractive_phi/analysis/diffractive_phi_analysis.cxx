@@ -94,7 +94,7 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto h_Mass_rec = d1.Histo1D({"h_Mass_rec", "; GeV; counts", 1000, 0, 4}, "Mass");
   auto h_t_rec = d1.Histo1D({"h_t_rec", "; GeV^{2}; counts", 50, 0, 2}, "trec");
 
-  auto h_scatElec_eta = d1.Histo1D({"h_scatElec_eta",";eta; counts",100,-9,9}, "etaElec");
+  auto h_scatElec_eta = d1.Histo1D({"h_scatElec_eta",";eta; counts",100,-11,9}, "etaElec");
   auto h_scatID = d1.Histo1D({"h_scatID","",10,0,10},"scatID_cand_value");
 
   /*
