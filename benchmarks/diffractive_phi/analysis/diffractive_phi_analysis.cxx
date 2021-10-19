@@ -1,5 +1,5 @@
 #include "pleaseIncludeMe.h"
-int diffractive_phi_analysis(const std::string& config_name, const vm_type=1)
+int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1)
 {
   // read our configuration
   std::ifstream  config_file{config_name};
