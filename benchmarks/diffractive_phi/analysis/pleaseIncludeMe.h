@@ -119,7 +119,7 @@ auto findScatElec(const std::vector<eic::ReconstructedParticleData>& parts,
       std::vector<int> scat_id,
     std::vector<int> scat_source) 
 {
-  std::vector<ROOT::Math::PxPyPzMVector> momenta{1};
+  std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
     if(scat_id.size()>0 
         && scat_source.size()>0
@@ -151,7 +151,7 @@ auto findScatElecMC(const std::vector<dd4pod::Geant4ParticleData>& parts)
   return momenta;
 }
 
-auto findPhiMC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
+auto findVMMC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
     if(i1.genStatus==2&&i1.pdgID==vm_pid[which_vm]) {
@@ -162,7 +162,7 @@ auto findPhiMC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
   return momenta;
 }
 
-auto findPhi_DaugPlus_MC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
+auto findVM_DaugPlus_MC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
     if(i1.genStatus==1&&i1.pdgID==vm_daug_pid[which_vm]) {
@@ -173,7 +173,7 @@ auto findPhi_DaugPlus_MC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
   return momenta;
 }
 
-auto findPhi_DaugMinus_MC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
+auto findVM_DaugMinus_MC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
     if(i1.genStatus==1&&i1.pdgID==-vm_daug_pid[which_vm]) {
@@ -208,10 +208,8 @@ auto vector_sum = [](std::vector<ROOT::Math::PxPyPzMVector> p1,
     if(i1.Px()<-1e9) continue;
     for(auto& i2: p2){
       if(i2.Px()<-1e9) continue;
-      //pt cut
-      // if(i1.Pt()<0.05||i2.Pt()<0.05) continue;
       //eta cut
-      // if(fabs(i1.Eta())>4.0||fabs(i2.Eta())>4.0) continue;
+      if(fabs(i1.Eta())>3.5||fabs(i2.Eta())>3.5) continue;
       vm.push_back(i1+i2);
     }
   }
