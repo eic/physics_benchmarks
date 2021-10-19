@@ -169,7 +169,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   - t rec with veto conditions applied, including FF detectors
   */
 
-  auto eventVetoCut[](const ROOT::VecOps::RVec<int>& FF_status,
+  auto eventVetoCut = [](const ROOT::VecOps::RVec<int>& FF_status,
     const std::vector<eic::ReconstructedParticleData>& parts)
   { 
     int keepThisEvent_ = 1;
