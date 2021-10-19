@@ -250,7 +250,6 @@ auto resolution_MC_match_REC(const std::vector<ROOT::Math::PxPyPzMVector> MC,
   std::vector<double > resolution;
   for(auto& i1:MC){
     double res = -1.e-10;
-    if(i1.Px()<-1e9) continue;
     for(auto& i2:REC){
       if(matchVectKine(i1,i2)&&fabs(i2.M()-i1.M())<vm_mass_width[which_vm]){
         res = (i1.Pt()-i2.Pt())/i2.Pt();
