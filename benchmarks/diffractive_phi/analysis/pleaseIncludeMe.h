@@ -65,12 +65,45 @@ auto giveme_resolution = [] (
   std::vector<float> v;
   for (auto& i1: v1) {
     for (auto& i2: v2) {
-      if (i1 != 0 && i2<0.6) {
+      if (i1 != 0) {
         v.push_back((i1-i2)/i1);
       }
     }
   }
   return v;
+};
+
+auto genMatch = [](std::vector<ROOT::Math::PxPyPzMVector> scatElec_REC,
+                  std::vector<ROOT::Math::PxPyPzMVector> scatElec_MC,
+                std::vector<ROOT::Math::PxPyPzMVector> vm_REC,
+              std::vector<ROOT::Math::PxPyPzMVector> vm_MC )
+{
+
+  bool matchElectron=false;
+  for(auto e1: scatElec_REC){
+    for(auto e2: scatElec_MC){
+      TLorentzVector e1_L;
+       e1_L.SetPxPyPzE(e1.Px(),e1.Py(),e1.Pz(),e1.E());
+      TLorentzVector e2_L;
+       e2_L.SetPxPyPzE(e2.Px(),e2.Py(),e2.Pz(),e2.E());
+      if( e1_L.DeltaR(e2_L)<1e-1 ) matchElectron=true ;
+    }
+  }
+
+  bool matchVM=false;
+  for(auto v1: vm_REC){
+    for(auto v2: vm_MC){
+      TLorentzVector v1_L;
+       v1_L.SetPxPyPzE(v1.Px(),v1.Py(),v1.Pz(),v1.E());
+      TLorentzVector v2_L;
+       v2_L.SetPxPyPzE(v2.Px(),v2.Py(),v2.Pz(),v2.E());
+      if( v1_L.DeltaR(v2_L)<1e-1 ) matchVM=true ;
+    }
+  }
+
+  if( matchVM && matchElectron ) return 1;
+  else return 0;
+
 };
 
 auto scatID_cand_value = [](const ROOT::VecOps::RVec<int>& x){
