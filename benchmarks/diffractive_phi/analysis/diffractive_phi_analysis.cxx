@@ -33,6 +33,7 @@ int diffractive_phi_analysis(const std::string& config_name)
   ROOT::EnableImplicitMT(kNumThreads);
   ROOT::RDataFrame d("events", rec_file);
 
+  //CHOOSE which VM, 0 = rho, 1 = phi, 2 = j/psi
   which_vm = 0;
 
   /*
@@ -105,10 +106,10 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("y_elec", "InclusiveKinematicsElectron.y")
              .Define("scatElecMC",findScatElecMC, {"mcparticles"})
              .Define("etaElecMC",getEtaMC,{"scatElecMC"})
-             .Define("phiMC",findPhiMC,{"mcparticles"})
+             .Define("phiMC",findVMMC,{"mcparticles"})
              .Define("phiMassMC",getMass,{"phiMC"})
              .Define("tMC",giveme_t,{"phiMC","scatElecMC"})
-             .Define("phiMC_daugPlus",findPhi_DaugPlus_MC,{"mcparticles"})
+             .Define("phiMC_daugPlus",findVM_DaugPlus_MC,{"mcparticles"})
              .Define("etaPhiMC_daugPlus",getEtaMC,{"phiMC_daugPlus"})
              .Define("ptPhiMC_daugPlus",getPtMC,{"phiMC_daugPlus"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
@@ -172,7 +173,7 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("vm", vector_sum, {"p1","p2"}).Define("Pt2",getPt2OfPhi,{"vm"}).Define("Mass",getMass,{"vm"})
              .Define("trec_d4", giveme_t, {"vm","scatElec"})
              .Define("scatElecMC",findScatElecMC, {"mcparticles"})
-             .Define("vmMC",findPhiMC,{"mcparticles"})
+             .Define("vmMC",findVMMC,{"mcparticles"})
              .Define("tMC_d4",giveme_t,{"vmMC","scatElecMC"})
              .Define("t_res",giveme_resolution,{"tMC_d4","trec_d4"})     
              .Filter(kineCut,{"Q2_elec","y_elec"})
