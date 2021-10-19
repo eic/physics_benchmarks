@@ -172,7 +172,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   auto eventVetoCut[](const ROOT::VecOps::RVec<int>& FF_status,
     const std::vector<eic::ReconstructedParticleData>& parts)
   { 
-    bool keepThisEvent_ = true
+    bool keepThisEvent_ = true;
     if(FF_status.size()>0) keepThisEvent_ = false;
     int mult=0;
     for(auto&i1 : parts){
