@@ -127,39 +127,6 @@ int diffractive_phi_analysis(const std::string& config_name)
 
   */
 
-  auto genMatch = [](std::vector<ROOT::Math::PxPyPzMVector> scatElec_REC,
-                    std::vector<ROOT::Math::PxPyPzMVector> scatElec_MC,
-                  std::vector<ROOT::Math::PxPyPzMVector> vm_REC,
-                std::vector<ROOT::Math::PxPyPzMVector> vm_MC )
-  {
-
-    bool matchElectron=false;
-    for(auto e1: scatElec_REC){
-      for(auto e2: scatElec_MC){
-        TLorentzVector e1_L;
-         e1_L.SetPxPyPzE(e1.Px(),e1.Py(),e1.Pz(),e1.E());
-        TLorentzVector e2_L;
-         e2_L.SetPxPyPzE(e2.Px(),e2.Py(),e2.Pz(),e2.E());
-        if( e1_L.DeltaR(e2_L)<1e-1 ) matchElectron=true ;
-      }
-    }
-
-    bool matchVM=false;
-    for(auto v1: vm_REC){
-      for(auto v2: vm_MC){
-        TLorentzVector v1_L;
-         v1_L.SetPxPyPzE(v1.Px(),v1.Py(),v1.Pz(),v1.E());
-        TLorentzVector v2_L;
-         v2_L.SetPxPyPzE(v2.Px(),v2.Py(),v2.Pz(),v2.E());
-        if( v1_L.DeltaR(v2_L)<1e-1 ) matchVM=true ;
-      }
-    }
-
-    if( matchVM && matchElectron ) return 1;
-    else return 0;
-
-  };
-
   auto d4 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
              .Define("y_elec", "InclusiveKinematicsElectron.y")
              .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedChargedParticles"})
@@ -182,6 +149,7 @@ int diffractive_phi_analysis(const std::string& config_name)
   auto h_t_rec_d4 = d4.Histo1D({"h_t_rec_d4", "; GeV^{2}; counts", 50, 0, 2}, "trec_d4");
   auto h_t_MC_d4 = d4.Histo1D({"h_t_MC_d4",";t; counts",50,0,2}, "tMC_d4");
   auto h_t_res = d4.Histo1D({"h_t_res",";res; counts",100,-1,1},"t_res");
+  auto h_t_res_2D = d4.Histo2D({"h_t_res_2D",";-t;res",50,0,2,100,-1,1},"tMC_d4","t_res");
 
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
@@ -217,6 +185,7 @@ int diffractive_phi_analysis(const std::string& config_name)
   h_t_rec_d4->Write();
   h_t_MC_d4->Write();
   h_t_res->Write();
+  h_t_res_2D->Write();
 
   output->Write();
   output->Close();
