@@ -149,14 +149,10 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("y_elec", "InclusiveKinematicsElectron.y")
              .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedChargedParticles"})
              .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedChargedParticles"})
-             .Define("scatID_value","InclusiveKinematicsElectron.scatID.value")
-             .Define("scatID_source","InclusiveKinematicsElectron.scatID.source")
-             .Define("scatID_cand_value",scatID_cand_value, {"scatID_value"})
-             .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
-             .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
              .Define("vm", vector_sum, {"p1","p2"}).Define("vm_rec_pt",getPtVM,{"vm"})
              .Define("VMMC",findVMMC,{"mcparticles"}).Define("vm_mc_pt",getPtVM,{"VMMC"})
-             .Define("vm_mcMrec_pt",getPtVM_match,{"vm_mc_pt","vm_rec_pt"})
+             .Define("vm_match",findVM_match,{"VMMC","vm"})
+             .Define("vm_mcMrec_pt",getPtVM,{"vm_match"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
   auto h_Pt_VM_MC_total = d4.Histo1D({"h_Pt_VM_MC_total", "; GeV; counts", 50, 0, 2}, "vm_mc_pt");
