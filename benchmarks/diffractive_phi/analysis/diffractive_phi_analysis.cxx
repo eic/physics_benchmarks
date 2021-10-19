@@ -172,14 +172,14 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   auto eventVetoCut[](const ROOT::VecOps::RVec<int>& FF_status,
     const std::vector<eic::ReconstructedParticleData>& parts)
   { 
-    bool keepThisEvent_ = true;
-    if(FF_status.size()>0) keepThisEvent_ = false;
+    int keepThisEvent_ = 1;
+    if(FF_status.size()>0) keepThisEvent_ = 0;
     int mult=0;
     for(auto&i1 : parts){
       TLorentzVector p(i1.p.x,i1.p.y,i1.p.z,i1.mass);
       if(p.Pt()>0.05&&fabs(p.Eta())<3.5) mult++;
     }
-    if(mult>3) keepThisEvent_ = false;
+    if(mult>3) keepThisEvent_ = 0;
 
     return keepThisEvent_;
   };
