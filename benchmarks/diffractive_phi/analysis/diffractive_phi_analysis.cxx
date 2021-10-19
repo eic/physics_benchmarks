@@ -135,7 +135,7 @@ int diffractive_phi_analysis(const std::string& config_name)
       for(auto e2: scatElec_MC){
         TLorentzVector e1_L;
          e1_L.SetPxPyPzE(e1.Px(),e1.Py(),e1.Pz(),e1.E());
-        TLorentzVector e2_L = e2;
+        TLorentzVector e2_L;
          e2_L.SetPxPyPzE(e2.Px(),e2.Py(),e2.Pz(),e2.E());
         if( e1_L.DeltaR(e2_L)<1e-1 ) matchElectron=true ;
       }
@@ -146,7 +146,7 @@ int diffractive_phi_analysis(const std::string& config_name)
       for(auto v2: vm_MC){
         TLorentzVector v1_L;
          v1_L.SetPxPyPzE(v1.Px(),v1.Py(),v1.Pz(),v1.E());
-        TLorentzVector v2_L = v2;
+        TLorentzVector v2_L;
          v2_L.SetPxPyPzE(v2.Px(),v2.Py(),v2.Pz(),v2.E());
         if( v1_L.DeltaR(v2_L)<1e-1 ) matchVM=true ;
       }
