@@ -155,12 +155,14 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("vm_mcMrec_pt",getPtVM,{"vm_mc_match_rec"})
              .Define("vm_rec_not_match_mc",findVM_REC_NOT_match_MC,{"vm","VMMC"})
              .Define("vm_recNMmc_pt",getPtVM,{"vm_rec_not_match_mc"})
+             .Define("vm_res_pt",resolution_REC_match_MC,{"vm","VMMC"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
   auto h_Pt_VM_MC_total = d4.Histo1D({"h_Pt_VM_MC_total", "; GeV; counts", 50, 0, 2}, "vm_mc_pt");
   auto h_Pt_VM_MC_match = d4.Histo1D({"h_Pt_VM_MC_match", "; GeV; counts", 50, 0, 2}, "vm_mcMrec_pt");
   auto h_Pt_VM_REC_total = d4.Histo1D({"h_Pt_VM_REC_total", "; GeV; counts", 50, 0, 2}, "vm_rec_pt");
   auto h_Pt_VM_REC_not_match = d4.Histo1D({"h_Pt_VM_REC_not_match", "; GeV; counts", 50, 0, 2}, "vm_recNMmc_pt");
+  auto h_Pt_VM_REC_res = d4.Histo2D({"h_Pt_VM_REC_res",";pt;res",50,0,2,100,-1,1},"vm_rec_pt","vm_res_pt");
 
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
@@ -202,7 +204,8 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   h_Pt_VM_MC_match->Write();
   h_Pt_VM_REC_total->Write();
   h_Pt_VM_REC_not_match->Write();
-  
+  h_Pt_VM_REC_res->Write();
+
   output->Write();
   output->Close();
 
