@@ -247,8 +247,8 @@ auto giveme_t = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
   }
   for(auto& i2: scatElec){
     for(auto& i1: vm){
-      // if(fabs(i1.Rapidity())>4.0||fabs(i1.M()-1.019)>0.02) continue;
-            if(fabs(i1.Rapidity())>4.0||fabs(i1.M()-3.09)>0.02) continue;
+      if(fabs(i1.Rapidity())>4.0||fabs(i1.M()-1.019)>0.02) continue;
+            // if(fabs(i1.Rapidity())>4.0||fabs(i1.M()-3.09)>0.02) continue;
 
       if(i2.Px()<-1e9) continue;
       TLorentzVector eIn(0,0,-18,18);
