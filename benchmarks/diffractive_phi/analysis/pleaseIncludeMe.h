@@ -254,7 +254,7 @@ auto giveme_t = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       TLorentzVector eIn(0,0,-18,18);
       TLorentzVector eOut;eOut.SetPxPyPzE(i2.Px(),i2.Py(),i2.Pz(),i2.E());
       TLorentzVector vmOut;vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
-      double method_E = (eIn-eOut-vmOut).Mag2()
+      double method_E = (eIn-eOut-vmOut).Mag2();
       TVector2 sum_pt(i1.Px()+i2.Px(), i1.Py()+i2.Py());
       // t_vec.push_back( sum_pt.Mod2() );
       t_vec.push_back( -method_E );
