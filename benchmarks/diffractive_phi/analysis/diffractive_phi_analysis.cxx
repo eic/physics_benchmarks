@@ -143,8 +143,8 @@ int diffractive_phi_analysis(const std::string& config_name)
              .Define("vmMC",findVMMC,{"mcparticles"})
              .Define("tMC_d4",giveme_t,{"vmMC","scatElecMC"})
              .Define("t_res",giveme_resolution,{"tMC_d4","trec_d4"})     
-             .Filter(kineCut,{"Q2_elec","y_elec"})
-             .Filter(genMatch,{"scatElec","scatElecMC","vm","vmMC"});
+             .Filter(kineCut,{"Q2_elec","y_elec"});
+             // .Filter(genMatch,{"scatElec","scatElecMC","vm","vmMC"});
 
   auto h_t_rec_d4 = d4.Histo1D({"h_t_rec_d4", "; GeV^{2}; counts", 50, 0, 2}, "trec_d4");
   auto h_t_MC_d4 = d4.Histo1D({"h_t_MC_d4",";t; counts",50,0,2}, "tMC_d4");
