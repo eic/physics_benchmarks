@@ -63,16 +63,13 @@ auto giveme_resolution = [] (
     const std::vector<double> v2
 ) {
   std::vector<float> v;
-
   for (auto& i1: v1) {
-    // for (auto& i2: v2) {
-      if (i1 != 0&&v2.size()>0) {
-        v.push_back((i1-v2[0])/i1);
-      }
-      else{
-        v.push_back(-99);
-      }
-    // }
+    if (v2.size()>0) {
+      v.push_back((i1-v2[0])/i1);
+    }
+    else{
+      v.push_back(-99);
+    }
   }
   return v;
 };
@@ -146,8 +143,6 @@ auto findScatElec(const std::vector<eic::ReconstructedParticleData>& parts,
     }
   
   }
-  //vector size mostly 4 sometimes 3 and 5, need to find out.  
-  // std::cout << "size size = " << momenta.size() << std::endl;
   return momenta;
 }
 
@@ -322,10 +317,10 @@ auto getEtaVM(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
 auto giveme_t = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
    std::vector<ROOT::Math::PxPyPzMVector> scatElec){
   std::vector<double > t_vec;
-  if(vm.size()<1||scatElec.size()<1) {
-    t_vec.push_back(-99.);
-    return t_vec;
-  }
+  // if(vm.size()<1||scatElec.size()<1) {
+  //   t_vec.push_back(-99.);
+  //   return t_vec;
+  // }
   for(auto& i2: scatElec){
     for(auto& i1: vm){
       if(fabs(i1.Rapidity())>3.0||fabs(i1.M()-vm_mass[which_vm])>vm_mass_width[which_vm]) continue;
