@@ -115,7 +115,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   /*
   Block 4 
   - resolution on t
-  - efficiency and fakes, etc
+  - t resolution
   */
 
   auto d3 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
@@ -139,6 +139,28 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   auto h_t_MC = d3.Histo1D({"h_t_MC",";t; counts",50,0,2}, "t_MC");
   auto h_t_res = d3.Histo1D({"h_t_res",";res; counts",100,-1,1},"t_res");
   auto h_t_res_2D = d3.Histo2D({"h_t_res_2D",";-t;res",50,0,2,100,-1,1},"t_MC","t_res");
+
+  /*
+  Block 5
+  - single particle (vm, dvcs photon) efficiency, fake, resolution
+  */
+
+  auto d4 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
+             .Define("y_elec", "InclusiveKinematicsElectron.y")
+             .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedChargedParticles"})
+             .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedChargedParticles"})
+             .Define("scatID_value","InclusiveKinematicsElectron.scatID.value")
+             .Define("scatID_source","InclusiveKinematicsElectron.scatID.source")
+             .Define("scatID_cand_value",scatID_cand_value, {"scatID_value"})
+             .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
+             .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
+             .Define("vm", vector_sum, {"p1","p2"}).Define("vm_rec_pt",getPtVM,{"vm"})
+             .Define("VMMC",findVMMC,{"mcparticles"}).Define("vm_mc_pt",getPtVM,{"VMMC"})
+             .Define("vm_mcMrec_pt",getPtVM_match,{"vm_mc_pt","vm_rec_pt"})
+             .Filter(kineCut,{"Q2_elec","y_elec"});
+
+  auto h_Pt_VM_MC_total = d4.Histo1D({"h_Pt_VM_MC_total", "; GeV; counts", 50, 0, 2}, "vm_mc_pt");
+  auto h_Pt_VM_MC_match = d4.Histo1D({"h_Pt_VM_MC_match", "; GeV; counts", 50, 0, 2}, "vm_mcMrec_pt");
 
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
@@ -174,6 +196,10 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   h_t_MC->Write();
   h_t_res->Write();
   h_t_res_2D->Write();
+
+  //Block 5
+  h_Pt_VM_MC_total->Write();
+  h_Pt_VM_MC_match->Write();
 
   output->Write();
   output->Close();
