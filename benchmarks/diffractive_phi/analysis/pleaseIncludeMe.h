@@ -77,7 +77,7 @@ auto giveme_resolution = [] (
   return v;
 };
 
-auto matchVector(ROOT::Math::PxPyPzMVector v1, ROOT::Math::PxPyPzMVector v2){
+auto matchVectKine(ROOT::Math::PxPyPzMVector v1, ROOT::Math::PxPyPzMVector v2){
   TLorentzVector v1_L(v1.Px(),v1.Py(),v1.Pz(),v1.E());
   TLorentzVector v2_L(v2.Px(),v2.Py(),v2.Pz(),v2.E());
 
@@ -219,7 +219,7 @@ auto findVM_match(const std::vector<ROOT::Math::PxPyPzMVector> MC,
   for(auto& i1:MC){
     if(i1.Px()<-1e9) continue;
     for(auto& i2:REC){
-      if(matchVector(i1,i2)) v=i1;
+      if(matchVectKine(i1,i2)&&fabs(i2.M()-i1.M())<vm_mass_width[which_vm]) v=i1;
     }
     vm_match.push_back(v);
   }
