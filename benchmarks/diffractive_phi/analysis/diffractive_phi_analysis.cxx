@@ -151,12 +151,16 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedChargedParticles"})
              .Define("vm", vector_sum, {"p1","p2"}).Define("vm_rec_pt",getPtVM,{"vm"})
              .Define("VMMC",findVMMC,{"mcparticles"}).Define("vm_mc_pt",getPtVM,{"VMMC"})
-             .Define("vm_match",findVM_match,{"VMMC","vm"})
-             .Define("vm_mcMrec_pt",getPtVM,{"vm_match"})
+             .Define("vm_mc_match_rec",findVM_MC_match_REC,{"VMMC","vm"})
+             .Define("vm_mcMrec_pt",getPtVM,{"vm_mc_match_rec"})
+             .Define("vm_rec_not_match_mc",findVM_REC_NOT_match_MC,{"vm","VMMC"})
+             .Define("vm_recNMmc_pt",getPtVM,{"vm_rec_not_match_mc"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
   auto h_Pt_VM_MC_total = d4.Histo1D({"h_Pt_VM_MC_total", "; GeV; counts", 50, 0, 2}, "vm_mc_pt");
   auto h_Pt_VM_MC_match = d4.Histo1D({"h_Pt_VM_MC_match", "; GeV; counts", 50, 0, 2}, "vm_mcMrec_pt");
+  auto h_Pt_VM_REC_total = d4.Histo1D({"h_Pt_VM_REC_total", "; GeV; counts", 50, 0, 2}, "vm_rec_pt");
+  auto h_Pt_VM_REC_not_match = d4.Histo1D({"h_Pt_VM_REC_not_match", "; GeV; counts", 50, 0, 2}, "vm_recNMmc_pt");
 
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");

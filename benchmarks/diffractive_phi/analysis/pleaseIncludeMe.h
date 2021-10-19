@@ -211,7 +211,7 @@ auto vector_sum = [](std::vector<ROOT::Math::PxPyPzMVector> p1,
   return vm;
 };
 
-auto findVM_match(const std::vector<ROOT::Math::PxPyPzMVector> MC, 
+auto findVM_MC_match_REC(const std::vector<ROOT::Math::PxPyPzMVector> MC, 
   const std::vector<ROOT::Math::PxPyPzMVector> REC)
 {
   std::vector<ROOT::Math::PxPyPzMVector> vm_match;
@@ -220,6 +220,36 @@ auto findVM_match(const std::vector<ROOT::Math::PxPyPzMVector> MC,
     if(i1.Px()<-1e9) continue;
     for(auto& i2:REC){
       if(matchVectKine(i1,i2)&&fabs(i2.M()-i1.M())<vm_mass_width[which_vm]) v=i1;
+    }
+    vm_match.push_back(v);
+  }
+  return vm_match;
+}
+
+auto findVM_REC_match_MC(const std::vector<ROOT::Math::PxPyPzMVector> REC, 
+  const std::vector<ROOT::Math::PxPyPzMVector> MC)
+{
+  std::vector<ROOT::Math::PxPyPzMVector> vm_match;
+  auto v = ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
+  for(auto& i1:REC){
+    //here not cutting on rec mass yet.
+    for(auto& i2:MC){
+      if(matchVectKine(i1,i2)&&fabs(i2.M()-i1.M())<vm_mass_width[which_vm]) v=i1;
+    }
+    vm_match.push_back(v);
+  }
+  return vm_match;
+}
+
+auto findVM_REC_NOT_match_MC(const std::vector<ROOT::Math::PxPyPzMVector> REC, 
+  const std::vector<ROOT::Math::PxPyPzMVector> MC)
+{
+  std::vector<ROOT::Math::PxPyPzMVector> vm_match;
+  auto v = ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
+  for(auto& i1:REC){
+    //here not cutting on rec mass yet.
+    for(auto& i2:MC){
+      if(!matchVectKine(i1,i2)||fabs(i2.M()-i1.M())>vm_mass_width[which_vm]) v=i1;
     }
     vm_match.push_back(v);
   }
