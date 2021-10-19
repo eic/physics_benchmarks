@@ -262,6 +262,19 @@ auto getPtVM(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return ptVec;
 }
 
+auto getPtVM_match = [](std::vector<double> pt_MC, std::vector<double> pt_REC) {
+  std::vector<double> ptVec;
+  bool hasREC_=false;
+  for(auto& i2 : pt_REC){
+    if(i2>0.) hasREC_=true;
+  }
+  for(auto& i1 : pt_MC){
+    if(i1!=-99.&&hasREC_) ptVec.push_back(i1);
+    else ptVec.push_back(-99);
+  }
+  return ptVec;
+};
+
 auto getEta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> etaVec;
   for(auto& i1:mom){
