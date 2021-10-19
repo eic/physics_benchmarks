@@ -27,24 +27,33 @@ this command put you in the "container".
 
 `git clone git@eicweb.phy.anl.gov:EIC/benchmarks/physics_benchmarks.git`
 
-- switch to branch "diffractive-phi-benchmarks"
+switch to branch "diffractive-phi-benchmarks"
+
 `git checkout diffractive-phi-benchmarks`
 
-- local setup
-`export JUGGLER_INSTALL_PREFIX=$HOME/stow/juggler # if developing algorithms\\
-export JUGGLER_DETECTOR=athena   # athena is the default\\
-export BEAMLINE_CONFIG=ip6       # ip6 is the default\\
-`
-`cd physics_benchmarks
+local setup
+
+```
+export JUGGLER_INSTALL_PREFIX=$HOME/stow/juggler # if developing algorithms
+export JUGGLER_DETECTOR=athena   # athena is the default
+export BEAMLINE_CONFIG=ip6       # ip6 is the default
+export JUGGLER_N_EVENTS=5 		# number of events to run
+```
+
+more setup,
+
+```
+cd physics_benchmarks
 git clone https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git setup
 source setup/bin/env.sh && ./setup/bin/install_common.sh
 source .local/bin/env.sh && build_detector.sh
 mkdir_local_data_link sim_output
 mkdir -p results
 mkdir -p config
-`
+```
 
-- temporary needs a calibration:
+(temporary) need a calibration:
+
 `bash bin/get_calibrations`
 
 ## GEN-SIM-DIGI/RECO-Analysis
