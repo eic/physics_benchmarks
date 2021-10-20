@@ -31,7 +31,7 @@ switch to branch "diffractive-phi-benchmarks"; however, you should create your o
 `git checkout diffractive-phi-benchmarks`
 
 
-local setup (similar to setup codes two levels up.)
+Local setup (similar to setup codes two levels up.) To be safe, I redo the following setup every time I login, which for some are not necessary obviously.
 
 ```
 export JUGGLER_INSTALL_PREFIX=$HOME/stow/juggler # if developing algorithms
@@ -52,7 +52,7 @@ mkdir -p results
 mkdir -p config
 ```
 
-(temporary) need a calibration:
+(temporary) need a calibration for reco:
 
 `bash bin/get_calibrations`
 
