@@ -12,7 +12,6 @@ Here the instructions are ONLY intended for people who wants to give it a shot a
 - Register for a Gitlab account, https://eicweb.phy.anl.gov/users/sign_up, and someone from ATHENA simulation team will approve your account. This account will enable you to copy (git clone) the repo. 
 
 If you do have all items above and still want to try, please continue.
-
 Go to your working dir, e.g., /gpfs02/eic/YOUR_NAME/ATHENA/
 
 ## Getting the container
@@ -60,11 +59,13 @@ mkdir -p config
 ## Performing GEN-SIM-DIGI/RECO-Analysis steps
 
 - Gen step:
+
 In this example, I have my ready-to-use MC hepmc file, so no need to generate MC. I made this step simply for just doing a copy. Do the following:
 
 `bash benchmarks/diffractive_phi/gen.sh --ebeam 18 --pbeam 110 --config barrel `
 
 You can see from gen.sh, line 73:
+
 `cp /gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_ep_Oct_14/ep_vm.hepmc ${TMP_PATH}/${GEN_TAG}.hepmc`
 
 Besides those printout, you only need to replace this line to copy the hepmc file to `${TMP_PATH}/${GEN_TAG}.hepmc`
