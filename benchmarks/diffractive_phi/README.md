@@ -65,13 +65,13 @@ In this example, I have my ready-to-use MC hepmc file, so no need to generate MC
 `bash benchmarks/diffractive_phi/gen.sh --ebeam 18 --pbeam 110 --config barrel `
 
 You can see from gen.sh, line 73:
-`cp /gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_Oct_5/Output_input_temp_189.hepmc ${TMP_PATH}/${GEN_TAG}.hepmc`
+`cp /gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_ep_Oct_14/ep_vm.hepmc ${TMP_PATH}/${GEN_TAG}.hepmc`
 
 Besides those printout, you only need to replace this line to copy the hepmc file to `${TMP_PATH}/${GEN_TAG}.hepmc`
 
 - SIM-DIGI-RECO step:
 
-If the first step was done correctly, then this step should work out of the box. Currently ep works, eA still has issue. 
+If the first step was done correctly, then this step should work out of the box. Currently ep works, while eA still has issue. 
 
 `bash benchmarks/diffractive_phi/reco_local.sh --ebeam 18 --pbeam 110 --config barrel `
 
@@ -79,4 +79,9 @@ If the first step was done correctly, then this step should work out of the box.
 
 This analysis code lives in `benchmarks/diffractive_phi/analysis/diffractive_phi_analysis.cxx` and to run it, simply do:
 
-`bash benchmarks/diffractive_phi/analysis-only.sh --ebeam 18 --pbeam 109 --config barrel`
+`bash benchmarks/diffractive_phi/analysis-only.sh --ebeam 18 --pbeam 110 --config barrel`
+
+The output root file will be under `results/diffractive_phi/18on110/barrel_output.root`
+Note "barrel" is the config one can choose since the beginning.
+
+
