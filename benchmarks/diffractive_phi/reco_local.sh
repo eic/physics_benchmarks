@@ -13,7 +13,7 @@
 PROJECT_ROOT="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"/../..
 pushd ${PROJECT_ROOT}
 
-echo "Running the DIS benchmarks"
+echo "Running the Diffractive Phi benchmarks"
 
 ## =============================================================================
 ## Step 1: Setup the environment variables
@@ -134,4 +134,4 @@ echo "Skipping artifacts"
 
 ## =============================================================================
 ## All done!
-echo "DIS benchmarks complete"
+echo "Diffractive Phi benchmarks complete"

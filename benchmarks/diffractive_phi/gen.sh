@@ -64,13 +64,13 @@ echo "Generator output for $GEN_TAG not found in cache, need to copy generator f
 ## Step 3: Build generator exe 
 ##         TODO: need to configurability to the generator exe 
 
-echo "copying from /gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_Oct_5/ ..."
+echo "copying from /gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_ep_Oct_14/ ..."
 
 ## =============================================================================
 ## Step 4: Copy the event generator file over
 echo "Copying the generator file. Warning: this is a local BNL directory of Kong's. "
-# cp /gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_ep_Oct_14/ep_vm.hepmc ${TMP_PATH}/${GEN_TAG}.hepmc
-cp /gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_Oct_5/Output_input_temp_189.hepmc ${TMP_PATH}/${GEN_TAG}.hepmc
+cp /gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_ep_Oct_14/ep_vm.hepmc ${TMP_PATH}/${GEN_TAG}.hepmc
+# cp /gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_Oct_5/Output_input_temp_189.hepmc ${TMP_PATH}/${GEN_TAG}.hepmc
 if [[ "$?" -ne "0" ]] ; then
   echo "ERROR copying BeAGLE"
   exit 1
