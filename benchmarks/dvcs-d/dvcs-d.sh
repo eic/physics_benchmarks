@@ -140,8 +140,8 @@ cat << EOF > ${CONFIG}
 {
   "rec_file": "${JUGGLER_REC_FILE}",
   "detector": "${JUGGLER_DETECTOR}",
-  "output_prefix": "${FILE_NAME_TAG}",
-  "test_tag": "dummy"
+  "output_prefix": "results/${FILE_NAME_TAG}/nonlocal",
+  "test_tag": "-"
 }
 EOF
 
@@ -151,7 +151,7 @@ if [[ -n "${DO_ANALYSIS}" || -n "${DO_ALL}" ]] ; then
   rootls -t  ${JUGGLER_REC_FILE}
 
   # Store all plots here (preferribly png and pdf files)
-  mkdir -p "results/${FILE_NAME_TAG}"
+  mkdir -p "results/${FILE_NAME_TAG}/nonlocal"
 
   # here you can add as many scripts as you want.
   root -b -q "benchmarks/${FILE_NAME_TAG}/analysis/dvcs_d_analysis.cxx+(\"${CONFIG}\")"
