@@ -73,9 +73,9 @@ print_env.sh
 FILE_NAME_TAG="dvcs-d"
 DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DVCS_ABCONV/10x100/DVCS.1.ab.hiAcc.10x100.hepmc"
 
-export JUGGLER_MC_FILE="${LOCAL_DATA_PATH}/mc_${FILE_NAME_TAG}.hepmc"
-export JUGGLER_SIM_FILE="${LOCAL_DATA_PATH}/sim_${FILE_NAME_TAG}.root"
-export JUGGLER_REC_FILE="${LOCAL_DATA_PATH}/rec_${FILE_NAME_TAG}.root"
+export JUGGLER_MC_FILE="${LOCAL_DATA_PATH}/input/${FILE_NAME_TAG}/mc_${FILE_NAME_TAG}.hepmc"
+export JUGGLER_SIM_FILE="${LOCAL_DATA_PATH}/sim_output/${FILE_NAME_TAG}/sim_${FILE_NAME_TAG}.root"
+export JUGGLER_REC_FILE="${LOCAL_DATA_PATH}/sim_output/${FILE_NAME_TAG}/rec_${FILE_NAME_TAG}.root"
 
 echo "FILE_NAME_TAG       = ${FILE_NAME_TAG}"
 echo "JUGGLER_N_EVENTS    = ${JUGGLER_N_EVENTS}"
@@ -135,7 +135,7 @@ if [[ -n "${DO_REC}" || -n "${DO_ALL}" ]] ; then
   fi
 fi
 
-CONFIG="${LOCAL_DATA_PATH}/${FILE_NAME_TAG}.json"
+CONFIG="${LOCAL_DATA_PATH}/sim_output/${FILE_NAME_TAG}/${FILE_NAME_TAG}.json"
 cat << EOF > ${CONFIG}
 {
   "rec_file": "${JUGGLER_REC_FILE}",
