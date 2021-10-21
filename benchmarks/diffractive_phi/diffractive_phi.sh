@@ -1,7 +1,5 @@
 #!/bin/bash
 
-NOT use yet - Kong Tu
-
 function print_the_help {
   echo "USAGE: ${0} [--rec] [--sim] [--analysis] [--all] "
   echo "    The default options are to run all steps (sim,rec,analysis) "
@@ -73,7 +71,7 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 print_env.sh
 
 FILE_NAME_TAG="diffractive_phi"
-DATA_URL="S3/eictest/ATHENA/EVGEN/TEST/Output_input_temp_189.hepmc"
+DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/diffractive/diffractive_phi_1.hepmc"
 
 export JUGGLER_MC_FILE="${LOCAL_DATA_PATH}/mc_${FILE_NAME_TAG}.hepmc"
 export JUGGLER_SIM_FILE="${LOCAL_DATA_PATH}/sim_${FILE_NAME_TAG}.root"
@@ -91,7 +89,7 @@ echo "JUGGLER_DETECTOR    = ${JUGGLER_DETECTOR}"
 ## Step 1. Get the data
 if [[ -n "${DATA_INIT}" || -n "${DO_ALL}" ]] ; then
   mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
-  mc -C . cat  --insecure ${DATA_URL} |  head  -n 20000 > "${JUGGLER_MC_FILE}"
+  mc -C . cat  --insecure ${DATA_URL} |  head  -n 1004 > "${JUGGLER_MC_FILE}"
   if [[ "$?" -ne "0" ]] ; then
     echo "Failed to download hepmc file"
     exit 1
