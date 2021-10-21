@@ -133,7 +133,7 @@ if [[ -n "${DO_REC}" || -n "${DO_ALL}" ]] ; then
   if [[ "${JUGGLER_N_EVENTS}" -lt "500" ]] ; then 
     # file must be less than 10 MB to upload
     if [[ "${root_filesize}" -lt "10000000" ]] ; then 
-      cp ${JUGGLER_REC_FILE} results/.
+      # cp ${JUGGLER_REC_FILE} results/. # Kong- comment out for now, not sure why copying this here.
     fi
   fi
 fi
@@ -143,7 +143,7 @@ cat << EOF > ${CONFIG}
 {
   "rec_file": "${JUGGLER_REC_FILE}",
   "detector": "${JUGGLER_DETECTOR}",
-  "output_prefix": "results/${FILE_NAME_TAG}/nonlocal",
+  "output_prefix": "results/${FILE_NAME_TAG}/nonlocal/${FILE_NAME_TAG}",
   "test_tag": "-"
 }
 EOF
