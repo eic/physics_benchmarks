@@ -47,6 +47,33 @@ int dvcs_d_analysis(const std::string& config_name)
   auto h_x_res = d0.Histo1D({"h_x_res", "; ; counts", 100, -1, 1}, "x_res");
   
   /*
+  Block 2
+  - Kong's examples on filtering events on the REC level
+  - Reconstruct gamma, pt, eta 
+  - scattered electron finder.
+  */
+
+  //y,Q2 cuts 
+  auto kineCut = [](const ROOT::VecOps::RVec<float>& qsq, const ROOT::VecOps::RVec<float>& y_rec) { 
+    if(qsq.size()<1||y_rec.size()<1) return 0;
+    if(qsq[0] > 1. && qsq[0] < 10. && y_rec[0] < 0.95 && y_rec[0] > 0.01) return 1;
+    else return 0;
+  };
+
+  auto d1 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
+             .Define("y_elec", "InclusiveKinematicsElectron.y")
+             .Define("scatID_value","InclusiveKinematicsElectron.scatID.value")
+             .Define("scatID_source","InclusiveKinematicsElectron.scatID.source")
+             .Define("scatID_cand_value",scatID_cand_value, {"scatID_value"})
+             .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
+             .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"}).Define("etaElec",getEta,{"scatElec"})
+             .Filter(kineCut,{"Q2_elec","y_elec"});
+
+  auto h_Q2_elec = d1.Histo1D({"h_Q2_elec", "; GeV^2; counts", 100, -5, 25}, "Q2_elec");
+  auto h_y_elec = d1.Histo1D({"h_y_elec", "; ; counts", 100, 0, 1}, "y_elec");
+  auto h_Eta_scatElec_REC = d1.Histo1D({"h_Eta_scatElec_REC",";eta; counts",100,-11,9}, "etaElec");
+
+  /*
   Block 3
   - Kong's examples on gen particles distributions, including 
   - e', VM, and VM daughters
@@ -56,12 +83,14 @@ int dvcs_d_analysis(const std::string& config_name)
              .Define("y_elec", "InclusiveKinematicsElectron.y")
              .Define("scatElecMC",findScatElecMC, {"mcparticles"}).Define("etaElecMC",getEta,{"scatElecMC"})
              .Define("gammaMC",findGammaMC,{"mcparticles"}).Define("MassMC",getMass,{"gammaMC"}).Define("gamma_mc_pt",getPt,{"gammaMC"}).Define("gamma_mc_eta",getEta,{"gammaMC"})
+             .Define("t_MC",giveme_t_MC,{"mcparticles"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
   auto h_Eta_scatElec_MC = d2.Histo1D({"h_Eta_scatElec_MC",";eta; counts",100,-11,9}, "etaElecMC");
   auto h_Mass_MC = d2.Histo1D({"h_Mass_MC",";Mass; counts",100,0,4}, "MassMC");
   auto h_Pt_gamma_MC = d2.Histo1D({"h_Pt_gamma_MC", "; GeV; counts", 50, 0, 2}, "gamma_mc_pt");
   auto h_Eta_gamma_MC = d2.Histo1D({"h_Eta_gamma_MC", "; ; counts", 100, -11, 9}, "gamma_mc_eta");
+  auto h_t_MC = d2.Histo1D({"h_t_MC", "; ; counts", 50, 0, 2}, "t_MC");
  
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
@@ -75,12 +104,20 @@ int dvcs_d_analysis(const std::string& config_name)
   h_x_rec->Write();
   h_x_res->Write();
 
+  //Block 2
+
+  h_Q2_elec->Write();
+  h_y_elec->Write();
+  h_Eta_scatElec_REC->Write();
+
+
    //Block 3
-  
+
   h_Eta_scatElec_MC->Write();
   h_Mass_MC->Write();
   h_Pt_gamma_MC->Write();
   h_Eta_gamma_MC->Write();
+  h_t_MC->Write();
 
   output->Write();
   output->Close();
