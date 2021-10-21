@@ -61,17 +61,25 @@ fi
 echo "Generator output for $GEN_TAG not found in cache, need to copy generator files over"
 
 ## =============================================================================
-## Step 3: Build generator exe 
-##         TODO: need to configurability to the generator exe 
-
-echo "copying from /gpfs02/eic/DATA/EpIC/DVCS_10x100_1M/ ..."
+## Step 3: skip
+##         
 
 ## =============================================================================
 ## Step 4: Copy the event generator file over
-echo "Copying the generator file. Warning: this is a local BNL directory  "
-cp /gpfs02/eic/DATA/EpIC/DVCS_10x100_1M/DVCS.1.hepmc ${TMP_PATH}/${GEN_TAG}.hepmc
+
+# echo "copying from /gpfs02/eic/DATA/EpIC/DVCS_10x100_1M/ ..."
+# echo "Copying the generator file. Warning: this is a local BNL directory  "
+# cp /gpfs02/eic/DATA/EpIC/DVCS_10x100_1M/DVCS.1.hepmc ${TMP_PATH}/${GEN_TAG}.hepmc
+# if [[ "$?" -ne "0" ]] ; then
+#   echo "ERROR copying EpIC"
+#   exit 1
+# fi
+
+DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DVCS_ABCONV/10x100/DVCS.1.ab.hiAcc.10x100.hepmc"
+mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
+mc -C . cat  --insecure ${DATA_URL} |  head  -n 1004 > "${TMP_PATH}/${GEN_TAG}.hepmc"
 if [[ "$?" -ne "0" ]] ; then
-  echo "ERROR copying EpIC"
+  echo "Failed to download hepmc file"
   exit 1
 fi
 
