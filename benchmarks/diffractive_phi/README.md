@@ -56,7 +56,7 @@ mkdir -p config
 
 `bash bin/get_calibrations`
 
-'source /opt/detector/setup.sh'
+`source /opt/detector/setup.sh`
 
 ## Performing GEN-SIM-DIGI/RECO-Analysis steps
 

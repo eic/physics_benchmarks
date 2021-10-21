@@ -121,7 +121,7 @@ fi
 
 ## =============================================================================
 ## Step 5: finalize
-echo "Finalizing DIS benchmark"
+echo "Finalizing diffractive phi benchmark"
 echo "Skipping artifacts"
 ## Move over reconsturction artifacts as long as we don't have
 ## too many events
