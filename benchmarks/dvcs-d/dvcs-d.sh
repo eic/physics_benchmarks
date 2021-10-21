@@ -134,6 +134,7 @@ if [[ -n "${DO_REC}" || -n "${DO_ALL}" ]] ; then
     # file must be less than 10 MB to upload
     if [[ "${root_filesize}" -lt "10000000" ]] ; then 
       # cp ${JUGGLER_REC_FILE} results/. # Kong- comment out for now, not sure why copying this here.
+      echo "not copying ${JUGGLER_REC_FILE} to results/."
     fi
   fi
 fi
