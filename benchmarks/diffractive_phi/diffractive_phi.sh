@@ -71,7 +71,7 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 print_env.sh
 
 FILE_NAME_TAG="diffractive_phi"
-DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/diffractive/diffractive_phi_1.hepmc"
+DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/diffractive_phi/diffractive_phi_1.hepmc"
 
 export JUGGLER_MC_FILE="${LOCAL_DATA_PATH}/mc_${FILE_NAME_TAG}.hepmc"
 export JUGGLER_SIM_FILE="${LOCAL_DATA_PATH}/sim_${FILE_NAME_TAG}.root"
@@ -143,8 +143,9 @@ if [[ -n "${DO_ANALYSIS}" || -n "${DO_ALL}" ]] ; then
   # Store all plots here (preferribly png and pdf files)
   mkdir -p "results/${FILE_NAME_TAG}"
 
+  export VM_TYPE_TAG=0
   # here you can add as many scripts as you want.
-  root -b -q "benchmarks/${FILE_NAME_TAG}/scripts/demo.cxx(\"${JUGGLER_REC_FILE}\")"
+  root -b -q "benchmarks/${FILE_NAME_TAG}/analysis/diffractive_phi_analysis.cxx(\"${JUGGLER_REC_FILE}\",${VM_TYPE_TAG})"
   if [[ "$?" -ne "0" ]] ; then
     echo "ERROR running root script"
     exit 1
