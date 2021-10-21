@@ -18,16 +18,6 @@ int dvcs_d_analysis(const std::string& config_name)
   fmt::print(" - output prefix: {}\n", output_prefix);
   fmt::print(" - test tag: {}\n", test_tag);
 
-  // disable test for now - Kong.Tu
-  // create our test definition
-  // test_tag
-  // common_bench::Test dis_Q2_resolution{
-  //     {{"name", fmt::format("{}_Q2_resolution", test_tag)},
-  //      {"title", "DIS Q2 resolution"},
-  //      {"description",
-  //       fmt::format("DIS Q2 resolution with {}, estimated using a Gaussian fit.", detector)},
-  //      {"quantity", "resolution (in %)"},
-  //      {"target", "0.1"}}};
 
   // Run this in multi-threaded mode if desired
   ROOT::EnableImplicitMT(kNumThreads);

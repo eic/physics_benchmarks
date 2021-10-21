@@ -135,6 +135,16 @@ if [[ -n "${DO_REC}" || -n "${DO_ALL}" ]] ; then
   fi
 fi
 
+CONFIG="${LOCAL_DATA_PATH}/${FILE_NAME_TAG}.json"
+cat << EOF > ${CONFIG}
+{
+  "rec_file": "${JUGGLER_REC_FILE}",
+  "detector": "${JUGGLER_DETECTOR}",
+  "output_prefix": "${RESULTS_PATH}/${FILE_NAME_TAG}",
+  "test_tag": "dummy"
+}
+EOF
+
 ### Step 4. Run the analysis code
 if [[ -n "${DO_ANALYSIS}" || -n "${DO_ALL}" ]] ; then
   echo "Running analysis scripts"
