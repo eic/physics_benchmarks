@@ -34,7 +34,7 @@ switch to branch "diffractive-phi-benchmarks"; however, you should create your o
 Local setup (similar to setup codes two levels up.) To be safe, I redo the following setup every time I login, which for some are not necessary obviously.
 
 ```
-export JUGGLER_INSTALL_PREFIX=$HOME/stow/juggler # if developing algorithms
+export JUGGLER_INSTALL_PREFIX=/usr/local # if developing algorithms
 export JUGGLER_DETECTOR=athena   # athena is the default
 export BEAMLINE_CONFIG=ip6       # ip6 is the default
 export JUGGLER_N_EVENTS=5 		# number of events to run
@@ -55,6 +55,8 @@ mkdir -p config
 (temporary) need a calibration for reco:
 
 `bash bin/get_calibrations`
+
+'source /opt/detector/setup.sh'
 
 ## Performing GEN-SIM-DIGI/RECO-Analysis steps
 
