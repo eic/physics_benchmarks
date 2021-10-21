@@ -140,7 +140,7 @@ cat << EOF > ${CONFIG}
 {
   "rec_file": "${JUGGLER_REC_FILE}",
   "detector": "${JUGGLER_DETECTOR}",
-  "output_prefix": "${RESULTS_PATH}/${FILE_NAME_TAG}",
+  "output_prefix": "${FILE_NAME_TAG}",
   "test_tag": "dummy"
 }
 EOF
