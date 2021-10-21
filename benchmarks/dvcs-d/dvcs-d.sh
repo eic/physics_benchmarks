@@ -73,6 +73,9 @@ print_env.sh
 FILE_NAME_TAG="dvcs-d"
 DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DVCS_ABCONV/10x100/DVCS.1.ab.hiAcc.10x100.hepmc"
 
+mkdir -p "${LOCAL_DATA_PATH}/input/${FILE_NAME_TAG}"
+mkdir -p "${LOCAL_DATA_PATH}/sim_output/${FILE_NAME_TAG}"
+
 export JUGGLER_MC_FILE="${LOCAL_DATA_PATH}/input/${FILE_NAME_TAG}/mc_${FILE_NAME_TAG}.hepmc"
 export JUGGLER_SIM_FILE="${LOCAL_DATA_PATH}/sim_output/${FILE_NAME_TAG}/sim_${FILE_NAME_TAG}.root"
 export JUGGLER_REC_FILE="${LOCAL_DATA_PATH}/sim_output/${FILE_NAME_TAG}/rec_${FILE_NAME_TAG}.root"
