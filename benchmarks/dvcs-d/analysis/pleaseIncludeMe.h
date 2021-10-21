@@ -150,7 +150,7 @@ auto findScatElecMC(const std::vector<dd4pod::Geant4ParticleData>& parts)
 {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
-    if(i1.genStatus==21&&i1.pdgID==11) {
+    if(i1.genStatus==11&&i1.pdgID==11) {
       momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,i1.mass});
     }
     else {momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});}
@@ -158,10 +158,10 @@ auto findScatElecMC(const std::vector<dd4pod::Geant4ParticleData>& parts)
   return momenta;
 }
 
-auto findVMMC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
+auto findGammaMC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
-    if(i1.genStatus==2&&i1.pdgID==vm_pid[which_vm]) {
+    if(i1.genStatus==1&&i1.pdgID==22) {
       momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,i1.mass});
     }
     else {momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});}
@@ -169,42 +169,6 @@ auto findVMMC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
   return momenta;
 }
 
-auto findVM_DaugPlus_MC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
-  std::vector<ROOT::Math::PxPyPzMVector> momenta;
-  for(auto& i1 : parts){
-    if(i1.genStatus==1&&i1.pdgID==vm_daug_pid[which_vm]) {
-      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,i1.mass});
-    }
-    else {momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});}
-  }
-  return momenta;
-}
-
-auto findVM_DaugMinus_MC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
-  std::vector<ROOT::Math::PxPyPzMVector> momenta;
-  for(auto& i1 : parts){
-    if(i1.genStatus==1&&i1.pdgID==-vm_daug_pid[which_vm]) {
-      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,i1.mass});
-    }
-    else {momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});}
-  }
-  return momenta;
-}
-
-auto vector_sum = [](std::vector<ROOT::Math::PxPyPzMVector> p1, 
-  std::vector<ROOT::Math::PxPyPzMVector> p2 ){
-  std::vector<ROOT::Math::PxPyPzMVector> vm;
-  for(auto& i1: p1){
-    if(i1.Px()<-1e9) continue;
-    for(auto& i2: p2){
-      if(i2.Px()<-1e9) continue;
-      //eta cut
-      if(fabs(i1.Eta())>3.5||fabs(i2.Eta())>3.5) continue;
-      vm.push_back(i1+i2);
-    }
-  }
-  return vm;
-};
 
 auto findVM_MC_match_REC(const std::vector<ROOT::Math::PxPyPzMVector> MC, 
   const std::vector<ROOT::Math::PxPyPzMVector> REC)
@@ -272,27 +236,6 @@ auto getPt(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return ptVec;
 }
 
-auto getPtVM(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
-  std::vector<double> ptVec(mom.size() );
-  std::transform(mom.begin(), mom.end(), ptVec.begin(), [](const auto& part) {
-    if(part.Px()<-1e9||fabs(part.M()-vm_mass[which_vm])>vm_mass_width[which_vm]) return -99.;
-    else return part.Pt();
-  });
-  return ptVec;
-}
-
-auto getPtVM_match = [](std::vector<double> pt_MC, std::vector<double> pt_REC) {
-  std::vector<double> ptVec;
-  bool hasREC_=false;
-  for(auto& i2 : pt_REC){
-    if(i2>0.) hasREC_=true;
-  }
-  for(auto& i1 : pt_MC){
-    if(i1!=-99.&&hasREC_) ptVec.push_back(i1);
-    else ptVec.push_back(-99);
-  }
-  return ptVec;
-};
 
 auto getEta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> etaVec;
@@ -304,15 +247,6 @@ auto getEta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return etaVec;
 }
 
-auto getEtaVM(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
-  std::vector<double> etaVec;
-  for(auto& i1:mom){
-    double eta = i1.Eta();
-    if(i1.Px()<-1e9||fabs(i1.M()-vm_mass[which_vm])>vm_mass_width[which_vm]){eta=-10.;}
-    etaVec.push_back(eta);
-  }
-  return etaVec;
-}
 
 auto giveme_t = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
    std::vector<ROOT::Math::PxPyPzMVector> scatElec){
