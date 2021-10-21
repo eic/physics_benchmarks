@@ -1,0 +1,15 @@
+dvcs-d:process:
+  stage: process
+  extends: .phy_benchmark
+  tags:
+    - s3
+  needs: ["common:detector"]
+  script:
+    - bash benchmarks/dvcs-d/dvcs-d.sh --all
+
+dvcs-d:results:
+  stage: collect
+  needs: ["dvcs-d:process"]
+  script:
+    - ls -lrth
+
