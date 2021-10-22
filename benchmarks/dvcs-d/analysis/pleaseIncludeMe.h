@@ -242,7 +242,7 @@ auto giveme_t_REC(const std::vector<ROOT::Math::PxPyPzMVector>& mom,
   }
   for(auto&i2: mom){
     TVector3 pOut_v3(i2.Px(),i2.Py(),i2.Pz());
-    pOut.SetVectM(pOut_v3,MASS_PROTON);
+    pOut.SetVectM(pOut_v3,0.93827);
   }
   t_vec.push_back( -(pOut-pIn).Mag2() );
   
