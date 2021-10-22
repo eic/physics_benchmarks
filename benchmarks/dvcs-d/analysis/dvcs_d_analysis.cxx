@@ -69,7 +69,7 @@ int dvcs_d_analysis(const std::string& config_name)
              .Define("gammaREC",findGamma,{"ReconstructedParticles"}).Define("MassREC",getMass,{"gammaREC"}).Define("gamma_rec_pt",getPt,{"gammaREC"}).Define("gamma_rec_eta",getEta,{"gammaREC"})
              .Define("protonREC",findScatProton,{"ReconstructedFFParticles"}).Define("proton_rec_eta",getEta,{"protonREC"}).Define("proton_rec_phi",getPhi,{"protonREC"})
              .Define("proton_rec_pt",getPt,{"protonREC"})
-             .Define("t_REC",giveme_t_REC,{"protonREC","mcparticles"}).Define("t_REC_A",giveme_t,{"gammaREC","protonREC"})
+             .Define("t_REC",giveme_t_REC,{"protonREC","mcparticles"}).Define("t_REC_A",giveme_t,{"gammaREC","scatElec"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
   auto h_Q2_elec = d1.Histo1D({"h_Q2_elec", "; GeV^2; counts", 100, -5, 25}, "Q2_elec");
