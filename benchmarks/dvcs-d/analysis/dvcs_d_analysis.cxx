@@ -79,7 +79,7 @@ int dvcs_d_analysis(const std::string& config_name)
   auto h_Pt_gamma_REC = d1.Histo1D({"h_Pt_gamma_REC", "; GeV; counts", 50, 0, 2}, "gamma_rec_pt");
   auto h_Eta_gamma_REC = d1.Histo1D({"h_Eta_gamma_REC", "; ; counts", 100, -11, 9}, "gamma_rec_eta");
   auto h_Pt_proton_REC = d1.Histo1D({"h_Pt_proton_REC", "; GeV; counts", 50, 0, 5}, "proton_rec_pt");
-  auto h_Eta_proton_REC = d1.Histo1D({"h_Eta_proton_REC", "; ; counts", 50, -11,9}, "proton_rec_eta");
+  auto h_Eta_proton_REC = d1.Histo1D({"h_Eta_proton_REC", "; ; counts", 100, 0,9}, "proton_rec_eta");
   auto h_EtaPhi_proton_REC = d1.Histo2D({"h_EtaPhi_proton_REC",";eta;phi",100,-10,10,100,-PI,PI},"proton_rec_eta","proton_rec_phi");
   auto h_t_REC = d1.Histo1D({"h_t_REC", "; ; counts", 50, 0, 5}, "t_REC");
   auto h_t_REC_A = d1.Histo1D({"h_t_REC_A", "; ; counts", 50, 0, 5}, "t_REC_A");
@@ -103,7 +103,7 @@ int dvcs_d_analysis(const std::string& config_name)
   auto h_Pt_gamma_MC = d2.Histo1D({"h_Pt_gamma_MC", "; GeV; counts", 50, 0, 2}, "gamma_mc_pt");
   auto h_Eta_gamma_MC = d2.Histo1D({"h_Eta_gamma_MC", "; ; counts", 100, -11, 9}, "gamma_mc_eta");
   auto h_Pt_proton_MC = d2.Histo1D({"h_Pt_proton_MC", "; GeV; counts", 50, 0, 5}, "proton_mc_pt");
-  auto h_Eta_proton_MC = d2.Histo1D({"h_Eta_proton_MC", "; ; counts", 100, -11, 9}, "proton_mc_eta");
+  auto h_Eta_proton_MC = d2.Histo1D({"h_Eta_proton_MC", "; ; counts", 100, 0, 9}, "proton_mc_eta");
   auto h_t_MC = d2.Histo1D({"h_t_MC", "; ; counts", 50, 0, 2}, "t_MC");
  
   TString output_name_dir = output_prefix.c_str();
