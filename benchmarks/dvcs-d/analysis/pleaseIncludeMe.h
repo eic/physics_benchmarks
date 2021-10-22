@@ -126,7 +126,7 @@ auto findGamma(const std::vector<eic::ReconstructedParticleData>& parts){
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
     if(i1.charge==0){
-      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.p.x,i1.p.y,i1.p.z,i1.mass});
+      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.p.x,i1.p.y,i1.p.z,0});
     }
   }
   return momenta;
