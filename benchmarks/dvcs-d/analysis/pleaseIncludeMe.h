@@ -217,6 +217,16 @@ auto getPhi(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return phiVec;
 }
 
+auto getE(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
+  std::vector<double> energyVec;
+  for(auto& i1:mom){
+    double energy = i1.E();
+    if(i1.Px()<-1e9){energy=-10.;}
+    energyVec.push_back(energy);
+  }
+  return energyVec;
+}
+
 
 auto giveme_t_MC(const std::vector<dd4pod::Geant4ParticleData>& parts){
   std::vector<double > t_vec;
