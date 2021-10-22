@@ -147,7 +147,7 @@ auto findScatProtonMC(const std::vector<dd4pod::Geant4ParticleData>& parts){
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
     if(i1.genStatus==1&&i1.pdgID==2212){
-      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.p.x,i1.p.y,i1.p.z,i1.mass});
+      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,i1.mass});
     }
   }
   return momenta;
