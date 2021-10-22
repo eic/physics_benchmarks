@@ -68,6 +68,7 @@ int dvcs_d_analysis(const std::string& config_name)
              .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"}).Define("etaElec",getEta,{"scatElec"})
              .Define("gammaREC",findGamma,{"ReconstructedParticles"}).Define("MassREC",getMass,{"gammaREC"}).Define("gamma_rec_pt",getPt,{"gammaREC"}).Define("gamma_rec_eta",getEta,{"gammaREC"})
              .Define("protonREC",findScatProton,{"ReconstructedFFParticles"}).Define("proton_rec_eta",getEta,{"protonREC"}).Define("proton_rec_phi",getPhi,{"protonREC"})
+             .Define("proton_rec_pt",getPt,{"protonREC"})
              .Define("t_REC",giveme_t_REC,{"protonREC","mcparticles"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
@@ -77,7 +78,9 @@ int dvcs_d_analysis(const std::string& config_name)
   auto h_Mass_gamma_REC = d1.Histo1D({"h_Mass_gamma_REC", "; GeV; counts", 1000, 0, 4}, "MassREC");
   auto h_Pt_gamma_REC = d1.Histo1D({"h_Pt_gamma_REC", "; GeV; counts", 50, 0, 2}, "gamma_rec_pt");
   auto h_Eta_gamma_REC = d1.Histo1D({"h_Eta_gamma_REC", "; ; counts", 100, -11, 9}, "gamma_rec_eta");
-  auto h_EtaPhi_proton_REC = d1.Histo2D({"h_EtaPhi_proton_REC",";eta;phi",100,0,PI,100,-PI,PI},"proton_rec_eta","proton_rec_phi");
+  auto h_Pt_proton_REC = d1.Histo1D({"h_Pt_proton_REC", "; GeV; counts", 50, 0, 2}, "proton_rec_pt");
+  auto h_Eta_proton_REC = d1.Histo1D({"h_Eta_proton_REC", "; ; counts", 50, -11,9}, "proton_rec_pt");
+  auto h_EtaPhi_proton_REC = d1.Histo2D({"h_EtaPhi_proton_REC",";eta;phi",100,-10,10,100,-PI,PI},"proton_rec_eta","proton_rec_phi");
   auto h_t_REC = d1.Histo1D({"h_t_REC", "; ; counts", 50, 0, 2}, "t_REC");
 
   /*
@@ -119,6 +122,8 @@ int dvcs_d_analysis(const std::string& config_name)
   h_Mass_gamma_REC->Write();
   h_Pt_gamma_REC->Write();
   h_Eta_gamma_REC->Write();
+  h_Pt_proton_REC->Write();
+  h_Eta_proton_REC->Write();
   h_EtaPhi_proton_REC->Write();
   h_t_REC->Write();
 
