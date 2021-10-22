@@ -128,9 +128,6 @@ auto findGamma(const std::vector<eic::ReconstructedParticleData>& parts){
     if(i1.charge==0){
       momenta.push_back(ROOT::Math::PxPyPzMVector{i1.p.x,i1.p.y,i1.p.z,0});
     }
-    if(i1.charge!=0){
-      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.p.x,i1.p.y,i1.p.z,MASS_ELECTRON});
-    }
   }
   return momenta;
 }
@@ -249,7 +246,20 @@ auto giveme_t_REC(const std::vector<ROOT::Math::PxPyPzMVector>& mom,
   return t_vec;
 }
 
-
+auto giveme_t = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
+   std::vector<ROOT::Math::PxPyPzMVector> scatElec){
+  std::vector<double > t_vec;
+  for(auto& i2: scatElec){
+    for(auto& i1: vm){
+      if(fabs(i1.Rapidity())>3.0) continue;
+      if(i2.Px()<-1e9) continue;
+      TVector2 sum_pt(i1.Px()+i2.Px(), i1.Py()+i2.Py());
+      t_vec.push_back( sum_pt.Mod2() );
+    }
+  }
+  
+  return t_vec;
+};
 
 
 
