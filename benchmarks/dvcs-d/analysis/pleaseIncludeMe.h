@@ -122,6 +122,16 @@ auto findScatElecMC(const std::vector<dd4pod::Geant4ParticleData>& parts)
   return momenta;
 }
 
+auto findGamma(const std::vector<eic::ReconstructedParticleData>& parts){
+  std::vector<ROOT::Math::PxPyPzMVector> momenta;
+  for(auto& i1 : parts){
+    if(i1.charge==0){
+      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.px,i1.py,i1.pz,i1.mass})
+    }
+  }
+  return momenta;
+}
+
 auto findGammaMC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
@@ -129,6 +139,16 @@ auto findGammaMC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
       momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,i1.mass});
     }
     else {momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});}
+  }
+  return momenta;
+}
+
+auto findScatProton(const std::vector<eic::ReconstructedParticleData>& FF){
+  std::vector<ROOT::Math::PxPyPzMVector> momenta;
+  for(auto& i1 : FF){
+    if(i1.charge==1){
+      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.px,i1.py,i1.pz,i1.mass});
+    }
   }
   return momenta;
 }
@@ -177,6 +197,16 @@ auto getEta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return etaVec;
 }
 
+auto getPhi(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
+  std::vector<double> phiVec;
+  for(auto& i1:mom){
+    double phi = i1.Phi();
+    if(i1.Px()<-1e9){phi=-10.;}
+    phiVec.push_back(phi);
+  }
+  return phiVec;
+}
+
 
 auto giveme_t_MC(const std::vector<dd4pod::Geant4ParticleData>& parts){
   std::vector<double > t_vec;
@@ -196,7 +226,24 @@ auto giveme_t_MC(const std::vector<dd4pod::Geant4ParticleData>& parts){
   return t_vec;
 }
 
-
+auto giveme_t_REC(const std::vector<ROOT::Math::PxPyPzMVector>& mom,
+  const std::vector<dd4pod::Geant4ParticleData>& parts){
+  
+  std::vector<double> t_vec;
+  TLorentzVector pIn,pOut;
+  for(auto&i1 : parts){
+    if(i1.genStatus==4&&i1.pdgID==2212) {
+      TVector3 pIn_v3(i1.ps.x,i1.ps.y,i1.ps.z);
+      pIn.SetVectM(pIn_v3,i1.mass);
+    }
+  }
+  for(auto&i2: mom){
+    pOut.SetPxPyPzE(i2.Px(),i2.Py(),i2.Pz(),i2.E());
+  }
+  t_vec.push_back( -(pOut-pIn).Mag2() );
+  
+  return t_vec;
+}
 
 
 
