@@ -71,8 +71,8 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 print_env.sh
 
 FILE_NAME_TAG="diffractive_phi"
-# DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DIFFRACTIVE_PHI_ABCONV/Sartre/sartre_bnonsat_Au_phi_ab_eAu_1.hepmc"
-DATA_URL="/gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_ep_Oct_14/ep_vm.hepmc"
+DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DIFFRACTIVE_PHI_ABCONV/Sartre/sartre_bnonsat_Au_phi_ab_eAu_1.hepmc"
+# DATA_URL="/gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_ep_Oct_14/ep_vm.hepmc"
 
 mkdir -p "${LOCAL_DATA_PATH}/input/${FILE_NAME_TAG}"
 mkdir -p "${LOCAL_DATA_PATH}/sim_output/${FILE_NAME_TAG}"
@@ -93,8 +93,8 @@ echo "JUGGLER_DETECTOR    = ${JUGGLER_DETECTOR}"
 ## Step 1. Get the data
 if [[ -n "${DATA_INIT}" || -n "${DO_ALL}" ]] ; then
   mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
-  # mc -C . cat  --insecure ${DATA_URL} |  head  -n 1004 > "${JUGGLER_MC_FILE}"
-  mc -C . cat  --insecure ${DATA_URL} > "${JUGGLER_MC_FILE}" #full sample
+  mc -C . cat  --insecure ${DATA_URL} |  head  -n 1004 > "${JUGGLER_MC_FILE}"
+  # mc -C . cat  --insecure ${DATA_URL} > "${JUGGLER_MC_FILE}" #full sample
   if [[ "$?" -ne "0" ]] ; then
     echo "Failed to download hepmc file"
     exit 1
