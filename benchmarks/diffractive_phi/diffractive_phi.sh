@@ -71,11 +71,15 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 print_env.sh
 
 FILE_NAME_TAG="diffractive_phi"
-DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DIFFRACTIVE_PHI_ABCONV/Sartre/sartre_bnonsat_Au_phi_ab_eAu_1.hepmc"
+# DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DIFFRACTIVE_PHI_ABCONV/Sartre/sartre_bnonsat_Au_phi_ab_eAu_1.hepmc"
+DATA_URL="/gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_ep_Oct_14/ep_vm.hepmc"
 
-export JUGGLER_MC_FILE="${LOCAL_DATA_PATH}/mc_${FILE_NAME_TAG}.hepmc"
-export JUGGLER_SIM_FILE="${LOCAL_DATA_PATH}/sim_${FILE_NAME_TAG}.root"
-export JUGGLER_REC_FILE="${LOCAL_DATA_PATH}/rec_${FILE_NAME_TAG}.root"
+mkdir -p "${LOCAL_DATA_PATH}/input/${FILE_NAME_TAG}"
+mkdir -p "${LOCAL_DATA_PATH}/sim_output/${FILE_NAME_TAG}"
+
+export JUGGLER_MC_FILE="${LOCAL_DATA_PATH}/input/${FILE_NAME_TAG}/mc_${FILE_NAME_TAG}.hepmc"
+export JUGGLER_SIM_FILE="${LOCAL_DATA_PATH}/sim_output/${FILE_NAME_TAG}/sim_${FILE_NAME_TAG}.root"
+export JUGGLER_REC_FILE="${LOCAL_DATA_PATH}/sim_output/${FILE_NAME_TAG}/rec_${FILE_NAME_TAG}.root"
 
 echo "FILE_NAME_TAG       = ${FILE_NAME_TAG}"
 echo "JUGGLER_N_EVENTS    = ${JUGGLER_N_EVENTS}"
@@ -90,6 +94,7 @@ echo "JUGGLER_DETECTOR    = ${JUGGLER_DETECTOR}"
 if [[ -n "${DATA_INIT}" || -n "${DO_ALL}" ]] ; then
   mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
   mc -C . cat  --insecure ${DATA_URL} |  head  -n 1004 > "${JUGGLER_MC_FILE}"
+  # mc -C . cat  --insecure ${DATA_URL} > "${JUGGLER_MC_FILE}" #full sample
   if [[ "$?" -ne "0" ]] ; then
     echo "Failed to download hepmc file"
     exit 1
@@ -130,10 +135,21 @@ if [[ -n "${DO_REC}" || -n "${DO_ALL}" ]] ; then
   if [[ "${JUGGLER_N_EVENTS}" -lt "500" ]] ; then 
     # file must be less than 10 MB to upload
     if [[ "${root_filesize}" -lt "10000000" ]] ; then 
-      cp ${JUGGLER_REC_FILE} results/.
+      # cp ${JUGGLER_REC_FILE} results/. # Kong- comment out for now, not sure why copying this here.
+      echo "not copying ${JUGGLER_REC_FILE} to results/."
     fi
   fi
 fi
+
+CONFIG="${LOCAL_DATA_PATH}/sim_output/${FILE_NAME_TAG}/${FILE_NAME_TAG}.json"
+cat << EOF > ${CONFIG}
+{
+  "rec_file": "${JUGGLER_REC_FILE}",
+  "detector": "${JUGGLER_DETECTOR}",
+  "output_prefix": "results/${FILE_NAME_TAG}/nonlocal/${FILE_NAME_TAG}",
+  "test_tag": "-"
+}
+EOF
 
 ### Step 4. Run the analysis code
 if [[ -n "${DO_ANALYSIS}" || -n "${DO_ALL}" ]] ; then
@@ -141,11 +157,11 @@ if [[ -n "${DO_ANALYSIS}" || -n "${DO_ALL}" ]] ; then
   rootls -t  ${JUGGLER_REC_FILE}
 
   # Store all plots here (preferribly png and pdf files)
-  mkdir -p "results/${FILE_NAME_TAG}"
+  mkdir -p "results/${FILE_NAME_TAG}/nonlocal"
 
   export VM_TYPE_TAG=0
   # here you can add as many scripts as you want.
-  root -b -q "benchmarks/${FILE_NAME_TAG}/analysis/diffractive_phi_analysis.cxx(\"${JUGGLER_REC_FILE}\",${VM_TYPE_TAG})"
+  root -b -q "benchmarks/${FILE_NAME_TAG}/analysis/diffractive_phi_analysis.cxx(\"${CONFIG}\",${VM_TYPE_TAG})"
   if [[ "$?" -ne "0" ]] ; then
     echo "ERROR running root script"
     exit 1
