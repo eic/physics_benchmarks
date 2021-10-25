@@ -207,6 +207,16 @@ auto getEta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return etaVec;
 }
 
+auto getTheta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
+  std::vector<double> thetaVec;
+  for(auto& i1:mom){
+    double theta = i1.Theta();
+    if(i1.Px()<-1e9){theta=-10.;}
+    thetaVec.push_back(theta);
+  }
+  return thetaVec;
+}
+
 auto getPhi(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> phiVec;
   for(auto& i1:mom){
