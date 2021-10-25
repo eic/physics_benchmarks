@@ -78,7 +78,7 @@ summary:
   stage: finish
   #needs: ["dis:results", "dvcs:results", "dvmp:results"]
   needs:
-    - "dvcs:results"
+    - "dvcs-d:results"
   script:
     - collect_benchmarks.py
   artifacts:
