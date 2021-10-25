@@ -1,8 +1,6 @@
 dvcs-d:process:
   stage: process
   extends: .phy_benchmark
-  tags:
-    - s3
   needs: ["common:detector"]
   script:
     - bash benchmarks/dvcs-d/dvcs-d.sh --all
