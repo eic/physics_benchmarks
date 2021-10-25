@@ -2,9 +2,10 @@ diffractive_phi:process:
   stage: process
   extends: .phy_benchmark
   tags:
-    - s3
+     - phy
   needs: ["common:detector"]
   script:
+    - compile_analyses.py diffractive_phi
     - bash benchmarks/diffractive_phi/diffractive_phi.sh --all
 
 diffractive_phi:results:
