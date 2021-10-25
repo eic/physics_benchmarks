@@ -71,7 +71,7 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 print_env.sh
 
 FILE_NAME_TAG="diffractive_phi"
-DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/diffractive_phi/diffractive_phi_1.hepmc"
+DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DIFFRACTIVE_PHI_ACONV/Sartre/sartre_bnonsat_Au_phi_ab_eAu_1.hepmc"
 
 export JUGGLER_MC_FILE="${LOCAL_DATA_PATH}/mc_${FILE_NAME_TAG}.hepmc"
 export JUGGLER_SIM_FILE="${LOCAL_DATA_PATH}/sim_${FILE_NAME_TAG}.root"
