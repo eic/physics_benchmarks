@@ -1,8 +1,11 @@
 dvcs-d:process:
   stage: process
   extends: .phy_benchmark
+  tags:
+    - phy
   needs: ["common:detector"]
   script:
+    - compile_analyses.py dvcs-d
     - bash benchmarks/dvcs-d/dvcs-d.sh --all
 
 dvcs-d:results:
@@ -10,4 +13,3 @@ dvcs-d:results:
   needs: ["dvcs-d:process"]
   script:
     - ls -lrth
-
