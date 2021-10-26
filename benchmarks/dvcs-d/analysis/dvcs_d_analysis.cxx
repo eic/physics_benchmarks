@@ -82,7 +82,7 @@ int dvcs_d_analysis(const std::string& config_name)
   auto h_energyEta_gamma_REC = d1.Histo2D({"h_energyEta_gamma_REC",";#eta;E (GeV)",100,-10,10,100,0,10},"gamma_rec_eta","gamma_rec_E");
   auto h_Pt_proton_REC = d1.Histo1D({"h_Pt_proton_REC", "; pT (GeV); counts", 50, 0, 5}, "proton_rec_pt");
   auto h_Eta_proton_REC = d1.Histo1D({"h_Eta_proton_REC", "; #eta; counts", 100, 0,9}, "proton_rec_eta");
-  auto h_Theta_proton_REC = d1.Histo1D({"h_Theta_proton_REC", "; #theta; counts", 100, 0,PI+0.1}, "proton_rec_theta");
+  auto h_Theta_proton_REC = d1.Histo1D({"h_Theta_proton_REC", "; #theta; counts", 100, 0,0.1}, "proton_rec_theta");
   auto h_EtaPhi_proton_REC = d1.Histo2D({"h_EtaPhi_proton_REC",";#eta;#phi",100,-10,10,100,-PI,PI},"proton_rec_eta","proton_rec_phi");
   auto h_t_REC = d1.Histo1D({"h_t_REC", "; t; counts", 50, 0, 5}, "t_REC");
   auto h_t_REC_A = d1.Histo1D({"h_t_REC_A", "; t; counts", 50, 0, 5}, "t_REC_A");
@@ -107,7 +107,7 @@ int dvcs_d_analysis(const std::string& config_name)
   auto h_Eta_gamma_MC = d2.Histo1D({"h_Eta_gamma_MC", "; #eta; counts", 100, -11, 9}, "gamma_mc_eta");
   auto h_Pt_proton_MC = d2.Histo1D({"h_Pt_proton_MC", "; pT (GeV); counts", 50, 0, 5}, "proton_mc_pt");
   auto h_Eta_proton_MC = d2.Histo1D({"h_Eta_proton_MC", "; #eta; counts", 100, 0, 9}, "proton_mc_eta");
-  auto h_Theta_proton_MC = d2.Histo1D({"h_Theta_proton_MC", "; #theta; counts", 100, 0, 9}, "proton_mc_theta");
+  auto h_Theta_proton_MC = d2.Histo1D({"h_Theta_proton_MC", "; #theta; counts", 100, 0, 0.1}, "proton_mc_theta");
   auto h_t_MC = d2.Histo1D({"h_t_MC", "; ; counts", 50, 0, 2}, "t_MC");
  
   TString output_name_dir = output_prefix.c_str();
