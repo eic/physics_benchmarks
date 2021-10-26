@@ -148,13 +148,13 @@ auto findScatProtonMC(const std::vector<dd4pod::Geant4ParticleData>& parts){
   for(auto& i1 : parts){
     if(i1.genStatus==1&&i1.pdgID==2212){
       //Double_t px = i1.ps.x;
-      //Double_t py = i1.ps.y;
+     // Double_t py = i1.ps.y;
       //Double_t pz = i1.ps.z;
       //Double_t s = std::sin(0.025);
       //Double_t c = std::cos(0.025);
-      //Double_t zz = pz;
-      //Double_t xx = px;
-      //pz = c*zz - s*xx;
+     // Double_t zz = pz;
+     // Double_t xx = px;
+     // pz = c*zz - s*xx;
       //px = s*zz + c*xx;
       //momenta.push_back(ROOT::Math::PxPyPzMVector{px, py, pz, i1.mass});
       momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x, i1.ps.y, i1.ps.z, i1.mass});
@@ -167,16 +167,17 @@ auto findScatProton(const std::vector<eic::ReconstructedParticleData>& FF){
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : FF){
     if(i1.charge==1){
-      Double_t px = i1.p.x;
-      Double_t py = i1.p.y;
-      Double_t pz = i1.p.z;
-      Double_t s = std::sin(0.025);
-      Double_t c = std::cos(0.025);
-      Double_t zz = pz;
-      Double_t xx = px;
-      pz = c*zz - s*xx;
-      px = s*zz + c*xx;
-      momenta.push_back(ROOT::Math::PxPyPzMVector{px,py,pz,i1.mass});
+      //Double_t px = i1.p.x;
+      //Double_t py = i1.p.y;
+      //Double_t pz = i1.p.z;
+      //Double_t s = std::sin(0.025);
+      //Double_t c = std::cos(0.025);
+      //Double_t zz = pz;
+      //Double_t xx = px;
+      //pz = c*zz - s*xx;
+      //px = s*zz + c*xx;
+      //momenta.push_back(ROOT::Math::PxPyPzMVector{px,py,pz,i1.mass});
+      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.p.x,i1.p.y,i1.p.z,i1.mass});
     }
   }
   return momenta;
