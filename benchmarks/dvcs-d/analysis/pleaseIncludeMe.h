@@ -166,9 +166,9 @@ auto findScatProton(const std::vector<eic::ReconstructedParticleData>& FF){
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : FF){
     if(i1.charge==1){
-      Double_t px = i1.ps.x;
-      Double_t py = i1.ps.y;
-      Double_t pz = i1.ps.z;
+      Double_t px = i1.p.x;
+      Double_t py = i1.p.y;
+      Double_t pz = i1.p.z;
       Double_t s = std::sin(0.025);
       Double_t c = std::cos(0.025);
       Double_t zz = pz;
