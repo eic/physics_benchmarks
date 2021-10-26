@@ -170,8 +170,8 @@ auto findScatProton(const std::vector<eic::ReconstructedParticleData>& FF){
       Double_t px = i1.p.x;
       Double_t py = i1.p.y;
       Double_t pz = i1.p.z;
-      Double_t s = std::sin(-0.025);
-      Double_t c = std::cos(-0.025);
+      Double_t s = std::sin(0.025);
+      Double_t c = std::cos(0.025);
       Double_t zz = pz;
       Double_t xx = px;
       pz = c*zz - s*xx;
