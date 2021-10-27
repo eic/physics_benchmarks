@@ -1,0 +1,15 @@
+upsilon:process:
+  stage: process
+  extends: .phy_benchmark
+  tags:
+    - phy
+  needs: ["common:detector"]
+  script:
+    - compile_analyses.py upsilon
+    - bash benchmarks/upsilon/upsilon.sh --all
+
+upsilon:results:
+  stage: collect
+  needs: ["upsilon:process"]
+  script:
+    - ls -lrth
