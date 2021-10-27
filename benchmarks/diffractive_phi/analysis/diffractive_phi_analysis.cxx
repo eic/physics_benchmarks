@@ -223,7 +223,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Filter(phiPhaseSpace, {"vm"});
 
   auto h_Mass_eSTARlight_MC = d6.Histo1D({"h_Mass_eSTARlight_MC",";Mass; counts",100,0,4}, "VM_mass");
-  auto h_Q2vsX_eSTARlight = d6.Histo2D({"h_Q2vsX_eSTARlight",";Q2;x",500,0,0.1,5000,0,1},"x_truth","Q2_truth");
+  auto h_Q2vsX_eSTARlight = d6.Histo2D({"h_Q2vsX_eSTARlight",";x;Q2",500,0,0.1,5000,0,1},"x_truth","Q2_truth");
 
 
   TString output_name_dir = output_prefix.c_str();
