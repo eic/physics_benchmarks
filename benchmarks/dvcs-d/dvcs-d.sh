@@ -71,7 +71,7 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 print_env.sh
 
 FILE_NAME_TAG="dvcs-d"
-DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DVCS_ABCONV/10x100/DVCS.1.ab.hiAcc.10x100.hepmc"
+DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DVCS_ABCONV/10x100/DVCS.1.ab.hiAcc.10x100_novtx.hepmc"
 # DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DVCS_ABCONV/18x275/DVCS.3.ab.hiAcc.18x275.hepmc"
 #DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DVCS/10x100/DVCS.1.10x100.hepmc" #un-afterburned data
 
@@ -94,8 +94,8 @@ echo "JUGGLER_DETECTOR    = ${JUGGLER_DETECTOR}"
 ## Step 1. Get the data
 if [[ -n "${DATA_INIT}" || -n "${DO_ALL}" ]] ; then
   mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
-  mc -C . cat  --insecure ${DATA_URL} |  head  -n 1004 > "${JUGGLER_MC_FILE}"
-  # mc -C . cat  --insecure ${DATA_URL} > "${JUGGLER_MC_FILE}"
+  # mc -C . cat  --insecure ${DATA_URL} |  head  -n 1004 > "${JUGGLER_MC_FILE}"
+  mc -C . cat  --insecure ${DATA_URL} > "${JUGGLER_MC_FILE}"
   if [[ "$?" -ne "0" ]] ; then
     echo "Failed to download hepmc file"
     exit 1
