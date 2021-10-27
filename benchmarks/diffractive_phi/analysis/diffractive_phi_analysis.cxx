@@ -1,5 +1,5 @@
 #include "pleaseIncludeMe.h"
-int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1)
+int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1, const int mc_type=0)
 {
   // read our configuration
   std::ifstream  config_file{config_name};
@@ -35,6 +35,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
 
   //CHOOSE which VM, 0 = rho, 1 = phi, 2 = j/psi
   which_vm = vm_type;
+  which_mc = mc_type;
 
   /*
   Block 1
@@ -200,6 +201,31 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
 
   auto h_t_rec_veto = d5.Histo1D({"h_t_rec_veto", "; GeV^{2}; counts",50,0,2}, "t_rec");
 
+  /*
+  Block 7 eSTARLight specific
+  - 
+  */
+
+  auto phiPhaseSpace = [](std::vector <ROOT::Math::PxPyPzMVector> VM)
+  { 
+    bool keepThisEvent_ = false;
+    for(auto&i1 : VM){
+      if(fabs(i1.M()-1.019)<0.02) keepThisEvent_ = true;
+    }
+    return keepThisEvent_;
+  };
+
+  auto d6 = d.Define("Q2_truth", "InclusiveKinematicsTruth.Q2")
+             .Define("x_truth", "InclusiveKinematicsTruth.x")
+             .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedChargedParticles"})
+             .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedChargedParticles"})
+             .Define("vm", vector_sum, {"p1","p2"}).Define("VM_mass",getMass,{"vm"})
+             .Filter(phiPhaseSpace, {"vm"});
+
+  auto h_Mass_eSTARlight_MC = d6.Histo1D({"h_Mass_eSTARlight_MC",";Mass; counts",100,0,4}, "VM_mass");
+  auto h_Q2vsX_eSTARlight = d6.Histo2D({"h_Q2vsX_eSTARlight",";Q2;x",500,0,0.1,5000,0,1},"x_truth","Q2_truth");
+
+
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
   
@@ -244,6 +270,10 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
 
   //Block 6
   h_t_rec_veto->Write();
+
+  //Bloack 7
+  h_Mass_eSTARlight_MC->Write();
+  h_Q2vsX_eSTARlight->Write();
 
   output->Write();
   output->Close();
