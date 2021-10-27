@@ -72,7 +72,9 @@ print_env.sh
 
 FILE_NAME_TAG="diffractive_phi"
 # DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DIFFRACTIVE_PHI_ABCONV/Sartre/sartre_bnonsat_Au_phi_ab_eAu_1.hepmc"
-DATA_URL="/gpfs02/eic/ztu/ATHENA/detectorSimulations/eSTARLight/phiineA50k.hepmc"
+DATA_URL="/gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_Oct_5/Output_input_temp_189_noNuclei.hepmc"
+# DATA_URL="/gpfs02/eic/ztu/ATHENA/detectorSimulations/Sartre/hepmc3_test_Oct_5/sartre_bnonsat_Au_phi_8_noNuclei.hepmc"
+# DATA_URL="/gpfs02/eic/ztu/ATHENA/detectorSimulations/eSTARLight/phiineA50k.hepmc"
 
 
 mkdir -p "${LOCAL_DATA_PATH}/input/${FILE_NAME_TAG}"
@@ -161,7 +163,7 @@ if [[ -n "${DO_ANALYSIS}" || -n "${DO_ALL}" ]] ; then
   mkdir -p "results/${FILE_NAME_TAG}/nonlocal"
 
   export VM_TYPE_TAG=1
-  export MC_TYPE_TAG=2
+  export MC_TYPE_TAG=0
   # here you can add as many scripts as you want.
   root -b -q "benchmarks/${FILE_NAME_TAG}/analysis/diffractive_phi_analysis.cxx(\"${CONFIG}\",${VM_TYPE_TAG},${MC_TYPE_TAG})"
   if [[ "$?" -ne "0" ]] ; then
