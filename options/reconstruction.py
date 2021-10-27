@@ -91,8 +91,10 @@ from Configurables import Jug__Reco__TrackParamClusterInit as TrackParamClusterI
 from Configurables import Jug__Reco__TrackParamVertexClusterInit as TrackParamVertexClusterInit
 from Configurables import Jug__Reco__CKFTracking as CKFTracking
 from Configurables import Jug__Reco__ParticlesFromTrackFit as ParticlesFromTrackFit
-from Configurables import Jug__Reco__TrajectoryFromTrackFit as TrajectoryFromTrackFit
+# from Configurables import Jug__Reco__TrajectoryFromTrackFit as TrajectoryFromTrackFit
 from Configurables import Jug__Reco__InclusiveKinematicsElectron as InclusiveKinematicsElectron
+from Configurables import Jug__Reco__InclusiveKinematicsDA as InclusiveKinematicsDA
+from Configurables import Jug__Reco__InclusiveKinematicsJB as InclusiveKinematicsJB
 
 from Configurables import Jug__Reco__FarForwardParticles as FFRecoRP
 from Configurables import Jug__Reco__FarForwardParticlesOMD as FFRecoOMD
@@ -579,8 +581,7 @@ else:
 
 trk_hit_col = TrackingHitsCollector("trk_hit_col",
         inputTrackingHits=input_tracking_hits,
-        trackingHits="trackingHits",
-        OutputLevel=VERBOSE)
+        trackingHits="trackingHits")
 algorithms.append( trk_hit_col )
 
 # Hit Source linker
@@ -610,10 +611,10 @@ parts_from_fit = ParticlesFromTrackFit("parts_from_fit",
         outputTrackParameters = "outputTrackParameters")
 algorithms.append(parts_from_fit)
 
-trajs_from_fit = TrajectoryFromTrackFit("trajs_from_fit",
-        inputTrajectories = trk_find_alg.outputTrajectories,
-        outputTrajectoryParameters = "outputTrajectoryParameters")
-algorithms.append(trajs_from_fit)
+# trajs_from_fit = TrajectoryFromTrackFit("trajs_from_fit",
+#         inputTrajectories = trk_find_alg.outputTrajectories,
+#         outputTrajectoryParameters = "outputTrajectoryParameters")
+# algorithms.append(trajs_from_fit)
 
 # Event building
 parts_with_truth_pid = ParticlesWithTruthPID("parts_with_truth_pid",
@@ -680,13 +681,25 @@ if 'acadia' in detector_version:
             outputHitCollection="MRICHRecHits")
     algorithms.append(mrich_reco)
 
-# Electron kinematics
-electron_incl_kin = InclusiveKinematicsElectron("electron_incl_kin",
+# Inclusive kinematics
+incl_kin_electron = InclusiveKinematicsElectron("incl_kin_electron",
         inputMCParticles="mcparticles",
         inputParticles="ReconstructedParticles",
         outputData="InclusiveKinematicsElectron"
 )
-algorithms.append(electron_incl_kin)
+algorithms.append(incl_kin_electron)
+incl_kin_jb = InclusiveKinematicsJB("incl_kin_jb",
+        inputMCParticles="mcparticles",
+        inputParticles="ReconstructedParticles",
+        outputData="InclusiveKinematicsJB"
+)
+algorithms.append(incl_kin_jb)
+incl_kin_da = InclusiveKinematicsDA("incl_kin_da",
+        inputMCParticles="mcparticles",
+        inputParticles="ReconstructedParticles",
+        outputData="InclusiveKinematicsDA"
+)
+algorithms.append(incl_kin_da)
 
 # Output
 podout = PodioOutput("out", filename=output_rec)
