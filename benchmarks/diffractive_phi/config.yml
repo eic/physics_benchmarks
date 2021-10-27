@@ -13,4 +13,3 @@ diffractive_phi:results:
   needs: ["diffractive_phi:process"]
   script:
     - ls -lrth
-
