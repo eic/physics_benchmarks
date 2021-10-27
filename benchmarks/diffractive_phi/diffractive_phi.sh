@@ -161,9 +161,8 @@ if [[ -n "${DO_ANALYSIS}" || -n "${DO_ALL}" ]] ; then
   mkdir -p "results/${FILE_NAME_TAG}/nonlocal"
 
   export VM_TYPE_TAG=0
-  export PHOTO_TAG=1
   # here you can add as many scripts as you want.
-  root -b -q "benchmarks/${FILE_NAME_TAG}/analysis/diffractive_phi_analysis.cxx(\"${CONFIG}\",${VM_TYPE_TAG},${PHOTO_TAG})"
+  root -b -q "benchmarks/${FILE_NAME_TAG}/analysis/diffractive_phi_analysis.cxx(\"${CONFIG}\",${VM_TYPE_TAG})"
   if [[ "$?" -ne "0" ]] ; then
     echo "ERROR running root script"
     exit 1
