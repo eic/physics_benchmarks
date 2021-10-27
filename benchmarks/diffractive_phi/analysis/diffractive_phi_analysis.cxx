@@ -1,5 +1,5 @@
 #include "pleaseIncludeMe.h"
-int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1, const int photo_=0)
+int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1)
 {
   // read our configuration
   std::ifstream  config_file{config_name};
@@ -65,18 +65,12 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   - Reconstruct VM (e.g., phi) thru decays, inv_mass, pt, eta 
   - scattered electron finder.
   */
-  int doPhoto_ = photo_;
+
   //y,Q2 cuts 
   auto kineCut = [](const ROOT::VecOps::RVec<float>& qsq, const ROOT::VecOps::RVec<float>& y_rec) { 
     if(qsq.size()<1||y_rec.size()<1) return 0;
-    if(!doPhoto_){
-      if(qsq[0] > 1. && qsq[0] < 10. && y_rec[0] < 0.95 && y_rec[0] > 0.01) return 1;
-      else return 0;
-    }
-    else{
-      if(qsq[0] > 0. && qsq[0] < 10. && y_rec[0] < 0.95 && y_rec[0] > 0.01) return 1;
-      else return 0;
-    }
+    if(qsq[0] > 0. && qsq[0] < 10. && y_rec[0] < 0.95 && y_rec[0] > 0.01) return 1;
+    else return 0;
   };
 
   auto d1 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
