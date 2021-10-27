@@ -42,6 +42,12 @@ double vm_mass_width[3]={0.15,0.02,0.03};
 double vm_daug_pid[3]={211,321,11};
 double vm_daug_mass[3]={MASS_PION,MASS_KAON,MASS_ELECTRON};
 
+//0 beagle, 1 sartre, 2 estarlight
+int which_mc = 0;
+int genStatus_scatElec[3]={21,1,1};
+int genStatus_VM[3]={2,2,2};
+//estarlight does not have status 2 phi, so dummy code for genStatus_VM[2].
+
 //resolution.
 auto combinatorial_diff_ratio = [] (
     const ROOT::VecOps::RVec<float>& v1,
@@ -150,7 +156,7 @@ auto findScatElecMC(const std::vector<dd4pod::Geant4ParticleData>& parts)
 {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
-    if(i1.genStatus==21&&i1.pdgID==11) {
+    if(i1.genStatus==genStatus_scatElec[which_mc]&&i1.pdgID==11) {
       momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,i1.mass});
     }
     else {momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});}
@@ -161,7 +167,7 @@ auto findScatElecMC(const std::vector<dd4pod::Geant4ParticleData>& parts)
 auto findVMMC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
-    if(i1.genStatus==2&&i1.pdgID==vm_pid[which_vm]) {
+    if(i1.genStatus==genStatus_VM[which_mc]&&i1.pdgID==vm_pid[which_vm]) {
       momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x,i1.ps.y,i1.ps.z,i1.mass});
     }
     else {momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});}
