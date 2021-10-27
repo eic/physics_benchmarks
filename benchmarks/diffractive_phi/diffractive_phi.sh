@@ -72,8 +72,8 @@ print_env.sh
 
 FILE_NAME_TAG="diffractive_phi"
 # DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DIFFRACTIVE_PHI_ABCONV/Sartre/sartre_bnonsat_Au_phi_ab_eAu_1.hepmc"
-# DATA_URL="/gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_Oct_5/Output_input_temp_189_noNuclei.hepmc"
-DATA_URL="/gpfs02/eic/ztu/ATHENA/detectorSimulations/Sartre/hepmc3_test_Oct_5/sartre_bnonsat_Au_phi_8_noNuclei.hepmc"
+DATA_URL="/gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_Oct_5/Output_input_temp_189_noNuclei_novtx_small.hepmc"
+# DATA_URL="/gpfs02/eic/ztu/ATHENA/detectorSimulations/Sartre/hepmc3_test_Oct_5/sartre_bnonsat_Au_phi_8_noNuclei.hepmc"
 # DATA_URL="/gpfs02/eic/ztu/ATHENA/detectorSimulations/eSTARLight/phiineA50k.hepmc"
 
 
