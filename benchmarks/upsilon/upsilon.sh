@@ -70,9 +70,8 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 # assuming something like .local/bin/env.sh has already been sourced.
 print_env.sh
 
-FILE_NAME_TAG="diffractive_phi"
-DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DIFFRACTIVE_PHI_ABCONV/Sartre/sartre_bnonsat_Au_phi_ab_eAu_1.hepmc"
-# DATA_URL="/gpfs02/eic/ztu/ATHENA/detectorSimulations/BeAGLE/hepmc3_test_ep_Oct_14/ep_vm.hepmc"
+FILE_NAME_TAG="upsilon"
+DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/UPSILON_ABCONV/upsilon1sphoto_ab_hiAcc_18x275.hepmc"
 
 mkdir -p "${LOCAL_DATA_PATH}/input/${FILE_NAME_TAG}"
 mkdir -p "${LOCAL_DATA_PATH}/sim_output/${FILE_NAME_TAG}"
@@ -94,7 +93,7 @@ echo "JUGGLER_DETECTOR    = ${JUGGLER_DETECTOR}"
 if [[ -n "${DATA_INIT}" || -n "${DO_ALL}" ]] ; then
   mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
   mc -C . cat  --insecure ${DATA_URL} |  head  -n 1004 > "${JUGGLER_MC_FILE}"
-  # mc -C . cat  --insecure ${DATA_URL} > "${JUGGLER_MC_FILE}" #full sample
+  # mc -C . cat  --insecure ${DATA_URL} > "${JUGGLER_MC_FILE}"
   if [[ "$?" -ne "0" ]] ; then
     echo "Failed to download hepmc file"
     exit 1
@@ -159,9 +158,8 @@ if [[ -n "${DO_ANALYSIS}" || -n "${DO_ALL}" ]] ; then
   # Store all plots here (preferribly png and pdf files)
   mkdir -p "results/${FILE_NAME_TAG}/nonlocal"
 
-  export VM_TYPE_TAG=0
   # here you can add as many scripts as you want.
-  root -b -q "benchmarks/${FILE_NAME_TAG}/analysis/diffractive_phi_analysis.cxx(\"${CONFIG}\",${VM_TYPE_TAG})"
+  root -b -q "benchmarks/${FILE_NAME_TAG}/analysis/upsilon_analysis.cxx+(\"${CONFIG}\")"
   if [[ "$?" -ne "0" ]] ; then
     echo "ERROR running root script"
     exit 1
