@@ -68,7 +68,7 @@ int dvcs_d_analysis(const std::string& config_name)
              .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"}).Define("etaElec",getEta,{"scatElec"})
              .Define("gammaREC",findGamma,{"ReconstructedParticles"}).Define("MassREC",getMass,{"gammaREC"})
              .Define("gamma_rec_pt",getPt,{"gammaREC"}).Define("gamma_rec_eta",getEta,{"gammaREC"}).Define("gamma_rec_E",getE,{"gammaREC"})
-             .Define("protonREC",findScatProton,{"ReconstructedFFParticles"}).Define("proton_rec_eta",getEta,{"protonREC"}).Define("proton_rec_phi",getPhi,{"protonREC"})
+             .Define("protonREC",findScatProton,{"SmearedFarForwardParticles"}).Define("proton_rec_eta",getEta,{"protonREC"}).Define("proton_rec_phi",getPhi,{"protonREC"})
              .Define("proton_rec_pt",getPt,{"protonREC"}).Define("proton_rec_theta",getTheta,{"protonREC"})
              .Define("t_REC",giveme_t_REC,{"protonREC","mcparticles"}).Define("t_REC_A",giveme_t,{"gammaREC","scatElec"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
