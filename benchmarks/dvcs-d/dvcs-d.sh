@@ -72,8 +72,6 @@ print_env.sh
 
 FILE_NAME_TAG="dvcs-d"
 DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DVCS_ABCONV/10x100/DVCS.1.ab.hiAcc.10x100_novtx.hepmc"
-# DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DVCS_ABCONV/18x275/DVCS.3.ab.hiAcc.18x275.hepmc"
-#DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DVCS/10x100/DVCS.1.10x100.hepmc" #un-afterburned data
 
 mkdir -p "${LOCAL_DATA_PATH}/input/${FILE_NAME_TAG}"
 mkdir -p "${LOCAL_DATA_PATH}/sim_output/${FILE_NAME_TAG}"

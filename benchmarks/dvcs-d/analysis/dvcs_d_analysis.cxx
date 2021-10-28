@@ -84,8 +84,8 @@ int dvcs_d_analysis(const std::string& config_name)
   auto h_Eta_proton_REC = d1.Histo1D({"h_Eta_proton_REC", "; #eta; counts", 100, 0,9}, "proton_rec_eta");
   auto h_Theta_proton_REC = d1.Histo1D({"h_Theta_proton_REC", "; #theta; counts", 100, 0,0.1}, "proton_rec_theta");
   auto h_EtaPhi_proton_REC = d1.Histo2D({"h_EtaPhi_proton_REC",";#eta;#phi",100,-10,10,100,-PI,PI},"proton_rec_eta","proton_rec_phi");
-  auto h_t_REC = d1.Histo1D({"h_t_REC", "; t; counts", 50, 0, 5}, "t_REC");
-  auto h_t_REC_A = d1.Histo1D({"h_t_REC_A", "; t; counts", 50, 0, 5}, "t_REC_A");
+  auto h_t_REC = d1.Histo1D({"h_t_REC", "; t; counts", 50, 0, 2}, "t_REC");
+  auto h_t_REC_A = d1.Histo1D({"h_t_REC_A", "; t; counts", 50, 0, 2}, "t_REC_A");
 
   /*
   Block 3
