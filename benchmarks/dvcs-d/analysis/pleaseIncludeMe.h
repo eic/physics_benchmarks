@@ -34,14 +34,6 @@
 #define MASS_KAON     0.493667
 #define MASS_AU197    183.45406466643374
 
-
-int which_vm = 1;
-double vm_pid[3]={113,333,443};
-double vm_mass[3]={0.77545,1.019,3.0969};
-double vm_mass_width[3]={0.15,0.02,0.03};
-double vm_daug_pid[3]={211,321,11};
-double vm_daug_mass[3]={MASS_PION,MASS_KAON,MASS_ELECTRON};
-
 //resolution.
 auto combinatorial_diff_ratio = [] (
     const ROOT::VecOps::RVec<float>& v1,

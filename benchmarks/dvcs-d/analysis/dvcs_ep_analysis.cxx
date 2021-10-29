@@ -122,8 +122,8 @@ int dvcs_ep_analysis(const std::string& config_name)
              .Define("y_elec", "InclusiveKinematicsElectron.y")
              .Define("gammaREC",findGamma,{"ReconstructedParticles"})
              .Define("gammaMC",findGammaMC,{"mcparticles"})
-             .Define("gammaAngleDiff",getAngleDiff,{"gammaMC","gammarec"})
-             .Define("gamma_mc_eta_match",findPhot_MC_match_REC,{"gammaMC","gammarec"})
+             .Define("gammaAngleDiff",getAngleDiff,{"gammaMC","gammaREC"})
+             .Define("gamma_mc_eta_match",findPhot_MC_match_REC,{"gammaMC","gammaREC"})
              .Filter(kineCut,{"Q2_elec","y_elec"})
              ;
 
