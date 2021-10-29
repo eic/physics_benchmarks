@@ -39,7 +39,7 @@ else
     DATA_URL="S3/eictest/ATHENA/RECO/acadia-v2.1/EXCLUSIVE/DVCS_ABCONV/10x100/DVCS.1.ab.hiAcc.10x100_novtx.00${i}.root"
     mc -C . cp --insecure ${DATA_URL} "${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}_${i}.root"
   done
-  hadd -f "${REC_FILE}.root" "${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}_"*".root"
+  hadd -f "${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}.root" "${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}_"*".root"
 fi
 
 
