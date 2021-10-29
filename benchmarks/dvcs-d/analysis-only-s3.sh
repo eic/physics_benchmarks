@@ -8,8 +8,6 @@
 PROJECT_ROOT="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"/../..
 pushd ${PROJECT_ROOT}
 
-print_env.sh
-
 FILE_NAME_TAG="dvcs-d"
 REC_FILE="${FILE_NAME_TAG}_input.root"
 JUGGLER_DETECTOR="ATHENA"
