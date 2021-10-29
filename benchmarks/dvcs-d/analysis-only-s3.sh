@@ -8,8 +8,7 @@
 PROJECT_ROOT="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"/../..
 pushd ${PROJECT_ROOT}
 
-source parse_cmd.sh $@
-source benchmarks/dvcs-d/env.sh
+print_env.sh
 
 FILE_NAME_TAG="dvcs-d"
 REC_FILE="${FILE_NAME_TAG}_output.root"
@@ -39,7 +38,7 @@ echo "Running analysis"
 CONFIG="${INPUT_PATH_FROM_S3_TAG}/${FILE_NAME_TAG}.json"
 cat << EOF > ${CONFIG}
 {
-  "rec_file": "${REC_FILE}",
+  "rec_file": "${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}",
   "detector": "${JUGGLER_DETECTOR}",
   "output_prefix": "${RESULTS_PATH}",
   "test_tag": "${BEAM_TAG}"
