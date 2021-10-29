@@ -18,6 +18,7 @@ default:
       - juggler.env
     reports:
       dotenv: juggler.env
+  timeout: 6 hours
 
 stages:
   - config
