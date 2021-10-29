@@ -248,8 +248,8 @@ auto getE(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return energyVec;
 }
 
-auto getAngleDiff(const std::vector<ROOT::Math::PxPyPzMVector>& ph_gen,
-  const std::vector<ROOT::Math::PxPyPzMVector>& ph_rec)
+auto getAngleDiff(const std::vector<ROOT::Math::PxPyPzMVector> ph_gen,
+  const std::vector<ROOT::Math::PxPyPzMVector> ph_rec)
 {
   std::vector<double> angleVec;
   for(auto& i1:ph_gen){
