@@ -22,7 +22,8 @@ echo "Running the dvcs-d analysis"
 
 DATA_URL="S3/eictest/ATHENA/RECO/acadia-v2.1/EXCLUSIVE/DVCS_ABCONV/10x100/DVCS.1.ab.hiAcc.10x100_novtx.0049.root"
 mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
-mc -C . cp --insecure ${DATA_URL} "${INPUT_PATH_FROM_S3_TAG}/${FILE_NAME_TAG}_output.root"
+mc -C . cp --insecure ${DATA_URL} ${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}
+
 # if [[ "$?" -ne "0" ]] ; then
 #   echo "Failed to download hepmc file"
 #   exit 1
