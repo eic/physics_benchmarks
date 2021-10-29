@@ -8,6 +8,9 @@
 PROJECT_ROOT="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"/../..
 pushd ${PROJECT_ROOT}
 
+source parse_cmd.sh $@
+source benchmarks/dvcs-d/env.sh
+
 FILE_NAME_TAG="dvcs-d"
 REC_FILE="${FILE_NAME_TAG}_output.root"
 JUGGLER_DETECTOR="ATHENA"
