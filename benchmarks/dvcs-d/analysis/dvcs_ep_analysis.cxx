@@ -71,7 +71,8 @@ int dvcs_ep_analysis(const std::string& config_name)
              .Define("protonREC",findScatProton,{"ReconstructedFFParticles"}).Define("proton_rec_eta",getEta,{"protonREC"}).Define("proton_rec_phi",getPhi,{"protonREC"})
              .Define("proton_rec_pt",getPt,{"protonREC"}).Define("proton_rec_theta",getTheta,{"protonREC"})
              .Define("t_REC",giveme_t_REC,{"protonREC","mcparticles"}).Define("t_REC_A",giveme_t,{"gammaREC","scatElec"})
-             .Filter(kineCut,{"Q2_elec","y_elec"});
+             .Filter(kineCut,{"Q2_elec","y_elec"})
+             ;
 
   auto h_Q2_elec = d1.Histo1D({"h_Q2_elec", "; GeV^2; counts", 100, -5, 25}, "Q2_elec");
   auto h_y_elec = d1.Histo1D({"h_y_elec", "; ; counts", 100, 0, 1}, "y_elec");
@@ -99,7 +100,8 @@ int dvcs_ep_analysis(const std::string& config_name)
              .Define("gammaMC",findGammaMC,{"mcparticles"}).Define("MassMC",getMass,{"gammaMC"}).Define("gamma_mc_pt",getPt,{"gammaMC"}).Define("gamma_mc_eta",getEta,{"gammaMC"})
              .Define("protonMC",findScatProtonMC,{"mcparticles"}).Define("proton_mc_pt",getPt,{"protonMC"}).Define("proton_mc_eta",getEta,{"protonMC"}).Define("proton_mc_theta",getTheta,{"protonMC"})
              .Define("t_MC",giveme_t_MC,{"mcparticles"})
-             .Filter(kineCut,{"Q2_elec","y_elec"});
+             .Filter(kineCut,{"Q2_elec","y_elec"})
+             ;
 
   auto h_Eta_scatElec_MC = d2.Histo1D({"h_Eta_scatElec_MC",";eta; counts",100,-11,9}, "etaElecMC");
   auto h_Mass_MC = d2.Histo1D({"h_Mass_MC",";Mass; counts",100,0,4}, "MassMC");
@@ -110,9 +112,28 @@ int dvcs_ep_analysis(const std::string& config_name)
   auto h_Theta_proton_MC = d2.Histo1D({"h_Theta_proton_MC", "; #theta; counts", 100, 0, 0.1}, "proton_mc_theta");
   auto h_t_MC = d2.Histo1D({"h_t_MC", "; ; counts", 50, 0, 2}, "t_MC");
  
+  
+  /*
+  Block 4
+  - Photon angular resolution and efficiency&acceptance
+  */
+
+  auto d3 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
+             .Define("y_elec", "InclusiveKinematicsElectron.y")
+             .Define("gammaREC",findGamma,{"ReconstructedParticles"})
+             .Define("gammaMC",findGammaMC,{"mcparticles"})
+             .Define("gammaAngleDiff",getAngleDiff,{"gammaMC","gammarec"})
+             .Define("gamma_mc_eta_match",findPhot_MC_match_REC,{"gammaMC","gammarec"})
+             .Filter(kineCut,{"Q2_elec","y_elec"})
+             ;
+
+  auto h_Angle_gamma_MC = d3.Histo1D({"h_Angle_gamma_MC", "; opening angle; counts", 100, 0, PI}, "gammaAngleDiff");
+  auto h_Eta_gamma_MC_match = d3.Histo1D({"h_Eta_gamma_MC_match", "; #eta; counts", 100, -11, 9}, "gamma_mc_eta_match");
+
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
   
+
   //Block 1
   
   h_Q2_sim->Write();
@@ -148,6 +169,10 @@ int dvcs_ep_analysis(const std::string& config_name)
   h_Eta_proton_MC->Write();
   h_Theta_proton_MC->Write();
   h_t_MC->Write();
+
+  //Block 4
+  h_Angle_gamma_MC->Write();
+  h_Eta_gamma_MC_match->Write();
 
   output->Write();
   output->Close();

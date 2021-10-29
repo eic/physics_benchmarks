@@ -78,7 +78,7 @@ auto matchVectKine(ROOT::Math::PxPyPzMVector v1, ROOT::Math::PxPyPzMVector v2){
   TLorentzVector v1_L(v1.Px(),v1.Py(),v1.Pz(),v1.E());
   TLorentzVector v2_L(v2.Px(),v2.Py(),v2.Pz(),v2.E());
 
-  if(v1_L.DeltaR(v2_L)>0.3e-1) return false;
+  if(v1_L.DeltaR(v2_L)>0.3) return false;
   else return true;
 }
 
@@ -183,20 +183,19 @@ auto findScatProton(const std::vector<eic::ReconstructedParticleData>& FF){
   return momenta;
 }
 
-auto resolution_MC_match_REC(const std::vector<ROOT::Math::PxPyPzMVector> MC, 
+auto findPhot_MC_match_REC(const std::vector<ROOT::Math::PxPyPzMVector> MC, 
   const std::vector<ROOT::Math::PxPyPzMVector> REC)
 {
-  std::vector<double > resolution;
+  std::vector<ROOT::Math::PxPyPzMVector> ph_match;
   for(auto& i1:MC){
-    double res = -1.e-10;
+    auto v = ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
+    if(i1.Px()<-1e9) continue;
     for(auto& i2:REC){
-      if(matchVectKine(i1,i2)&&fabs(i2.M()-i1.M())<vm_mass_width[which_vm]){
-        res = (i1.Pt()-i2.Pt())/i2.Pt();
-      } 
+      if(matchVectKine(i1,i2)) v=i1;
     }
-    resolution.push_back(res);
+    ph_match.push_back(v);
   }
-  return resolution;
+  return ph_match;
 }
 
 auto getMass(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
@@ -257,6 +256,22 @@ auto getE(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return energyVec;
 }
 
+auto getAngleDiff(const std::vector<ROOT::Math::PxPyPzMVector>& ph_gen,
+  const std::vector<ROOT::Math::PxPyPzMVector>& ph_rec)
+{
+  std::vector<double> angleVec;
+  for(auto& i1:ph_gen){
+    if(i1.Px()<-1e9) continue;
+    TLorentzVector ph_gen_4v(i1.Px(),i1.Py(),i1.Pz(),i1.E());
+    for(auto& i2:ph_rec){
+      if(i2.Px()<-1e9) continue;
+      TLorentzVector ph_rec_4v(i2.Px(),i2.Py(),i2.Pz(),i2.E());
+      double angle = ph_gen_4v.Angle(ph_rec_4v.Vect());
+      angleVec.push_back(angle);
+    }
+  }
+  return angleVec;
+}
 
 auto giveme_t_MC(const std::vector<dd4pod::Geant4ParticleData>& parts){
   std::vector<double > t_vec;
