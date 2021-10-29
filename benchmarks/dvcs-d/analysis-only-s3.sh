@@ -40,7 +40,7 @@ cat << EOF > ${CONFIG}
 {
   "rec_file": "${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}",
   "detector": "${JUGGLER_DETECTOR}",
-  "output_prefix": "${RESULTS_PATH}",
+  "output_prefix": "${RESULTS_PATH}/${FILE_NAME_TAG}",
   "test_tag": "${BEAM_TAG}"
 }
 EOF
