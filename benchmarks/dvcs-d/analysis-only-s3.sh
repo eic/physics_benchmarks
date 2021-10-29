@@ -33,7 +33,7 @@ mc -C . cp --insecure ${DATA_URL} ${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}
 ## Step 4: Analysis
 ## write a temporary configuration file for the analysis script
 echo "Running analysis"
-CONFIG="${INPUT_PATH_FROM_S3}/${FILE_NAME_TAG}.json"
+CONFIG="${INPUT_PATH_FROM_S3_TAG}/${FILE_NAME_TAG}.json"
 cat << EOF > ${CONFIG}
 {
   "rec_file": "${REC_FILE}",
