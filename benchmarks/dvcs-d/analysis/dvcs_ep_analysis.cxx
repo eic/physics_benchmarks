@@ -127,7 +127,7 @@ int dvcs_ep_analysis(const std::string& config_name)
              .Filter(kineCut,{"Q2_elec","y_elec"})
              ;
 
-  auto h_Angle_gamma_MC = d3.Histo1D({"h_Angle_gamma_MC", "; opening angle; counts", 100, 0, PI}, "gammaAngleDiff");
+  auto h_Angle_gamma_MC = d3.Histo1D({"h_Angle_gamma_MC", "; opening angle; counts", 1000, 0, PI}, "gammaAngleDiff");
   // auto h_Eta_gamma_MC_match = d3.Histo1D({"h_Eta_gamma_MC_match", "; #eta; counts", 100, -11, 9}, "gamma_mc_eta_match");
 
   TString output_name_dir = output_prefix.c_str();
