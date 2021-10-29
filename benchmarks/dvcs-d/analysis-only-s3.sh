@@ -9,17 +9,20 @@ PROJECT_ROOT="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"/../..
 pushd ${PROJECT_ROOT}
 
 FILE_NAME_TAG="dvcs-d"
-REC_FILE="dvcs-d_output.root"
+REC_FILE="${FILE_NAME_TAG}_output.root"
 JUGGLER_DETECTOR="ATHENA"
-RESULTS_PATH=results/s3_full/dvcs-d
+RESULTS_PATH="results/s3_full/${FILE_NAME_TAG}"
 BEAM_TAG="10X100"
+
+mkdir -p "s3_full/${FILE_NAME_TAG}"
+mkdir -p "results/s3_full/${FILE_NAME_TAG}"
 
 set INPUT_PATH_FROM_S3_TAG = "s3_full/${FILE_NAME_TAG}"
 echo "Running the dvcs-d analysis"
 
 DATA_URL="S3/eictest/ATHENA/ATHENA/RECO/acadia-v2.1/EXCLUSIVE/DVCS_ABCONV/10x100/DVCS.1.ab.hiAcc.10x100_novtx.0049.root"
 mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
-mc -C . cp  --insecure ${DATA_URL} "${INPUT_PATH_FROM_S3}/REC_FILE" 
+mc -C . cp  --insecure ${DATA_URL} "${INPUT_PATH_FROM_S3}/${REC_FILE}" 
 if [[ "$?" -ne "0" ]] ; then
   echo "Failed to download hepmc file"
   exit 1
