@@ -50,7 +50,7 @@ echo "Running analysis"
 CONFIG="${INPUT_PATH_FROM_S3_TAG}/${FILE_NAME_TAG}.json"
 cat << EOF > ${CONFIG}
 {
-  "rec_file": "${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}",
+  "rec_file": "${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}.root",
   "detector": "${JUGGLER_DETECTOR}",
   "output_prefix": "${RESULTS_PATH}/${FILE_NAME_TAG}",
   "test_tag": "${BEAM_TAG}"
