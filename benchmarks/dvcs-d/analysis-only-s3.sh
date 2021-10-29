@@ -20,16 +20,20 @@ mkdir -p "s3_full/${FILE_NAME_TAG}"
 mkdir -p "results/s3_full/${FILE_NAME_TAG}"
 
 INPUT_PATH_FROM_S3_TAG="s3_full/${FILE_NAME_TAG}"
+
+echo "This is running analysis from root files on S3. Many local variables are set"
+echo "Input will be copy to ${INPUT_PATH_FROM_S3_TAG}"
+echo "Output will be stored at ${RESULTS_PATH}" 
+
 echo "Running the dvcs-d analysis"
 
-DATA_URL="S3/eictest/ATHENA/RECO/acadia-v2.1/EXCLUSIVE/DVCS_ABCONV/10x100/DVCS.1.ab.hiAcc.10x100_novtx.0049.root"
-mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
-mc -C . cp --insecure ${DATA_URL} ${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}
-
-# if [[ "$?" -ne "0" ]] ; then
-#   echo "Failed to download hepmc file"
-#   exit 1
-# fi
+if [ -f "${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}" ]; then
+  echo "Found file and already downloaded."
+else
+  DATA_URL="S3/eictest/ATHENA/RECO/acadia-v2.1/EXCLUSIVE/DVCS_ABCONV/10x100/DVCS.1.ab.hiAcc.10x100_novtx.0049.root"
+  mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
+  mc -C . cp --insecure ${DATA_URL} ${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}
+fi
 
 ## =============================================================================
 ## Step 4: Analysis
