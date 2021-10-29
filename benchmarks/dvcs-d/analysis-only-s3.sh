@@ -29,7 +29,7 @@ echo "Output will be stored at ${RESULTS_PATH}"
 
 echo "Running the dvcs-d analysis"
 
-if [ -f "${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}" ]; then
+if [ -f "${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}.root" ]; then
   echo "Found file and already downloaded."
 else
   mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
