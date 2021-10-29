@@ -124,7 +124,7 @@ int dvcs_ep_analysis(const std::string& config_name)
              .Define("gammaMC",findGammaMC,{"mcparticles"})
              .Define("gammaAngleDiff",getAngleDiff,{"gammaMC","gammaREC"})
              .Define("gammaMC_match",findPhot_MC_match_REC,{"gammaMC","gammaREC"})
-             .Define("gamma_mc_eta_match",getEta,"gammaMC_match")
+             .Define("gamma_mc_eta_match",getEta,{"gammaMC_match"})
              .Filter(kineCut,{"Q2_elec","y_elec"})
              ;
 
