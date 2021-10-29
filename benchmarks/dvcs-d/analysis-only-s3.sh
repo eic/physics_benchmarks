@@ -11,7 +11,7 @@ pushd ${PROJECT_ROOT}
 print_env.sh
 
 FILE_NAME_TAG="dvcs-d"
-REC_FILE="${FILE_NAME_TAG}_output.root"
+REC_FILE="${FILE_NAME_TAG}_input.root"
 JUGGLER_DETECTOR="ATHENA"
 RESULTS_PATH="results/s3_full/${FILE_NAME_TAG}"
 BEAM_TAG="10X100"
