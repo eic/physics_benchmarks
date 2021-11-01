@@ -128,7 +128,11 @@ int dvcs_ep_analysis(const std::string& config_name)
              .Define("gammaREC_not_match",findPart_REC_not_match_MC,{"gammaREC","gammaMC"})
              .Define("gamma_rec_eta_not_match",getEta,{"gammaREC_not_match"})
              .Define("scatElecMC",findScatElecMC,{"mcparticles"})
-             .Define("scatElecREC",findScatElec_alt,{"ReconstructedParticles"})
+             .Define("scatID_value","InclusiveKinematicsElectron.scatID.value")
+             .Define("scatID_source","InclusiveKinematicsElectron.scatID.source")
+             .Define("scatID_cand_value",scatID_cand_value, {"scatID_value"})
+             .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
+             .Define("scatElecREC",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
              .Define("scatElec_rec_eta",getEta,{"scatElecREC"})
              .Define("scatElecMC_match",findPart_MC_match_REC,{"scatElecMC","scatElecREC"})
              .Define("scatElec_mc_eta_match",getEta,{"scatElecMC_match"})
@@ -142,7 +146,6 @@ int dvcs_ep_analysis(const std::string& config_name)
   auto h_Eta_gamma_REC_not_match = d3.Histo1D({"h_Eta_gamma_REC_not_match", "; #eta; counts", 100, -11, 9}, "gamma_rec_eta_not_match");
   auto h_Eta_scatElec_MC_match = d3.Histo1D({"h_Eta_scatElec_MC_match", "; #eta; counts", 100, -11, 9}, "scatElec_mc_eta_match");
   auto h_Eta_scatElec_REC_not_match = d3.Histo1D({"h_Eta_scatElec_REC_not_match", "; #eta; counts", 100, -11, 9}, "scatElec_rec_eta_not_match");
-  auto h_Eta_scatElec_REC_alt = d3.Histo1D({"h_Eta_scatElec_REC_alt", "; #eta; counts", 100, -11, 9}, "scatElec_rec_eta");
 
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
@@ -190,7 +193,6 @@ int dvcs_ep_analysis(const std::string& config_name)
   h_Eta_gamma_REC_not_match->Write();
   h_Eta_scatElec_MC_match->Write();
   h_Eta_scatElec_REC_not_match->Write();
-  h_Eta_scatElec_REC_alt->Write();
 
 
   output->Write();
