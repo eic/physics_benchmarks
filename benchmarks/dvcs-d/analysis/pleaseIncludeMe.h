@@ -69,7 +69,7 @@ auto giveme_resolution = [] (
 auto matchVectKine(ROOT::Math::PxPyPzMVector v1, ROOT::Math::PxPyPzMVector v2){
   TLorentzVector v1_L(v1.Px(),v1.Py(),v1.Pz(),v1.E());
   TLorentzVector v2_L(v2.Px(),v2.Py(),v2.Pz(),v2.E());
-
+  if(fabs(v1.M()-v2.M())>1e-6) return false;
   if(v1_L.DeltaR(v2_L)>0.3) return false;
   else return true;
 }
