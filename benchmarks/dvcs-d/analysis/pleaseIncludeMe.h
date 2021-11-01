@@ -199,6 +199,7 @@ auto findPhot_REC_not_match_MC(const std::vector<ROOT::Math::PxPyPzMVector> REC,
     auto v = ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
     if(i1.Px()<-1e9) continue;
     for(auto& i2:MC){
+      if(i2.Px()<-1e9) continue;
       if(!matchVectKine(i1,i2)) v=i1;
     }
     ph_not_match.push_back(v);
