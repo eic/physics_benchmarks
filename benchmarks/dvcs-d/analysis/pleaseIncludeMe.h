@@ -190,6 +190,22 @@ auto findPhot_MC_match_REC(const std::vector<ROOT::Math::PxPyPzMVector> MC,
   return ph_match;
 }
 
+auto findPhot_REC_not_match_MC(const std::vector<ROOT::Math::PxPyPzMVector> REC, 
+  const std::vector<ROOT::Math::PxPyPzMVector> MC)
+{
+  std::vector<ROOT::Math::PxPyPzMVector> ph_not_match;
+  
+  for(auto& i1:REC){
+    auto v = ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
+    if(i1.Px()<-1e9) continue;
+    for(auto& i2:MC){
+      if(!matchVectKine(i1,i2)) v=i1;
+    }
+    ph_not_match.push_back(v);
+  }
+  return ph_not_match;
+}
+
 auto getMass(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> massVec(mom.size() );
   std::transform(mom.begin(), mom.end(), massVec.begin(), [](const auto& part) {

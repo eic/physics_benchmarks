@@ -125,11 +125,14 @@ int dvcs_ep_analysis(const std::string& config_name)
              .Define("gammaAngleDiff",getAngleDiff,{"gammaMC","gammaREC"})
              .Define("gammaMC_match",findPhot_MC_match_REC,{"gammaMC","gammaREC"})
              .Define("gamma_mc_eta_match",getEta,{"gammaMC_match"})
+             .Define("gammaREC_not_match",findPhot_REC_not_match_MC,{"gammaREC","gammaMC"})
+             .Define("gamma_rec_eta_not_match",getEta,{"gammaREC_not_match"})
              .Filter(kineCut,{"Q2_elec","y_elec"})
              ;
 
   auto h_Angle_gamma_MC = d3.Histo1D({"h_Angle_gamma_MC", "; opening angle; counts", 1000, 0, PI}, "gammaAngleDiff");
   auto h_Eta_gamma_MC_match = d3.Histo1D({"h_Eta_gamma_MC_match", "; #eta; counts", 100, -11, 9}, "gamma_mc_eta_match");
+  auto h_Eta_gamma_REC_not_match = d3.Histo1D({"h_Eta_gamma_REC_not_match", "; #eta; counts", 100, -11, 9}, "gamma_rec_eta_not_match");
 
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
@@ -174,6 +177,7 @@ int dvcs_ep_analysis(const std::string& config_name)
   //Block 4
   h_Angle_gamma_MC->Write();
   h_Eta_gamma_MC_match->Write();
+  h_Eta_gamma_REC_not_match->Write();
 
   output->Write();
   output->Close();
