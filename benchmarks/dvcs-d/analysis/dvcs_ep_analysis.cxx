@@ -79,7 +79,7 @@ int dvcs_ep_analysis(const std::string& config_name)
   auto h_Eta_scatElec_REC = d1.Histo1D({"h_Eta_scatElec_REC",";#eta; counts",100,-11,9}, "etaElec");
   auto h_Mass_gamma_REC = d1.Histo1D({"h_Mass_gamma_REC", "; Mass (GeV); counts", 1000, 0, 4}, "MassREC");
   auto h_Pt_gamma_REC = d1.Histo1D({"h_Pt_gamma_REC", "; pT (GeV); counts", 50, 0, 2}, "gamma_rec_pt");
-  auto h_Eta_gamma_REC = d1.Histo1D({"h_Eta_gamma_REC", "; #eta; counts", 100, -11, 9}, "gamma_rec_eta");
+  auto h_Eta_gamma_REC = d1.Histo1D({"h_Eta_gamma_REC", "; #eta; counts", 100, -9, 9}, "gamma_rec_eta");
   auto h_energyEta_gamma_REC = d1.Histo2D({"h_energyEta_gamma_REC",";#eta;E (GeV)",100,-10,10,100,0,10},"gamma_rec_eta","gamma_rec_E");
   auto h_Pt_proton_REC = d1.Histo1D({"h_Pt_proton_REC", "; pT (GeV); counts", 50, 0, 5}, "proton_rec_pt");
   auto h_Eta_proton_REC = d1.Histo1D({"h_Eta_proton_REC", "; #eta; counts", 100, 0,9}, "proton_rec_eta");
@@ -106,7 +106,7 @@ int dvcs_ep_analysis(const std::string& config_name)
   auto h_Eta_scatElec_MC = d2.Histo1D({"h_Eta_scatElec_MC",";eta; counts",100,-11,9}, "etaElecMC");
   auto h_Mass_MC = d2.Histo1D({"h_Mass_MC",";Mass; counts",100,0,4}, "MassMC");
   auto h_Pt_gamma_MC = d2.Histo1D({"h_Pt_gamma_MC", "; pT (GeV); counts", 50, 0, 2}, "gamma_mc_pt");
-  auto h_Eta_gamma_MC = d2.Histo1D({"h_Eta_gamma_MC", "; #eta; counts", 100, -11, 9}, "gamma_mc_eta");
+  auto h_Eta_gamma_MC = d2.Histo1D({"h_Eta_gamma_MC", "; #eta; counts", 100, -9, 9}, "gamma_mc_eta");
   auto h_Pt_proton_MC = d2.Histo1D({"h_Pt_proton_MC", "; pT (GeV); counts", 50, 0, 5}, "proton_mc_pt");
   auto h_Eta_proton_MC = d2.Histo1D({"h_Eta_proton_MC", "; #eta; counts", 100, 0, 9}, "proton_mc_eta");
   auto h_Theta_proton_MC = d2.Histo1D({"h_Theta_proton_MC", "; #theta; counts", 100, 0, 0.1}, "proton_mc_theta");
@@ -131,8 +131,8 @@ int dvcs_ep_analysis(const std::string& config_name)
              ;
 
   auto h_Angle_gamma_MC = d3.Histo1D({"h_Angle_gamma_MC", "; opening angle; counts", 1000, 0, PI}, "gammaAngleDiff");
-  auto h_Eta_gamma_MC_match = d3.Histo1D({"h_Eta_gamma_MC_match", "; #eta; counts", 100, -11, 9}, "gamma_mc_eta_match");
-  auto h_Eta_gamma_REC_not_match = d3.Histo1D({"h_Eta_gamma_REC_not_match", "; #eta; counts", 100, -11, 9}, "gamma_rec_eta_not_match");
+  auto h_Eta_gamma_MC_match = d3.Histo1D({"h_Eta_gamma_MC_match", "; #eta; counts", 100, -9, 9}, "gamma_mc_eta_match");
+  auto h_Eta_gamma_REC_not_match = d3.Histo1D({"h_Eta_gamma_REC_not_match", "; #eta; counts", 100, -9, 9}, "gamma_rec_eta_not_match");
 
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
