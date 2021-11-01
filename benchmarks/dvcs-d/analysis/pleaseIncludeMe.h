@@ -102,6 +102,16 @@ auto findScatElec(const std::vector<eic::ReconstructedParticleData>& parts,
   return momenta;
 }
 
+auto findScatElec_alt(const std::vector<eic::ReconstructedParticleData>& parts){
+  std::vector<ROOT::Math::PxPyPzMVector> momenta;
+  for(auto& i1 : parts){
+    if(i1.charge==-1){
+      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.p.x,i1.p.y,i1.p.z,MASS_ELECTRON});
+    }
+  }
+  return momenta;
+}
+
 auto findScatElecMC(const std::vector<dd4pod::Geant4ParticleData>& parts)
 {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
@@ -175,7 +185,7 @@ auto findScatProton(const std::vector<eic::ReconstructedParticleData>& FF){
   return momenta;
 }
 
-auto findPhot_MC_match_REC(const std::vector<ROOT::Math::PxPyPzMVector> MC, 
+auto findPart_MC_match_REC(const std::vector<ROOT::Math::PxPyPzMVector> MC, 
   const std::vector<ROOT::Math::PxPyPzMVector> REC)
 {
   std::vector<ROOT::Math::PxPyPzMVector> ph_match;
@@ -183,6 +193,7 @@ auto findPhot_MC_match_REC(const std::vector<ROOT::Math::PxPyPzMVector> MC,
     auto v = ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
     if(i1.Px()<-1e9) continue;
     for(auto& i2:REC){
+      if(i2.Px()<-1e9) continue;
       if(matchVectKine(i1,i2)) v=i1;
     }
     ph_match.push_back(v);
@@ -190,7 +201,7 @@ auto findPhot_MC_match_REC(const std::vector<ROOT::Math::PxPyPzMVector> MC,
   return ph_match;
 }
 
-auto findPhot_REC_not_match_MC(const std::vector<ROOT::Math::PxPyPzMVector> REC, 
+auto findPart_REC_not_match_MC(const std::vector<ROOT::Math::PxPyPzMVector> REC, 
   const std::vector<ROOT::Math::PxPyPzMVector> MC)
 {
   std::vector<ROOT::Math::PxPyPzMVector> ph_not_match;
