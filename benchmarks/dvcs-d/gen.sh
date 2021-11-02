@@ -75,7 +75,7 @@ echo "Generator output for $GEN_TAG not found in cache, need to copy generator f
 #   exit 1
 # fi
 
-DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DVCSD_ABCONV/10x100/DVCS-eD-ab-hiAcc-10x100.hepmc"
+DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DVCSD_ABCONV/10x100/DVCS-eD-ab-hiAcc-10x100-2.hepmc"
 mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
 mc -C . cat  --insecure ${DATA_URL} > "${TMP_PATH}/${GEN_TAG}.hepmc"
 if [[ "$?" -ne "0" ]] ; then
