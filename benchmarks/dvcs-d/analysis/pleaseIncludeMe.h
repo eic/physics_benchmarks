@@ -349,7 +349,8 @@ auto giveme_t_REC(const std::vector<ROOT::Math::PxPyPzMVector>& mom,
   return t_vec;
 }
 
-auto giveme_t_doubleTagging_REC(const std::vector<eic::ReconstructedParticleData>& mom){
+auto giveme_t_doubleTagging_REC(const std::vector<eic::ReconstructedParticleData>& mom,
+  const std::vector<dd4pod::Geant4ParticleData>& parts){
   
   std::vector<double> t_vec;
   TLorentzVector nOut(1e-10,1e-10,1e-10,1e-10),pOut(1e-10,1e-10,1e-10,1e-10);
@@ -365,13 +366,22 @@ auto giveme_t_doubleTagging_REC(const std::vector<eic::ReconstructedParticleData
   }
   if(nOut.E()<1e-9||pOut.E()<1e-9){
     t_vec.push_back( -1. );
-    cout << "no " << -(nOut-pOut).Mag2() << endl;
   }
   else{
-    t_vec.push_back( -(nOut-pOut).Mag2() );
-    cout << "test " << -(nOut-pOut).Mag2() << endl;
-  }
+    for(auto&i1:parts){
+      if(i1.genStatus==4&&i1.pdgID==2112) {
+        TVector3 n_beam_v3(i1.ps.x,i1.ps.y,i1.ps.z)
+        TLorentzVector n_beam;
+        n_beam.SetVectM(n_beam_v3,0.93957);
+      }
+    }
+    TVector3 boost = n_beam.BoostVector();
+    nOut.Boost(-boost);
+    pOut.Boost(-boost);
 
+    pOut.SetPxPyPzE(-pOut.Px(),-pOut.Py(),-pOut.Pz(),pOut.E());
+    t_vec.push_back( -(nOut-pOut).Mag2() );
+  }
 
   return t_vec;
 }
