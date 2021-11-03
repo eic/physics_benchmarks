@@ -71,7 +71,7 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 print_env.sh
 
 FILE_NAME_TAG="dvcs-d"
-DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DVCSD_ABCONV/10x100/DVCS-eD-ab-hiAcc-10x100.hepmc"
+DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DVCSD_ABCONV/10x100/DVCS-eD-ab-hiAcc-10x100-2-NEW.hepmc"
 
 
 mkdir -p "${LOCAL_DATA_PATH}/input/${FILE_NAME_TAG}"
