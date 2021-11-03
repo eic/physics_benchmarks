@@ -68,7 +68,7 @@ int dvcs_d_analysis(const std::string& config_name)
              .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"}).Define("etaElec",getEta,{"scatElec"})
              .Define("gammaREC",findGamma,{"ReconstructedParticles"}).Define("MassREC",getMass,{"gammaREC"})
              .Define("gamma_rec_pt",getPt,{"gammaREC"}).Define("gamma_rec_eta",getEta,{"gammaREC"}).Define("gamma_rec_E",getE,{"gammaREC"})
-             .Define("protonREC",findScatProton,{"ReconstructedFFParticles"}).Define("proton_rec_eta",getEta,{"protonREC"}).Define("proton_rec_phi",getPhi,{"protonREC"}).Define("proton_rec_px",getPx,{"protonREC"}).Define("proton_rec_py",getPy,{"protonREC"}).Define("proton_rec_momentum",getP,{"protonREC","mcparticles"})
+             .Define("protonREC",findScatProton,{"ReconstructedFFParticles"}).Define("proton_rec_eta",getEta,{"protonREC"}).Define("proton_rec_phi",getPhi,{"protonREC"}).Define("proton_rec_px",getPx,{"protonREC"}).Define("proton_rec_py",getPy,{"protonREC"}).Define("proton_rec_momentum",getPmiss,{"protonREC","mcparticles"})
              .Define("neutronREC",findScatNeutron,{"ReconstructedFFParticles"}).Define("neutron_rec_px",getPx,{"neutronREC"}).Define("neutron_rec_py",getPy,{"neutronREC"})
              .Define("proton_rec_pt",getPt,{"protonREC"}).Define("proton_rec_theta",getTheta,{"protonREC"})
              .Define("t_REC",giveme_t_doubleTagging_REC,{"ReconstructedFFParticles","mcparticles"}).Define("t_REC_A",giveme_t,{"gammaREC","scatElec"})
@@ -101,7 +101,8 @@ int dvcs_d_analysis(const std::string& config_name)
              .Define("y_elec", "InclusiveKinematicsElectron.y")
              .Define("scatElecMC",findScatElecMC, {"mcparticles"}).Define("etaElecMC",getEta,{"scatElecMC"})
              .Define("gammaMC",findGammaMC,{"mcparticles"}).Define("MassMC",getMass,{"gammaMC"}).Define("gamma_mc_pt",getPt,{"gammaMC"}).Define("gamma_mc_eta",getEta,{"gammaMC"})
-             .Define("protonMC",findScatProtonMC,{"mcparticles"}).Define("proton_mc_pt",getPt,{"protonMC"}).Define("proton_mc_eta",getEta,{"protonMC"}).Define("proton_mc_theta",getTheta,{"protonMC"}).Define("proton_mc_momentum",getP,{"protonMC","mcparticles"})
+             .Define("protonMC",findScatProtonMC,{"mcparticles"}).Define("proton_mc_pt",getPt,{"protonMC"}).Define("proton_mc_eta",getEta,{"protonMC"}).Define("proton_mc_theta",getTheta,{"protonMC"})
+             .Define("proton_mc_momentum",getPmiss,{"protonMC","mcparticles"})
              .Define("t_MC",giveme_t_neutron_MC,{"mcparticles"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
@@ -112,7 +113,7 @@ int dvcs_d_analysis(const std::string& config_name)
   auto h_Pt_proton_MC = d2.Histo1D({"h_Pt_proton_MC", "; pT (GeV); counts", 50, 0, 5}, "proton_mc_pt");
   auto h_Eta_proton_MC = d2.Histo1D({"h_Eta_proton_MC", "; #eta; counts", 100, 0, 9}, "proton_mc_eta");
   auto h_Theta_proton_MC = d2.Histo1D({"h_Theta_proton_MC", "; #theta; counts", 100, 0, 0.1}, "proton_mc_theta");
-  auto h_Momentum_proton_MC = d1.Histo1D({"h_Momentum_proton_MC", "; P; counts", 100, 0, 2}, "proton_mc_momentum");
+  auto h_Momentum_proton_MC = d2.Histo1D({"h_Momentum_proton_MC", "; P; counts", 100, 0, 2}, "proton_mc_momentum");
   auto h_t_MC = d2.Histo1D({"h_t_MC", "; ; counts", 50, 0, 2}, "t_MC");
  
   TString output_name_dir = output_prefix.c_str();

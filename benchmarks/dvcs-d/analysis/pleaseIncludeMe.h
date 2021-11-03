@@ -303,7 +303,7 @@ auto getE(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return energyVec;
 }
 
-auto getP(const std::vector<ROOT::Math::PxPyPzMVector>& mom,
+auto getPmiss(const std::vector<ROOT::Math::PxPyPzMVector>& mom,
   const std::vector<dd4pod::Geant4ParticleData>& parts) 
 {
   std::vector<double> momentumVec;
