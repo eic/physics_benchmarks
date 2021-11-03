@@ -303,6 +303,33 @@ auto getE(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return energyVec;
 }
 
+auto getP(const std::vector<ROOT::Math::PxPyPzMVector>& mom,
+  const std::vector<dd4pod::Geant4ParticleData>& parts) 
+{
+  std::vector<double> momentumVec;
+  for(auto& i1:mom){
+    double momentum = i1.P();
+    if(i1.Px()<-1e9){
+      momentum=-10.;
+    }
+    else{
+      TLorentzVector n_beam;
+      for(auto&i2:parts){
+        if(i2.genStatus==4&&i2.pdgID==2112) {
+          TVector3 n_beam_v3(i2.ps.x,i2.ps.y,i2.ps.z);
+          n_beam.SetVectM(n_beam_v3,0.93957);
+        }
+      }
+      TVector3 boost = n_beam.BoostVector();
+      TLorentzVector p(i1.Px(),i1.Py(),i1.Pz(),i1.E());
+      p.Boost(-boost);
+      momentum = p.P();
+    }
+    momentumVec.push_back(momentum);
+  }
+  return momentumVec;
+}
+
 auto getAngleDiff(const std::vector<ROOT::Math::PxPyPzMVector> ph_gen,
   const std::vector<ROOT::Math::PxPyPzMVector> ph_rec)
 {
