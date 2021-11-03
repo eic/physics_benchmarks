@@ -354,11 +354,11 @@ auto giveme_t_doubleTagging_REC(const std::vector<eic::ReconstructedParticleData
   std::vector<double> t_vec;
   TLorentzVector nOut(1e-10,1e-10,1e-10,1e-10),pOut(1e-10,1e-10,1e-10,1e-10);
   for(auto&i2: mom){
-    if(fabs(i2.mass-0.93957)<1e-4){
+    if(i2.charge==0){
       TVector3 nOut_v3(i2.p.x,i2.p.y,i2.p.z);
       nOut.SetVectM(nOut_v3,0.93957);
     }
-    if(fabs(i2.mass-0.93827)<1e-4){
+    if(i2.charge==+1){
       TVector3 pOut_v3(-i2.p.x,-i2.p.y,-i2.p.z);//remember the - sign.
       pOut.SetVectM(pOut_v3,0.93827);
     }
