@@ -357,15 +357,13 @@ auto giveme_t_doubleTagging_REC(const std::vector<eic::ReconstructedParticleData
     if(i2.charge==0){
       TVector3 nOut_v3(i2.p.x,i2.p.y,i2.p.z);
       nOut.SetVectM(nOut_v3,0.93957);
-      std::cout << "neutron " << i2.p.x << std::endl;
     }
     if(i2.charge==+1){
       TVector3 pOut_v3(i2.p.x,i2.p.y,i2.p.z);//remember the - sign.
       pOut.SetVectM(pOut_v3,0.93827);
-      std::cout << "proton " << i2.p.x << std::endl;
     }
   }
-  if(nOut.Px()<1e-9||pOut.Px()<1e-9){
+  if(nOut.E()<1e-9||pOut.E()<1e-9){
     t_vec.push_back( -1. );
     cout << "no " << -(nOut-pOut).Mag2() << endl;
   }
@@ -373,7 +371,7 @@ auto giveme_t_doubleTagging_REC(const std::vector<eic::ReconstructedParticleData
     t_vec.push_back( -(nOut-pOut).Mag2() );
     cout << "test " << -(nOut-pOut).Mag2() << endl;
   }
-  
+
 
   return t_vec;
 }
