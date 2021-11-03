@@ -68,7 +68,8 @@ int dvcs_d_analysis(const std::string& config_name)
              .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"}).Define("etaElec",getEta,{"scatElec"})
              .Define("gammaREC",findGamma,{"ReconstructedParticles"}).Define("MassREC",getMass,{"gammaREC"})
              .Define("gamma_rec_pt",getPt,{"gammaREC"}).Define("gamma_rec_eta",getEta,{"gammaREC"}).Define("gamma_rec_E",getE,{"gammaREC"})
-             .Define("protonREC",findScatProton,{"ReconstructedFFParticles"}).Define("proton_rec_eta",getEta,{"protonREC"}).Define("proton_rec_phi",getPhi,{"protonREC"})
+             .Define("protonREC",findScatProton,{"ReconstructedFFParticles"}).Define("proton_rec_eta",getEta,{"protonREC"}).Define("proton_rec_phi",getPhi,{"protonREC"}).Define("proton_rec_px",getPx,{"protonREC"}).Define("proton_rec_py",getPy,{"protonREC"})
+             .Define("neutronREC",findScatNeutron,{"ReconstructedFFParticles"}).Define("neutron_rec_px",getPx,{"neutronREC"}).Define("neutron_rec_py",getPy,{"neutronREC"})
              .Define("proton_rec_pt",getPt,{"protonREC"}).Define("proton_rec_theta",getTheta,{"protonREC"})
              .Define("t_REC",giveme_t_doubleTagging_REC,{"ReconstructedFFParticles","mcparticles"}).Define("t_REC_A",giveme_t,{"gammaREC","scatElec"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
@@ -84,6 +85,8 @@ int dvcs_d_analysis(const std::string& config_name)
   auto h_Eta_proton_REC = d1.Histo1D({"h_Eta_proton_REC", "; #eta; counts", 100, 0,9}, "proton_rec_eta");
   auto h_Theta_proton_REC = d1.Histo1D({"h_Theta_proton_REC", "; #theta; counts", 100, 0,0.1}, "proton_rec_theta");
   auto h_EtaPhi_proton_REC = d1.Histo2D({"h_EtaPhi_proton_REC",";#eta;#phi",100,-10,10,100,-PI,PI},"proton_rec_eta","proton_rec_phi");
+  auto h_PxPy_proton_REC = d1.Histo2D({"h_PxPy_proton_REC",";#px;#py",100,-10,10,100,-10,10},"proton_rec_px","proton_rec_py");
+  auto h_PxPy_neutron_REC = d1.Histo2D({"h_PxPy_neutron_REC",";#px;#py",100,-10,10,100,-10,10},"neutron_rec_px","neutron_rec_py");
   auto h_t_REC = d1.Histo1D({"h_t_REC", "; t; counts", 50, 0, 2}, "t_REC");
   auto h_t_REC_A = d1.Histo1D({"h_t_REC_A", "; t; counts", 50, 0, 2}, "t_REC_A");
 
@@ -135,6 +138,8 @@ int dvcs_d_analysis(const std::string& config_name)
   h_Eta_proton_REC->Write();
   h_Theta_proton_REC->Write();
   h_EtaPhi_proton_REC->Write();
+  h_PxPy_proton_REC->Write();
+  h_PxPy_neutron_REC->Write();
   h_t_REC->Write();
   h_t_REC_A->Write();
 

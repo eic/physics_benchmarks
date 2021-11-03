@@ -185,6 +185,16 @@ auto findScatProton(const std::vector<eic::ReconstructedParticleData>& FF){
   return momenta;
 }
 
+auto findScatNeutron(const std::vector<eic::ReconstructedParticleData>& FF){
+  std::vector<ROOT::Math::PxPyPzMVector> momenta;
+  for(auto& i1 : FF){
+    if(i1.charge==0){
+      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.p.x,i1.p.y,i1.p.z,i1.mass});
+    }
+  }
+  return momenta;
+}
+
 auto findPart_MC_match_REC(const std::vector<ROOT::Math::PxPyPzMVector> MC, 
   const std::vector<ROOT::Math::PxPyPzMVector> REC)
 {
@@ -235,6 +245,23 @@ auto getPt(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return ptVec;
 }
 
+auto getPx(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
+  std::vector<double> pxVec(mom.size() );
+  std::transform(mom.begin(), mom.end(), pxVec.begin(), [](const auto& part) {
+    if(part.Px()<-1e9) return -99.;
+    else return part.Px();
+  });
+  return pxVec;
+}
+
+auto getPy(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
+  std::vector<double> pyVec(mom.size() );
+  std::transform(mom.begin(), mom.end(), pyVec.begin(), [](const auto& part) {
+    if(part.Px()<-1e9) return -99.;
+    else return part.Py();
+  });
+  return pyVec;
+}
 
 auto getEta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> etaVec;
