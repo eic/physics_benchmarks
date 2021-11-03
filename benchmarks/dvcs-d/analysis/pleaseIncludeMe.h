@@ -311,6 +311,24 @@ auto giveme_t_MC(const std::vector<dd4pod::Geant4ParticleData>& parts){
   return t_vec;
 }
 
+auto giveme_t_neutron_MC(const std::vector<dd4pod::Geant4ParticleData>& parts){
+  std::vector<double > t_vec;
+  TLorentzVector pIn,pOut;
+  for(auto& i1 : parts){
+    if(i1.genStatus==4&&i1.pdgID==2112) {
+      TVector3 pIn_v3(i1.ps.x,i1.ps.y,i1.ps.z);
+      pIn.SetVectM(pIn_v3,i1.mass);
+    }
+    if(i1.genStatus==1&&i1.pdgID==2112) {
+      TVector3 pOut_v3(i1.ps.x,i1.ps.y,i1.ps.z);
+      pOut.SetVectM(pOut_v3,i1.mass);
+    }
+  }
+  t_vec.push_back( -(pOut-pIn).Mag2() );
+  
+  return t_vec;
+}
+
 auto giveme_t_REC(const std::vector<ROOT::Math::PxPyPzMVector>& mom,
   const std::vector<dd4pod::Geant4ParticleData>& parts){
   
@@ -327,6 +345,25 @@ auto giveme_t_REC(const std::vector<ROOT::Math::PxPyPzMVector>& mom,
     pOut.SetVectM(pOut_v3,0.93827);
   }
   t_vec.push_back( -(pOut-pIn).Mag2() );
+  
+  return t_vec;
+}
+
+auto giveme_t_doubleTagging_REC(const std::vector<ROOT::Math::PxPyPzMVector>& mom){
+  
+  std::vector<double> t_vec;
+  TLorentzVector nOut,pOut;
+  for(auto&i2: mom){
+    if(fabs(i2.mass-0.93957)<1e-4){
+      TVector3 nOut_v3(i2.Px(),i2.Py(),i2.Pz());
+      nOut.SetVectM(nOut_v3,0.93957);
+    }
+    if(fabs(i2.mass-0.93827)<1e-4){
+      TVector3 pOut_v3(-i2.Px(),-i2.Py(),-i2.Pz());//remember the - sign.
+      pOut.SetVectM(pOut_v3,0.93827);
+    }
+  }
+  t_vec.push_back( -(nOut-pOut).Mag2() );
   
   return t_vec;
 }
