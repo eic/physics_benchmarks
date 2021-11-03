@@ -349,17 +349,17 @@ auto giveme_t_REC(const std::vector<ROOT::Math::PxPyPzMVector>& mom,
   return t_vec;
 }
 
-auto giveme_t_doubleTagging_REC(const std::vector<ROOT::Math::PxPyPzMVector>& mom){
+auto giveme_t_doubleTagging_REC(const std::vector<eic::ReconstructedParticleData>& mom){
   
   std::vector<double> t_vec;
   TLorentzVector nOut,pOut;
   for(auto&i2: mom){
     if(fabs(i2.mass-0.93957)<1e-4){
-      TVector3 nOut_v3(i2.Px(),i2.Py(),i2.Pz());
+      TVector3 nOut_v3(i2.p.x,i2.p.y,i2.p.z);
       nOut.SetVectM(nOut_v3,0.93957);
     }
     if(fabs(i2.mass-0.93827)<1e-4){
-      TVector3 pOut_v3(-i2.Px(),-i2.Py(),-i2.Pz());//remember the - sign.
+      TVector3 pOut_v3(-i2.p.x,-i2.p.y,-i2.p.z);//remember the - sign.
       pOut.SetVectM(pOut_v3,0.93827);
     }
   }
