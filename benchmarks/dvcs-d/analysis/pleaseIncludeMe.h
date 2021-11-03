@@ -367,12 +367,13 @@ auto giveme_t_doubleTagging_REC(const std::vector<eic::ReconstructedParticleData
   }
   if(nOut.Px()<1e-9||pOut.Px()<1e-9){
     t_vec.push_back( -1. );
+    cout << "no " << -(nOut-pOut).Mag2() << endl;
   }
   else{
     t_vec.push_back( -(nOut-pOut).Mag2() );
     cout << "test " << -(nOut-pOut).Mag2() << endl;
   }
-
+  
 
   return t_vec;
 }
