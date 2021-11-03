@@ -363,7 +363,7 @@ auto giveme_t_doubleTagging_REC(const std::vector<eic::ReconstructedParticleData
       pOut.SetVectM(pOut_v3,0.93827);
     }
   }
-  if(nOut.Px()<1e-9||pOut.Px()<1e-9||){
+  if(nOut.Px()<1e-9||pOut.Px()<1e-9){
     t_vec.push_back( -1. );
   }
   else{
