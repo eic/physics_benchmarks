@@ -359,7 +359,7 @@ auto giveme_t_doubleTagging_REC(const std::vector<eic::ReconstructedParticleData
       nOut.SetVectM(nOut_v3,0.93957);
     }
     if(i2.charge==+1){
-      TVector3 pOut_v3(-i2.p.x,-i2.p.y,-i2.p.z);//remember the - sign.
+      TVector3 pOut_v3(i2.p.x,i2.p.y,i2.p.z);//remember the - sign.
       pOut.SetVectM(pOut_v3,0.93827);
     }
   }
