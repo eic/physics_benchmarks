@@ -370,7 +370,7 @@ auto giveme_t_doubleTagging_REC(const std::vector<eic::ReconstructedParticleData
   else{
     for(auto&i1:parts){
       if(i1.genStatus==4&&i1.pdgID==2112) {
-        TVector3 n_beam_v3(i1.ps.x,i1.ps.y,i1.ps.z)
+        TVector3 n_beam_v3(i1.ps.x,i1.ps.y,i1.ps.z);
         TLorentzVector n_beam;
         n_beam.SetVectM(n_beam_v3,0.93957);
       }
