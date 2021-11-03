@@ -73,7 +73,8 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 print_env.sh
 
 FILE_NAME_TAG="u_omega"
-DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/omega/u_omegaNeutralDecay_5x41GeV_5k_Q2_1_5.hepmc"
+#DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/omega/u_omegaNeutralDecay_5x41GeV_5k_Q2_1_5.hepmc"
+DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/OMEGA_ABCONV/slight_18x275_Q2of0to1_omegaNeutralDecay_ab_hiDiv.hepmc"
 
 export JUGGLER_MC_FILE="${LOCAL_DATA_PATH}/mc_${FILE_NAME_TAG}.hepmc"
 export JUGGLER_SIM_FILE="${LOCAL_DATA_PATH}/sim_${FILE_NAME_TAG}.root"
