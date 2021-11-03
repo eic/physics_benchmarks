@@ -317,7 +317,7 @@ auto getPmiss(const std::vector<ROOT::Math::PxPyPzMVector>& mom,
       for(auto&i2:parts){
         if(i2.genStatus==4&&i2.pdgID==2112) {
           TVector3 n_beam_v3(i2.ps.x,i2.ps.y,i2.ps.z);
-          n_beam.SetVectM(n_beam_v3,0.93957);
+          n_beam.SetVectM(n_beam_v3,i2.mass);
         }
       }
       TVector3 boost = n_beam.BoostVector();
