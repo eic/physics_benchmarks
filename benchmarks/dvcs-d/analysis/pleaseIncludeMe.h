@@ -352,7 +352,7 @@ auto giveme_t_REC(const std::vector<ROOT::Math::PxPyPzMVector>& mom,
 auto giveme_t_doubleTagging_REC(const std::vector<eic::ReconstructedParticleData>& mom){
   
   std::vector<double> t_vec;
-  TLorentzVector nOut,pOut;
+  TLorentzVector nOut(1e-10,1e-10,1e-10,1e-10),pOut(1e-10,1e-10,1e-10,1e-10);
   for(auto&i2: mom){
     if(fabs(i2.mass-0.93957)<1e-4){
       TVector3 nOut_v3(i2.p.x,i2.p.y,i2.p.z);
@@ -363,8 +363,15 @@ auto giveme_t_doubleTagging_REC(const std::vector<eic::ReconstructedParticleData
       pOut.SetVectM(pOut_v3,0.93827);
     }
   }
-  t_vec.push_back( -(nOut-pOut).Mag2() );
-  
+  if(nOut.Px()<1e-9||pOut.Px()<1e-9||){
+    t_vec.push_back( -1. );
+  }
+  else{
+    t_vec.push_back( -(nOut-pOut).Mag2() );
+    cout << "test " << -(nOut-pOut).Mag2() << endl;
+  }
+
+
   return t_vec;
 }
 
