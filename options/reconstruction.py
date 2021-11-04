@@ -647,7 +647,7 @@ fast_ff = FFSmearedParticles("fast_ff",
         enableB0         = True,
         enableRP         = True,
         enableOMD        = True,
-        ionBeamEnergy    = 200,
+        ionBeamEnergy    = 100,
         crossingAngle    = -0.025)
 algorithms.append(fast_ff)
 

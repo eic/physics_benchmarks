@@ -330,6 +330,30 @@ auto getPmiss(const std::vector<ROOT::Math::PxPyPzMVector>& mom,
   return momentumVec;
 }
 
+auto getP(const std::vector<ROOT::Math::PxPyPzMVector>& mom)
+{
+  std::vector<double> pVec;
+  for(auto& i1:mom){
+    double momentum = i1.P();
+    if(i1.Px()<-1e9){momentum=-10.;}
+    pVec.push_back(momentum);
+  }
+  return pVec;
+
+}
+
+auto getPz(const std::vector<ROOT::Math::PxPyPzMVector>& mom)
+{
+  std::vector<double> pzVec;
+  for(auto& i1:mom){
+    double pz = i1.Pz();
+    if(i1.Px()<-1e9){pz=-10.;}
+    pzVec.push_back(pz);
+  }
+  return pzVec;
+
+}
+
 auto getAngleDiff(const std::vector<ROOT::Math::PxPyPzMVector> ph_gen,
   const std::vector<ROOT::Math::PxPyPzMVector> ph_rec)
 {
