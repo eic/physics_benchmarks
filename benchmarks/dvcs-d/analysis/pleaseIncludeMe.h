@@ -398,7 +398,7 @@ auto giveme_t_neutron_MC(const std::vector<dd4pod::Geant4ParticleData>& parts){
       pIn.SetVectM(pIn_v3,i1.mass);
     }
     if(i1.genStatus==1&&i1.pdgID==2112) {
-      TVector3 pOut_v3(i1.ps.x,i1.ps.y,i1.ps.z);
+      TVector3 pOut_v3(i1.ps.x/2.,i1.ps.y/2.,i1.ps.z/2.);
       pOut.SetVectM(pOut_v3,i1.mass);
     }
   }
@@ -450,7 +450,7 @@ auto giveme_t_doubleTagging_REC(const std::vector<eic::ReconstructedParticleData
     for(auto&i1:parts){
       if(i1.genStatus==4&&i1.pdgID==2112) {
         TVector3 n_beam_v3(i1.ps.x,i1.ps.y,i1.ps.z);
-        n_beam.SetVectM(n_beam_v3,0.93957);
+        n_beam.SetVectM(n_beam_v3,i1.mass);
       }
     }
     TVector3 boost = n_beam.BoostVector();
