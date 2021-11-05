@@ -71,7 +71,7 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 print_env.sh
 
 FILE_NAME_TAG="diffractive_phi"
-DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DIFFRACTIVE_PHI_ABCONV/Sartre/sartre_bnonsat_Au_phi_ab_eAu_1.hepmc"
+DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DIFFRACTIVE_PHI_ABCONV/BeAGLE/Output_input_temp_101_ab_eAu_18x110.hepmc"
 
 
 mkdir -p "${LOCAL_DATA_PATH}/input/${FILE_NAME_TAG}"

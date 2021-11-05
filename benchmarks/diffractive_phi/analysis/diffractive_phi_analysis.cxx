@@ -84,6 +84,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
              .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"}).Define("etaElec",getEta,{"scatElec"})
              .Define("vm", vector_sum, {"p1","p2"}).Define("Mass",getMass,{"vm"}).Define("vm_rec_pt", getPtVM, {"vm"}).Define("vm_rec_eta", getEtaVM, {"vm"})
+             .Define("protonREC",findScatProton,{"ReconstructedFFParticles"}).Define("proton_rec_p",getP,{"protonREC"})
              .Filter(kineCut,{"Q2_elec","y_elec"}); 
 
   auto h_Q2_elec = d1.Histo1D({"h_Q2_elec", "; GeV^2; counts", 100, -5, 25}, "Q2_elec");
@@ -92,6 +93,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   auto h_Mass_REC = d1.Histo1D({"h_Mass_REC", "; GeV; counts", 1000, 0, 4}, "Mass");
   auto h_Pt_VM_REC = d1.Histo1D({"h_Pt_VM_REC", "; GeV; counts", 50, 0, 2}, "vm_rec_pt");
   auto h_Eta_VM_REC = d1.Histo1D({"h_Eta_VM_REC", "; ; counts", 100, -11, 9}, "vm_rec_eta");
+  auto h_P_proton_REC = d1.Histo1D({"h_P_proton_REC", "; GeV; counts", 200, 0, 200}, "proton_rec_p");
 
   /*
   Block 3
@@ -157,6 +159,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("vm_rec_not_match_mc",findVM_REC_NOT_match_MC,{"vm","VMMC"})
              .Define("vm_recNMmc_pt",getPtVM,{"vm_rec_not_match_mc"})
              .Define("vm_res_pt",resolution_MC_match_REC,{"VMMC","vm"})
+             .Define("protonMC",findScatProtonMC,{"mcparticles"}).Define("proton_mc_p",getP,{"protonMC"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
   auto h_Pt_VM_MC_total = d4.Histo1D({"h_Pt_VM_MC_total", "; GeV; counts", 50, 0, 2}, "vm_mc_pt");
@@ -164,6 +167,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   auto h_Pt_VM_REC_total = d4.Histo1D({"h_Pt_VM_REC_total", "; GeV; counts", 50, 0, 2}, "vm_rec_pt");
   auto h_Pt_VM_REC_not_match = d4.Histo1D({"h_Pt_VM_REC_not_match", "; GeV; counts", 50, 0, 2}, "vm_recNMmc_pt");
   auto h_Pt_VM_MC_res = d4.Histo2D({"h_Pt_VM_MC_res",";pt;res",50,0,2,100,-1,1},"vm_mc_pt","vm_res_pt");
+  auto h_P_proton_MC = d4.Histo1D({"h_P_proton_MC", "; GeV; counts", 200, 0, 200}, "proton_mc_p");
 
   /*
   Block 6
@@ -246,6 +250,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   h_Mass_REC->Write();
   h_Pt_VM_REC->Write();
   h_Eta_VM_REC->Write();
+  h_P_proton_REC->Write();
 
   //Block 3
   h_Eta_scatElec_MC->Write();
@@ -267,6 +272,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   h_Pt_VM_REC_total->Write();
   h_Pt_VM_REC_not_match->Write();
   h_Pt_VM_MC_res->Write();
+  h_P_proton_MC->Write();
 
   //Block 6
   h_t_rec_veto->Write();

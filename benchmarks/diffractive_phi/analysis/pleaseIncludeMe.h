@@ -197,6 +197,26 @@ auto findVM_DaugMinus_MC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
   return momenta;
 }
 
+auto findScatProtonMC(const std::vector<dd4pod::Geant4ParticleData>& parts){
+  std::vector<ROOT::Math::PxPyPzMVector> momenta;
+  for(auto& i1 : parts){
+    if(i1.genStatus==1&&i1.pdgID==2212){
+      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.ps.x, i1.ps.y, i1.ps.z, i1.mass});
+    }
+  }
+  return momenta;
+}
+
+auto findScatProton(const std::vector<eic::ReconstructedParticleData>& FF){
+  std::vector<ROOT::Math::PxPyPzMVector> momenta;
+  for(auto& i1 : FF){
+    if(i1.charge==1){
+      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.p.x,i1.p.y,i1.p.z,i1.mass});
+    }
+  }
+  return momenta;
+}
+
 auto vector_sum = [](std::vector<ROOT::Math::PxPyPzMVector> p1, 
   std::vector<ROOT::Math::PxPyPzMVector> p2 ){
   std::vector<ROOT::Math::PxPyPzMVector> vm;
@@ -276,6 +296,18 @@ auto getPt(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
     else return part.Pt();
   });
   return ptVec;
+}
+
+auto getP(const std::vector<ROOT::Math::PxPyPzMVector>& mom)
+{
+  std::vector<double> pVec;
+  for(auto& i1:mom){
+    double momentum = i1.P();
+    if(i1.Px()<-1e9){momentum=-10.;}
+    pVec.push_back(momentum);
+  }
+  return pVec;
+
 }
 
 auto getPtVM(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
