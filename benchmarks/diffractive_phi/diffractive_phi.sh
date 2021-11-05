@@ -160,8 +160,8 @@ if [[ -n "${DO_ANALYSIS}" || -n "${DO_ALL}" ]] ; then
   # Store all plots here (preferribly png and pdf files)
   mkdir -p "results/${FILE_NAME_TAG}/nonlocal"
 
-  export VM_TYPE_TAG=1
-  export MC_TYPE_TAG=1
+  export VM_TYPE_TAG=0
+  export MC_TYPE_TAG=0
   # here you can add as many scripts as you want.
   root -b -q "benchmarks/${FILE_NAME_TAG}/analysis/diffractive_phi_analysis.cxx(\"${CONFIG}\",${VM_TYPE_TAG},${MC_TYPE_TAG})"
   if [[ "$?" -ne "0" ]] ; then
