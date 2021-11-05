@@ -394,11 +394,11 @@ auto giveme_t_neutron_MC(const std::vector<dd4pod::Geant4ParticleData>& parts){
   TLorentzVector pIn,pOut;
   for(auto& i1 : parts){
     if(i1.genStatus==4&&i1.pdgID==2112) {
-      TVector3 pIn_v3(i1.ps.x,i1.ps.y,i1.ps.z);
+      TVector3 pIn_v3(i1.ps.x/2.,i1.ps.y/2.,i1.ps.z/2.);
       pIn.SetVectM(pIn_v3,i1.mass);
     }
     if(i1.genStatus==1&&i1.pdgID==2112) {
-      TVector3 pOut_v3(i1.ps.x/2.,i1.ps.y/2.,i1.ps.z/2.);
+      TVector3 pOut_v3(i1.ps.x,i1.ps.y,i1.ps.z);
       pOut.SetVectM(pOut_v3,i1.mass);
     }
   }
