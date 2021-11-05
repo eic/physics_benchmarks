@@ -79,7 +79,7 @@ summary:
   stage: finish
   #needs: ["dis:results", "dvcs:results", "dvmp:results"]
   needs:
-    - "dvcs-d:results"
+    - ["dvcs-d:results","diffractive_phi:results"]
   script:
     - collect_benchmarks.py
   artifacts:
