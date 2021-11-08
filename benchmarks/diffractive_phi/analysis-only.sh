@@ -110,8 +110,8 @@ cat << EOF > ${CONFIG}
 }
 EOF
 #cat ${CONFIG}
-export VM_TYPE_TAG=0
-export MC_TYPE_TAG=0
+export VM_TYPE_TAG=1
+export MC_TYPE_TAG=1
 root -b -q "benchmarks/diffractive_phi/analysis/diffractive_phi_analysis.cxx+(\"${CONFIG}\",${VM_TYPE_TAG},${MC_TYPE_TAG})"
 if [[ "$?" -ne "0" ]] ; then
   echo "ERROR running rec_diffractive_phi_analysis script"
