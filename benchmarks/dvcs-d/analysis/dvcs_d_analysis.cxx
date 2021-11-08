@@ -107,7 +107,7 @@ int dvcs_d_analysis(const std::string& config_name)
              .Define("gammaMC",findGammaMC,{"mcparticles"}).Define("MassMC",getMass,{"gammaMC"}).Define("gamma_mc_pt",getPt,{"gammaMC"}).Define("gamma_mc_eta",getEta,{"gammaMC"})
              .Define("protonMC",findScatProtonMC,{"mcparticles"}).Define("proton_mc_pt",getPt,{"protonMC"}).Define("proton_mc_eta",getEta,{"protonMC"}).Define("proton_mc_theta",getTheta,{"protonMC"})
              .Define("proton_mc_momentum",getPmiss,{"protonMC","mcparticles"}).Define("proton_mc_p",getP,{"protonMC"}).Define("proton_mc_pz",getPz,{"protonMC"})
-             .Define("neutronMC",findScatNeutronMC,{"mcparticles"}).Define("neutron_mc_momentum",getPmiss,{"neutronMC"})
+             .Define("neutronMC",findScatNeutronMC,{"mcparticles"}).Define("neutron_mc_momentum",getPmiss,{"neutronMC","mcparticles"})
              .Define("t_MC",giveme_t_neutron_MC,{"mcparticles"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
