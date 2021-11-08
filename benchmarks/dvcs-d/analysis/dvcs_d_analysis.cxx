@@ -154,7 +154,7 @@ int dvcs_d_analysis(const std::string& config_name)
   h_EtaPhi_proton_REC->Write();
   h_PxPy_proton_REC->Write();
   h_PxPy_neutron_REC->Write();
-  h_Momentum_neutron_REC->Wirte();
+  h_Momentum_neutron_REC->Write();
   h_t_REC->Write();
   h_t_REC_A->Write();
 
