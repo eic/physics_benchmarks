@@ -70,7 +70,7 @@ int dvcs_d_analysis(const std::string& config_name)
              .Define("gamma_rec_pt",getPt,{"gammaREC"}).Define("gamma_rec_eta",getEta,{"gammaREC"}).Define("gamma_rec_E",getE,{"gammaREC"})
              .Define("protonREC",findScatProton,{"ReconstructedFFParticles"}).Define("proton_rec_eta",getEta,{"protonREC"}).Define("proton_rec_phi",getPhi,{"protonREC"}).Define("proton_rec_px",getPx,{"protonREC"}).Define("proton_rec_py",getPy,{"protonREC"}).Define("proton_rec_momentum",getPmiss,{"protonREC","mcparticles"})
              .Define("proton_rec_p",getP,{"protonREC"}).Define("proton_rec_pz",getPz,{"protonREC"})
-             .Define("neutronREC",findScatNeutron,{"ReconstructedFFParticles"}).Define("neutron_rec_px",getPx,{"neutronREC"}).Define("neutron_rec_py",getPy,{"neutronREC"}).Define("neutron_rec_momentum",getPmiss,{"neutronREC"})
+             .Define("neutronREC",findScatNeutron,{"ReconstructedFFParticles"}).Define("neutron_rec_px",getPx,{"neutronREC"}).Define("neutron_rec_py",getPy,{"neutronREC"}).Define("neutron_rec_momentum",getPmiss,{"neutronREC","mcparticles"})
              .Define("proton_rec_pt",getPt,{"protonREC"}).Define("proton_rec_theta",getTheta,{"protonREC"})
              .Define("t_REC",giveme_t_doubleTagging_REC,{"ReconstructedFFParticles","mcparticles"}).Define("t_REC_A",giveme_t,{"gammaREC","scatElec"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
