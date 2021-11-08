@@ -70,7 +70,7 @@ int dvcs_d_analysis(const std::string& config_name)
              .Define("gamma_rec_pt",getPt,{"gammaREC"}).Define("gamma_rec_eta",getEta,{"gammaREC"}).Define("gamma_rec_E",getE,{"gammaREC"})
              .Define("protonREC",findScatProton,{"ReconstructedFFParticles"}).Define("proton_rec_eta",getEta,{"protonREC"}).Define("proton_rec_phi",getPhi,{"protonREC"}).Define("proton_rec_px",getPx,{"protonREC"}).Define("proton_rec_py",getPy,{"protonREC"}).Define("proton_rec_momentum",getPmiss,{"protonREC","mcparticles"})
              .Define("proton_rec_p",getP,{"protonREC"}).Define("proton_rec_pz",getPz,{"protonREC"})
-             .Define("neutronREC",findScatNeutron,{"ReconstructedFFParticles"}).Define("neutron_rec_px",getPx,{"neutronREC"}).Define("neutron_rec_py",getPy,{"neutronREC"})
+             .Define("neutronREC",findScatNeutron,{"ReconstructedFFParticles"}).Define("neutron_rec_px",getPx,{"neutronREC"}).Define("neutron_rec_py",getPy,{"neutronREC"}).Define("neutron_rec_momentum",getPmiss,{"neutronREC"})
              .Define("proton_rec_pt",getPt,{"protonREC"}).Define("proton_rec_theta",getTheta,{"protonREC"})
              .Define("t_REC",giveme_t_doubleTagging_REC,{"ReconstructedFFParticles","mcparticles"}).Define("t_REC_A",giveme_t,{"gammaREC","scatElec"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
@@ -91,6 +91,7 @@ int dvcs_d_analysis(const std::string& config_name)
   auto h_EtaPhi_proton_REC = d1.Histo2D({"h_EtaPhi_proton_REC",";#eta;#phi",100,-10,10,100,-PI,PI},"proton_rec_eta","proton_rec_phi");
   auto h_PxPy_proton_REC = d1.Histo2D({"h_PxPy_proton_REC",";#px;#py",200,-6,2,200,-6,2},"proton_rec_px","proton_rec_py");
   auto h_PxPy_neutron_REC = d1.Histo2D({"h_PxPy_neutron_REC",";#px;#py",200,-6,2,200,-6,2},"neutron_rec_px","neutron_rec_py");
+  auto h_Momentum_neutron_REC = d1.Histo1D({"h_Momentum_neutron_REC", "; P; counts", 100, 0, 2}, "neutron_rec_momentum");
   auto h_t_REC = d1.Histo1D({"h_t_REC", "; t; counts", 50, 0, 2}, "t_REC");
   auto h_t_REC_A = d1.Histo1D({"h_t_REC_A", "; t; counts", 50, 0, 2}, "t_REC_A");
 
@@ -106,6 +107,7 @@ int dvcs_d_analysis(const std::string& config_name)
              .Define("gammaMC",findGammaMC,{"mcparticles"}).Define("MassMC",getMass,{"gammaMC"}).Define("gamma_mc_pt",getPt,{"gammaMC"}).Define("gamma_mc_eta",getEta,{"gammaMC"})
              .Define("protonMC",findScatProtonMC,{"mcparticles"}).Define("proton_mc_pt",getPt,{"protonMC"}).Define("proton_mc_eta",getEta,{"protonMC"}).Define("proton_mc_theta",getTheta,{"protonMC"})
              .Define("proton_mc_momentum",getPmiss,{"protonMC","mcparticles"}).Define("proton_mc_p",getP,{"protonMC"}).Define("proton_mc_pz",getPz,{"protonMC"})
+             .Define("neutronMC",findScatNeutronMC,{"mcparticles"}).Define("neutron_mc_momentum",getPmiss,{"neutronMC"})
              .Define("t_MC",giveme_t_neutron_MC,{"mcparticles"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
@@ -117,6 +119,7 @@ int dvcs_d_analysis(const std::string& config_name)
   auto h_Eta_proton_MC = d2.Histo1D({"h_Eta_proton_MC", "; #eta; counts", 100, 0, 9}, "proton_mc_eta");
   auto h_Theta_proton_MC = d2.Histo1D({"h_Theta_proton_MC", "; #theta; counts", 100, 0, 0.1}, "proton_mc_theta");
   auto h_Momentum_proton_MC = d2.Histo1D({"h_Momentum_proton_MC", "; P; counts", 100, 0, 2}, "proton_mc_momentum");
+  auto h_Momentum_neutron_MC = d2.Histo1D({"h_Momentum_neutron_MC", "; P; counts", 100, 0, 2}, "neutron_mc_momentum");
   auto h_P_proton_MC = d2.Histo1D({"h_P_proton_MC", "; P; counts", 200, 0, 200}, "proton_mc_p");
   auto h_Pz_proton_MC = d2.Histo1D({"h_Pz_proton_MC", "; P; counts", 200, 0, 200}, "proton_mc_pz");
   auto h_t_MC = d2.Histo1D({"h_t_MC", "; ; counts", 50, 0, 2}, "t_MC");
@@ -151,6 +154,7 @@ int dvcs_d_analysis(const std::string& config_name)
   h_EtaPhi_proton_REC->Write();
   h_PxPy_proton_REC->Write();
   h_PxPy_neutron_REC->Write();
+  h_Momentum_neutron_REC->Wirte();
   h_t_REC->Write();
   h_t_REC_A->Write();
 
@@ -164,6 +168,7 @@ int dvcs_d_analysis(const std::string& config_name)
   h_Eta_proton_MC->Write();
   h_Theta_proton_MC->Write();
   h_Momentum_proton_MC->Write();
+  h_Momentum_neutron_MC->Write();
   h_P_proton_MC->Write();
   h_Pz_proton_MC->Write();
   h_t_MC->Write();

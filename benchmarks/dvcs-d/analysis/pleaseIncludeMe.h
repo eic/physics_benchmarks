@@ -185,6 +185,16 @@ auto findScatProton(const std::vector<eic::ReconstructedParticleData>& FF){
   return momenta;
 }
 
+auto findScatNeutronMC(const std::vector<dd4pod::Geant4ParticleData>& parts){
+  std::vector<ROOT::Math::PxPyPzMVector> momenta;
+  for(auto& i1 : parts){
+    if(i1.genStatus==1&&i1.pdgID==2112){
+      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.p.x,i1.p.y,i1.p.z,i1.mass});
+    }
+  }
+  return momenta;
+}
+
 auto findScatNeutron(const std::vector<eic::ReconstructedParticleData>& FF){
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : FF){
