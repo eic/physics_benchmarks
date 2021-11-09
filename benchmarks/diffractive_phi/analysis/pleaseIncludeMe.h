@@ -358,6 +358,7 @@ auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
   const std::vector<dd4pod::Geant4ParticleData>& mc){
 
   TLorentzVector eIn(0,0,-18,18);
+  TLorentzVector eInTrue(0,0,-18,18);
   TLorentzVector pInTrue(0,0,109.996,110.000);
   TLorentzVector pIn(0,0,109.996,110.000);
   for(auto& i3 : mc){
@@ -394,7 +395,7 @@ auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       eOut.RotateY(-angle_x);
       eOut.RotateX(-angle_y);
       
-      TVector3 boost_to_lab = (pInTrue+eIn).BoostVector();
+      TVector3 boost_to_lab = (pInTrue+eInTrue).BoostVector();
       vmOut.Boost(boost_to_lab);
       eIn.Boost(boost_to_lab);
       eOut.Boost(boost_to_lab);
