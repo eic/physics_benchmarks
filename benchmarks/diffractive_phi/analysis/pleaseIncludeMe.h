@@ -380,11 +380,15 @@ auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       
       TVector3 boost_to_cm = (pIn+eIn).BoostVector();
       
-      double angle_x = - (TMath::ATan(boost_to_cm.Z() / boost_to_cm.X()));
-      double angle_y = - (TMath::ATan(boost_to_cm.Z() / boost_to_cm.Y()));
+      TVector3 x_axis(1,0,0);
+      TVector3 y_axis(0,1,0);
       TLorentzRotation boost_plus_rotate=TLorentzRotation(-1.0*boost_to_cm);
-      boost_plus_rotate.RotateY( angle_x );
-      boost_plus_rotate.RotateX( angle_y );
+      
+      double angle_x = boost_to_cm.Angle(x_axis);
+      boost_plus_rotate.RotateY( -angle_x );
+      
+      double angle_y = boost_to_cm.Angle(y_axis);
+      boost_plus_rotate.RotateX( -angle_y );
 
       vmOut=boost_plus_rotate*vmOut;
       eOut=boost_plus_rotate*eOut;
