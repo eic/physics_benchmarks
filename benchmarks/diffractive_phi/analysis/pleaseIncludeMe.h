@@ -376,8 +376,8 @@ auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       if(i2.Px()<-1e9) continue;
       TLorentzVector eOut;eOut.SetPxPyPzE(i2.Px(),i2.Py(),i2.Pz(),i2.E());
       TLorentzVector vmOut;vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
-      TVector3 boost_to_ion = pIn.BoostVector();
-      TVector3 boost_to_lab = pInTrue.BoostVector();
+      TVector3 boost_to_ion = (pIn+eIn).BoostVector();
+      TVector3 boost_to_lab = (pInTrue+eIn).BoostVector();
       vmOut.Boost(-boost_to_ion);
       vmOut.Boost(boost_to_lab);
       double method_E = (eIn-eOut-vmOut).Mag2();
