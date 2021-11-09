@@ -379,17 +379,17 @@ auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       TLorentzVector vmOut;vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
       
       TVector3 boost_to_ion = (pIn+eIn).BoostVector();
-      TVector3 boost_to_lab = (pInTrue+eIn).BoostVector();
       TLorentzRotation boost_plus_rotate=TLorentzRotation(-1.0*boost_to_ion);
-      boost_plus_rotate.RotateY( - (TMath::ATan(boost_plus_rotate.Z() / boost_plus_rotate.X())) );
-      boost_plus_rotate.RotateX( - (TMath::ATan(boost_plus_rotate.Z() / boost_plus_rotate.Y())) );
+      boost_plus_rotate.RotateY( - (TMath::ATan(boost_to_ion.Z() / boost_to_ion.X())) );
+      boost_plus_rotate.RotateX( - (TMath::ATan(boost_to_ion.Z() / boost_to_ion.Y())) );
 
       vmOut=vmOut*boost_plus_rotate;
       eOut=eOut*boost_plus_rotate;
-
+      
+      TVector3 boost_to_lab = (pInTrue+eIn).BoostVector();
       vmOut.Boost(boost_to_lab);
       eOut.Boost(boost_to_lab);
-      
+
       double method_E = (eIn-eOut-vmOut).Mag2();
       t_vec.push_back( -method_E );
     }
