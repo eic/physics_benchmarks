@@ -399,7 +399,7 @@ auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       // eIn.Boost(boost_to_lab);
       // eOut.Boost(boost_to_lab);
       //end
-      double method_E = (eIn-eOut-vmOut).Mag2();
+      double method_E = (eInTrue-eOut-vmOut).Mag2();
       t_vec.push_back( -method_E );
     }
   }
