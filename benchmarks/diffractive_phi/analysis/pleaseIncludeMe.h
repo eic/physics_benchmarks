@@ -30,6 +30,7 @@
 
 #define PI            3.1415926
 #define MASS_ELECTRON 0.00051
+#define MASS_PROTON   0.93827
 #define MASS_PION     0.13957
 #define MASS_KAON     0.493667
 #define MASS_AU197    183.45406466643374
@@ -365,7 +366,7 @@ auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
     } 
     if(i3.genStatus==4&&i3.pdgID=2212){
       TVector3 pInv3(i3.ps.x,i3.ps.y,i3.ps.z);
-      pIn.SetVectM(eInv3,MASS_PROTON);
+      pIn.SetVectM(pInv3,MASS_PROTON);
     }
   }
   std::vector<double > t_vec;
