@@ -394,6 +394,10 @@ auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       eOut.RotateY(-angle_x);
       eOut.RotateX(-angle_y);
       
+      //take into account wrong momentum for after-burner.
+      double pz_new=pIn.P();
+      pInTrue.SetPxPyPzE(0.,0.,pz_new,sqrt(pz_new*pz_new+MASS_PROTON*MASS_PROTON));
+
       TVector3 boost_to_lab = (pInTrue+eInTrue).BoostVector();
       vmOut.Boost(boost_to_lab);
       eIn.Boost(boost_to_lab);
