@@ -383,8 +383,8 @@ auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       boost_plus_rotate.RotateY( - (TMath::ATan(boost_to_ion.Z() / boost_to_ion.X())) );
       boost_plus_rotate.RotateX( - (TMath::ATan(boost_to_ion.Z() / boost_to_ion.Y())) );
 
-      vmOut=vmOut*boost_plus_rotate;
-      eOut=eOut*boost_plus_rotate;
+      vmOut=boost_plus_rotate*vmOut;
+      eOut=boost_plus_rotate*eOut;
       
       TVector3 boost_to_lab = (pInTrue+eIn).BoostVector();
       vmOut.Boost(boost_to_lab);
