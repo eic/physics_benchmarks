@@ -351,7 +351,7 @@ auto getEtaVM(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return etaVec;
 }
 
-auto giveme_t = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
+auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
    std::vector<ROOT::Math::PxPyPzMVector> scatElec){
   std::vector<double > t_vec;
   for(auto& i2: scatElec){
@@ -363,8 +363,21 @@ auto giveme_t = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       TLorentzVector vmOut;vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
       double method_E = (eIn-eOut-vmOut).Mag2();
       t_vec.push_back( -method_E );
-      // TVector2 sum_pt(i1.Px()+i2.Px(), i1.Py()+i2.Py());
-      // t_vec.push_back( sum_pt.Mod2() );
+    }
+  }
+  
+  return t_vec;
+};
+
+auto giveme_t_A = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
+   std::vector<ROOT::Math::PxPyPzMVector> scatElec){
+  std::vector<double > t_vec;
+  for(auto& i2: scatElec){
+    for(auto& i1: vm){
+      if(fabs(i1.Rapidity())>3.0||fabs(i1.M()-vm_mass[which_vm])>vm_mass_width[which_vm]) continue;
+      if(i2.Px()<-1e9) continue;
+      TVector2 sum_pt(i1.Px()+i2.Px(), i1.Py()+i2.Py());
+      t_vec.push_back( sum_pt.Mod2() );
     }
   }
   

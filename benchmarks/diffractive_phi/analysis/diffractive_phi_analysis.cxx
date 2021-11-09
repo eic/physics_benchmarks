@@ -131,17 +131,17 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
              .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
              .Define("vm", vector_sum, {"p1","p2"})
-             .Define("t_rec", giveme_t, {"vm","scatElec"})
+             .Define("t_rec", giveme_t_E, {"vm","scatElec"})
              .Define("scatElecMC",findScatElecMC, {"mcparticles"})
              .Define("VMMC",findVMMC,{"mcparticles"})
-             .Define("t_MC",giveme_t,{"VMMC","scatElecMC"})
+             .Define("t_MC",giveme_t_E,{"VMMC","scatElecMC"})
              .Define("t_res",giveme_resolution,{"t_MC","t_rec"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
-  auto h_t_rec = d3.Histo1D({"h_t_rec", "; GeV^{2}; counts",50,0,2}, "t_rec");
-  auto h_t_MC = d3.Histo1D({"h_t_MC",";t; counts",50,0,2}, "t_MC");
+  auto h_t_rec = d3.Histo1D({"h_t_rec", "; GeV^{2}; counts",100,0,0.2}, "t_rec");
+  auto h_t_MC = d3.Histo1D({"h_t_MC",";t; counts",100,0,0.2}, "t_MC");
   auto h_t_res = d3.Histo1D({"h_t_res",";res; counts",100,-1,1},"t_res");
-  auto h_t_res_2D = d3.Histo2D({"h_t_res_2D",";-t;res",50,0,2,100,-1,1},"t_MC","t_res");
+  auto h_t_res_2D = d3.Histo2D({"h_t_res_2D",";-t;res",100,0,0.2,100,-1,1},"t_MC","t_res");
 
   /*
   Block 5
@@ -199,11 +199,11 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
              .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
              .Define("vm", vector_sum, {"p1","p2"})
-             .Define("t_rec", giveme_t, {"vm","scatElec"})
+             .Define("t_rec", giveme_t_E, {"vm","scatElec"})
              .Filter(eventVetoCut,{"ReconstructedFFParticles","ReconstructedChargedParticles"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
-  auto h_t_rec_veto = d5.Histo1D({"h_t_rec_veto", "; GeV^{2}; counts",50,0,2}, "t_rec");
+  auto h_t_rec_veto = d5.Histo1D({"h_t_rec_veto", "; GeV^{2}; counts",100,0,0.2}, "t_rec");
 
   /*
   Block 7 eSTARLight specific
