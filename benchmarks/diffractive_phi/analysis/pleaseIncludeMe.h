@@ -358,8 +358,8 @@ auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
   const std::vector<dd4pod::Geant4ParticleData>& mc){
 
   TLorentzVector eIn(0,0,-18,18);
-  TLorentzVector pInTrue(0,0,110,110.004);
-  TLorentzVector pIn(0,0,110,110.004);
+  TLorentzVector pInTrue(0,0,109.996,110.000);
+  TLorentzVector pIn(0,0,109.996,110.000);
   for(auto& i3 : mc){
     if(i3.genStatus==4&&i3.pdgID==11){
       TVector3 eInv3(i3.ps.x,i3.ps.y,i3.ps.z);
