@@ -356,11 +356,17 @@ auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
   const std::vector<dd4pod::Geant4ParticleData>& mc){
 
   TLorentzVector eIn(0,0,-18,18);
+  TLorentzVector pInTrue(0,0,110,110.004);
+  TLorentzVector pIn(0,0,110,110.004);
   for(auto& i3 : mc){
     if(i3.genStatus==4&&i3.pdgID==11){
       TVector3 eInv3(i3.ps.x,i3.ps.y,i3.ps.z);
       eIn.SetVectM(eInv3,MASS_ELECTRON);
     } 
+    if(i3.genStatus==4&&i3.pdgID=2212){
+      TVector3 pInv3(i3.ps.x,i3.ps.y,i3.ps.z);
+      pIn.SetVectM(eInv3,MASS_PROTON);
+    }
   }
   std::vector<double > t_vec;
   for(auto& i2: scatElec){
@@ -369,6 +375,10 @@ auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       if(i2.Px()<-1e9) continue;
       TLorentzVector eOut;eOut.SetPxPyPzE(i2.Px(),i2.Py(),i2.Pz(),i2.E());
       TLorentzVector vmOut;vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
+      TVector3 boost_to_ion = pIn.BoostVector();
+      TVector3 boost_to_lab = pInTrue.BoostVector();
+      vmOut.Boost(-boost_to_ion);
+      vmOut.Boost(boost_to_lab);
       double method_E = (eIn-eOut-vmOut).Mag2();
       t_vec.push_back( -method_E );
     }
