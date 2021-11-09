@@ -352,13 +352,21 @@ auto getEtaVM(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
 }
 
 auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
-   std::vector<ROOT::Math::PxPyPzMVector> scatElec){
+   std::vector<ROOT::Math::PxPyPzMVector> scatElec,
+  const std::vector<dd4pod::Geant4ParticleData>& mc){
+
+  TLorentzVector eIn(0,0,-18,18);
+  for(auto& i3 : mc){
+    if(i3.genStatus==4&&i3.pdgID==11){
+      TVector3 eInv3(i3.ps.x,i3.ps.y,i3.ps.z);
+      eIn.SetVectM(eInv3,MASS_ELECTRON);
+    } 
+  }
   std::vector<double > t_vec;
   for(auto& i2: scatElec){
     for(auto& i1: vm){
       if(fabs(i1.Rapidity())>3.0||fabs(i1.M()-vm_mass[which_vm])>vm_mass_width[which_vm]) continue;
       if(i2.Px()<-1e9) continue;
-      TLorentzVector eIn(0,0,-18,18);
       TLorentzVector eOut;eOut.SetPxPyPzE(i2.Px(),i2.Py(),i2.Pz(),i2.E());
       TLorentzVector vmOut;vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
       double method_E = (eIn-eOut-vmOut).Mag2();
