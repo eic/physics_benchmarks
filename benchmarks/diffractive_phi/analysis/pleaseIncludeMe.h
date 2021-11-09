@@ -378,14 +378,15 @@ auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       TLorentzVector eOut;eOut.SetPxPyPzE(i2.Px(),i2.Py(),i2.Pz(),i2.E());
       TLorentzVector vmOut;vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
       
-      TVector3 boost_to_ion = (pIn+eIn).BoostVector();
-      TLorentzRotation boost_plus_rotate=TLorentzRotation(-1.0*boost_to_ion);
-      boost_plus_rotate.RotateY( - (TMath::ATan(boost_to_ion.Z() / boost_to_ion.X())) );
-      boost_plus_rotate.RotateX( - (TMath::ATan(boost_to_ion.Z() / boost_to_ion.Y())) );
-
-      vmOut=boost_plus_rotate*vmOut;
-      eOut=boost_plus_rotate*eOut;
-      
+      TVector3 boost_to_cm = (pIn+eIn).BoostVector();
+      vmOut.Boost(-boost_to_cm);
+      eOut.Boost(-boost_to_cm);
+      double angle_x = - (TMath::ATan(boost_to_cm.Z() / boost_to_cm.X()));
+      double angle_y = - (TMath::ATan(boost_to_cm.Z() / boost_to_cm.Y()));
+      vmOut.RotateY(angle_x);
+      vmOut.RotateX(angle_y);
+      eOut.RotateY(angle_x);
+      eOut.RotateX(angle_y);     
       TVector3 boost_to_lab = (pInTrue+eIn).BoostVector();
       vmOut.Boost(boost_to_lab);
       eOut.Boost(boost_to_lab);
