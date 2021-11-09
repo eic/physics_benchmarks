@@ -224,10 +224,8 @@ auto vector_sum = [](std::vector<ROOT::Math::PxPyPzMVector> p1,
     if(i1.Px()<-1e9) continue;
     for(auto& i2: p2){
       if(i2.Px()<-1e9) continue;
-      //eta cut
-      if(fabs(i1.Eta())>3.5||fabs(i2.Eta())>3.5) continue;
+      //no detector cuts.
       vm.push_back(i1+i2);
-      std::cout << "mass. " << (i1+i2).M() << std::endl;
     }
   }
   return vm;
