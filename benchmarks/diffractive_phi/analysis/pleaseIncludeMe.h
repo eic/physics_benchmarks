@@ -484,6 +484,8 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       if(i2.Px()<-1e9) continue;
       TLorentzVector eOut;eOut.SetPxPyPzE(i2.Px(),i2.Py(),i2.Pz(),i2.E());
       TLorentzVector vmOut;vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
+      TLorentzVector aInVec(0.,0.,pInTrue.Pz()*197, sqrt(pInTrue.Pz()*197*pInTrue.Pz()*197 + MASS_AU197*MASS_AU197) );
+
       //reverse engineering.boost
       TVector3 boost_to_cm = (pIn+eIn).BoostVector();
       double angle_x = TMath::ATan(boost_to_cm.Z() / boost_to_cm.X());
@@ -506,7 +508,6 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       eOut.Boost(boost_to_lab);
       //end
       double method_L = -99.;
-      TLorentzVector aInVec(0.,0.,pInTrue.Pz()*197, sqrt(pInTrue.Pz()*197*pInTrue.Pz()*197 + MASS_AU197*MASS_AU197) );
       TLorentzVector a_beam_scattered = aInVec-(vmOut+eOut-eIn);
       double p_Aplus = a_beam_scattered.E()+a_beam_scattered.Pz();
       double p_TAsquared = TMath::Power(a_beam_scattered.Pt(),2);
@@ -515,7 +516,7 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       a_beam_scattered_corr.SetPxPyPzE(a_beam_scattered.Px(),a_beam_scattered.Py(),(p_Aplus-p_Aminus)/2., (p_Aplus+p_Aminus)/2. );
       method_L = (a_beam_scattered_corr-aInVec).Mag2();
 
-      t_vec.push_back( method_L );
+      t_vec.push_back( -method_L );
     }
   }
   return t_vec;
