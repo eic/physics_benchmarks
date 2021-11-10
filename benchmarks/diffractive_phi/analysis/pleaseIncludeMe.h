@@ -379,34 +379,7 @@ auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       TLorentzVector eOut;eOut.SetPxPyPzE(i2.Px(),i2.Py(),i2.Pz(),i2.E());
       TLorentzVector vmOut;vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
       //exact method need no boost.
-      //reverse engineering.boost
-      TVector3 boost_to_cm = (pIn+eIn).BoostVector();
-      double angle_x = TMath::ATan(boost_to_cm.Z() / boost_to_cm.X());
-      double angle_y = TMath::ATan(boost_to_cm.Z() / boost_to_cm.Y());
-    
-      eInTrue.Boost(-boost_to_cm);
-      eInTrue.RotateY(angle_x);
-      eInTrue.RotateX(angle_y);
-      eInTrue.Boost(boost_to_cm);
-     
-      // vmOut.Boost(-boost_to_cm);
-      // vmOut.RotateY(-angle_x);
-      // vmOut.RotateX(-angle_y);
-
-      // eIn.Boost(-boost_to_cm);
-      // eIn.RotateY(-angle_x);
-      // eIn.RotateX(-angle_y);
-
-      // eOut.Boost(-boost_to_cm);
-      // eOut.RotateY(-angle_x);
-      // eOut.RotateX(-angle_y);
-      
-      // TVector3 boost_to_lab = (pInTrue+eInTrue).BoostVector();
-      // vmOut.Boost(boost_to_lab);
-      // eIn.Boost(boost_to_lab);
-      // eOut.Boost(boost_to_lab);
-      //end
-      double method_E = (eInTrue-eOut-vmOut).Mag2();
+      double method_E = (eIn-eOut-vmOut).Mag2();
       t_vec.push_back( -method_E );
     }
   }
