@@ -408,8 +408,10 @@ auto giveme_t_MC_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
     }
   }
   std::vector<double > t_vec;
-  double method_E = (eIn-eOut-vmOut).Mag2();
-  t_vec.push_back( -method_E );
+  TVector2 sum_pt(eOut.Px()+vmOut.Px(), eOut.Py()+vmOut.Py());
+  t_vec.push_back( sum_pt.Mod2() );
+  // double method_E = (eIn-eOut-vmOut).Mag2();
+  // t_vec.push_back( -method_E );
   
   return t_vec;
 };
@@ -444,6 +446,7 @@ auto giveme_t_A = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       t_vec.push_back( sum_pt.Mod2() );
     }
   }
+
   return t_vec;
 };
 
