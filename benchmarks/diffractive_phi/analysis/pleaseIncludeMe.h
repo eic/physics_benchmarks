@@ -452,19 +452,19 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
   const std::vector<dd4pod::Geant4ParticleData>& mc){
 
   TLorentzVector eIn(0,0,-18,18);
-  TLorentzVector eInTrue(0,0,-18,18);
-  TLorentzVector pInTrue(0,0,109.996,110.000);
-  TLorentzVector pIn(0,0,109.996,110.000);
-  for(auto& i3 : mc){
-    if(i3.genStatus==4&&i3.pdgID==11){
-      TVector3 eInv3(i3.ps.x,i3.ps.y,i3.ps.z);
-      eIn.SetVectM(eInv3,MASS_ELECTRON);
-    } 
-    if(i3.genStatus==4&&i3.pdgID==2212){
-      TVector3 pInv3(i3.ps.x,i3.ps.y,i3.ps.z);
-      pIn.SetVectM(pInv3,MASS_PROTON);
-    }
-  }
+  // TLorentzVector eInTrue(0,0,-18,18);
+  // TLorentzVector pInTrue(0,0,109.996,110.000);
+  // TLorentzVector pIn(0,0,109.996,110.000);
+  // for(auto& i3 : mc){
+  //   if(i3.genStatus==4&&i3.pdgID==11){
+  //     TVector3 eInv3(i3.ps.x,i3.ps.y,i3.ps.z);
+  //     eIn.SetVectM(eInv3,MASS_ELECTRON);
+  //   } 
+  //   if(i3.genStatus==4&&i3.pdgID==2212){
+  //     TVector3 pInv3(i3.ps.x,i3.ps.y,i3.ps.z);
+  //     pIn.SetVectM(pInv3,MASS_PROTON);
+  //   }
+  // }
   std::vector<double > t_vec;
   for(auto& i2: scatElec){
     for(auto& i1: vm){
@@ -474,27 +474,6 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       TLorentzVector vmOut;vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
       TLorentzVector aInVec(0.,0.,pInTrue.Pz()*197, sqrt(pInTrue.Pz()*197*pInTrue.Pz()*197 + MASS_AU197*MASS_AU197) );
 
-      //reverse engineering.boost
-      TVector3 boost_to_cm = (pIn+eIn).BoostVector();
-      double angle_x = TMath::ATan(boost_to_cm.Z() / boost_to_cm.X());
-      double angle_y = TMath::ATan(boost_to_cm.Z() / boost_to_cm.Y());
-      vmOut.Boost(-boost_to_cm);
-      vmOut.RotateY(-angle_x);
-      vmOut.RotateX(-angle_y);
-
-      eIn.Boost(-boost_to_cm);
-      eIn.RotateY(-angle_x);
-      eIn.RotateX(-angle_y);
-
-      eOut.Boost(-boost_to_cm);
-      eOut.RotateY(-angle_x);
-      eOut.RotateX(-angle_y);
-      
-      TVector3 boost_to_lab = (pInTrue+eInTrue).BoostVector();
-      vmOut.Boost(boost_to_lab);
-      eIn.Boost(boost_to_lab);
-      eOut.Boost(boost_to_lab);
-      //end
       double method_L = -99.;
       TLorentzVector a_beam_scattered = aInVec-(vmOut+eOut-eIn);
       double p_Aplus = a_beam_scattered.E()+a_beam_scattered.Pz();
