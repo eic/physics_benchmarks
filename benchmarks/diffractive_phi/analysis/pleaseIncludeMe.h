@@ -389,7 +389,7 @@ auto giveme_t_MC_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       TVector3 eOutv3(i3.ps.x,i3.ps.y,i3.ps.z);
       eOut.SetVectM(eOutv3,i3.mass);
     }
-    if(i3.genStatus==2&&i3.pdgID==333){
+    if(i3.genStatus==2&&i3.pdgID==vm_pid[which_vm]){
       TVector3 vmOutv3(i3.ps.x,i3.ps.y,i3.ps.z);
       vmOut.SetVectM(vmOutv3,i3.mass);
     }
@@ -411,7 +411,7 @@ auto giveme_t_A = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       TVector3 eOutv3(i3.ps.x,i3.ps.y,i3.ps.z);
       eOut_MC.SetVectM(eOutv3,i3.mass);
     }
-    if(i3.genStatus==2&&i3.pdgID==333){
+    if(i3.genStatus==2&&i3.pdgID==vm_pid[which_vm]){
       TVector3 vmOutv3(i3.ps.x,i3.ps.y,i3.ps.z);
       vmOut_MC.SetVectM(vmOutv3,i3.mass);
     }
