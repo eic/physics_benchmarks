@@ -405,8 +405,12 @@ auto giveme_t_A = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
    std::vector<ROOT::Math::PxPyPzMVector> scatElec,
   const std::vector<dd4pod::Geant4ParticleData>& mc){
 
-  TLorentzVector vmOut_MC;
+  TLorentzVector vmOut_MC, eOut_MC;
   for(auto& i3 : mc){
+    if(i3.genStatus==1&&i3.pdgID==11){
+      TVector3 eOutv3(i3.ps.x,i3.ps.y,i3.ps.z);
+      eOut_MC.SetVectM(eOutv3,i3.mass);
+    }
     if(i3.genStatus==2&&i3.pdgID==333){
       TVector3 vmOutv3(i3.ps.x,i3.ps.y,i3.ps.z);
       vmOut_MC.SetVectM(vmOutv3,i3.mass);
@@ -420,6 +424,8 @@ auto giveme_t_A = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       TLorentzVector eOut;eOut.SetPxPyPzE(i2.Px(),i2.Py(),i2.Pz(),i2.E());
       TLorentzVector vmOut;vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
       vmOut = vmOut_MC;
+      eOut = eOut_MC;
+      
       TVector2 sum_pt(eOut.Px()+vmOut.Px(), eOut.Py()+vmOut.Py());
       t_vec.push_back( sum_pt.Mod2() );
     }
