@@ -36,7 +36,7 @@
 #define MASS_KAON     0.493667
 #define MASS_AU197    183.45406466643374
 
-
+int nEvent=1;
 int which_vm = 1;
 double vm_pid[3]={113,333,443};
 double vm_mass[3]={0.77545,1.019,3.0969};

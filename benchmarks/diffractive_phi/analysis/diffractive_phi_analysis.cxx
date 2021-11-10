@@ -33,6 +33,9 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   ROOT::EnableImplicitMT(kNumThreads);
   ROOT::RDataFrame d("events", rec_file);
 
+  cout<<"Event: " << nEvent << endl;
+  nEvent++;
+
   //CHOOSE which VM, 0 = rho, 1 = phi, 2 = j/psi
   which_vm = vm_type;
   which_mc = mc_type;
