@@ -386,6 +386,34 @@ auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
   return t_vec;
 };
 
+auto giveme_t_MC_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
+   std::vector<ROOT::Math::PxPyPzMVector> scatElec,
+  const std::vector<dd4pod::Geant4ParticleData>& mc){
+
+  TLorentzVector eIn(0,0,-18,18);
+  TLorentzVector eOut(0,0,0,0.0);
+  TLorentzVector vmOut(0,0,0,0.0);
+  for(auto& i3 : mc){
+    if(i3.genStatus==4&&i3.pdgID==11){
+      TVector3 eInv3(i3.ps.x,i3.ps.y,i3.ps.z);
+      eIn.SetVectM(eInv3,i3.mass);
+    } 
+    if(i3.genStatus==1&&i3.pdgID==11){
+      TVector3 eOutv3(i3.ps.x,i3.ps.y,i3.ps.z);
+      eOut.SetVectM(eOutv3,i3.mass);
+    }
+    if(i3.genStatus==2&&i3.pdgID==333){
+      TVector3 vmOutv3(i3.ps.x,i3.ps.y,i3.ps.z);
+      vmOut.SetVectM(vmOutv3,i3.mass);
+    }
+  }
+  std::vector<double > t_vec;
+  double method_E = (eIn-eOut-vmOut).Mag2();
+  t_vec.push_back( -method_E );
+  
+  return t_vec;
+};
+
 auto giveme_t_A = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
    std::vector<ROOT::Math::PxPyPzMVector> scatElec,
   const std::vector<dd4pod::Geant4ParticleData>& mc){
