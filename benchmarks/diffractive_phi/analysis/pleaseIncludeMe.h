@@ -419,12 +419,13 @@ auto giveme_t_A = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
   std::vector<double > t_vec;
   for(auto& i2: scatElec){
     for(auto& i1: vm){
+      if(i1.Px()<-1e9) continue;
       if(fabs(i1.Rapidity())>3.0||fabs(i1.M()-vm_mass[which_vm])>vm_mass_width[which_vm]) continue;
       if(i2.Px()<-1e9) continue;
       TLorentzVector eOut;eOut.SetPxPyPzE(i2.Px(),i2.Py(),i2.Pz(),i2.E());
       TLorentzVector vmOut;vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
       // vmOut = vmOut_MC;
-      eOut = eOut_MC;
+      // eOut = eOut_MC;
       
       TVector2 sum_pt(eOut.Px()+vmOut.Px(), eOut.Py()+vmOut.Py());
       t_vec.push_back( sum_pt.Mod2() );
