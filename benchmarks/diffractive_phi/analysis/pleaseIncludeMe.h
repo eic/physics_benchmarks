@@ -407,14 +407,6 @@ auto giveme_t_A = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
 
   TLorentzVector vmOut_MC;
   for(auto& i3 : mc){
-    if(i3.genStatus==4&&i3.pdgID==11){
-      TVector3 eInv3(i3.ps.x,i3.ps.y,i3.ps.z);
-      eIn.SetVectM(eInv3,MASS_ELECTRON);
-    } 
-    if(i3.genStatus==4&&i3.pdgID==2212){
-      TVector3 pInv3(i3.ps.x,i3.ps.y,i3.ps.z);
-      pIn.SetVectM(pInv3,MASS_PROTON);
-    }
     if(i3.genStatus==2&&i3.pdgID==333){
       TVector3 vmOutv3(i3.ps.x,i3.ps.y,i3.ps.z);
       vmOut_MC.SetVectM(vmOutv3,i3.mass);
