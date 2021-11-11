@@ -160,6 +160,8 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("vm_recNMmc_pt",getPtVM,{"vm_rec_not_match_mc"})
              .Define("vm_res_pt",resolution_MC_match_REC,{"VMMC","vm"})
              .Define("protonMC",findScatProtonMC,{"mcparticles"}).Define("proton_mc_p",getP,{"protonMC"})
+             .Define("VMMC_daugPlus",findVM_DaugPlus_MC,{"mcparticles"}).Define("ptVMMC_daugPlus",getPt,{"VMMC_daugPlus"})
+             .Define("p1_rec_pt",getPt,{"p1"}).Define("p1_res_pt",resolution_MC_match_REC,{"ptVMMC_daugPlus","p1_rec_pt"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
   auto h_Pt_VM_MC_total = d4.Histo1D({"h_Pt_VM_MC_total", "; GeV; counts", 50, 0, 2}, "vm_mc_pt");
@@ -168,6 +170,9 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   auto h_Pt_VM_REC_not_match = d4.Histo1D({"h_Pt_VM_REC_not_match", "; GeV; counts", 50, 0, 2}, "vm_recNMmc_pt");
   auto h_Pt_VM_MC_res = d4.Histo2D({"h_Pt_VM_MC_res",";pt;res",50,0,2,100,-1,1},"vm_mc_pt","vm_res_pt");
   auto h_P_proton_MC = d4.Histo1D({"h_P_proton_MC", "; GeV; counts", 200, 0, 200}, "proton_mc_p");
+  auto h_Pt_track_REC = d4.Histo1D({"h_Pt_track_REC", "; GeV; counts", 50, 0, 2}, "p1_rec_pt");
+  auto h_Pt_track_MC = d4.Histo1D({"h_Pt_track_MC", "; GeV; counts", 50, 0, 2}, "ptVMMC_daugPlus");
+  auto h_Pt_track_MC_res = d4.Histo2D({"h_Pt_track_MC_res",";pt;res",50,0,2,100,-1,1},"ptVMMC_daugPlus","p1_res_pt");
 
   /*
   Block 6
@@ -273,6 +278,10 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   h_Pt_VM_REC_not_match->Write();
   h_Pt_VM_MC_res->Write();
   h_P_proton_MC->Write();
+  h_Pt_track_REC->Write();
+  h_Pt_track_MC->Write();
+  h_Pt_track_MC_res->Write();
+
 
   //Block 6
   h_t_rec_veto->Write();
