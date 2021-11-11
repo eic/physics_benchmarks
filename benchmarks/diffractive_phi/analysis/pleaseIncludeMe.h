@@ -109,15 +109,30 @@ auto momenta_from_reconstruction_plus(const std::vector<eic::ReconstructedPartic
   return momenta;
 }
 
-auto momenta_from_reconstruction_minus(const std::vector<eic::ReconstructedParticleData>& parts) {
+auto momenta_from_reconstruction_minus(const std::vector<eic::ReconstructedParticleData>& parts,
+  std::vector<int> scat_id,
+    std::vector<int> scat_source) 
+
+{
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
-     if(part.charge<0){
-      return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, vm_daug_mass[which_vm]};
+    if(scat_id.size()<=0 || scat_source.size()<=0){
+      if(part.charge<0){
+        return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, vm_daug_mass[which_vm]};
+      }
+      else{
+        return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
+      }
     }
     else{
-      return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
+      if(part.charge<0 && part.ID.value!=scat_id[0] && part.ID.source!=scat_source[0]){
+        return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, vm_daug_mass[which_vm]};
+      }
+      else{
+        return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
+      }
     }
+    
   });
   return momenta;
 }
