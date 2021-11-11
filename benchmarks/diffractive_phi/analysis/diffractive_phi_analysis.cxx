@@ -131,7 +131,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
              .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
              .Define("vm", vector_sum, {"p1","p2"})
-             .Define("t_rec", giveme_t_A, {"vm","scatElec","mcparticles"})
+             .Define("t_rec", giveme_t_L, {"vm","scatElec","mcparticles"})
              .Define("scatElecMC",findScatElecMC, {"mcparticles"})
              .Define("VMMC",findVMMC,{"mcparticles"})
              .Define("t_MC",giveme_t_MC_E,{"VMMC","scatElecMC","mcparticles"})
@@ -199,7 +199,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
              .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
              .Define("vm", vector_sum, {"p1","p2"})
-             .Define("t_rec", giveme_t_A, {"vm","scatElec","mcparticles"})
+             .Define("t_rec", giveme_t_L, {"vm","scatElec","mcparticles"})
              .Filter(eventVetoCut,{"ReconstructedFFParticles","ReconstructedChargedParticles"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
