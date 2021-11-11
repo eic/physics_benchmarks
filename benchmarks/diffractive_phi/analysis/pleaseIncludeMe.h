@@ -422,8 +422,12 @@ auto giveme_t_A = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       if(i1.Px()<-1e9) continue;
       if(fabs(i1.Rapidity())>3.0||fabs(i1.M()-vm_mass[which_vm])>vm_mass_width[which_vm]) continue;
       if(i2.Px()<-1e9) continue;
+
       TLorentzVector eOut;eOut.SetPxPyPzE(i2.Px(),i2.Py(),i2.Pz(),i2.E());
-      TLorentzVector vmOut;vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
+      TLorentzVector vmOut;
+      TVector3 vmOutv3(i1.Px(),i1.Py(),i1.Pz());
+      vmOut.SetVectM(vmOutv3,vm_mass[which_vm]);
+      
       // vmOut = vmOut_MC;
       // eOut = eOut_MC;
       
