@@ -161,6 +161,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("vm_res_pt",resolution_MC_match_REC,{"VMMC","vm"})
              .Define("protonMC",findScatProtonMC,{"mcparticles"}).Define("proton_mc_p",getP,{"protonMC"})
              .Define("VMMC_daugPlus",findVM_DaugPlus_MC,{"mcparticles"}).Define("ptVMMC_daugPlus",getPt,{"VMMC_daugPlus"})
+             .Define("VMMC_daugPlusMatchREC",findVM_MC_match_REC,{"VMMC_daugPlus","p1"}).Define("ptVMMC_daugPlus_match",getPt,{"VMMC_daugPlusMatchREC"})
              .Define("p1_rec_pt",getPt,{"p1"}).Define("p1_res_pt",resolution_MC_match_REC,{"VMMC_daugPlus","p1"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
@@ -172,6 +173,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   auto h_P_proton_MC = d4.Histo1D({"h_P_proton_MC", "; GeV; counts", 200, 0, 200}, "proton_mc_p");
   auto h_Pt_track_REC = d4.Histo1D({"h_Pt_track_REC", "; GeV; counts", 50, 0, 2}, "p1_rec_pt");
   auto h_Pt_track_MC = d4.Histo1D({"h_Pt_track_MC", "; GeV; counts", 50, 0, 2}, "ptVMMC_daugPlus");
+  auto h_Pt_track_MC_match = d4.Histo1D({"h_Pt_track_MC_match", "; GeV; counts", 50, 0, 2}, "ptVMMC_daugPlus_match");
   auto h_Pt_track_MC_res = d4.Histo2D({"h_Pt_track_MC_res",";pt;res",50,0,2,100,-1,1},"ptVMMC_daugPlus","p1_res_pt");
 
   /*
@@ -280,6 +282,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   h_P_proton_MC->Write();
   h_Pt_track_REC->Write();
   h_Pt_track_MC->Write();
+  h_Pt_track_MC_match->Write();
   h_Pt_track_MC_res->Write();
 
 
