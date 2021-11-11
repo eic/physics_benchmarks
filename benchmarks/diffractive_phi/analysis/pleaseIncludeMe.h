@@ -116,23 +116,12 @@ auto momenta_from_reconstruction_minus(const std::vector<eic::ReconstructedParti
 {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
-    if(scat_id.size()<=0 || scat_source.size()<=0){
-      if(i1.charge<0){
-        momenta.push_back(ROOT::Math::PxPyPzMVector{i1.p.x, i1.p.y, i1.p.z, vm_daug_mass[which_vm]});
-      }
-      else{
-        momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});
-      }
+   if(i1.charge<0){
+      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.p.x, i1.p.y, i1.p.z, vm_daug_mass[which_vm]});
     }
     else{
-      if(i1.charge<0 && i1.ID.value!=scat_id[0] && i1.ID.source!=scat_source[0]){
-        momenta.push_back(ROOT::Math::PxPyPzMVector{i1.p.x, i1.p.y, i1.p.z, vm_daug_mass[which_vm]});
-      }
-      else{
-        momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});
-      }
+      momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});
     }
-
   }
   return momenta;
 }
