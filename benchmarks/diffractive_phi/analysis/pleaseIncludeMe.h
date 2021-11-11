@@ -278,7 +278,7 @@ auto resolution_MC_match_REC(const std::vector<ROOT::Math::PxPyPzMVector> MC,
     double res = -1.e-10;
     for(auto& i2:REC){
       if(matchVectKine(i1,i2)&&fabs(i2.M()-i1.M())<vm_mass_width[which_vm]){
-        if(fabs(i1.eta)<1.0 && fabs(i2.eta)<1.0){
+        if(fabs(i1.Eta())<1.0 && fabs(i2.Eta())<1.0){
           res = (i1.Pt()-i2.Pt())/i2.Pt();
         }
       } 
