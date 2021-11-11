@@ -460,8 +460,7 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       if(i2.Px()<-1e9) continue;
       TLorentzVector eOut;eOut.SetPxPyPzE(i2.Px(),i2.Py(),i2.Pz(),i2.E());
       TLorentzVector vmOut;vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
-      TLorentzVector aInVec(pIn.Px()*197,pIn.Py()*197,pIn.Pz()*197, 
-        sqrt(pIn.Px()*197*pIn.Px()*197 + pIn.Py()*197*pIn.Py()*197, pIn.Pz()*197*pIn.Pz()*197 + MASS_AU197*MASS_AU197) );
+      TLorentzVector aInVec(pIn.Px()*197,pIn.Py()*197,pIn.Pz()*197,sqrt(pIn.Px()*197*pIn.Px()*197 + pIn.Py()*197*pIn.Py()*197, pIn.Pz()*197*pIn.Pz()*197 + MASS_AU197*MASS_AU197) );
 
       double method_L = -99.;
       TLorentzVector a_beam_scattered = aInVec-(vmOut+eOut-eIn);
