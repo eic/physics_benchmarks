@@ -114,26 +114,26 @@ auto momenta_from_reconstruction_minus(const std::vector<eic::ReconstructedParti
     std::vector<int> scat_source) 
 
 {
-  std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
-  std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
+  std::vector<ROOT::Math::PxPyPzMVector> momenta;
+  for(auto& i1 : parts){
     if(scat_id.size()<=0 || scat_source.size()<=0){
       if(part.charge<0){
-        return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, vm_daug_mass[which_vm]};
+        momenta.push_back(ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, vm_daug_mass[which_vm]});
       }
       else{
-        return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
+        momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});
       }
     }
     else{
       if(part.charge<0 && part.ID.value!=scat_id[0] && part.ID.source!=scat_source[0]){
-        return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, vm_daug_mass[which_vm]};
+        momenta.push_back(ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, vm_daug_mass[which_vm]});
       }
       else{
-        return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
+        momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});
       }
     }
-    
-  });
+
+  }
   return momenta;
 }
 
