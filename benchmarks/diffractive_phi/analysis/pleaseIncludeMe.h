@@ -364,7 +364,7 @@ auto getNtrk(const std::vector<eic::ReconstructedParticleData>& parts)
   std::vector<int> mult;
   int n=0;
   for(auto& i1 : parts){
-    if(i1.charge!=0) n++;
+    if(i1.charge>0) n++;
   }
   mult.push_back( n );
   return mult;
