@@ -275,15 +275,14 @@ auto resolution_MC_match_REC(const std::vector<ROOT::Math::PxPyPzMVector> MC,
 {
   std::vector<double > resolution;
   for(auto& i1:MC){
-    if(i1.Px()<-1e9) continue;
-    double res = -1.e-10;
+    double res = -1e-10;
     for(auto& i2:REC){
-      if(i2.Px()<-1e9) continue;
-      if(matchVectKine(i1,i2)&&fabs(i2.M()-i1.M())<vm_mass_width[which_vm]){
-        if(fabs(i2.Eta())<1.0){
-          res = (i1.Pt()-i2.Pt())/i1.Pt();
-        }
-      } 
+      if(i1.Px()<-1e9||i2.Px()<-1e9) continue;
+        if(matchVectKine(i1,i2)&&fabs(i2.M()-i1.M())<vm_mass_width[which_vm]){
+          if(fabs(i2.Eta())<1.0){
+            res = (i1.Pt()-i2.Pt())/i1.Pt();
+          }
+        } 
     }
     resolution.push_back(res);
   }
