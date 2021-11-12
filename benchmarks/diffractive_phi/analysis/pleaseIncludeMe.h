@@ -136,36 +136,17 @@ auto sort_momenta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return sort_mom;
 }
 
-// auto findScatElec(const std::vector<eic::ReconstructedParticleData>& parts, 
-//       std::vector<int> scat_id,
-//     std::vector<int> scat_source) 
-// {
-//   std::vector<ROOT::Math::PxPyPzMVector> momenta;
-//   for(auto& i1 : parts){
-//     if(scat_id.size()>0 
-//         && scat_source.size()>0
-//           &&i1.ID.value==scat_id[0]
-//             &&i1.ID.source==scat_source[0])
-//     {
-//       auto scat = ROOT::Math::PxPyPzMVector{i1.p.x, i1.p.y, i1.p.z, MASS_ELECTRON};
-//       momenta.push_back(scat);
-//     }
-//     else{
-//       momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});
-//     }
-  
-//   }
-//   return momenta;
-// }
-
 auto findScatElec(const std::vector<eic::ReconstructedParticleData>& parts, 
       std::vector<int> scat_id,
     std::vector<int> scat_source) 
 {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
-    if(i1.ID.value==0)
-    { 
+    if(scat_id.size()>0 
+        && scat_source.size()>0
+          &&i1.ID.value==scat_id[0]
+            &&i1.ID.source==scat_source[0])
+    {
       auto scat = ROOT::Math::PxPyPzMVector{i1.p.x, i1.p.y, i1.p.z, MASS_ELECTRON};
       momenta.push_back(scat);
     }
@@ -483,8 +464,16 @@ auto giveme_t_A = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       TLorentzVector eOut;eOut.SetPxPyPzE(i2.Px(),i2.Py(),i2.Pz(),i2.E());
       TLorentzVector vmOut; vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
       
-      // vmOut = vmOut_MC;
-      // eOut = eOut_MC;
+      vmOut = vmOut_MC;
+      eOut = eOut_MC;
+
+      double e_pt_res=gRandom->Gaus(0.0,0.017);
+      double e_pt = eOut.Pt()*(1.+e_pt_res);
+      eOut.SetPt(e_pt);
+
+      double vm_pt_res=gRandom->Gaus(0.0,0.01);
+      double vm_pt = vmOut.Pt()*(1.+vm_pt_res);
+      vmOut.SetPt(vm_pt);
       
       TVector2 sum_pt(eOut.Px()+vmOut.Px(), eOut.Py()+vmOut.Py());
       t_vec.push_back( sum_pt.Mod2() );
