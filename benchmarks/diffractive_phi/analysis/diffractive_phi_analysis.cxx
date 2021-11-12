@@ -180,7 +180,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   auto h_Pt_track_REC = d4.Histo1D({"h_Pt_track_REC", "; GeV; counts", 50, 0, 2}, "p1_rec_pt");
   auto h_Pt_track_MC = d4.Histo1D({"h_Pt_track_MC", "; GeV; counts", 50, 0, 2}, "ptVMMC_daugPlus");
   auto h_Pt_track_MC_match = d4.Histo1D({"h_Pt_track_MC_match", "; GeV; counts", 50, 0, 2}, "ptVMMC_daugPlus_match");
-  auto h_Pt_track_MC_res = d4.Histo2D({"h_Pt_track_MC_res",";pt;res",50,0,2,100,-1,1},"ptVMMC_daugPlus","p1_res_pt");
+  auto h_Pt_track_MC_res = d4.Histo2D({"h_Pt_track_MC_res",";pt;res",50,0,2,1000,-0.15,0.15},"ptVMMC_daugPlus","p1_res_pt");
 
   /*
   Block 6
