@@ -359,6 +359,17 @@ auto getEtaVM(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return etaVec;
 }
 
+auto getNtrk(const std::vector<eic::ReconstructedParticleData>& parts) 
+{
+  std::vector<int> mult;
+  int n=0;
+  for(auto& i1 : parts){
+    if(i1.charge!=0) n++;
+  }
+  mult.push_back( n );
+  return mult;
+}
+
 auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
    std::vector<ROOT::Math::PxPyPzMVector> scatElec,
   const std::vector<dd4pod::Geant4ParticleData>& mc){
