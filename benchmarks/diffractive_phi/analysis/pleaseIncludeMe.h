@@ -467,13 +467,21 @@ auto giveme_t_A = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       vmOut = vmOut_MC;
       eOut = eOut_MC;
 
-      double e_pt_res=gRandom->Gaus(0.0,0.017);
-      double e_pt = eOut.Pt()*(1.+e_pt_res);
-      eOut.SetPt(e_pt);
+      double e_px_res=gRandom->Gaus(0.0,0.012);
+      double e_px = eOut.Px()*(1.+e_px_res);
+      eOut.SetPx(e_px);
 
-      double vm_pt_res=gRandom->Gaus(0.0,0.01);
-      double vm_pt = vmOut.Pt()*(1.+vm_pt_res);
-      vmOut.SetPt(vm_pt);
+      double e_py_res=gRandom->Gaus(0.0,0.012);
+      double e_py = eOut.Py()*(1.+e_py_res);
+      eOut.SetPy(e_py);
+
+      double vm_px_res=gRandom->Gaus(0.0,0.007);
+      double vm_px = vmOut.Px()*(1.+vm_px_res);
+      vmOut.SetPx(vm_px);
+
+      double vm_py_res=gRandom->Gaus(0.0,0.007);
+      double vm_py = vmOut.Py()*(1.+vm_py_res);
+      vmOut.SetPy(vm_py);
       
       TVector2 sum_pt(eOut.Px()+vmOut.Px(), eOut.Py()+vmOut.Py());
       t_vec.push_back( sum_pt.Mod2() );
