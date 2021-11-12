@@ -156,6 +156,9 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("scatID_source","InclusiveKinematicsElectron.scatID.source")
              .Define("scatID_cand_value",scatID_cand_value, {"scatID_value"})
              .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
+             .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"}).Define("e_rec_pt",getPt,{"scatElec"})
+             .Define("scatElecMC",findScatElecMC, {"mcparticles"}).Define("e_mc_pt",getPt,{"scatElec"})
+             .Define("e_res_pt",resolution_MC_match_REC,{"scatElecMC","scatElec"})
              .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedChargedParticles"})
              .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
              .Define("vm", vector_sum, {"p1","p2"}).Define("vm_rec_pt",getPtVM,{"vm"})
@@ -181,6 +184,9 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   auto h_Pt_track_MC = d4.Histo1D({"h_Pt_track_MC", "; GeV; counts", 50, 0, 2}, "ptVMMC_daugPlus");
   auto h_Pt_track_MC_match = d4.Histo1D({"h_Pt_track_MC_match", "; GeV; counts", 50, 0, 2}, "ptVMMC_daugPlus_match");
   auto h_Pt_track_MC_res = d4.Histo2D({"h_Pt_track_MC_res",";pt;res",50,0,2,300,-0.15,0.15},"ptVMMC_daugPlus","p1_res_pt");
+  auto h_Pt_e_REC = d4.Histo1D({"h_Pt_e_REC", "; GeV; counts", 50, 0, 2}, "e_rec_pt");
+  auto h_Pt_e_MC = d4.Histo1D({"h_Pt_e_MC", "; GeV; counts", 50, 0, 2}, "e_mc_pt");
+  auto h_Pt_e_MC_res = d4.Histo2D({"h_Pt_e_MC_res",";pt;res",50,0,2,300,-0.15,0.15},"e_mc_pt","e_res_pt");
 
   /*
   Block 6
@@ -295,6 +301,9 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   h_Pt_track_MC->Write();
   h_Pt_track_MC_match->Write();
   h_Pt_track_MC_res->Write();
+  h_Pt_e_REC->Write();
+  h_Pt_e_MC->Write();
+  h_Pt_e_MC_res->Write();
 
 
   //Block 6
