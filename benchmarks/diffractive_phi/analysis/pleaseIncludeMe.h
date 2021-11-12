@@ -316,7 +316,9 @@ auto resolution_MC_match_REC_electron(const std::vector<ROOT::Math::PxPyPzMVecto
     double res = -99;
     for(auto& i2:REC){
       if(i1.Px()<-1e9||i2.Px()<-1e9) continue;
-        if(matchVectKine(i1,i2)&&fabs(i2.M()-i1.M())<vm_mass_width[which_vm]){
+        if(matchVectKine(i1,i2)
+          &&fabs(i2.M()-i1.M())<vm_mass_width[which_vm]
+            && i1.Eta() > -3.7 && i1.Eta() < -0.5){
             res = (i1.Pt()-i2.Pt())/i1.Pt();
         } 
     }
