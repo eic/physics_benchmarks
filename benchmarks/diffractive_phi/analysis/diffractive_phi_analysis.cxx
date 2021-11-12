@@ -158,7 +158,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
              .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"}).Define("e_rec_pt",getPt,{"scatElec"})
              .Define("scatElecMC",findScatElecMC, {"mcparticles"}).Define("e_mc_pt",getPt,{"scatElecMC"})
-             .Define("e_res_pt",resolution_MC_match_REC,{"scatElecMC","scatElec"})
+             .Define("e_res_pt",resolution_MC_match_REC_electron,{"scatElecMC","scatElec"})
              .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedChargedParticles"})
              .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
              .Define("vm", vector_sum, {"p1","p2"}).Define("vm_rec_pt",getPtVM,{"vm"})

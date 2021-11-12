@@ -289,6 +289,24 @@ auto resolution_MC_match_REC(const std::vector<ROOT::Math::PxPyPzMVector> MC,
   return resolution;
 }
 
+auto resolution_MC_match_REC_electron(const std::vector<ROOT::Math::PxPyPzMVector> MC, 
+  const std::vector<ROOT::Math::PxPyPzMVector> REC)
+{
+  std::vector<double > resolution;
+  for(auto& i1:MC){
+    double res = -99;
+    for(auto& i2:REC){
+      if(i1.Px()<-1e9||i2.Px()<-1e9) continue;
+        if(matchVectKine(i1,i2)&&fabs(i2.M()-i1.M())<vm_mass_width[which_vm]){
+            res = (i1.Pt()-i2.Pt())/i1.Pt();
+        } 
+    }
+    resolution.push_back(res);
+  }
+  return resolution;
+}
+
+
 auto getMass(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> massVec(mom.size() );
   std::transform(mom.begin(), mom.end(), massVec.begin(), [](const auto& part) {
