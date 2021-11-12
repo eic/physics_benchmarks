@@ -475,11 +475,11 @@ auto giveme_t_A = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       double e_py = eOut.Py()*(1.+e_py_res);
       eOut.SetPy(e_py);
 
-      double vm_px_res=gRandom->Gaus(0.0,0.007);
+      double vm_px_res=gRandom->Gaus(0.0,0.005);
       double vm_px = vmOut.Px()*(1.+vm_px_res);
       vmOut.SetPx(vm_px);
 
-      double vm_py_res=gRandom->Gaus(0.0,0.007);
+      double vm_py_res=gRandom->Gaus(0.0,0.005);
       double vm_py = vmOut.Py()*(1.+vm_py_res);
       vmOut.SetPy(vm_py);
       
