@@ -279,7 +279,7 @@ auto resolution_MC_match_REC(const std::vector<ROOT::Math::PxPyPzMVector> MC,
     for(auto& i2:REC){
       if(matchVectKine(i1,i2)&&fabs(i2.M()-i1.M())<vm_mass_width[which_vm]){
         if(fabs(i1.Eta())<1.0){
-          res = (i1.Pt()-i2.Pt())/i1.Pt();
+          res = (i1.P()-i2.P())/i1.P();
         }
       } 
     }
@@ -364,7 +364,7 @@ auto getNtrk(const std::vector<eic::ReconstructedParticleData>& parts)
   std::vector<int> mult;
   int n=0;
   for(auto& i1 : parts){
-    if(i1.charge>0) n++;
+    if(i1.charge!=0) n++;
   }
   mult.push_back( n );
   return mult;
