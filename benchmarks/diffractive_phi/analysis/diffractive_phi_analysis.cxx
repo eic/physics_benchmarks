@@ -165,7 +165,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("vm_rec_not_match_mc",findVM_REC_NOT_match_MC,{"vm","VMMC"})
              .Define("vm_recNMmc_pt",getPtVM,{"vm_rec_not_match_mc"})
              .Define("vm_res_pt",resolution_MC_match_REC,{"VMMC","vm"})
-             .Define("protonMC",findScatProtonMC,{"mcparticles"}).Define("proton_mc_p",getPt,{"protonMC"})
+             .Define("protonMC",findScatProtonMC,{"mcparticles"}).Define("proton_mc_p",getP,{"protonMC"})
              .Define("VMMC_daugPlus",findVM_DaugPlus_MC,{"mcparticles"}).Define("ptVMMC_daugPlus",getPt,{"VMMC_daugPlus"})
              .Define("VMMC_daugPlusMatchREC",findVM_MC_match_REC,{"VMMC_daugPlus","p1"}).Define("ptVMMC_daugPlus_match",getPt,{"VMMC_daugPlusMatchREC"})
              .Define("p1_rec_pt",getPt,{"p1"}).Define("p1_res_pt",resolution_MC_match_REC,{"VMMC_daugPlus","p1"})
