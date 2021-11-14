@@ -158,7 +158,9 @@ auto findScatElec(const std::vector<eic::ReconstructedParticleData>& parts,
   return momenta;
 }
 
-auto findScatElecTest(const std::vector<eic::ReconstructedParticleData>& parts) 
+auto findScatElecTest(const std::vector<eic::ReconstructedParticleData>& parts,
+  std::vector<int> scat_id,
+    std::vector<int> scat_source) 
 {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
