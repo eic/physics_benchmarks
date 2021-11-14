@@ -483,24 +483,24 @@ auto giveme_t_A = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       TLorentzVector eOut;eOut.SetPxPyPzE(i2.Px(),i2.Py(),i2.Pz(),i2.E());
       TLorentzVector vmOut; vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
       
-      vmOut = vmOut_MC;
-      eOut = eOut_MC;
+      // vmOut = vmOut_MC;
+      // eOut = eOut_MC;
 
-      double e_px_res=gRandom->Gaus(0.0,0.01);
-      double e_px = eOut.Px()*(1.+e_px_res);
-      eOut.SetPx(e_px);
+      // double e_px_res=gRandom->Gaus(0.0,0.01);
+      // double e_px = eOut.Px()*(1.+e_px_res);
+      // eOut.SetPx(e_px);
 
-      double e_py_res=gRandom->Gaus(0.0,0.01);
-      double e_py = eOut.Py()*(1.+e_py_res);
-      eOut.SetPy(e_py);
+      // double e_py_res=gRandom->Gaus(0.0,0.01);
+      // double e_py = eOut.Py()*(1.+e_py_res);
+      // eOut.SetPy(e_py);
 
-      double vm_px_res=gRandom->Gaus(0.0,0.0045);
-      double vm_px = vmOut.Px()*(1.+vm_px_res);
-      vmOut.SetPx(vm_px);
+      // double vm_px_res=gRandom->Gaus(0.0,0.0045);
+      // double vm_px = vmOut.Px()*(1.+vm_px_res);
+      // vmOut.SetPx(vm_px);
 
-      double vm_py_res=gRandom->Gaus(0.0,0.0045);
-      double vm_py = vmOut.Py()*(1.+vm_py_res);
-      vmOut.SetPy(vm_py);
+      // double vm_py_res=gRandom->Gaus(0.0,0.0045);
+      // double vm_py = vmOut.Py()*(1.+vm_py_res);
+      // vmOut.SetPy(vm_py);
       
       TVector2 sum_pt(eOut.Px()+vmOut.Px(), eOut.Py()+vmOut.Py());
       t_vec.push_back( sum_pt.Mod2() );
