@@ -540,17 +540,13 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       vmOut = vmOut_MC;
       eOut = eOut_MC;
 
-      double e_p_res=gRandom->Gaus(0.0,0.0066);
-      double e_p = eOut.Px()*(1.+e_p_res);
-      eOut.SetP(e_px);
+      double e_pt_res=gRandom->Gaus(0.0,0.0068);
+      double e_pt = eOut.Pt()*(1.+e_pt_res);
+      eOut.SetPerp(e_pt);
 
-      double vm_px_res=gRandom->Gaus(0.0,0.0034);
-      double vm_px = vmOut.Px()*(1.+vm_px_res);
-      vmOut.SetPx(vm_px);
-
-      double vm_py_res=gRandom->Gaus(0.0,0.0034);
-      double vm_py = vmOut.Py()*(1.+vm_py_res);
-      vmOut.SetPy(vm_py);
+      double vm_pt_res=gRandom->Gaus(0.0,0.0048);
+      double vm_pt = vmOut.Pt()*(1.+vm_pt_res);
+      vmOut.SetPerp(vm_pt);
 
       double method_L = -99.;
       TLorentzVector a_beam_scattered = aInVec-(vmOut+eOut-eIn);
