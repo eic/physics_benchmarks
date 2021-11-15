@@ -189,7 +189,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   auto h_Pt_e_REC = d4.Histo1D({"h_Pt_e_REC", "; GeV; counts", 50, 0, 2}, "e_rec_pt");
   auto h_Pt_e_MC = d4.Histo1D({"h_Pt_e_MC", "; GeV; counts", 50, 0, 2}, "e_mc_pt");
   auto h_Pt_e_MC_res = d4.Histo2D({"h_Pt_e_MC_res",";pt;res",50,0,2,300,-0.15,0.15},"e_mc_pt","e_res_pt");
-  auto h_Eta_e_MC_res = d4.Histo2D({"h_Eta_e_MC_res",";eta;res",50,-4,2,-0.15,0.15},"e_mc_eta","e_res_pt");
+  auto h_Eta_e_MC_res = d4.Histo2D({"h_Eta_e_MC_res",";eta;res",50,-4,2,300,-0.15,0.15},"e_mc_eta","e_res_pt");
 
   /*
   Block 6
