@@ -519,14 +519,14 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
   TLorentzVector pIn(-2.749,0,109.996,110.034);
   TLorentzVector vmOut_MC, eOut_MC;
   for(auto& i3 : mc){
-    if(i3.genStatus==4&&i3.pdgID==11){
-      TVector3 eInv3(i3.ps.x,i3.ps.y,i3.ps.z);
-      eIn.SetVectM(eInv3,MASS_ELECTRON);
-    } 
-    if(i3.genStatus==4&&i3.pdgID==2212){
-      TVector3 pInv3(i3.ps.x,i3.ps.y,i3.ps.z);
-      pIn.SetVectM(pInv3,MASS_PROTON);
-    }
+    // if(i3.genStatus==4&&i3.pdgID==11){
+    //   TVector3 eInv3(i3.ps.x,i3.ps.y,i3.ps.z);
+    //   eIn.SetVectM(eInv3,MASS_ELECTRON);
+    // } 
+    // if(i3.genStatus==4&&i3.pdgID==2212){
+    //   TVector3 pInv3(i3.ps.x,i3.ps.y,i3.ps.z);
+    //   pIn.SetVectM(pInv3,MASS_PROTON);
+    // }
      if(i3.genStatus==1&&i3.pdgID==11){
       TVector3 eOutv3(i3.ps.x,i3.ps.y,i3.ps.z);
       eOut_MC.SetVectM(eOutv3,i3.mass);
@@ -545,8 +545,24 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       TLorentzVector vmOut;vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
       TLorentzVector aInVec(pIn.Px()*197,pIn.Py()*197,pIn.Pz()*197,sqrt(pIn.Px()*197*pIn.Px()*197 + pIn.Py()*197*pIn.Py()*197 + pIn.Pz()*197*pIn.Pz()*197 + MASS_AU197*MASS_AU197) );
       
-      vmOut = vmOut_MC;
-      eOut = eOut_MC;
+      // vmOut = vmOut_MC;
+      // eOut = eOut_MC;
+
+      // double e_px_res=gRandom->Gaus(0.0,0.0035);
+      // double e_px = eOut.Px()*(1.+e_px_res);
+      // eOut.SetPx(e_px);
+
+      // double e_py_res=gRandom->Gaus(0.0,0.0035);
+      // double e_py = eOut.Py()*(1.+e_py_res);
+      // eOut.SetPy(e_py);
+
+      // double vm_px_res=gRandom->Gaus(0.0,0.0034);
+      // double vm_px = vmOut.Px()*(1.+vm_px_res);
+      // vmOut.SetPx(vm_px);
+
+      // double vm_py_res=gRandom->Gaus(0.0,0.0034);
+      // double vm_py = vmOut.Py()*(1.+vm_py_res);
+      // vmOut.SetPy(vm_py);
 
       double method_L = -99.;
       TLorentzVector a_beam_scattered = aInVec-(vmOut+eOut-eIn);
