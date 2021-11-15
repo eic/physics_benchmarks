@@ -517,6 +517,7 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
   TLorentzVector eInTrue(0,0,-18,18);
   TLorentzVector pInTrue(0,0,109.996,110.000);
   TLorentzVector pIn(-2.749,0,109.996,110.034);
+  pIn=pInTrue;
   TLorentzVector vmOut_MC, eOut_MC;
   for(auto& i3 : mc){
     if(i3.genStatus==4&&i3.pdgID==11){
@@ -546,7 +547,7 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       TLorentzVector aInVec(pIn.Px()*197,pIn.Py()*197,pIn.Pz()*197,sqrt(pIn.Px()*197*pIn.Px()*197 + pIn.Py()*197*pIn.Py()*197 + pIn.Pz()*197*pIn.Pz()*197 + MASS_AU197*MASS_AU197) );
       
       vmOut = vmOut_MC;
-      // eOut = eOut_MC;
+      eOut = eOut_MC;
 
       double method_L = -99.;
       TLorentzVector a_beam_scattered = aInVec-(vmOut+eOut-eIn);
