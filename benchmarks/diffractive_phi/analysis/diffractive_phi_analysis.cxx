@@ -169,8 +169,8 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("vm_recNMmc_pt",getPtVM,{"vm_rec_not_match_mc"})
              .Define("vm_res_pt",resolution_MC_match_REC,{"VMMC","vm"})
              .Define("protonMC",findScatProtonMC,{"mcparticles"}).Define("proton_mc_p",getP,{"protonMC"})
-             .Define("VMMC_daugPlus",findVM_DaugPlus_MC,{"mcparticles"}).Define("ptVMMC_daugPlus",getPt,{"VMMC_daugPlus"})
-             .Define("VMMC_daugPlusMatchREC",findVM_MC_match_REC,{"VMMC_daugPlus","p1"}).Define("ptVMMC_daugPlus_match",getPt,{"VMMC_daugPlusMatchREC"})
+             .Define("VMMC_daugPlus",findVM_DaugPlus_MC,{"mcparticles"}).Define("ptVMMC_daugPlus",getPt,{"VMMC_daugPlus"}).Define("etaVMMC_daugPlus",getEta,{"VMMC_daugPlus"})
+             .Define("VMMC_daugPlusMatchREC",findVM_MC_match_REC,{"VMMC_daugPlus","p1"}).Define("ptVMMC_daugPlus_match",getPt,{"VMMC_daugPlusMatchREC"}).Define("etaVMMC_daugPlus_match",getEta,{"VMMC_daugPlusMatchREC"})
              .Define("p1_rec_pt",getPt,{"p1"}).Define("p1_res_pt",resolution_MC_match_REC,{"VMMC_daugPlus","p1"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
@@ -184,6 +184,8 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   auto h_Pt_track_MC = d4.Histo1D({"h_Pt_track_MC", "; GeV; counts", 50, 0, 2}, "ptVMMC_daugPlus");
   auto h_Pt_track_MC_match = d4.Histo1D({"h_Pt_track_MC_match", "; GeV; counts", 50, 0, 2}, "ptVMMC_daugPlus_match");
   auto h_Pt_track_MC_res = d4.Histo2D({"h_Pt_track_MC_res",";pt;res",50,0,2,300,-0.15,0.15},"ptVMMC_daugPlus","p1_res_pt");
+  auto h_Eta_track_MC = d4.Histo1D({"h_Eta_track_MC", "; GeV; counts", 50, -5, 5}, "etaVMMC_daugPlus");
+  auto h_Eta_track_MC_match = d4.Histo1D({"h_Eta_track_MC_match", "; GeV; counts", 50, -5, 5}, "etaVMMC_daugPlus_match");
   auto h_Pt_e_REC = d4.Histo1D({"h_Pt_e_REC", "; GeV; counts", 50, 0, 2}, "e_rec_pt");
   auto h_Pt_e_MC = d4.Histo1D({"h_Pt_e_MC", "; GeV; counts", 50, 0, 2}, "e_mc_pt");
   auto h_Pt_e_MC_res = d4.Histo2D({"h_Pt_e_MC_res",";pt;res",50,0,2,300,-0.15,0.15},"e_mc_pt","e_res_pt");
@@ -301,6 +303,8 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   h_Pt_track_MC->Write();
   h_Pt_track_MC_match->Write();
   h_Pt_track_MC_res->Write();
+  h_Eta_track_MC->Write();
+  h_Eta_track_MC_match->Write();
   h_Pt_e_REC->Write();
   h_Pt_e_MC->Write();
   h_Pt_e_MC_res->Write();
