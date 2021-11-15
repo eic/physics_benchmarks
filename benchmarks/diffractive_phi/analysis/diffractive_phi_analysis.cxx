@@ -70,7 +70,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   //y,Q2 cuts 
   auto kineCut = [](const ROOT::VecOps::RVec<float>& qsq, const ROOT::VecOps::RVec<float>& y_rec) { 
     if(qsq.size()<1||y_rec.size()<1) return 0;
-    if(qsq[0] > 15. && qsq[0] < 20. && y_rec[0] < 0.95 && y_rec[0] > 0.01) return 1;
+    if(qsq[0] > 1. && qsq[0] < 20. && y_rec[0] < 0.95 && y_rec[0] > 0.01) return 1;
     else return 0;
   };
 
@@ -157,7 +157,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("scatID_cand_value",scatID_cand_value, {"scatID_value"})
              .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
              .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"}).Define("e_rec_pt",getPt,{"scatElec"})
-             .Define("scatElecMC",findScatElecMC, {"mcparticles"}).Define("e_mc_pt",getP,{"scatElecMC"}).Define("e_mc_eta",getEta,{"scatElecMC"})
+             .Define("scatElecMC",findScatElecMC, {"mcparticles"}).Define("e_mc_pt",getPt,{"scatElecMC"}).Define("e_mc_eta",getEta,{"scatElecMC"})
              .Define("e_res_pt",resolution_MC_match_REC_electron,{"scatElecMC","scatElec"})
              .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedChargedParticles"})
              .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
