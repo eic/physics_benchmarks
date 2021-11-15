@@ -319,7 +319,7 @@ auto resolution_MC_match_REC_electron(const std::vector<ROOT::Math::PxPyPzMVecto
         if(matchVectKine(i1,i2)
           &&fabs(i2.M()-i1.M())<vm_mass_width[which_vm]
             && i1.Eta() > -3.7 && i1.Eta() < -0.5){
-            res = (i1.Pt()-i2.Pt())/i1.Pt();
+            res = (i1.P()-i2.P())/i1.P();
         } 
     }
     resolution.push_back(res);
@@ -521,24 +521,24 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       TLorentzVector vmOut;vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
       TLorentzVector aInVec(pIn.Px()*197,pIn.Py()*197,pIn.Pz()*197,sqrt(pIn.Px()*197*pIn.Px()*197 + pIn.Py()*197*pIn.Py()*197 + pIn.Pz()*197*pIn.Pz()*197 + MASS_AU197*MASS_AU197) );
       
-      vmOut = vmOut_MC;
-      eOut = eOut_MC;
+      // vmOut = vmOut_MC;
+      // eOut = eOut_MC;
 
-      double e_px_res=gRandom->Gaus(0.0,0.0047);
-      double e_px = eOut.Px()*(1.+e_px_res);
-      eOut.SetPx(e_px);
+      // double e_px_res=gRandom->Gaus(0.0,0.0047);
+      // double e_px = eOut.Px()*(1.+e_px_res);
+      // eOut.SetPx(e_px);
 
-      double e_py_res=gRandom->Gaus(0.0,0.0047);
-      double e_py = eOut.Py()*(1.+e_py_res);
-      eOut.SetPy(e_py);
+      // double e_py_res=gRandom->Gaus(0.0,0.0047);
+      // double e_py = eOut.Py()*(1.+e_py_res);
+      // eOut.SetPy(e_py);
 
-      double vm_px_res=gRandom->Gaus(0.0,0.0034);
-      double vm_px = vmOut.Px()*(1.+vm_px_res);
-      vmOut.SetPx(vm_px);
+      // double vm_px_res=gRandom->Gaus(0.0,0.0034);
+      // double vm_px = vmOut.Px()*(1.+vm_px_res);
+      // vmOut.SetPx(vm_px);
 
-      double vm_py_res=gRandom->Gaus(0.0,0.0034);
-      double vm_py = vmOut.Py()*(1.+vm_py_res);
-      vmOut.SetPy(vm_py);
+      // double vm_py_res=gRandom->Gaus(0.0,0.0034);
+      // double vm_py = vmOut.Py()*(1.+vm_py_res);
+      // vmOut.SetPy(vm_py);
 
       double method_L = -99.;
       TLorentzVector a_beam_scattered = aInVec-(vmOut+eOut-eIn);
