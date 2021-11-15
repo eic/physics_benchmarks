@@ -482,7 +482,7 @@ auto giveme_t_A = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       TLorentzVector eOut;eOut.SetPxPyPzE(i2.Px(),i2.Py(),i2.Pz(),i2.E());
       TLorentzVector vmOut; vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
       
-      // vmOut = vmOut_MC;
+      vmOut = vmOut_MC;
       // eOut = eOut_MC;
 
       // double e_px_res=gRandom->Gaus(0.0,0.0035);
