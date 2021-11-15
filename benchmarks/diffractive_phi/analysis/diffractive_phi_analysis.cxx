@@ -70,7 +70,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   //y,Q2 cuts 
   auto kineCut = [](const ROOT::VecOps::RVec<float>& qsq, const ROOT::VecOps::RVec<float>& y_rec) { 
     if(qsq.size()<1||y_rec.size()<1) return 0;
-    if(qsq[0] > 7. && qsq[0] < 10. && y_rec[0] < 0.95 && y_rec[0] > 0.01) return 1;
+    if(qsq[0] > 10. && qsq[0] < 20. && y_rec[0] < 0.95 && y_rec[0] > 0.01) return 1;
     else return 0;
   };
 
@@ -143,7 +143,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   auto h_t_rec = d3.Histo1D({"h_t_rec", "; GeV^{2}; counts",100,0,0.2}, "t_rec");
   auto h_t_MC = d3.Histo1D({"h_t_MC",";t; counts",100,0,0.2}, "t_MC");
   auto h_t_res = d3.Histo1D({"h_t_res",";res; counts",100,-1,1},"t_res");
-  auto h_t_res_2D = d3.Histo2D({"h_t_res_2D",";-t;res",100,0,0.2,100,-1,1},"t_MC","t_res");
+  auto h_t_res_2D = d3.Histo2D({"h_t_res_2D",";-t;res",100,0,0.2,500,-5,5},"t_MC","t_res");
 
   /*
   Block 5
