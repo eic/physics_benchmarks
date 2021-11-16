@@ -485,11 +485,11 @@ auto giveme_t_A = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       vmOut = vmOut_MC;
       eOut = eOut_MC;
 
-      double e_pt_res=gRandom->Gaus(0.0,0.014);//0.0068, set this number by full simulations for Q2>15
+      double e_pt_res=gRandom->Gaus(0.0,0.014);//gaus fit~0.0068, set this number by full simulations for Q2>15
       double e_pt = eOut.Pt()*(1.+e_pt_res);
       eOut.SetPerp(e_pt);
 
-      double vm_pt_res=gRandom->Gaus(0.0,0.011);//0.0065, set this number by full simulations for Q2>15
+      double vm_pt_res=gRandom->Gaus(0.0,0.011);//gaus fit~0.0065, set this number by full simulations for Q2>15
       double vm_pt = vmOut.Pt()*(1.+vm_pt_res);
       vmOut.SetPerp(vm_pt);
       
@@ -532,11 +532,11 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       vmOut = vmOut_MC;
       eOut = eOut_MC;
 
-      double e_pt_res=gRandom->Gaus(0.0,0.0068);
+      double e_pt_res=gRandom->Gaus(0.0,0.014);//gaus fit~0.0068, set this number by full simulations for Q2>15
       double e_pt = eOut.Pt()*(1.+e_pt_res);
       eOut.SetPerp(e_pt);
 
-      double vm_pt_res=gRandom->Gaus(0.0,0.0065);
+      double vm_pt_res=gRandom->Gaus(0.0,0.011);//gaus fit~0.0065, set this number by full simulations for Q2>15
       double vm_pt = vmOut.Pt()*(1.+vm_pt_res);
       vmOut.SetPerp(vm_pt);
 
