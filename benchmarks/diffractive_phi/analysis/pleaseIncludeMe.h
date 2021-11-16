@@ -540,7 +540,7 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       vmOut = vmOut_MC;
       eOut = eOut_MC;
 
-      double e_pt_res=gRandom->Gaus(0.0,0.014);
+      double e_pt_res=gRandom->Gaus(0.0,0.018);
       double e_pt = eOut.Pt()*(1.+e_pt_res);
       eOut.SetPerp(e_pt);
 
