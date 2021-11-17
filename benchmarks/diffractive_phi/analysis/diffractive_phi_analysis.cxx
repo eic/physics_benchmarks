@@ -278,7 +278,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   h_Mass_REC->Write();
   h_Pt_VM_REC->Write();
   h_Eta_VM_REC->Write();
-  h_Eta_VM_MC->Write();
+  h_Rap_VM_REC->Write();
   h_P_proton_REC->Write();
   h_mult_REC->Write();
 
