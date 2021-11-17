@@ -398,6 +398,16 @@ auto getEtaVM(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return etaVec;
 }
 
+auto getRapVM(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
+  std::vector<double> etaVec;
+  for(auto& i1:mom){
+    double eta = i1.Rapidity();
+    if(i1.Px()<-1e9||fabs(i1.M()-vm_mass[which_vm])>vm_mass_width[which_vm]){eta=-10.;}
+    etaVec.push_back(eta);
+  }
+  return etaVec;
+}
+
 auto getNtrk(const std::vector<eic::ReconstructedParticleData>& parts) 
 {
   std::vector<int> mult;
@@ -532,11 +542,11 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       // vmOut = vmOut_MC;
       // eOut = eOut_MC;
 
-      // double e_pt_res=gRandom->Gaus(0.0,0.014);//gaus fit~0.0068, set this number by full simulations for Q2>15
+      // double e_pt_res=gRandom->Gaus(0.0,0.012);//gaus fit~0.0068, set this number by full simulations for Q2>15
       // double e_pt = eOut.Pt()*(1.+e_pt_res);
       // eOut.SetPerp(e_pt);
 
-      // double vm_pt_res=gRandom->Gaus(0.0,0.011);//gaus fit~0.0065, set this number by full simulations for Q2>15
+      // double vm_pt_res=gRandom->Gaus(0.0,0.015);//gaus fit~0.0065, set this number by full simulations for Q2>15
       // double vm_pt = vmOut.Pt()*(1.+vm_pt_res);
       // vmOut.SetPerp(vm_pt);
 
