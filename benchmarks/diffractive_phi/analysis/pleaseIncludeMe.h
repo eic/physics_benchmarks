@@ -519,7 +519,6 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
   TLorentzVector eInTrue(0,0,-18,18);
   TLorentzVector pInTrue(0,0,109.996,110.000);
   TLorentzVector pIn(-2.749,0,109.996,110.034);
-  pIn=pInTrue;//for unburned files
   TLorentzVector vmOut_MC, eOut_MC;
   for(auto& i3 : mc){
      if(i3.genStatus==1&&i3.pdgID==11){
