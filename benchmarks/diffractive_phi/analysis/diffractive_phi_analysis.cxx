@@ -80,8 +80,9 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("scatID_source","InclusiveKinematicsElectron.scatID.source")
              .Define("scatID_cand_value",scatID_cand_value, {"scatID_value"})
              .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
-             .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedChargedParticles"}).Define("ptVMREC_daugPlus",getPt,{"p1"}).Define("etaVMREC_daugPlus",getEta,{"p1"})
+             .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedChargedParticles"})
              .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
+             .Define("ptVMREC_daugPlus",getPt,{"p2"}).Define("etaVMREC_daugPlus",getEta,{"p2"})
              .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"}).Define("etaElec",getEta,{"scatElec"})
              .Define("vm", vector_sum, {"p1","p2"}).Define("Mass",getMass,{"vm"}).Define("vm_rec_pt", getPtVM, {"vm"}).Define("vm_rec_eta", getEtaVM, {"vm"}).Define("vm_rec_rap", getRapVM, {"vm"})
              .Define("protonREC",findScatProton,{"ReconstructedFFParticles"}).Define("proton_rec_p",getP,{"protonREC"})
@@ -110,7 +111,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("y_elec", "InclusiveKinematicsElectron.y")
              .Define("scatElecMC",findScatElecMC, {"mcparticles"}).Define("etaElecMC",getEta,{"scatElecMC"})
              .Define("VMMC",findVMMC,{"mcparticles"}).Define("MassMC",getMass,{"VMMC"}).Define("vm_mc_pt",getPtVM,{"VMMC"}).Define("vm_mc_eta",getEtaVM,{"VMMC"}).Define("vm_mc_rap",getRapVM,{"VMMC"})
-             .Define("VMMC_daugPlus",findVM_DaugPlus_MC,{"mcparticles"}).Define("etaVMMC_daugPlus",getEta,{"VMMC_daugPlus"}).Define("ptVMMC_daugPlus",getPt,{"VMMC_daugPlus"})
+             .Define("VMMC_daugPlus",findVM_DaugMinus_MC,{"mcparticles"}).Define("etaVMMC_daugPlus",getEta,{"VMMC_daugPlus"}).Define("ptVMMC_daugPlus",getPt,{"VMMC_daugPlus"})
              .Filter(kineCut,{"Q2_elec","y_elec"});
 
   auto h_Eta_scatElec_MC = d2.Histo1D({"h_Eta_scatElec_MC",";eta; counts",100,-11,9}, "etaElecMC");
