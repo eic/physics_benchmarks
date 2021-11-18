@@ -70,7 +70,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   //y,Q2 cuts 
   auto kineCut = [](const ROOT::VecOps::RVec<float>& qsq, const ROOT::VecOps::RVec<float>& y_rec) { 
     if(qsq.size()<1||y_rec.size()<1) return 0;
-    if(qsq[0] > 1. && qsq[0] < 20. && y_rec[0] < 0.95 && y_rec[0] > 0.01) return 1;
+    if(qsq[0] > 15. && qsq[0] < 20. && y_rec[0] < 0.95 && y_rec[0] > 0.01) return 1;
     else return 0;
   };
 
