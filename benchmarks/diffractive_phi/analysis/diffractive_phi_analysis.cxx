@@ -80,7 +80,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
              .Define("scatID_source","InclusiveKinematicsElectron.scatID.source")
              .Define("scatID_cand_value",scatID_cand_value, {"scatID_value"})
              .Define("scatID_cand_source",scatID_cand_value, {"scatID_source"})
-             .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedChargedParticles"})
+             .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedChargedParticles"}).Define("ptVMREC_daugPlus",getPt,{"p1"}).Define("etaVMREC_daugPlus",getEta,{"p1"})
              .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"})
              .Define("scatElec",findScatElec,{"ReconstructedChargedParticles","scatID_cand_value","scatID_cand_source"}).Define("etaElec",getEta,{"scatElec"})
              .Define("vm", vector_sum, {"p1","p2"}).Define("Mass",getMass,{"vm"}).Define("vm_rec_pt", getPtVM, {"vm"}).Define("vm_rec_eta", getEtaVM, {"vm"}).Define("vm_rec_rap", getRapVM, {"vm"})
@@ -97,6 +97,8 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   auto h_Rap_VM_REC = d1.Histo1D({"h_Rap_VM_REC", "; ; counts", 100, -11, 9}, "vm_rec_rap");
   auto h_P_proton_REC = d1.Histo1D({"h_P_proton_REC", "; GeV; counts", 200, 0, 200}, "proton_rec_p");
   auto h_mult_REC = d1.Histo1D({"h_mult_REC", "; N; counts", 10, -0.5, 9.5}, "mult");
+  auto h_Pt_VMdaugPlus_REC = d1.Histo1D({"h_Pt_VMdaugPlus_REC",";pt; counts",100,0,9}, "ptVMREC_daugPlus");
+  auto h_Eta_VMdaugPlus_REC = d1.Histo1D({"h_Eta_VMdaugPlus_REC",";eta; counts",100,-11,9}, "etaVMREC_daugPlus");
 
   /*
   Block 3
@@ -281,6 +283,8 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
   h_Rap_VM_REC->Write();
   h_P_proton_REC->Write();
   h_mult_REC->Write();
+  h_Pt_VMdaugPlus_REC->Write();
+  h_Eta_VMdaugPlus_REC->Write();
 
   //Block 3
   h_Eta_scatElec_MC->Write();
