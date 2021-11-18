@@ -338,7 +338,7 @@ auto getMass(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
 auto getPt(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   std::vector<double> ptVec(mom.size() );
   std::transform(mom.begin(), mom.end(), ptVec.begin(), [](const auto& part) {
-    if(part.Px()<-1e9 || part.Eta() < -2) return -99.;
+    if(part.Px()<-1e9) return -99.;
     else return part.Pt();
   });
   return ptVec;
