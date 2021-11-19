@@ -515,20 +515,12 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
    std::vector<ROOT::Math::PxPyPzMVector> scatElec,
   const std::vector<dd4pod::Geant4ParticleData>& mc){
 
-  TLorentzVector eIn(0,0,-18,18);
-  // TLorentzVector eIn(0,0,-5,5);
-  TLorentzVector pIn(-2.749,0,109.996,110.034);
-  // TLorentzVector pIn(0,0,109.996,110.00);
+  // TLorentzVector eIn(0,0,-18,18);
+  TLorentzVector eIn(0,0,-5,5);
+  // TLorentzVector pIn(-2.749,0,109.996,110.034);
+  TLorentzVector pIn(0,0,109.996,110.00);
   TLorentzVector vmOut_MC, eOut_MC;
   for(auto& i3 : mc){
-    if(i3.genStatus==4&&i3.pdgID==11){
-      TVector3 eInv3(i3.ps.x,i3.ps.y,i3.ps.z);
-      eIn.SetVectM(eInv3,i3.mass);
-    } 
-    if(i3.genStatus==4&&i3.pdgID==2212){
-      TVector3 pInv3(i3.ps.x,i3.ps.y,i3.ps.z);
-      pIn.SetVectM(pInv3,i3.mass);
-    } 
      if(i3.genStatus==1&&i3.pdgID==11){
       TVector3 eOutv3(i3.ps.x,i3.ps.y,i3.ps.z);
       eOut_MC.SetVectM(eOutv3,i3.mass);
