@@ -539,12 +539,12 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       TLorentzVector vmOut;vmOut.SetPxPyPzE(i1.Px(),i1.Py(),i1.Pz(),i1.E());
       TLorentzVector aInVec(pIn.Px()*197,pIn.Py()*197,pIn.Pz()*197,sqrt(pIn.Px()*197*pIn.Px()*197 + pIn.Py()*197*pIn.Py()*197 + pIn.Pz()*197*pIn.Pz()*197 + MASS_AU197*MASS_AU197) );
       
-      vmOut = vmOut_MC;
-      eOut = eOut_MC;
+      // vmOut = vmOut_MC;
+      // eOut = eOut_MC;
 
-      double e_pt_res=gRandom->Gaus(0.0,0.012);//gaus fit~0.0068, set this number by full simulations for Q2>15
-      double e_pt = eOut.Pt()*(1.+e_pt_res);
-      eOut.SetPerp(e_pt);
+      // double e_pt_res=gRandom->Gaus(0.0,0.012);//gaus fit~0.0068, set this number by full simulations for Q2>15
+      // double e_pt = eOut.Pt()*(1.+e_pt_res);
+      // eOut.SetPerp(e_pt);
 
       // double vm_pt_res=gRandom->Gaus(0.0,0.015);//gaus fit~0.0065, set this number by full simulations for Q2>15
       // double vm_pt = vmOut.Pt()*(1.+vm_pt_res);
