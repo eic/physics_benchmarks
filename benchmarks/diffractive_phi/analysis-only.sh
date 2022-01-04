@@ -110,7 +110,7 @@ cat << EOF > ${CONFIG}
 }
 EOF
 #cat ${CONFIG}
-export VM_TYPE_TAG=1
+export VM_TYPE_TAG=2
 export MC_TYPE_TAG=1
 root -b -q "benchmarks/diffractive_phi/analysis/diffractive_phi_analysis.cxx+(\"${CONFIG}\",${VM_TYPE_TAG},${MC_TYPE_TAG})"
 #root -b -q "benchmarks/diffractive_phi/analysis/test_phi_analysis.cxx+(\"${CONFIG}\",${VM_TYPE_TAG},${MC_TYPE_TAG})"
