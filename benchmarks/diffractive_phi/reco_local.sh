@@ -59,18 +59,18 @@ PLOT_TAG=${CONFIG}
 
 ## =============================================================================
 ## Step 2: Run the simulation
-echo "Running Geant4 simulation"
-npsim --runType batch \
-      --part.minimalKineticEnergy 1000*GeV  \
-      -v INFO \
-      --numberOfEvents ${JUGGLER_N_EVENTS} \
-      --compactFile ${DETECTOR_PATH}/${JUGGLER_DETECTOR}.xml \
-      --inputFiles ${GEN_FILE} \
-      --outputFile ${SIM_FILE}
-if [ "$?" -ne "0" ] ; then
-  echo "ERROR running npsim"
-  exit 1
-fi
+# echo "Running Geant4 simulation"
+# npsim --runType batch \
+#       --part.minimalKineticEnergy 1000*GeV  \
+#       -v INFO \
+#       --numberOfEvents ${JUGGLER_N_EVENTS} \
+#       --compactFile ${DETECTOR_PATH}/${JUGGLER_DETECTOR}.xml \
+#       --inputFiles ${GEN_FILE} \
+#       --outputFile ${SIM_FILE}
+# if [ "$?" -ne "0" ] ; then
+#   echo "ERROR running npsim"
+#   exit 1
+# fi
 
 ## =============================================================================
 ## Step 3: Run digitization & reconstruction
