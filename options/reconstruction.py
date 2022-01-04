@@ -23,6 +23,11 @@ if "JUGGLER_DETECTOR_VERSION" in os.environ:
 
 compact_path = os.path.join(detector_path, detector_name)
 
+if "PBEAM" in os.environ:
+    ionBeamEnergy = str(os.environ["PBEAM"])
+else:
+    ionBeamEnergy = 100
+
 # RICH reconstruction
 qe_data = [(1.0, 0.25), (7.5, 0.25),]
 
@@ -660,7 +665,9 @@ trk_find_alg = CKFTracking("trk_find_alg",
         inputSourceLinks = sourcelinker.outputSourceLinks,
         inputMeasurements = sourcelinker.outputMeasurements,
         inputInitialTrackParameters = truth_trk_init.outputInitialTrackParameters,
-        outputTrajectories = "trajectories")
+        outputTrajectories = "trajectories",
+	chi2CutOff = 50	
+)
 algorithms.append(trk_find_alg)
 
 parts_from_fit = ParticlesFromTrackFit("parts_from_fit",
@@ -705,7 +712,7 @@ fast_ff = FFSmearedParticles("fast_ff",
         enableB0         = True,
         enableRP         = True,
         enableOMD        = True,
-        ionBeamEnergy    = 275,
+        ionBeamEnergy    = ionBeamEnergy,
         crossingAngle    = -0.025)
 algorithms.append(fast_ff)
 
@@ -784,3 +791,4 @@ ApplicationMgr(
     OutputLevel = WARNING,
     AuditAlgorithms = True
  )
+
