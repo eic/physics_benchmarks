@@ -540,7 +540,7 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       TLorentzVector aInVec(pIn.Px()*197,pIn.Py()*197,pIn.Pz()*197,sqrt(pIn.Px()*197*pIn.Px()*197 + pIn.Py()*197*pIn.Py()*197 + pIn.Pz()*197*pIn.Pz()*197 + MASS_AU197*MASS_AU197) );
       
       // vmOut = vmOut_MC;
-      // eOut = eOut_MC;
+      eOut = eOut_MC;
 
       // double e_pt_res=gRandom->Gaus(0.0,0.012);//gaus fit~0.0068, set this number by full simulations for Q2>15
       // double e_pt = eOut.Pt()*(1.+e_pt_res);
