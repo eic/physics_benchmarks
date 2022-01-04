@@ -443,17 +443,12 @@ auto giveme_t_MC_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
    std::vector<ROOT::Math::PxPyPzMVector> scatElec,
   const std::vector<dd4pod::Geant4ParticleData>& mc){
 
-  TLorentzVector eIn(0,0,-18,18);
-  TLorentzVector eOut(0,0,0,0.0);
-  TLorentzVector vmOut(0,0,0,0.0);
+  TLorentzVector photIn(0.,0.,0.,0.);
+  TLorentzVector vmOut(0.,0.,0.,0.);
   for(auto& i3 : mc){
-    if(i3.genStatus==4&&i3.pdgID==11){
-      TVector3 eInv3(i3.ps.x,i3.ps.y,i3.ps.z);
-      eIn.SetVectM(eInv3,i3.mass);
-    } 
-    if(i3.genStatus==1&&i3.pdgID==11){
-      TVector3 eOutv3(i3.ps.x,i3.ps.y,i3.ps.z);
-      eOut.SetVectM(eOutv3,i3.mass);
+    if(i3.genStatus==21&&i3.pdgID==22){
+      TVector3 photInv3(i3.ps.x,i3.ps.y,i3.ps.z);
+      photIn.SetVectM(photInv3,i3.mass);
     }
     if(i3.genStatus==2&&i3.pdgID==vm_pid[which_vm]){
       TVector3 vmOutv3(i3.ps.x,i3.ps.y,i3.ps.z);
@@ -461,12 +456,13 @@ auto giveme_t_MC_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
     }
   }
   std::vector<double > t_vec;
-  double method_E = (eIn-eOut-vmOut).Mag2();
+  double method_E = (photIn-vmOut).Mag2();
   t_vec.push_back( -method_E );
   
   return t_vec;
 };
 
+//scatElec will have ambuity with J/psi decay to ee.
 auto giveme_t_A = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
    std::vector<ROOT::Math::PxPyPzMVector> scatElec,
   const std::vector<dd4pod::Geant4ParticleData>& mc){
@@ -540,7 +536,7 @@ auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
       TLorentzVector aInVec(pIn.Px()*197,pIn.Py()*197,pIn.Pz()*197,sqrt(pIn.Px()*197*pIn.Px()*197 + pIn.Py()*197*pIn.Py()*197 + pIn.Pz()*197*pIn.Pz()*197 + MASS_AU197*MASS_AU197) );
       
       // vmOut = vmOut_MC;
-      eOut = eOut_MC;
+      // eOut = eOut_MC;
 
       // double e_pt_res=gRandom->Gaus(0.0,0.012);//gaus fit~0.0068, set this number by full simulations for Q2>15
       // double e_pt = eOut.Pt()*(1.+e_pt_res);
