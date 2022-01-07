@@ -59,18 +59,18 @@ PLOT_TAG=${CONFIG}
 
 ## =============================================================================
 ## Step 2: Run the simulation
-# echo "Running Geant4 simulation"
-# npsim --runType batch \
-#       --part.minimalKineticEnergy 1000*GeV  \
-#       -v INFO \
-#       --numberOfEvents ${JUGGLER_N_EVENTS} \
-#       --compactFile ${DETECTOR_PATH}/${JUGGLER_DETECTOR}.xml \
-#       --inputFiles ${GEN_FILE} \
-#       --outputFile ${SIM_FILE}
-# if [ "$?" -ne "0" ] ; then
-#   echo "ERROR running npsim"
-#   exit 1
-# fi
+echo "Running Geant4 simulation"
+npsim --runType batch \
+      --part.minimalKineticEnergy 1000*GeV  \
+      -v INFO \
+      --numberOfEvents ${JUGGLER_N_EVENTS} \
+      --compactFile ${DETECTOR_PATH}/${JUGGLER_DETECTOR}.xml \
+      --inputFiles ${GEN_FILE} \
+      --outputFile ${SIM_FILE}
+if [ "$?" -ne "0" ] ; then
+  echo "ERROR running npsim"
+  exit 1
+fi
 
 ## =============================================================================
 ## Step 3: Run digitization & reconstruction
@@ -95,29 +95,6 @@ if [ "$?" -ne "0" ] ; then
   echo "ERROR running juggler"
   exit 1
 fi
-
-## =============================================================================
-## Step 4: Analysis
-## write a temporary configuration file for the analysis script
-# echo "Running analysis"
-# CONFIG="${TMP_PATH}/${PLOT_TAG}.json"
-# cat << EOF > ${CONFIG}
-# {
-#   "rec_file": "${REC_FILE}",
-#   "detector": "${JUGGLER_DETECTOR}",
-#   "output_prefix": "${RESULTS_PATH}/${PLOT_TAG}",
-#   "ebeam": ${EBEAM},
-#   "pbeam": ${PBEAM},
-#   "test_tag": "${BEAM_TAG}"
-# }
-# EOF
-# #cat ${CONFIG}
-# root -b -q "benchmarks/dis/analysis/dis_electrons.cxx+(\"${CONFIG}\")"
-# #root -b -q "benchmarks/dis/analysis/dis_electrons.cxx(\"${CONFIG}\")"
-# if [[ "$?" -ne "0" ]] ; then
-#   echo "ERROR running rec_dis_electron script"
-#   exit 1
-# fi
 
 ## =============================================================================
 ## Step 5: finalize
