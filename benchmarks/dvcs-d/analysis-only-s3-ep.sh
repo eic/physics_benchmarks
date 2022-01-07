@@ -14,7 +14,7 @@ FILE_NAME_TAG="dvcs-ep"
 REC_FILE="${FILE_NAME_TAG}_input"
 JUGGLER_DETECTOR="ATHENA"
 RESULTS_PATH="results/s3_full/${FILE_NAME_TAG}"
-BEAM_TAG="10X100"
+BEAM_TAG="18X275"
 
 mkdir -p "s3_full/${FILE_NAME_TAG}"
 mkdir -p "results/s3_full/${FILE_NAME_TAG}"
@@ -33,9 +33,19 @@ if [ -f "${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}.root" ]; then
   echo "Found file and already downloaded."
 else
   mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
-  for i in {10..30}
+  for i in {100..222}
+  do
+    DATA_URL="S3/eictest/ATHENA/RECO/acadia-v2.1/EXCLUSIVE/DVCS_ABCONV/18x275/DVCS.3.ab.hiAcc.18x275_novtx.0${i}.root"
+    mc -C . cp --insecure ${DATA_URL} "${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}_${i}.root"
+  done
+  for i in {10..99}
   do
     DATA_URL="S3/eictest/ATHENA/RECO/acadia-v2.1/EXCLUSIVE/DVCS_ABCONV/18x275/DVCS.3.ab.hiAcc.18x275_novtx.00${i}.root"
+    mc -C . cp --insecure ${DATA_URL} "${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}_${i}.root"
+  done
+  for i in {1..9}
+  do
+    DATA_URL="S3/eictest/ATHENA/RECO/acadia-v2.1/EXCLUSIVE/DVCS_ABCONV/18x275/DVCS.3.ab.hiAcc.18x275_novtx.000${i}.root"
     mc -C . cp --insecure ${DATA_URL} "${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}_${i}.root"
   done
   hadd -f "${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}.root" "${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}_"*".root"
