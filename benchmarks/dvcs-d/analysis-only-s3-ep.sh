@@ -33,7 +33,7 @@ if [ -f "${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}.root" ]; then
   echo "Found file and already downloaded."
 else
   mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
-  for i in {1..20}
+  for i in {10..30}
   do
     DATA_URL="S3/eictest/ATHENA/RECO/acadia-v2.1/EXCLUSIVE/DVCS_ABCONV/18x275/DVCS.3.ab.hiAcc.18x275_novtx.00${i}.root"
     mc -C . cp --insecure ${DATA_URL} "${INPUT_PATH_FROM_S3_TAG}/${REC_FILE}_${i}.root"
