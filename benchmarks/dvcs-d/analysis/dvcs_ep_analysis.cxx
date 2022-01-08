@@ -55,7 +55,7 @@ int dvcs_ep_analysis(const std::string& config_name)
   //y,Q2 cuts 
   auto kineCut = [](const ROOT::VecOps::RVec<float>& qsq, const ROOT::VecOps::RVec<float>& x_rec) { 
     if(qsq.size()<1||x_rec.size()<1) return 0;
-    if(qsq[0] > 10. && qsq[0] < 15. && x_rec[0] < 1 && x_rec[0] > 0.004) return 1;
+    if(qsq[0] > 1. && qsq[0] < 15. && x_rec[0] < 1 && x_rec[0] > 0.004) return 1;
     else return 0;
   };
 
