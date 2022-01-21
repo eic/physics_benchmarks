@@ -149,7 +149,7 @@ int diffractive_phi_analysis(const std::string& config_name, const int vm_type=1
 
   auto h_t_rec = d3.Histo1D({"h_t_rec", "; GeV^{2}; counts",72,0,0.18}, "t_rec");
   double t_binning[49]={0,0.002,0.004,0.006,0.008,0.01,0.012,0.014,0.016,0.018,0.02,0.022,0.024,0.026,0.028,0.03,0.032,0.034,0.036,0.038,0.04,0.042,0.044,0.046,0.048,0.05,0.052,0.054,0.056,0.058,0.06,0.064,0.068,0.072,0.076,0.08,0.084,0.088,0.092,0.096,0.1,0.11,0.12,0.13,0.14,0.15,0.16,0.17,0.18};
-  auto h_t_rec_corse = d3.Histo1D({"h_t_rec", "; GeV^{2}; counts",48,t_binning}, "t_rec");
+  auto h_t_rec_corse = d3.Histo1D({"h_t_rec_corse", "; GeV^{2}; counts",48,t_binning}, "t_rec");
   auto h_t_MC = d3.Histo1D({"h_t_MC",";t; counts",100,0,0.2}, "t_MC");
   auto h_t_res = d3.Histo1D({"h_t_res",";res; counts",100,-1,1},"t_res");
   auto h_t_res_2D = d3.Histo2D({"h_t_res_2D",";-t;res",100,0,0.2,500,-5,5},"t_MC","t_res");
