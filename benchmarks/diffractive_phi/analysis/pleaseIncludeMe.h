@@ -100,7 +100,7 @@ auto momenta_from_reconstruction_plus(const std::vector<eicd::ReconstructedParti
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
     if(part.charge>0){
-      return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, vm_daug_mass[which_vm]};
+      return ROOT::Math::PxPyPzMVector{part.momentum.x, part.momentum.y, part.momentum.z, vm_daug_mass[which_vm]};
     }
     else{
       return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
@@ -117,7 +117,7 @@ auto momenta_from_reconstruction_minus(const std::vector<eicd::ReconstructedPart
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
    if(i1.charge<0){
-      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.p.x, i1.p.y, i1.p.z, vm_daug_mass[which_vm]});
+      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.momentum.x, i1.momentum.y, i1.momentum.z, vm_daug_mass[which_vm]});
     }
     else{
       momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});
