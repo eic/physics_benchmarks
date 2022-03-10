@@ -28,7 +28,6 @@
 #include "nlohmann/json.hpp"
 #include "eicd/InclusiveKinematicsData.h"
 #include "eicd/ReconstructedParticleData.h"
-#include "MCParticlesData"
 
 #define PI            3.1415926
 #define MASS_ELECTRON 0.00051
@@ -97,11 +96,11 @@ auto scatID_cand_value = [](const ROOT::VecOps::RVec<int>& x){
   return value;
 };
 
-auto momenta_from_reconstruction_plus(const std::vector<eicd::ReconstructedParticleData>& parts) {
+auto momenta_from_reconstruction_plus(const std::vector<eic::ReconstructedParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
     if(part.charge>0){
-      return ROOT::Math::PxPyPzMVector{part.momentum.x, part.momentum.y, part.momentum.z, vm_daug_mass[which_vm]};
+      return ROOT::Math::PxPyPzMVector{part.p.x, part.p.y, part.p.z, vm_daug_mass[which_vm]};
     }
     else{
       return ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10};
@@ -110,7 +109,7 @@ auto momenta_from_reconstruction_plus(const std::vector<eicd::ReconstructedParti
   return momenta;
 }
 
-auto momenta_from_reconstruction_minus(const std::vector<eicd::ReconstructedParticleData>& parts,
+auto momenta_from_reconstruction_minus(const std::vector<eic::ReconstructedParticleData>& parts,
   std::vector<int> scat_id,
     std::vector<int> scat_source) 
 
@@ -118,7 +117,7 @@ auto momenta_from_reconstruction_minus(const std::vector<eicd::ReconstructedPart
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
    if(i1.charge<0){
-      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.momentum.x, i1.momentum.y, i1.momentum.z, vm_daug_mass[which_vm]});
+      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.p.x, i1.p.y, i1.p.z, vm_daug_mass[which_vm]});
     }
     else{
       momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});
@@ -137,7 +136,7 @@ auto sort_momenta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return sort_mom;
 }
 
-auto findScatElec(const std::vector<eicd::ReconstructedParticleData>& parts, 
+auto findScatElec(const std::vector<eic::ReconstructedParticleData>& parts, 
       std::vector<int> scat_id,
     std::vector<int> scat_source) 
 {
@@ -148,7 +147,7 @@ auto findScatElec(const std::vector<eicd::ReconstructedParticleData>& parts,
           &&i1.ID.value==scat_id[0]
             &&i1.ID.source==scat_source[0])
     {
-      auto scat = ROOT::Math::PxPyPzMVector{i1.momentum.x, i1.momentum.y, i1.momentum.z, MASS_ELECTRON};
+      auto scat = ROOT::Math::PxPyPzMVector{i1.p.x, i1.p.y, i1.p.z, MASS_ELECTRON};
       momenta.push_back(scat);
     }
     else{
@@ -159,15 +158,15 @@ auto findScatElec(const std::vector<eicd::ReconstructedParticleData>& parts,
   return momenta;
 }
 
-auto findScatElecTest(const std::vector<eicd::ReconstructedParticleData>& parts,
+auto findScatElecTest(const std::vector<eic::ReconstructedParticleData>& parts,
   std::vector<int> scat_id,
     std::vector<int> scat_source) 
 {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
-    if( i1.PDG==11 && i1.charge==-1)
+    if( i1.pid==11 && i1.charge==-1)
     {
-      auto scat = ROOT::Math::PxPyPzMVector{i1.momentum.x, i1.momentum.y, i1.momentum.z, MASS_ELECTRON};
+      auto scat = ROOT::Math::PxPyPzMVector{i1.p.x, i1.p.y, i1.p.z, MASS_ELECTRON};
       momenta.push_back(scat);
     }
     else{
@@ -178,7 +177,7 @@ auto findScatElecTest(const std::vector<eicd::ReconstructedParticleData>& parts,
   return momenta;
 }
 
-auto findScatElecMC(const std::vector<edm4hep::MCParticlesData>& parts)
+auto findScatElecMC(const std::vector<dd4pod::Geant4ParticleData>& parts)
 {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
@@ -190,7 +189,7 @@ auto findScatElecMC(const std::vector<edm4hep::MCParticlesData>& parts)
   return momenta;
 }
 
-auto findVMMC(const std::vector<edm4hep::MCParticlesData>& parts) {
+auto findVMMC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
     if(i1.genStatus==genStatus_VM[which_mc]&&i1.pdgID==vm_pid[which_vm]) {
@@ -201,7 +200,7 @@ auto findVMMC(const std::vector<edm4hep::MCParticlesData>& parts) {
   return momenta;
 }
 
-auto findVM_DaugPlus_MC(const std::vector<edm4hep::MCParticlesData>& parts) {
+auto findVM_DaugPlus_MC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
     if(i1.genStatus==1&&i1.pdgID==vm_daug_pid[which_vm]) {
@@ -212,7 +211,7 @@ auto findVM_DaugPlus_MC(const std::vector<edm4hep::MCParticlesData>& parts) {
   return momenta;
 }
 
-auto findVM_DaugMinus_MC(const std::vector<edm4hep::MCParticlesData>& parts) {
+auto findVM_DaugMinus_MC(const std::vector<dd4pod::Geant4ParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
     if(i1.genStatus==1&&i1.pdgID==-vm_daug_pid[which_vm]) {
@@ -223,7 +222,7 @@ auto findVM_DaugMinus_MC(const std::vector<edm4hep::MCParticlesData>& parts) {
   return momenta;
 }
 
-auto findScatProtonMC(const std::vector<edm4hep::MCParticlesData>& parts){
+auto findScatProtonMC(const std::vector<dd4pod::Geant4ParticleData>& parts){
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
     if(i1.genStatus==1&&i1.pdgID==2212){
@@ -233,11 +232,11 @@ auto findScatProtonMC(const std::vector<edm4hep::MCParticlesData>& parts){
   return momenta;
 }
 
-auto findScatProton(const std::vector<eicd::ReconstructedParticleData>& FF){
+auto findScatProton(const std::vector<eic::ReconstructedParticleData>& FF){
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : FF){
     if(i1.charge==1){
-      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.momentum.x,i1.momentum.y,i1.momentum.z,i1.mass});
+      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.p.x,i1.p.y,i1.p.z,i1.mass});
     }
   }
   return momenta;
@@ -409,7 +408,7 @@ auto getRapVM(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return etaVec;
 }
 
-auto getNtrk(const std::vector<eicd::ReconstructedParticleData>& parts) 
+auto getNtrk(const std::vector<eic::ReconstructedParticleData>& parts) 
 {
   std::vector<int> mult;
   int n=0;
@@ -422,7 +421,7 @@ auto getNtrk(const std::vector<eicd::ReconstructedParticleData>& parts)
 
 auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
    std::vector<ROOT::Math::PxPyPzMVector> scatElec,
-  const std::vector<edm4hep::MCParticlesData>& mc){
+  const std::vector<dd4pod::Geant4ParticleData>& mc){
 
   TLorentzVector eIn(0,0,-18,18);
   std::vector<double > t_vec;
@@ -442,7 +441,7 @@ auto giveme_t_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
 
 auto giveme_t_MC_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
    std::vector<ROOT::Math::PxPyPzMVector> scatElec,
-  const std::vector<edm4hep::MCParticlesData>& mc){
+  const std::vector<dd4pod::Geant4ParticleData>& mc){
 
   TLorentzVector photIn(0.,0.,0.,0.);
   TLorentzVector vmOut(0.,0.,0.,0.);
@@ -466,7 +465,7 @@ auto giveme_t_MC_E = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
 //scatElec will have ambuity with J/psi decay to ee.
 auto giveme_t_A = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
    std::vector<ROOT::Math::PxPyPzMVector> scatElec,
-  const std::vector<edm4hep::MCParticlesData>& mc){
+  const std::vector<dd4pod::Geant4ParticleData>& mc){
 
   TLorentzVector vmOut_MC, eOut_MC;
   for(auto& i3 : mc){
@@ -510,10 +509,10 @@ auto giveme_t_A = [](std::vector<ROOT::Math::PxPyPzMVector> vm,
 
 auto giveme_t_L = [](std::vector<ROOT::Math::PxPyPzMVector> vm, 
    std::vector<ROOT::Math::PxPyPzMVector> scatElec,
-  const std::vector<edm4hep::MCParticlesData>& mc){
+  const std::vector<dd4pod::Geant4ParticleData>& mc){
 
-  TLorentzVector eIn(0,0,-18,18);
-  // TLorentzVector eIn(0,0,-5,5);
+  // TLorentzVector eIn(0,0,-18,18);
+  TLorentzVector eIn(0,0,-5,5);
   // TLorentzVector pIn(-2.749,0,109.996,110.034);
   TLorentzVector pIn(0,0,109.996,110.00);//no Crossing angle
   TLorentzVector vmOut_MC, eOut_MC;
