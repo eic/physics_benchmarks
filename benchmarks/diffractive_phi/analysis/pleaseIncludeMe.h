@@ -26,8 +26,8 @@
 #include "fmt/core.h"
 
 #include "nlohmann/json.hpp"
-#include "InclusiveKinematicsData.h"
-#include "ReconstructedParticleData.h"
+#include "eicd/InclusiveKinematicsData.h"
+#include "eicd/ReconstructedParticleData.h"
 
 #define PI            3.1415926
 #define MASS_ELECTRON 0.00051
