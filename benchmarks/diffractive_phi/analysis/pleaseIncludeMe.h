@@ -144,8 +144,8 @@ auto findScatElec(const std::vector<eicd::ReconstructedParticleData>& parts,
   for(auto& i1 : parts){
     if(scat_id.size()>0 
         && scat_source.size()>0
-          &&i1.ID.value==scat_id[0]
-            &&i1.ID.source==scat_source[0])
+          &&i1.particleIDs.value==scat_id[0]
+            &&i1.particleIDs.source==scat_source[0])
     {
       auto scat = ROOT::Math::PxPyPzMVector{i1.momentum.x, i1.momentum.y, i1.momentum.z, MASS_ELECTRON};
       momenta.push_back(scat);
@@ -164,7 +164,7 @@ auto findScatElecTest(const std::vector<eicd::ReconstructedParticleData>& parts,
 {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
-    if( i1.pid==11 && i1.charge==-1)
+    if( i1.PDG==11 && i1.charge==-1)
     {
       auto scat = ROOT::Math::PxPyPzMVector{i1.momentum.x, i1.momentum.y, i1.momentum.z, MASS_ELECTRON};
       momenta.push_back(scat);
