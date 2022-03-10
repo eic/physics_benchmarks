@@ -96,7 +96,7 @@ auto scatID_cand_value = [](const ROOT::VecOps::RVec<int>& x){
   return value;
 };
 
-auto momenta_from_reconstruction_plus(const std::vector<eic::ReconstructedParticleData>& parts) {
+auto momenta_from_reconstruction_plus(const std::vector<eicd::ReconstructedParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
     if(part.charge>0){
@@ -109,7 +109,7 @@ auto momenta_from_reconstruction_plus(const std::vector<eic::ReconstructedPartic
   return momenta;
 }
 
-auto momenta_from_reconstruction_minus(const std::vector<eic::ReconstructedParticleData>& parts,
+auto momenta_from_reconstruction_minus(const std::vector<eicd::ReconstructedParticleData>& parts,
   std::vector<int> scat_id,
     std::vector<int> scat_source) 
 
