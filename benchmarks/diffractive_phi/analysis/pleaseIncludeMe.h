@@ -28,6 +28,7 @@
 #include "nlohmann/json.hpp"
 #include "eicd/InclusiveKinematicsData.h"
 #include "eicd/ReconstructedParticleData.h"
+#include "MCParticlesData"
 
 #define PI            3.1415926
 #define MASS_ELECTRON 0.00051
