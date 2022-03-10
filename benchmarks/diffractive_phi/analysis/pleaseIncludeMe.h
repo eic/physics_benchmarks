@@ -136,7 +136,7 @@ auto sort_momenta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return sort_mom;
 }
 
-auto findScatElec(const std::vector<eic::ReconstructedParticleData>& parts, 
+auto findScatElec(const std::vector<eicd::ReconstructedParticleData>& parts, 
       std::vector<int> scat_id,
     std::vector<int> scat_source) 
 {
@@ -147,7 +147,7 @@ auto findScatElec(const std::vector<eic::ReconstructedParticleData>& parts,
           &&i1.ID.value==scat_id[0]
             &&i1.ID.source==scat_source[0])
     {
-      auto scat = ROOT::Math::PxPyPzMVector{i1.p.x, i1.p.y, i1.p.z, MASS_ELECTRON};
+      auto scat = ROOT::Math::PxPyPzMVector{i1.momentum.x, i1.momentum.y, i1.momentum.z, MASS_ELECTRON};
       momenta.push_back(scat);
     }
     else{
@@ -158,7 +158,7 @@ auto findScatElec(const std::vector<eic::ReconstructedParticleData>& parts,
   return momenta;
 }
 
-auto findScatElecTest(const std::vector<eic::ReconstructedParticleData>& parts,
+auto findScatElecTest(const std::vector<eicd::ReconstructedParticleData>& parts,
   std::vector<int> scat_id,
     std::vector<int> scat_source) 
 {
@@ -166,7 +166,7 @@ auto findScatElecTest(const std::vector<eic::ReconstructedParticleData>& parts,
   for(auto& i1 : parts){
     if( i1.pid==11 && i1.charge==-1)
     {
-      auto scat = ROOT::Math::PxPyPzMVector{i1.p.x, i1.p.y, i1.p.z, MASS_ELECTRON};
+      auto scat = ROOT::Math::PxPyPzMVector{i1.momentum.x, i1.momentum.y, i1.momentum.z, MASS_ELECTRON};
       momenta.push_back(scat);
     }
     else{
@@ -232,11 +232,11 @@ auto findScatProtonMC(const std::vector<dd4pod::Geant4ParticleData>& parts){
   return momenta;
 }
 
-auto findScatProton(const std::vector<eic::ReconstructedParticleData>& FF){
+auto findScatProton(const std::vector<eicd::ReconstructedParticleData>& FF){
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : FF){
     if(i1.charge==1){
-      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.p.x,i1.p.y,i1.p.z,i1.mass});
+      momenta.push_back(ROOT::Math::PxPyPzMVector{i1.momentum.x,i1.momentum.y,i1.momentum.z,i1.mass});
     }
   }
   return momenta;
@@ -408,7 +408,7 @@ auto getRapVM(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return etaVec;
 }
 
-auto getNtrk(const std::vector<eic::ReconstructedParticleData>& parts) 
+auto getNtrk(const std::vector<eicd::ReconstructedParticleData>& parts) 
 {
   std::vector<int> mult;
   int n=0;
