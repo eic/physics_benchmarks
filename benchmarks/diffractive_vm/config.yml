@@ -1,0 +1,15 @@
+diffractive_vm:process:
+  stage: process
+  extends: .phy_benchmark
+  tags:
+     - phy
+  needs: ["common:detector"]
+  script:
+    - compile_analyses.py diffractive_vm
+    - bash benchmarks/diffractive_vm/diffractive_vm.sh --all
+
+diffractive_vm:results:
+  stage: collect
+  needs: ["diffractive_vm:process"]
+  script:
+    - ls -lrth
