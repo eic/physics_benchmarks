@@ -88,7 +88,7 @@ summary:
   #needs: ["dis:results", "dvcs:results", "dvmp:results"]
   needs:
     - "dvcs:results"
-    - "tcs:results:
+    - "tcs:results"
   script:
     - collect_benchmarks.py
   artifacts:
