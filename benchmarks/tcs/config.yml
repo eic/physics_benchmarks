@@ -4,8 +4,8 @@ tcs:compile:
   script:
     - compile_analyses.py tcs
 
-tcs:simulate:
-  stage: simulate
+tcs:generate:
+  stage: generate
   extends: .phy_benchmark
   tags:
     - phy
@@ -22,11 +22,70 @@ tcs:simulate:
         PBEAM: 275
         TAG: s800
   script:
-    #- bash benchmarks/tcs/tcs.sh --all --ebeam ${EBEAM} --pbeam ${PBEAM} --tag ${TAG}
-    - bash benchmarks/tcs/tcs.sh --data-init --sim --rec --ebeam ${EBEAM} --pbeam ${PBEAM} --tag ${TAG}
+    - bash benchmarks/tcs/tcs.sh --data-init --ebeam ${EBEAM} --pbeam ${PBEAM} --tag ${TAG}
+
+tcs:simulate:
+  stage: simulate
+  extends: .phy_benchmark
+  tags:
+    - phy
+  needs: ["common:detector", "tcs:generate"]
+  parallel:
+    matrix:
+      - EBEAM: 5
+        PBEAM: 41
+        TAG: s450
+      - EBEAM: 10
+        PBEAM: 100
+        TAG: s100
+      - EBEAM: 18
+        PBEAM: 275
+        TAG: s800
+  script:
+    - bash benchmarks/tcs/tcs.sh --sim --ebeam ${EBEAM} --pbeam ${PBEAM} --tag ${TAG}
+
+tcs:reconstruct:
+  stage: reconstruct
+  extends: .phy_benchmark
+  tags:
+    - phy
+  needs: ["common:detector", "tcs:simulate"]
+  parallel:
+    matrix:
+      - EBEAM: 5
+        PBEAM: 41
+        TAG: s450
+      - EBEAM: 10
+        PBEAM: 100
+        TAG: s100
+      - EBEAM: 18
+        PBEAM: 275
+        TAG: s800
+  script:
+    - bash benchmarks/tcs/tcs.sh --rec --ebeam ${EBEAM} --pbeam ${PBEAM} --tag ${TAG}
+
+tcs:analyze:
+  stage: analyze
+  extends: .phy_benchmark
+  tags:
+    - phy
+  needs: ["common:detector", "tcs:reconstruct"]
+  parallel:
+    matrix:
+      - EBEAM: 5
+        PBEAM: 41
+        TAG: s450
+      - EBEAM: 10
+        PBEAM: 100
+        TAG: s100
+      - EBEAM: 18
+        PBEAM: 275
+        TAG: s800
+  script:
+    - bash benchmarks/tcs/tcs.sh --analysis --ebeam ${EBEAM} --pbeam ${PBEAM} --tag ${TAG}
 
 tcs:results:
   stage: collect
-  needs: ["tcs:simulate"]
+  needs: ["tcs:analyze"]
   script:
     - ls -lrth
