@@ -120,6 +120,7 @@ if [[ -n "${DATA_INIT}" || -n "${DO_ALL}" ]] ; then
     exit 1
   fi
   find ${TMP_PATH}
+  ls -al ${TMP_PATH}
   ls -al "${JUGGLER_MC_FILE}"
 fi
 
@@ -127,6 +128,7 @@ fi
 if [[ -n "${DO_SIM}" || -n "${DO_ALL}" ]] ; then
   ## run geant4 simulations
   find ${TMP_PATH}
+  ls -al ${TMP_PATH}
   ls -al "${JUGGLER_MC_FILE}"
   ddsim --runType batch \
     --part.minimalKineticEnergy 1000*GeV  \
