@@ -119,11 +119,14 @@ if [[ -n "${DATA_INIT}" || -n "${DO_ALL}" ]] ; then
     echo "Failed to download hepmc file"
     exit 1
   fi
+  find ${TMP_PATH}
+  ls -al "${JUGGLER_MC_FILE}"
 fi
 
 ### Step 2. Run the simulation (geant4)
 if [[ -n "${DO_SIM}" || -n "${DO_ALL}" ]] ; then
   ## run geant4 simulations
+  find ${TMP_PATH}
   ls -al "${JUGGLER_MC_FILE}"
   ddsim --runType batch \
     --part.minimalKineticEnergy 1000*GeV  \
