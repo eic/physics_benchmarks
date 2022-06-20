@@ -91,15 +91,33 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 # assuming something like .local/bin/env.sh has already been sourced.
 print_env.sh
 
-FILE_NAME_TAG="tcs_${EBEAM}x${PBEAM}_${TAG}_${JUGGLER_N_EVENTS}"
+export BENCHMARK_TAG="tcs"
+export BEAM_TAG="${EBEAM}x${PBEAM}"
+
+FILE_NAME_TAG="${BENCHMARK_TAG}_${BEAM__TAG}_${JUGGLER_N_EVENTS}"
 DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/TCS_ABCONV/${EBEAM}x${PBEAM}/hel_minus/TCS_gen_ab_hiAcc_${EBEAM}x${PBEAM}m_${TAG}_novtx.hepmc.gz"
 
-export TMP_PATH="${LOCAL_DATA_PATH}/tmp/tcs/${EBEAM}x${PBEAM}"
+export TMP_PATH="${LOCAL_DATA_PATH}/tmp/${BENCHMARK_TAG}/${BEAM_TAG}"
 mkdir -p "${TMP_PATH}"
 
-export JUGGLER_MC_FILE="${TMP_PATH}/mc_${FILE_NAME_TAG}.hepmc"
-export JUGGLER_SIM_FILE="${TMP_PATH}/sim_${FILE_NAME_TAG}.edm4hep.root"
-export JUGGLER_REC_FILE="${TMP_PATH}/rec_${FILE_NAME_TAG}.root"
+mkdir_local_data_link input
+export INPUT_PATH="input/${BENCHMARK_TAG}/${BEAM_TAG}"
+mkdir -p "${INPUT_PATH}"
+
+mkdir_local_data_link sim_output
+export SIM_OUTPUT_PATH="sim_output/${BENCHMARK_TAG}/${BEAM_TAG}"
+mkdir -p "${SIM_OUTPUT_PATH}"
+
+mkdir_local_data_link rec_output
+export REC_OUTPUT_PATH="rec_output/${BENCHMARK_TAG}/${BEAM_TAG}"
+mkdir -p "${REC_OUTPUT_PATH}"
+
+export RESULTS_PATH="results/${BENCHMARK_TAG}/${BEAM_TAG}"
+mkdir -p ${RESULTS_PATH}
+
+export JUGGLER_MC_FILE="${INPUT_PATH}/mc_${FILE_NAME_TAG}.hepmc"
+export JUGGLER_SIM_FILE="${SIM_OUTPUT_PATH}/sim_${FILE_NAME_TAG}.edm4hep.root"
+export JUGGLER_REC_FILE="${REC_OUTPUT_PATH}/rec_${FILE_NAME_TAG}.root"
 
 echo "FILE_NAME_TAG       = ${FILE_NAME_TAG}"
 echo "JUGGLER_N_EVENTS    = ${JUGGLER_N_EVENTS}"
@@ -119,17 +137,11 @@ if [[ -n "${DATA_INIT}" || -n "${DO_ALL}" ]] ; then
     echo "Failed to download hepmc file"
     exit 1
   fi
-  find ${TMP_PATH}
-  ls -al ${TMP_PATH}
-  ls -al "${JUGGLER_MC_FILE}"
 fi
 
 ### Step 2. Run the simulation (geant4)
 if [[ -n "${DO_SIM}" || -n "${DO_ALL}" ]] ; then
   ## run geant4 simulations
-  find ${TMP_PATH}
-  ls -al ${TMP_PATH}
-  ls -al "${JUGGLER_MC_FILE}"
   ddsim --runType batch \
     --part.minimalKineticEnergy 1000*GeV  \
     --filter.tracker edep0 \
@@ -142,13 +154,11 @@ if [[ -n "${DO_SIM}" || -n "${DO_ALL}" ]] ; then
     echo "ERROR running ddsim"
     exit 1
   fi
-  rootls -t "${JUGGLER_SIM_FILE}"
 fi
 
 ### Step 3. Run the reconstruction (juggler)
 export PBEAM
 if [[ -n "${DO_REC}" || -n "${DO_ALL}" ]] ; then
-  rootls -t "${JUGGLER_SIM_FILE}"
   for rec in options/*.py ; do
     unset tag
     [[ $(basename ${rec} .py) =~ (.*)\.(.*) ]] && tag=".${BASH_REMATCH[2]}"
