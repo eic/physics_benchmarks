@@ -91,12 +91,13 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 # assuming something like .local/bin/env.sh has already been sourced.
 print_env.sh
 
-FILE_NAME_TAG="tcs"
+FILE_NAME_TAG="tcs_${EBEAM}x${PBEAM}_${TAG}_${JUGGLER_N_EVENTS}"
 DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/TCS_ABCONV/${EBEAM}x${PBEAM}/hel_minus/TCS_gen_ab_hiAcc_${EBEAM}x${PBEAM}m_${TAG}_novtx.hepmc.gz"
 
-export JUGGLER_MC_FILE="${LOCAL_DATA_PATH}/mc_${FILE_NAME_TAG}.hepmc"
-export JUGGLER_SIM_FILE="${LOCAL_DATA_PATH}/sim_${FILE_NAME_TAG}.edm4hep.root"
-export JUGGLER_REC_FILE="${LOCAL_DATA_PATH}/rec_${FILE_NAME_TAG}.root"
+export TMP_PATH="${LOCAL_DATA_PATH}/tmp/tcs/${EBEAM}x${PBEAM}"
+export JUGGLER_MC_FILE="${TMP_PATH}/mc_${FILE_NAME_TAG}.hepmc"
+export JUGGLER_SIM_FILE="${TMP_PATH}/sim_${FILE_NAME_TAG}.edm4hep.root"
+export JUGGLER_REC_FILE="${TMP_PATH}/rec_${FILE_NAME_TAG}.root"
 
 echo "FILE_NAME_TAG       = ${FILE_NAME_TAG}"
 echo "JUGGLER_N_EVENTS    = ${JUGGLER_N_EVENTS}"
@@ -121,6 +122,7 @@ fi
 ### Step 2. Run the simulation (geant4)
 if [[ -n "${DO_SIM}" || -n "${DO_ALL}" ]] ; then
   ## run geant4 simulations
+  ls -al "${JUGGLER_MC_FILE}"
   ddsim --runType batch \
     --part.minimalKineticEnergy 1000*GeV  \
     --filter.tracker edep0 \
@@ -128,28 +130,31 @@ if [[ -n "${DO_SIM}" || -n "${DO_ALL}" ]] ; then
     --numberOfEvents ${JUGGLER_N_EVENTS} \
     --compactFile ${DETECTOR_PATH}/${JUGGLER_DETECTOR_CONFIG}.xml \
     --inputFiles "${JUGGLER_MC_FILE}" \
-    --outputFile  ${JUGGLER_SIM_FILE}
+    --outputFile "${JUGGLER_SIM_FILE}"
   if [ "$?" -ne "0" ] ; then
     echo "ERROR running ddsim"
     exit 1
   fi
+  rootls -t "${JUGGLER_SIM_FILE}"
 fi
 
 ### Step 3. Run the reconstruction (juggler)
 export PBEAM
 if [[ -n "${DO_REC}" || -n "${DO_ALL}" ]] ; then
+  rootls -t "${JUGGLER_SIM_FILE}"
   for rec in options/*.py ; do
     unset tag
     [[ $(basename ${rec} .py) =~ (.*)\.(.*) ]] && tag=".${BASH_REMATCH[2]}"
     JUGGLER_REC_FILE=${JUGGLER_REC_FILE/.root/${tag:-}.root} \
       gaudirun.py ${rec} || [ $? -eq 4 ]
+    rootls -t "${JUGGLER_REC_FILE}"
   done
 
   root_filesize=$(stat --format=%s "${JUGGLER_REC_FILE}")
   if [[ "${JUGGLER_N_EVENTS}" -lt "500" ]] ; then 
     # file must be less than 10 MB to upload
     if [[ "${root_filesize}" -lt "10000000" ]] ; then 
-      cp ${JUGGLER_REC_FILE} results/.
+      cp "${JUGGLER_REC_FILE}" results/.
     fi
   fi
 fi
@@ -157,7 +162,7 @@ fi
 ### Step 4. Run the analysis code
 if [[ -n "${DO_ANALYSIS}" || -n "${DO_ALL}" ]] ; then
   echo "Running analysis scripts"
-  rootls -t  ${JUGGLER_REC_FILE}
+  rootls -t "${JUGGLER_REC_FILE}"
 
   # Store all plots here (preferribly png and pdf files)
   mkdir -p results/tcs
