@@ -95,6 +95,8 @@ FILE_NAME_TAG="tcs_${EBEAM}x${PBEAM}_${TAG}_${JUGGLER_N_EVENTS}"
 DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/TCS_ABCONV/${EBEAM}x${PBEAM}/hel_minus/TCS_gen_ab_hiAcc_${EBEAM}x${PBEAM}m_${TAG}_novtx.hepmc.gz"
 
 export TMP_PATH="${LOCAL_DATA_PATH}/tmp/tcs/${EBEAM}x${PBEAM}"
+mkdir -p "${TMP_PATH}"
+
 export JUGGLER_MC_FILE="${TMP_PATH}/mc_${FILE_NAME_TAG}.hepmc"
 export JUGGLER_SIM_FILE="${TMP_PATH}/sim_${FILE_NAME_TAG}.edm4hep.root"
 export JUGGLER_REC_FILE="${TMP_PATH}/rec_${FILE_NAME_TAG}.root"
