@@ -100,7 +100,7 @@ DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/TCS_ABCONV/${EBEAM}x${PBEAM}/hel_min
 export TMP_PATH="${LOCAL_DATA_PATH}/tmp/${BENCHMARK_TAG}/${BEAM_TAG}"
 mkdir -p "${TMP_PATH}"
 
-export INPUT_PATH="datasets/data/${BENCHMARK_TAG}/${BEAM_TAG}"
+export INPUT_PATH="data/${BENCHMARK_TAG}/${BEAM_TAG}"
 mkdir -p "${INPUT_PATH}"
 
 export SIM_OUTPUT_PATH="sim_output/${BENCHMARK_TAG}/${BEAM_TAG}"
