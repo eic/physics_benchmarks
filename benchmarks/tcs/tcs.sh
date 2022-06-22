@@ -4,8 +4,8 @@ trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 IFS=$'\n\t'
 
 ls -lrtha
-ls -lrtha data
-ls -lrtha sim_output
+ls -lrtha data/
+ls -lrtha sim_output/
 
 function print_the_help {
   echo "USAGE: ${0} [--rec] [--sim] [--analysis] [--all] "
@@ -105,10 +105,7 @@ export TMP_PATH="${LOCAL_DATA_PATH}/tmp/${BENCHMARK_TAG}/${BEAM_TAG}"
 mkdir -p "${TMP_PATH}"
 
 export INPUT_PATH="data/${BENCHMARK_TAG}/${BEAM_TAG}"
-mkdir -p "${INPUT_PATH}"
-
 export SIM_OUTPUT_PATH="sim_output/${BENCHMARK_TAG}/${BEAM_TAG}"
-mkdir -p "${SIM_OUTPUT_PATH}"
 
 export REC_OUTPUT_PATH="results/${BENCHMARK_TAG}/${BEAM_TAG}"
 mkdir -p "${REC_OUTPUT_PATH}"
