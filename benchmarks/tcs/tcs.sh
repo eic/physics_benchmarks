@@ -3,6 +3,10 @@ set -Eu
 trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 IFS=$'\n\t'
 
+ls -lrtha
+ls -lrtha data
+ls -lrtha sim_output
+
 function print_the_help {
   echo "USAGE: ${0} [--rec] [--sim] [--analysis] [--all] "
   echo "    The default options are to run all steps (sim,rec,analysis) "
