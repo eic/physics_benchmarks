@@ -1022,7 +1022,7 @@ ApplicationMgr(
     EvtMax = n_events,
     ExtSvc = services,
     EventLoop = slimeventloopmgr,
-    MessageSvcType="InertMessageSvc"
+    MessageSvcType="InertMessageSvc",
     OutputLevel = WARNING,
     AuditAlgorithms = True
 )
