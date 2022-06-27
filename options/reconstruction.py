@@ -1,7 +1,8 @@
 from Gaudi.Configuration import *
 
 from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc
-from Configurables import ApplicationMgr, AuditorSvc, EICDataSvc, PodioOutput, GeoSvc
+from Configurables import GaudiSequencer, ApplicationMgr
+from Configurables import AuditorSvc, EICDataSvc, PodioOutput, GeoSvc
 from GaudiKernel import SystemOfUnits as units
 from GaudiKernel.SystemOfUnits import MeV, GeV, mm, cm, mrad
 
@@ -109,7 +110,7 @@ else:
                                     materials="calibrations/materials-map.cbor",
                                     OutputLevel=WARNING))
 # data service
-services.append(EICDataSvc("EventDataSvc", inputs=input_sims, OutputLevel=WARNING))
+services.append(EICDataSvc("EICDataSvc", inputs=input_sims, OutputLevel=WARNING))
 
 # Multithreading
 # - threads: total number of threads to use: this determines how many events and
@@ -129,7 +130,7 @@ whiteboard = HiveWhiteBoard(
 )
 slimeventloopmgr = HiveSlimEventLoopMgr(
         SchedulerName = "AvalancheSchedulerSvc",
-        OutputLevel = DEBUG
+        OutputLevel = WARNING
 )
 scheduler = AvalancheSchedulerSvc(
         ThreadPoolSize = threads,
@@ -1017,8 +1018,18 @@ podout.outputCommands = [
         ]
 algorithms.append(podout)
 
+# Sequencer
+cardinality = 1
+for alg in algorithms:
+    alg.Cardinality = cardinality
+seq = GaudiSequencer(
+    "seq",
+    Members = algorithms,
+    Sequential = True,
+    OutputLevel = WARNING)
+
 ApplicationMgr(
-    TopAlg = algorithms,
+    TopAlg = [seq],
     EvtSel = 'NONE',
     EvtMax = n_events,
     ExtSvc = services,
