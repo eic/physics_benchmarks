@@ -1,12 +1,37 @@
 from Gaudi.Configuration import *
 
+from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc
 from Configurables import ApplicationMgr, AuditorSvc, EICDataSvc, PodioOutput, GeoSvc
 from GaudiKernel import SystemOfUnits as units
 from GaudiKernel.SystemOfUnits import MeV, GeV, mm, cm, mrad
 
 import json
-from math import sqrt
 
+# Multithreading
+# - threads: total number of threads to use: this determines how many events and
+#            algorithms can be in flight (run in parallel)
+# - evtslots: number of events that may run in parallel, each with its own EventStore
+if "JUGGLER_N_THREADS" in os.environ:
+    threads = int(os.environ["JUGGLER_N_THREADS"])
+    evtslots = int(os.environ["JUGGLER_N_THREADS"])
+
+if "JUGGLER_N_SLOTS" in os.environ:
+    evtslots = int(os.environ["JUGGLER_N_SLOTS"])
+
+whiteboard = HiveWhiteBoard(
+        "EventDataSvc",
+        EventSlots = evtslots
+)
+slimeventloopmgr = HiveSlimEventLoopMgr(
+        SchedulerName = "AvalancheSchedulerSvc",
+        OutputLevel = DEBUG
+)
+scheduler = AvalancheSchedulerSvc(
+        ThreadPoolSize = threads,
+        OutputLevel = WARNING
+)
+
+# Detector names, paths, configuration
 detector_name = "athena"
 if "JUGGLER_DETECTOR_CONFIG" in os.environ :
     detector_name = str(os.environ["JUGGLER_DETECTOR_CONFIG"])
