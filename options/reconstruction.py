@@ -1,7 +1,7 @@
 from Gaudi.Configuration import *
 
 from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc
-from Configurables import GaudiSequencer, ApplicationMgr
+from Configurables import GaudiSequencer, SequencerTimerTool, ApplicationMgr
 from Configurables import AuditorSvc, EICDataSvc, PodioOutput, GeoSvc
 from GaudiKernel import SystemOfUnits as units
 from GaudiKernel.SystemOfUnits import MeV, GeV, mm, cm, mrad
@@ -1022,19 +1022,19 @@ algorithms.append(podout)
 cardinality = 1
 for alg in algorithms:
     alg.Cardinality = cardinality
-seq = GaudiSequencer(
-    "seq",
+sequencer = GaudiSequencer(
+    "sequencer",
     Members = algorithms,
     Sequential = True,
     OutputLevel = WARNING)
 
 ApplicationMgr(
-    TopAlg = [seq],
+    TopAlg = [sequencer],
     EvtSel = 'NONE',
     EvtMax = n_events,
     ExtSvc = services,
     EventLoop = slimeventloopmgr,
-    MessageSvcType="InertMessageSvc",
+    MessageSvcType = "InertMessageSvc",
     OutputLevel = WARNING,
     AuditAlgorithms = True
 )
