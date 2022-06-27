@@ -115,10 +115,11 @@ services.append(EICDataSvc("EventDataSvc", inputs=input_sims, OutputLevel=WARNIN
 # - threads: total number of threads to use: this determines how many events and
 #            algorithms can be in flight (run in parallel)
 # - evtslots: number of events that may run in parallel, each with its own EventStore
+threads = 1
+evtslots = 1
 if "JUGGLER_N_THREADS" in os.environ:
     threads = int(os.environ["JUGGLER_N_THREADS"])
     evtslots = int(os.environ["JUGGLER_N_THREADS"])
-
 if "JUGGLER_N_SLOTS" in os.environ:
     evtslots = int(os.environ["JUGGLER_N_SLOTS"])
 
