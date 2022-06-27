@@ -7,30 +7,6 @@ from GaudiKernel.SystemOfUnits import MeV, GeV, mm, cm, mrad
 
 import json
 
-# Multithreading
-# - threads: total number of threads to use: this determines how many events and
-#            algorithms can be in flight (run in parallel)
-# - evtslots: number of events that may run in parallel, each with its own EventStore
-if "JUGGLER_N_THREADS" in os.environ:
-    threads = int(os.environ["JUGGLER_N_THREADS"])
-    evtslots = int(os.environ["JUGGLER_N_THREADS"])
-
-if "JUGGLER_N_SLOTS" in os.environ:
-    evtslots = int(os.environ["JUGGLER_N_SLOTS"])
-
-whiteboard = HiveWhiteBoard(
-        "EventDataSvc",
-        EventSlots = evtslots
-)
-slimeventloopmgr = HiveSlimEventLoopMgr(
-        SchedulerName = "AvalancheSchedulerSvc",
-        OutputLevel = DEBUG
-)
-scheduler = AvalancheSchedulerSvc(
-        ThreadPoolSize = threads,
-        OutputLevel = WARNING
-)
-
 # Detector names, paths, configuration
 detector_name = "athena"
 if "JUGGLER_DETECTOR_CONFIG" in os.environ :
@@ -134,6 +110,31 @@ else:
                                     OutputLevel=WARNING))
 # data service
 services.append(EICDataSvc("EventDataSvc", inputs=input_sims, OutputLevel=WARNING))
+
+# Multithreading
+# - threads: total number of threads to use: this determines how many events and
+#            algorithms can be in flight (run in parallel)
+# - evtslots: number of events that may run in parallel, each with its own EventStore
+if "JUGGLER_N_THREADS" in os.environ:
+    threads = int(os.environ["JUGGLER_N_THREADS"])
+    evtslots = int(os.environ["JUGGLER_N_THREADS"])
+
+if "JUGGLER_N_SLOTS" in os.environ:
+    evtslots = int(os.environ["JUGGLER_N_SLOTS"])
+
+whiteboard = HiveWhiteBoard(
+        "EventDataSvc",
+        EventSlots = evtslots
+)
+slimeventloopmgr = HiveSlimEventLoopMgr(
+        SchedulerName = "AvalancheSchedulerSvc",
+        OutputLevel = DEBUG
+)
+scheduler = AvalancheSchedulerSvc(
+        ThreadPoolSize = threads,
+        OutputLevel = WARNING
+)
+services.append(whiteboard)
 
 # juggler components
 from Configurables import PodioInput
@@ -1020,6 +1021,8 @@ ApplicationMgr(
     EvtSel = 'NONE',
     EvtMax = n_events,
     ExtSvc = services,
+    EventLoop = slimeventloopmgr,
+    MessageSvcType="InertMessageSvc"
     OutputLevel = WARNING,
     AuditAlgorithms = True
- )
+)
