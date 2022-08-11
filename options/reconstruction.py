@@ -157,6 +157,7 @@ from Configurables import PodioInput
 from Configurables import Jug__Fast__MC2SmearedParticle as MC2DummyParticle
 from Configurables import Jug__Fast__ParticlesWithTruthPID as ParticlesWithTruthPID
 from Configurables import Jug__Fast__SmearedFarForwardParticles as FFSmearedParticles
+from Configurables import Jug__Fast__ScatteredElectronFinder as ScatteredElectronFinder
 
 from Configurables import Jug__Fast__MatchClusters as MatchClusters
 from Configurables import Jug__Fast__ClusterMerger as ClusterMerger
@@ -316,6 +317,13 @@ dummy = MC2DummyParticle(
     smearing=0,
 )
 algorithms.append(dummy)
+
+truth_scat_e = ScatteredElectronFinder(
+    "truth_scat_e",
+    inputMCParticles="MCParticles",
+    outputMCScatteredElectron="MCScatteredElectron",
+)
+algorithms.append(truth_scat_e)
 
 # Truth level kinematics
 truth_incl_kin = InclusiveKinematicsTruth(
