@@ -21,8 +21,8 @@
 #include "fmt/core.h"
 
 #include "nlohmann/json.hpp"
-#include "eicd/InclusiveKinematicsData.h"
-#include "eicd/ReconstructedParticleData.h"
+#include "edm4eic/InclusiveKinematicsData.h"
+#include "edm4eic/ReconstructedParticleData.h"
 
 int dis_electrons(const std::string& config_name)
 {

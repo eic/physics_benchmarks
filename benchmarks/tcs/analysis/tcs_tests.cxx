@@ -15,11 +15,11 @@ R__LOAD_LIBRARY(libfmt.so)
 #include "fmt/core.h"
 #include "fmt/color.h"
 
-R__LOAD_LIBRARY(libeicd.so)
+R__LOAD_LIBRARY(libedm4eic.so)
 R__LOAD_LIBRARY(libDD4pod.so)
 
-#include "eicd/InclusiveKinematicsCollection.h"
-#include "eicd/ReconstructedParticleCollection.h"
+#include "edm4eic/InclusiveKinematicsCollection.h"
+#include "edm4eic/ReconstructedParticleCollection.h"
 
 void tcs_tests(const char* fname = "rec_tcs.root"){
 
@@ -30,7 +30,7 @@ void tcs_tests(const char* fname = "rec_tcs.root"){
   ROOT::RDataFrame df("events", fname);
 
   auto ff_theta_mrad = [] (
-      const std::vector<eicd::ReconstructedParticleData>& v,
+      const std::vector<edm4eic::ReconstructedParticleData>& v,
       const int16_t type
   ) -> std::vector<float> {
     std::vector<float> theta;
@@ -45,10 +45,10 @@ void tcs_tests(const char* fname = "rec_tcs.root"){
   auto df0 = df.Define("n_parts", "ReconstructedParticles.size()")
                .Define("isQ2gt1", "InclusiveKinematicsTruth.Q2 > 1.0")
                .Define("n_Q2gt1", "isQ2gt1.size()")
-               .Define("ff_theta_mrad_B0", [&](const std::vector<eicd::ReconstructedParticleData>& v){return ff_theta_mrad(v,1);}, {"ReconstructedFFParticles"})
-               .Define("ff_theta_mrad_RP", [&](const std::vector<eicd::ReconstructedParticleData>& v){return ff_theta_mrad(v,2);}, {"ReconstructedFFParticles"})
-               .Define("ff_theta_mrad_OMD",[&](const std::vector<eicd::ReconstructedParticleData>& v){return ff_theta_mrad(v,3);}, {"ReconstructedFFParticles"})
-               .Define("ff_theta_mrad_ZDC",[&](const std::vector<eicd::ReconstructedParticleData>& v){return ff_theta_mrad(v,4);}, {"ReconstructedFFParticles"})
+               .Define("ff_theta_mrad_B0", [&](const std::vector<edm4eic::ReconstructedParticleData>& v){return ff_theta_mrad(v,1);}, {"ReconstructedFFParticles"})
+               .Define("ff_theta_mrad_RP", [&](const std::vector<edm4eic::ReconstructedParticleData>& v){return ff_theta_mrad(v,2);}, {"ReconstructedFFParticles"})
+               .Define("ff_theta_mrad_OMD",[&](const std::vector<edm4eic::ReconstructedParticleData>& v){return ff_theta_mrad(v,3);}, {"ReconstructedFFParticles"})
+               .Define("ff_theta_mrad_ZDC",[&](const std::vector<edm4eic::ReconstructedParticleData>& v){return ff_theta_mrad(v,4);}, {"ReconstructedFFParticles"})
                ;
 
   auto h_n_parts = df0.Histo1D({"h_n_parts", "; h_n_parts n", 10, 0, 10}, "n_parts");

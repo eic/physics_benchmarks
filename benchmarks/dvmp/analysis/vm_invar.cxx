@@ -76,7 +76,7 @@ int vm_invar(const std::string& config_name)
   auto momenta_sort_sim = [vm_name, decay_name](const std::vector<edm4hep::MCParticleData>& parts){
     return util::momenta_sort_sim(parts, vm_name, decay_name);
   };
-  auto momenta_sort_rec = [vm_name, decay_name](const std::vector<eicd::ReconstructedParticleData>& parts){
+  auto momenta_sort_rec = [vm_name, decay_name](const std::vector<edm4eic::ReconstructedParticleData>& parts){
     return util::momenta_sort_rec(parts, vm_name, decay_name);
   };
   //====================================================================

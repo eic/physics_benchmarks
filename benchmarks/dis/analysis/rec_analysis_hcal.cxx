@@ -21,8 +21,8 @@
 #include "fmt/core.h"
 
 #include "nlohmann/json.hpp"
-#include "eicd/CalorimeterHitData.h"
-#include "eicd/ClusterData.h"
+#include "edm4eic/CalorimeterHitData.h"
+#include "edm4eic/ClusterData.h"
 
 int rec_analysis_hcal(const std::string& config_name)
 {

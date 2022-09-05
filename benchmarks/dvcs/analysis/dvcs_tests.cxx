@@ -14,11 +14,11 @@ R__LOAD_LIBRARY(libfmt.so)
 #include "fmt/core.h"
 #include "fmt/color.h"
 
-R__LOAD_LIBRARY(libeicd.so)
+R__LOAD_LIBRARY(libedm4eic.so)
 R__LOAD_LIBRARY(libDD4pod.so)
 
-#include "eicd/InclusiveKinematicsCollection.h"
-#include "eicd/ReconstructedParticleCollection.h"
+#include "edm4eic/InclusiveKinematicsCollection.h"
+#include "edm4eic/ReconstructedParticleCollection.h"
 
 void dvcs_tests(const char* fname = "rec_dvcs.root"){
 

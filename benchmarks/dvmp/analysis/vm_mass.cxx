@@ -16,8 +16,8 @@
 #include "fmt/core.h"
 #include "nlohmann/json.hpp"
 
-#include "eicd/ReconstructedParticleCollection.h"
-#include "eicd/ReconstructedParticleData.h"
+#include "edm4eic/ReconstructedParticleCollection.h"
+#include "edm4eic/ReconstructedParticleData.h"
 
 // Run VM invariant-mass-based benchmarks on an input reconstruction file for
 // a desired vector meson (e.g. jpsi) and a desired decay particle (e.g. muon)

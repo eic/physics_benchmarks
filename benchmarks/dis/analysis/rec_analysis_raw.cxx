@@ -21,7 +21,7 @@
 #include "fmt/core.h"
 
 #include "nlohmann/json.hpp"
-#include "eicd/RawCalorimeterHitData.h"
+#include "edm4eic/RawCalorimeterHitData.h"
 
 int rec_analysis_raw(const std::string& config_name)
 {

@@ -3,7 +3,7 @@
 
 #include <ROOT/RDataFrame.hxx>
 
-#include <eicd/ReconstructedParticleData.h>
+#include <edm4eic/ReconstructedParticleData.h>
 
 int analyze(std::string file)
 {
@@ -17,7 +17,7 @@ int analyze(std::string file)
     return -1;
   }
 
-  auto n_tracks = [](const std::vector<eicd::ReconstructedParticleData> &p) { return (int) p.size(); };
+  auto n_tracks = [](const std::vector<edm4eic::ReconstructedParticleData> &p) { return (int) p.size(); };
 
   auto d = df
   .Define("n_tracks_gen", n_tracks, {"GeneratedParticles"})

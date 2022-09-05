@@ -14,19 +14,19 @@ R__LOAD_LIBRARY(libfmt.so)
 #include "fmt/core.h"
 #include "fmt/color.h"
 
-R__LOAD_LIBRARY(libeicd.so)
+R__LOAD_LIBRARY(libedm4eic.so)
 R__LOAD_LIBRARY(libDD4pod.so)
 
 #include "dd4pod/Geant4ParticleCollection.h"
-#include "eicd/TrackParametersCollection.h"
-#include "eicd/ClusterCollection.h"
-#include "eicd/ReconstructedParticleCollection.h"
-#include "eicd/InclusiveKinematicsCollection.h"
+#include "edm4eic/TrackParametersCollection.h"
+#include "edm4eic/ClusterCollection.h"
+#include "edm4eic/ReconstructedParticleCollection.h"
+#include "edm4eic/InclusiveKinematicsCollection.h"
 
 using ROOT::RDataFrame;
 using namespace ROOT::VecOps;
 
-auto p_track = [](std::vector<eicd::TrackParametersData> const& in) {
+auto p_track = [](std::vector<edm4eic::TrackParametersData> const& in) {
   std::vector<double> result;
   for (size_t i = 0; i < in.size(); ++i) {
     result.push_back(std::abs(1.0/(in[i].qOverP)));
@@ -66,7 +66,7 @@ auto fourvec = [](ROOT::VecOps::RVec<dd4pod::Geant4ParticleData> const& in) {
   }
   return result;
 };
-auto recfourvec = [](ROOT::VecOps::RVec<eicd::ReconstructedParticleData> const& in) {
+auto recfourvec = [](ROOT::VecOps::RVec<edm4eic::ReconstructedParticleData> const& in) {
   std::vector<ROOT::Math::PxPyPzMVector> result;
   ROOT::Math::PxPyPzMVector lv;
   for (size_t i = 0; i < in.size(); ++i) {
