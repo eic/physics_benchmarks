@@ -129,8 +129,6 @@ summary:
 
 benchmarks:physics:success:
   stage: status-report
-  needs:
-    - ["summary"]
   extends: .status
   variables:
     STATE: "success"
@@ -139,8 +137,6 @@ benchmarks:physics:success:
 
 benchmarks:physics:failure:
   stage: status-report
-  needs:
-    - ["summary"]
   extends: .status
   variables:
     STATE: "failure"
