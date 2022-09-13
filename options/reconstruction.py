@@ -494,7 +494,7 @@ ce_ecal_clmerger = ClusterMerger(
 )
 algorithms.append(ce_ecal_clmerger)
 
-# Endcap ScFi Ecal
+# Endcap ScFi Ecal (homogeneous approximation)
 ci_ecal_daq = calo_daq["ecal_pos_endcap"]
 
 ci_ecal_digi = CalHitDigi(
@@ -502,7 +502,8 @@ ci_ecal_digi = CalHitDigi(
     inputHitCollection="EcalEndcapPHits",
     outputHitCollection="EcalEndcapPRawHits",
     scaleResponse=ci_ecal_sf,
-    energyResolutions=[0.1, 0.0015, 0.0],
+    energyResolutions=[0.00316, 0.0015, 0.0],
+    threshold=5.0 * MeV,
     **ci_ecal_daq,
 )
 algorithms.append(ci_ecal_digi)
