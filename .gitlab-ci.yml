@@ -46,7 +46,7 @@ stages:
           -d '{"state":"'"${STATE}"'",
                "target_url":"'"${CI_PIPELINE_URL}"'",
                "description":"'"${DESCRIPTION}"'",
-               "context":"eicweb/physics_benchmarks"
+               "context":"eicweb/physics_benchmarks ('"$DETECTOR_CONFIG"')"
               }' ;
       fi
 
