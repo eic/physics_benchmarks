@@ -99,36 +99,26 @@ if has_ecal_barrel_scfi:
     sim_coll += ecal_barrel_scfi_collections
 
 forward_romanpot_collections = [
-    "ForwardRomanPotHits1",
-    "ForwardRomanPotHits2",
+    "ForwardRomanPotHits",
 ]
 forward_offmtracker_collections = [
-    "ForwardOffMTrackerHits1",
-    "ForwardOffMTrackerHits2",
-    "ForwardOffMTrackerHits3",
-    "ForwardOffMTrackerHits4",
+    "ForwardOffMTrackerHits",
 ]
 sim_coll += forward_romanpot_collections + forward_offmtracker_collections
 
 tracker_endcap_collections = [
-    "InnerTrackerEndcapPHits",
-    "InnerTrackerEndcapNHits",
-    "MiddleTrackerEndcapPHits",
-    "MiddleTrackerEndcapNHits",
-    "OuterTrackerEndcapPHits",
-    "OuterTrackerEndcapNHits",
+    "TrackerEndcapHits",
 ]
 tracker_barrel_collections = [
-    "SagittaSiBarrelHits",
-    "OuterSiBarrelHits",
+    "SiBarrelHits",
 ]
 vertex_barrel_collections = [
     "VertexBarrelHits",
 ]
 mpgd_barrel_collections = [
-    "InnerMPGDBarrelHits",
-    "OuterMPGDBarrelHits",
+    "MPGDBarrelHits",
 ]
+
 sim_coll += (
     tracker_endcap_collections
     + tracker_barrel_collections
