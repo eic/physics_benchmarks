@@ -43,7 +43,7 @@ namespace util {
   }
   
   //import Reconstructed particles and set the wanted particles in the intended order========================
-  inline auto momenta_sort_rec(const std::vector<eicd::ReconstructedParticleData>& parts, std::string_view mother, std::string_view daughter){
+  inline auto momenta_sort_rec(const std::vector<edm4eic::ReconstructedParticleData>& parts, std::string_view mother, std::string_view daughter){
     std::vector<ROOT::Math::PxPyPzMVector> momenta{7};
     //0:e0  1:p0    2:e1    3:p1    4:recoil system (without p1)    5:l1 from recoil decay  6:l2 from recoil decay
     for(int i = 0 ; i < 7 ; i++) momenta[i].SetPxPyPzE(0., 0., 0., 0.);   //initialize as all 0
