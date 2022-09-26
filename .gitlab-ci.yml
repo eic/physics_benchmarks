@@ -45,7 +45,7 @@ stages:
           "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
           -d '{"state":"'"${STATE}"'",
                "target_url":"'"${CI_PIPELINE_URL}"'",
-               "description":"'"${DESCRIPTION}"'",
+               "description":"'"${DESCRIPTION} $(TZ=America/New_York date)"'",
                "context":"eicweb/physics_benchmarks ('"$DETECTOR_CONFIG"')"
               }' ;
       fi
@@ -55,7 +55,7 @@ benchmarks:physics:pending:
   extends: .status
   variables:
     STATE: "pending"
-    DESCRIPTION: "The physics benchmarks are running..."
+    DESCRIPTION: "Started..."
   when: always
 
 common:setup:
@@ -132,7 +132,7 @@ benchmarks:physics:success:
   extends: .status
   variables:
     STATE: "success"
-    DESCRIPTION: "The physics benchmarks succeeded!"
+    DESCRIPTION: "Succeeded!"
   when: on_success
 
 benchmarks:physics:failure:
@@ -140,5 +140,5 @@ benchmarks:physics:failure:
   extends: .status
   variables:
     STATE: "failure"
-    DESCRIPTION: "The physics benchmarks failed!"
+    DESCRIPTION: "Failed!"
   when: on_failure
