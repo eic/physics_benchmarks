@@ -353,7 +353,7 @@ algorithms.append(trk_b0_reco)
 # ZDC ECAL WSciFi
 ffi_zdc_ecal_digi = CalHitDigi(
     "ffi_zdc_ecal_digi",
-    inputHitCollection="ZDCEcalHits",
+    inputHitCollection="ZDC_Crystal_Hits",
     outputHitCollection="ZDCEcalRawHits",
 )
 algorithms.append(ffi_zdc_ecal_digi)
