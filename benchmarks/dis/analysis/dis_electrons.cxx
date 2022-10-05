@@ -166,72 +166,152 @@ int dis_electrons(const std::string& config_name)
   fmt::print(fmt::emphasis::bold | fg(fmt::color::forest_green),
              "Inclusive kinematics summary:\n");
   fmt::print("Q2 resolution:\n");
-  if (f_Q2_el_res == 0) {
-    fmt::print(" - electron: {} +/- {}\n",
-      f_Q2_el_res->Parameter(1), f_Q2_el_res->Error(1));
-  } else {
-    fmt::print("Q2 electron fit failed\n");
+  fmt::print(" - electron mean: {} +/- {}\n",
+    h_Q2_el_res->GetMean(), h_Q2_el_res->GetMeanError());
+  fmt::print(" - electron stddev: {} +/- {}\n",
+    h_Q2_el_res->GetStdDev(), h_Q2_el_res->GetStdDevError());
+  if (abs(h_Q2_el_res->GetMean()) / h_Q2_el_res->GetMeanError() > 5) {
+    fmt::print("Q2 electron res mean not 0\n");
     return 1;
   }
+  if (f_Q2_el_res == 0) {
+    fmt::print(" - electron fit: {} +/- {}\n",
+      f_Q2_el_res->Parameter(1), f_Q2_el_res->Error(1));
+  } else {
+    fmt::print("Q2 electron fit failed (FIXME: allowed to fail)\n");
+    //return 1;
+  }
+  fmt::print(" - sigma mean:    {} +/- {}\n",
+    h_Q2_sigma_res->GetMean(), h_Q2_sigma_res->GetMeanError());
+  fmt::print(" - sigma stddev:    {} +/- {}\n",
+    h_Q2_sigma_res->GetStdDev(), h_Q2_sigma_res->GetStdDevError());
+  if (abs(h_Q2_sigma_res->GetMean()) / h_Q2_sigma_res->GetMeanError() > 5) {
+    fmt::print("Q2 sigma res mean not 0 (FIXME: allowed to fail)\n");
+    //return 1;
+  }
   if (f_Q2_sigma_res == 0) {
-    fmt::print(" - sigma:    {} +/- {}\n",
+    fmt::print(" - sigma fit:    {} +/- {}\n",
       f_Q2_sigma_res->Parameter(1), f_Q2_sigma_res->Error(1));
   } else {
     fmt::print("Q2 sigma fit failed (FIXME: allowed to fail)\n");
     //return 1;
   }
+  fmt::print(" - esigma mean:    {} +/- {}\n",
+    h_Q2_esigma_res->GetMean(), h_Q2_esigma_res->GetMeanError());
+  fmt::print(" - esigma stddev:    {} +/- {}\n",
+    h_Q2_esigma_res->GetStdDev(), h_Q2_esigma_res->GetStdDevError());
+  if (abs(h_Q2_esigma_res->GetMean()) / h_Q2_esigma_res->GetMeanError() > 5) {
+    fmt::print("Q2 esigma res mean not 0 (FIXME: allowed to fail)\n");
+    //return 1;
+  }
   if (f_Q2_esigma_res == 0) {
-    fmt::print(" - esigma:   {} +/- {}\n",
+    fmt::print(" - esigma fit:   {} +/- {}\n",
       f_Q2_esigma_res->Parameter(1), f_Q2_esigma_res->Error(1));
   } else {
     fmt::print("Q2 esigma fit failed (FIXME: allowed to fail)\n");
     //return 1;
   }
+  fmt::print(" - JB mean:    {} +/- {}\n",
+    h_Q2_jb_res->GetMean(), h_Q2_jb_res->GetMeanError());
+  fmt::print(" - JB stddev:    {} +/- {}\n",
+    h_Q2_jb_res->GetStdDev(), h_Q2_jb_res->GetStdDevError());
+  if (abs(h_Q2_jb_res->GetMean()) / h_Q2_jb_res->GetMeanError() > 5) {
+    fmt::print("Q2 JB res mean not 0 (FIXME: allowed to fail)\n");
+    //return 1;
+  }
   if (f_Q2_jb_res == 0) {
-    fmt::print(" - JB:       {} +/- {}\n",
+    fmt::print(" - JB fit:       {} +/- {}\n",
       f_Q2_jb_res->Parameter(1), f_Q2_jb_res->Error(1));
   } else {
     fmt::print("Q2 JB fit failed (FIXME: allowed to fail)\n");
     //return 1;
   }
+  fmt::print(" - DA mean:    {} +/- {}\n",
+    h_Q2_da_res->GetMean(), h_Q2_da_res->GetMeanError());
+  fmt::print(" - DA stddev:    {} +/- {}\n",
+    h_Q2_da_res->GetStdDev(), h_Q2_da_res->GetStdDevError());
+  if (abs(h_Q2_da_res->GetMean()) / h_Q2_da_res->GetMeanError() > 5) {
+    fmt::print("Q2 DA res mean not 0 (FIXME: allowed to fail)\n");
+    //return 1;
+  }
   if (f_Q2_da_res == 0) {
-    fmt::print(" - DA:   (FIXME: allowed to fail)     {} +/- {}\n",
+    fmt::print(" - DA fit:   (FIXME: allowed to fail)     {} +/- {}\n",
       f_Q2_da_res->Parameter(1), f_Q2_da_res->Error(1));
   } else {
     fmt::print("Q2 DA fit failed (FIXME: allowed to fail)\n");
     //return 1;
   }
   fmt::print("x resolution:\n");
+  fmt::print(" - electron mean: {} +/- {}\n",
+    h_x_el_res->GetMean(), h_x_el_res->GetMeanError());
+  fmt::print(" - electron stddev: {} +/- {}\n",
+    h_x_el_res->GetStdDev(), h_x_el_res->GetStdDevError());
+  if (abs(h_x_el_res->GetMean()) / h_x_el_res->GetMeanError() > 5) {
+    fmt::print("x electron res mean not 0 (FIXME: allowed to fail)\n");
+    //return 1;
+  }
   if (f_x_el_res == 0) {
-    fmt::print(" - electron: {} +/- {}\n",
+    fmt::print(" - electron fit: {} +/- {}\n",
       f_x_el_res->Parameter(1), f_x_el_res->Error(1));
   } else {
-    fmt::print("x electron fit failed\n");
-    return 1;
+    fmt::print("x electron fit failed (FIXME: allowed to fail)\n");
+    //return 1;
+  }
+  fmt::print(" - sigma mean: {} +/- {}\n",
+    h_x_sigma_res->GetMean(), h_x_sigma_res->GetMeanError());
+  fmt::print(" - sigma stddev: {} +/- {}\n",
+    h_x_sigma_res->GetStdDev(), h_x_sigma_res->GetStdDevError());
+  if (abs(h_x_sigma_res->GetMean()) / h_x_sigma_res->GetMeanError() > 5) {
+    fmt::print("x sigma res mean not 0 (FIXME: allowed to fail)\n");
+    //return 1;
   }
   if (f_x_sigma_res == 0) {
-    fmt::print(" - sigma:    {} +/- {}\n",
+    fmt::print(" - sigma fit:    {} +/- {}\n",
       f_x_sigma_res->Parameter(1), f_x_sigma_res->Error(1));
   } else {
     fmt::print("x sigma fit failed (FIXME: allowed to fail)\n");
     //return 1;
   }
+  fmt::print(" - esigma mean: {} +/- {}\n",
+    h_x_esigma_res->GetMean(), h_x_esigma_res->GetMeanError());
+  fmt::print(" - esigma stddev: {} +/- {}\n",
+    h_x_esigma_res->GetStdDev(), h_x_esigma_res->GetStdDevError());
+  if (abs(h_x_esigma_res->GetMean()) / h_x_esigma_res->GetMeanError() > 5) {
+    fmt::print("x esigma res mean not 0 (FIXME: allowed to fail)\n");
+    //return 1;
+  }
   if (f_x_esigma_res == 0) {
-    fmt::print(" - esigma:   {} +/- {}\n",
+    fmt::print(" - esigma fit:   {} +/- {}\n",
       f_x_esigma_res->Parameter(1), f_x_esigma_res->Error(1));
   } else {
     fmt::print("x esigma fit failed (FIXME: allowed to fail)\n");
     //return 1;
   }
+  fmt::print(" - JB mean: {} +/- {}\n",
+    h_x_jb_res->GetMean(), h_x_jb_res->GetMeanError());
+  fmt::print(" - JB stddev: {} +/- {}\n",
+    h_x_jb_res->GetStdDev(), h_x_jb_res->GetStdDevError());
+  if (abs(h_x_jb_res->GetMean()) / h_x_jb_res->GetMeanError() > 5) {
+    fmt::print("x JB res mean not 0 (FIXME: allowed to fail)\n");
+    //return 1;
+  }
   if (f_x_jb_res == 0) {
-    fmt::print(" - JB:       {} +/- {}\n",
+    fmt::print(" - JB fit:       {} +/- {}\n",
       f_x_jb_res->Parameter(1), f_x_jb_res->Error(1));
   } else {
     fmt::print("x JB fit failed (FIXME: allowed to fail)\n");
     //return 1;
   }
+  fmt::print(" - DA mean: {} +/- {}\n",
+    h_x_da_res->GetMean(), h_x_da_res->GetMeanError());
+  fmt::print(" - DA stddev: {} +/- {}\n",
+    h_x_da_res->GetStdDev(), h_x_da_res->GetStdDevError());
+  if (abs(h_x_da_res->GetMean()) / h_x_da_res->GetMeanError() > 5) {
+    fmt::print("x DA res mean not 0 (FIXME: allowed to fail)\n");
+    //return 1;
+  }
   if (f_x_da_res == 0) {
-    fmt::print(" - DA:       {} +/- {}\n",
+    fmt::print(" - DA fit:       {} +/- {}\n",
       f_x_da_res->Parameter(1), f_x_da_res->Error(1));
   } else {
     fmt::print("x DA fit failed (FIXME: allowed to fail)\n");
