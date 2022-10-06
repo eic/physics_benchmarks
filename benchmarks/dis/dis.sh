@@ -79,8 +79,7 @@ fi
 ## =============================================================================
 ## Step 3: Run digitization & reconstruction
 echo "Running the digitization and reconstruction"
-JANA_HOME=/usr/local/lib/EICrecon eicrecon ${SIM_FILE}
-mv eicrecon.root ${REC_FILE}
+JANA_HOME=/usr/local/lib/EICrecon eicrecon -Ppodio:output_file=${REC_FILE} ${SIM_FILE}
 if [ "$?" -ne "0" ] ; then
   echo "ERROR running eicrecon"
   exit 1
