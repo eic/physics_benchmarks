@@ -3,14 +3,8 @@
 source $(dirname $0)/common.sh $*
 
 # Reconstruct
-for rec in options/*.py ; do
-  unset tag
-  [[ $(basename ${rec} .py) =~ (.*)\.(.*) ]] && tag=".${BASH_REMATCH[2]}"
-  JUGGLER_REC_FILE=${JUGGLER_REC_FILE/.root/${tag:-}.root} \
-    /usr/bin/time -v \
-    gaudirun.py ${JUGGLER_GAUDI_OPTIONS:-} ${rec}
-  if [[ "$?" -ne "0" ]] ; then
-    echo "ERROR running juggler"
-    exit 1
-  fi
-done
+JANA_HOME=/usr/local/lib/EICrecon eicrecon -Ppodio:output_file=${JUGGLER_REC_FILE} ${JUGGLER_SIM_FILE}
+if [ "$?" -ne "0" ] ; then
+  echo "ERROR running eicrecon"
+  exit 1
+fi
