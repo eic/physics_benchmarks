@@ -13,8 +13,13 @@ detector_version = str(os.environ.get("DETECTOR_VERSION", "main"))
 
 # Detector features that affect reconstruction
 has_ecal_barrel_scfi = False
+has_pid_backward_pfrich = False
 if "epic" in detector_name and "imaging" in detector_config:
     has_ecal_barrel_scfi = True
+    has_pid_backward_pfrich = True
+if "epic" in detector_name and "brycecanyon" in detector_config:
+    has_ecal_barrel_scfi = True
+    has_pid_backward_pfrich = True
 
 # CAL reconstruction
 # get sampling fractions from system environment variable

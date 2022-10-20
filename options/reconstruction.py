@@ -15,8 +15,13 @@ detector_version = str(os.environ.get("DETECTOR_VERSION", "main"))
 
 # Detector features that affect reconstruction
 has_ecal_barrel_scfi = False
+has_pid_backward_pfrich = False
 if "epic" in detector_name and "imaging" in detector_config:
     has_ecal_barrel_scfi = True
+    has_pid_backward_pfrich = True
+if "epic" in detector_name and "brycecanyon" in detector_config:
+    has_ecal_barrel_scfi = True
+    has_pid_backward_pfrich = True
 
 if "PBEAM" in os.environ:
     ionBeamEnergy = str(os.environ["PBEAM"])
@@ -250,7 +255,10 @@ sim_coll += (
     + mpgd_barrel_collections
 )
 
-sim_coll.append("MRICHHits")
+if has_pid_backward_pfrich:
+    sim_coll.append("PFRICHHits")
+else:
+    sim_coll.append("MRICHHits")
 
 # list of algorithms
 algorithms = []
@@ -1119,8 +1127,22 @@ algorithms.append(drich_reco)
 #        #inputTrackCollection=parts_with_truth_pid.outputParticles,
 #        outputClusterCollection="ForwardRICHClusters")
 
-# MRICH
-if "acadia" in detector_version:
+# PFRICH/MRICH
+if has_pid_backward_pfrich:
+    pfrich_digi = PhotoMultiplierDigi(
+        "pfrich_digi",
+        inputHitCollection="PFRICHHits",
+        outputHitCollection="PFRICHRawHits",
+        quantumEfficiency=[(a * eV, b) for a, b in qe_data],
+    )
+    algorithms.append(pfrich_digi)
+    pfrich_reco = PhotoMultiplierReco(
+        "pfrich_reco",
+        inputHitCollection=pfrich_digi.outputHitCollection,
+        outputHitCollection="PFRICHRecHits",
+    )
+    algorithms.append(pfrich_reco)
+else:
     mrich_digi = PhotoMultiplierDigi(
         "mrich_digi",
         inputHitCollection="MRICHHits",

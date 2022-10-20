@@ -13,12 +13,13 @@ detector_version = str(os.environ.get("DETECTOR_VERSION", "main"))
 
 # Detector features that affect reconstruction
 has_ecal_barrel_scfi = False
-if "athena" in detector_name:
-    has_ecal_barrel_scfi = True
-if "ecce" in detector_name and "imaging" in detector_config:
-    has_ecal_barrel_scfi = True
+has_pid_backward_pfrich = False
 if "epic" in detector_name and "imaging" in detector_config:
     has_ecal_barrel_scfi = True
+    has_pid_backward_pfrich = True
+if "epic" in detector_name and "brycecanyon" in detector_config:
+    has_ecal_barrel_scfi = True
+    has_pid_backward_pfrich = True
 
 # RICH reconstruction
 qe_data = [
@@ -126,7 +127,10 @@ sim_coll += (
     + mpgd_barrel_collections
 )
 
-sim_coll.append("MRICHHits")
+if has_pid_backward_pfrich:
+    sim_coll.append("PFRICHHits")
+else:
+    sim_coll.append("MRICHHits")
 
 # list of algorithms
 algorithms = []
