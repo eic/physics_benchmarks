@@ -9,24 +9,39 @@ single:simulate:
   timeout: 2 hours
   stage: simulate
   needs: ["common:detector"]
+  parallel:
+    matrix:
+      - particle: ['e-', 'pi-']
+        energy: ['1GeV']
+        angle: ['3to45deg', '45to135deg', '135to177deg']
   script:
-    - bash benchmarks/single/simulate.sh e-_1GeV_45to135deg
+    - bash benchmarks/single/simulate.sh ${particle}_${energy}_${angle}
 
 single:reconstruct:
   extends: .phy_benchmark
   timeout: 2 hours
   stage: reconstruct
   needs: ["single:simulate"]
+  parallel:
+    matrix:
+      - particle: ['e-', 'pi-']
+        energy: ['1GeV']
+        angle: ['3to45deg', '45to135deg', '135to177deg']
   script:
-    - bash benchmarks/single/reconstruct.sh e-_1GeV_45to135deg
+    - bash benchmarks/single/reconstruct.sh ${particle}_${energy}_${angle}
 
 single:analyze:
   extends: .phy_benchmark
   timeout: 2 hours
   stage: analyze
   needs: ["single:reconstruct", "single:compile"]
+  parallel:
+    matrix:
+      - particle: ['e-', 'pi-']
+        energy: ['1GeV']
+        angle: ['3to45deg', '45to135deg', '135to177deg']
   script:
-    - bash benchmarks/single/analyze.sh e-_1GeV_45to135deg
+    - bash benchmarks/single/analyze.sh ${particle}_${energy}_${angle}
 
 single:results:
   stage: collect
