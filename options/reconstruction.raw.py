@@ -12,13 +12,13 @@ detector_config = str(os.environ.get("DETECTOR_CONFIG", detector_name))
 detector_version = str(os.environ.get("DETECTOR_VERSION", "main"))
 
 # Detector features that affect reconstruction
-has_ecal_barrel_scfi = False
+has_ecal_barrel_imaging = False
 has_pid_backward_pfrich = False
 if "epic" in detector_name and "imaging" in detector_config:
-    has_ecal_barrel_scfi = True
+    has_ecal_barrel_imaging = True
     has_pid_backward_pfrich = True
 if "epic" in detector_name and "brycecanyon" in detector_config:
-    has_ecal_barrel_scfi = True
+    has_ecal_barrel_imaging = True
     has_pid_backward_pfrich = True
 
 # RICH reconstruction
@@ -82,8 +82,6 @@ sim_coll = [
     "EcalEndcapNHitsContributions",
     "EcalEndcapPHits",
     "EcalEndcapPHitsContributions",
-    "EcalBarrelHits",
-    "EcalBarrelHitsContributions",
     "HcalBarrelHits",
     "HcalBarrelHitsContributions",
     "HcalEndcapPHits",
@@ -92,12 +90,20 @@ sim_coll = [
     "HcalEndcapNHitsContributions",
     "DRICHHits",
 ]
-ecal_barrel_scfi_collections = [
+ecal_barrel_imaging_collections = [
+    "EcalBarrelImagingHits",
+    "EcalBarrelImagingHitsContributions",
     "EcalBarrelScFiHits",
     "EcalBarrelScFiHitsContributions",
 ]
-if has_ecal_barrel_scfi:
-    sim_coll += ecal_barrel_scfi_collections
+ecal_barrel_sciglass_collections = [
+    "EcalBarrelSciGlassHits",
+    "EcalBarrelSciGlassHitsContributions",
+]
+if has_ecal_barrel_imaging:
+    sim_coll += ecal_barrel_imaging_collections
+else:
+    sim_coll += ecal_barrel_sciglass_collections
 
 forward_romanpot_collections = [
     "ForwardRomanPotHits",
@@ -202,13 +208,13 @@ ci_ecal_digi = CalHitDigi(
 algorithms.append(ci_ecal_digi)
 
 # Central Barrel Ecal
-if has_ecal_barrel_scfi:
+if has_ecal_barrel_imaging:
     # Central ECAL Imaging Calorimeter
     img_barrel_daq = calo_daq["ecal_barrel_imaging"]
 
     img_barrel_digi = CalHitDigi(
         "img_barrel_digi",
-        inputHitCollection="EcalBarrelHits",
+        inputHitCollection="EcalBarrelImagingHits",
         outputHitCollection="EcalBarrelImagingRawHits",
         energyResolutions=[0.0, 0.02, 0.0],  # 2% flat resolution
         **img_barrel_daq
@@ -231,8 +237,8 @@ else:
 
     sciglass_ecal_digi = CalHitDigi(
         "sciglass_ecal_digi",
-        inputHitCollection="EcalBarrelHits",
-        outputHitCollection="EcalBarrelRawHits",
+        inputHitCollection="EcalBarrelSciGlassHits",
+        outputHitCollection="EcalBarrelSciGlassRawHits",
         energyResolutions=[0.0, 0.02, 0.0],  # 2% flat resolution
         **sciglass_ecal_daq
     )

@@ -14,13 +14,13 @@ detector_config = str(os.environ.get("DETECTOR_CONFIG", detector_name))
 detector_version = str(os.environ.get("DETECTOR_VERSION", "main"))
 
 # Detector features that affect reconstruction
-has_ecal_barrel_scfi = False
+has_ecal_barrel_imaging = False
 has_pid_backward_pfrich = False
 if "epic" in detector_name and "imaging" in detector_config:
-    has_ecal_barrel_scfi = True
+    has_ecal_barrel_imaging = True
     has_pid_backward_pfrich = True
 if "epic" in detector_name and "brycecanyon" in detector_config:
-    has_ecal_barrel_scfi = True
+    has_ecal_barrel_imaging = True
     has_pid_backward_pfrich = True
 
 if "PBEAM" in os.environ:
@@ -206,8 +206,6 @@ sim_coll = [
     "EcalEndcapNHitsContributions",
     "EcalEndcapPHits",
     "EcalEndcapPHitsContributions",
-    "EcalBarrelHits",
-    "EcalBarrelHitsContributions",
     "HcalBarrelHits",
     "HcalBarrelHitsContributions",
     "HcalEndcapPHits",
@@ -220,12 +218,20 @@ sim_coll = [
     "ZDCHcalHits",
     "ZDCHcalHitsContributions",
 ]
-ecal_barrel_scfi_collections = [
+ecal_barrel_imaging_collections = [
+    "EcalBarrelImagingHits",
+    "EcalBarrelImagingHitsContributions",
     "EcalBarrelScFiHits",
     "EcalBarrelScFiHitsContributions",
 ]
-if has_ecal_barrel_scfi:
-    sim_coll += ecal_barrel_scfi_collections
+ecal_barrel_sciglass_collections = [
+    "EcalBarrelSciGlassHits",
+    "EcalBarrelSciGlassHitsContributions",
+]
+if has_ecal_barrel_imaging:
+    sim_coll += ecal_barrel_imaging_collections
+else:
+    sim_coll += ecal_barrel_sciglass_collections
 
 forward_romanpot_collections = [
     "ForwardRomanPotHits",
@@ -568,13 +574,13 @@ ci_ecal_clmerger = ClusterMerger(
 algorithms.append(ci_ecal_clmerger)
 
 # Central Barrel Ecal
-if has_ecal_barrel_scfi:
+if has_ecal_barrel_imaging:
     # Central ECAL Imaging Calorimeter
     img_barrel_daq = calo_daq["ecal_barrel_imaging"]
 
     img_barrel_digi = CalHitDigi(
         "img_barrel_digi",
-        inputHitCollection="EcalBarrelHits",
+        inputHitCollection="EcalBarrelImagingHits",
         outputHitCollection="EcalBarrelImagingRawHits",
         energyResolutions=[0.0, 0.02, 0.0],  # 2% flat resolution
         **img_barrel_daq,
@@ -587,7 +593,7 @@ if has_ecal_barrel_scfi:
         outputHitCollection="EcalBarrelImagingRecHits",
         thresholdFactor=3,  # about 20 keV
         samplingFraction=img_barrel_sf,
-        readoutClass="EcalBarrelHits",  # readout class
+        readoutClass="EcalBarrelImagingHits",  # readout class
         layerField="layer",  # field to get layer id
         sectorField="module",  # field to get sector id
         **img_barrel_daq,
@@ -695,8 +701,8 @@ else:
 
     sciglass_ecal_digi = CalHitDigi(
         "sciglass_ecal_digi",
-        inputHitCollection="EcalBarrelHits",
-        outputHitCollection="EcalBarrelHitsDigi",
+        inputHitCollection="EcalBarrelSciGlassHits",
+        outputHitCollection="EcalBarrelSciGlassHitsDigi",
         energyResolutions=[0.0, 0.02, 0.0],  # 2% flat resolution
         **sciglass_ecal_daq,
     )
@@ -705,9 +711,9 @@ else:
     sciglass_ecal_reco = CalHitReco(
         "sciglass_ecal_reco",
         inputHitCollection=sciglass_ecal_digi.outputHitCollection,
-        outputHitCollection="EcalBarrelHitsReco",
+        outputHitCollection="EcalBarrelSciGlassHitsReco",
         thresholdFactor=3,  # about 20 keV
-        readoutClass="EcalBarrelHits",  # readout class
+        readoutClass="EcalBarrelSciGlassHits",  # readout class
         sectorField="sector",  # field to get sector id
         samplingFraction=0.998,  # this accounts for a small fraction of leakage
         **sciglass_ecal_daq,
@@ -716,7 +722,7 @@ else:
 
     sciglass_ecal_cl = TruthClustering(
         "sciglass_ecal_cl",
-        mcHits="EcalBarrelHits",
+        mcHits="EcalBarrelSciGlassHits",
         inputHits=sciglass_ecal_reco.outputHitCollection,
         outputProtoClusters="EcalBarrelTruthProtoClusters",
     )
@@ -735,7 +741,7 @@ else:
 
     sciglass_ecal_clreco = RecoCoG(
         "sciglass_ecal_clreco",
-        mcHits="EcalBarrelHits",
+        mcHits="EcalBarrelSciGlassHits",
         inputProtoClusterCollection=sciglass_ecal_cl.outputProtoClusters,
         outputClusterCollection="EcalBarrelClusters",
         outputAssociations="EcalBarrelClustersAssoc",

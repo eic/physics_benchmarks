@@ -87,47 +87,47 @@ int rec_analysis_raw(const std::string& config_name)
     d0 = d0.Define("n_EcalBarrelImagingRawHits", "EcalBarrelImagingRawHits.size()")
            .Define("n_EcalBarrelScFiRawHits",    "EcalBarrelScFiRawHits.size()");
   } else {
-    d0 = d0.Define("n_EcalBarrelRawHits", "EcalBarrelRawHits.size()");
+    d0 = d0.Define("n_EcalBarrelSciGlassRawHits", "EcalBarrelSciGlassRawHits.size()");
   }
 
   // Ecal hits
   auto h_n_EcalEndcapPRawHits = d0.Histo1D({"h_n_EcalEndcapPRawHits", "EcalEndcapP; hits; counts", 100, 0, 1000}, "n_EcalEndcapPRawHits");
-  ROOT::RDF::RResultPtr<TH1D> h_n_EcalBarrelImagingRawHits, h_n_EcalBarrelScFiRawHits, h_n_EcalBarrelRawHits;
+  ROOT::RDF::RResultPtr<TH1D> h_n_EcalBarrelImagingRawHits, h_n_EcalBarrelScFiRawHits, h_n_EcalBarrelSciGlassRawHits;
   if (d0.HasColumn("EcalBarrelScFiRawHits")) {
     h_n_EcalBarrelImagingRawHits = d0.Histo1D({"h_n_EcalBarrelImagingRawHits", "EcalBarrelImaging; hits; counts", 100, 0, 1000}, "n_EcalBarrelImagingRawHits");
     h_n_EcalBarrelScFiRawHits = d0.Histo1D({"h_n_EcalBarrelScFiRawHits", "EcalBarrelScFi; hits; counts", 100, 0, 10000}, "n_EcalBarrelScFiRawHits");
   } else {
-    h_n_EcalBarrelRawHits = d0.Histo1D({"h_n_EcalBarrelRawHits", "EcalBarrel; hits; counts", 100, 0, 1000}, "n_EcalBarrelRawHits");
+    h_n_EcalBarrelSciGlassRawHits = d0.Histo1D({"h_n_EcalBarrelSciGlassRawHits", "EcalBarrelSciGlas; hits; counts", 100, 0, 1000}, "n_EcalBarrelSciGlassRawHits");
   }
   auto h_n_EcalEndcapNRawHits = d0.Histo1D({"h_n_EcalEndcapNRawHits", "EcalEndcapN; hits; counts", 100, 0, 1000}, "n_EcalEndcapNRawHits");
   // Ecal stats
   auto stats_n_EcalEndcapPRawHits = d0.Stats("n_EcalEndcapPRawHits");
-  ROOT::RDF::RResultPtr<TStatistic> stats_n_EcalBarrelImagingRawHits, stats_n_EcalBarrelScFiRawHits, stats_n_EcalBarrelRawHits;
+  ROOT::RDF::RResultPtr<TStatistic> stats_n_EcalBarrelImagingRawHits, stats_n_EcalBarrelScFiRawHits, stats_n_EcalBarrelSciGlassRawHits;
   if (d0.HasColumn("EcalBarrelScFiRawHits")) {
     stats_n_EcalBarrelImagingRawHits = d0.Stats("n_EcalBarrelImagingRawHits");
     stats_n_EcalBarrelScFiRawHits = d0.Stats("n_EcalBarrelScFiRawHits");
   } else {
-    stats_n_EcalBarrelRawHits = d0.Stats("n_EcalBarrelRawHits");
+    stats_n_EcalBarrelSciGlassRawHits = d0.Stats("n_EcalBarrelSciGlassRawHits");
   }
   auto stats_n_EcalEndcapNRawHits = d0.Stats("n_EcalEndcapNRawHits");
   // Ecal adc
   auto h_adc_EcalEndcapPRawHits = d0.Histo1D({"h_adc_EcalEndcapPRawHits", "EcalEndcapP; amplitude; counts", 1024, 0, 32768}, "EcalEndcapPRawHits.amplitude");
-  ROOT::RDF::RResultPtr<TH1D> h_adc_EcalBarrelImagingRawHits, h_adc_EcalBarrelScFiRawHits, h_adc_EcalBarrelRawHits;
+  ROOT::RDF::RResultPtr<TH1D> h_adc_EcalBarrelImagingRawHits, h_adc_EcalBarrelScFiRawHits, h_adc_EcalBarrelSciGlassRawHits;
   if (d0.HasColumn("EcalBarrelScFiRawHits")) {
     h_adc_EcalBarrelImagingRawHits = d0.Histo1D({"h_adc_EcalBarrelImagingRawHits", "EcalBarrelImaging; amplitude; counts", 1024, 0, 8192}, "EcalBarrelImagingRawHits.amplitude");
     h_adc_EcalBarrelScFiRawHits = d0.Histo1D({"h_adc_EcalBarrelScFiRawHits", "EcalBarrelScFi; amplitude; counts", 1024, 0, 32768}, "EcalBarrelScFiRawHits.amplitude");
   } else {
-    h_adc_EcalBarrelRawHits = d0.Histo1D({"h_adc_EcalBarrelRawHits", "EcalBarrel; amplitude; counts", 1024, 0, 32768}, "EcalBarrelRawHits.amplitude");
+    h_adc_EcalBarrelSciGlassRawHits = d0.Histo1D({"h_adc_EcalBarrelSciGlassRawHits", "EcalBarrel; amplitude; counts", 1024, 0, 32768}, "EcalBarrelSciGlassRawHits.amplitude");
   }
   auto h_adc_EcalEndcapNRawHits = d0.Histo1D({"h_adc_EcalEndcapNRawHits", "EcalEndcapN; amplitude; counts", 1024, 0, 32768}, "EcalEndcapNRawHits.amplitude");
   // Ecal tdc
   auto h_tdc_EcalEndcapPRawHits = d0.Histo1D({"h_tdc_EcalEndcapPRawHits", "EcalEndcapP; TDC channel; counts", 1024, 0, 32768}, "EcalEndcapPRawHits.timeStamp");
-  ROOT::RDF::RResultPtr<TH1D> h_tdc_EcalBarrelImagingRawHits, h_tdc_EcalBarrelScFiRawHits, h_tdc_EcalBarrelRawHits;
+  ROOT::RDF::RResultPtr<TH1D> h_tdc_EcalBarrelImagingRawHits, h_tdc_EcalBarrelScFiRawHits, h_tdc_EcalBarrelSciGlassRawHits;
   if (d0.HasColumn("EcalBarrelScFiRawHits")) {
     h_tdc_EcalBarrelImagingRawHits = d0.Histo1D({"h_tdc_EcalBarrelImagingRawHits", "EcalBarrelImaging; TDC channel; counts", 1024, 0, 32768}, "EcalBarrelImagingRawHits.timeStamp");
     h_tdc_EcalBarrelScFiRawHits = d0.Histo1D({"h_tdc_EcalBarrelScFiRawHits", "EcalBarrelScFi; TDC channel; counts", 1024, 0, 32768}, "EcalBarrelScFiRawHits.timeStamp");
   } else {
-    h_tdc_EcalBarrelRawHits = d0.Histo1D({"h_tdc_EcalBarrelRawHits", "EcalBarrel; TDC channel; counts", 1024, 0, 32768}, "EcalBarrelRawHits.timeStamp");
+    h_tdc_EcalBarrelSciGlassRawHits = d0.Histo1D({"h_tdc_EcalBarrelSciGlassRawHits", "EcalBarrel; TDC channel; counts", 1024, 0, 32768}, "EcalBarrelSciGlassRawHits.timeStamp");
   }
   auto h_tdc_EcalEndcapNRawHits = d0.Histo1D({"h_tdc_EcalEndcapNRawHits", "EcalEndcapN; TDC channel; counts", 1024, 0, 32768}, "EcalEndcapNRawHits.timeStamp");
   // Hcal hits
@@ -182,8 +182,8 @@ int rec_analysis_raw(const std::string& config_name)
     fmt::print("EcalBarrelScFiRawHits:");
     stats_n_EcalBarrelScFiRawHits->Print();
   } else {
-    fmt::print("EcalBarrelRawHits:");
-    stats_n_EcalBarrelRawHits->Print();
+    fmt::print("EcalBarrelSciGlassRawHits:");
+    stats_n_EcalBarrelSciGlassRawHits->Print();
   }
   fmt::print("EcalEndcapNRawHits:");
   stats_n_EcalEndcapNRawHits->Print();
@@ -306,7 +306,7 @@ int rec_analysis_raw(const std::string& config_name)
     } else {
       c.cd(3);
       gPad->SetLogy(true);
-      auto& h3 = *h_n_EcalBarrelRawHits;
+      auto& h3 = *h_n_EcalBarrelSciGlassRawHits;
       // histogram style
       h3.SetLineColor(common_bench::plot::kMpBlue);
       h3.SetLineWidth(2);
@@ -378,7 +378,7 @@ int rec_analysis_raw(const std::string& config_name)
     } else {
       c.cd(3);
       gPad->SetLogy(true);
-      auto& h3 = *h_adc_EcalBarrelRawHits;
+      auto& h3 = *h_adc_EcalBarrelSciGlassRawHits;
       // histogram style
       h3.SetLineColor(common_bench::plot::kMpBlue);
       h3.SetLineWidth(2);
@@ -451,7 +451,7 @@ int rec_analysis_raw(const std::string& config_name)
     } else {
       c.cd(3);
       gPad->SetLogy(true);
-      auto& h3 = *h_tdc_EcalBarrelRawHits;
+      auto& h3 = *h_tdc_EcalBarrelSciGlassRawHits;
       // histogram style
       h3.SetLineColor(common_bench::plot::kMpBlue);
       h3.SetLineWidth(2);
@@ -612,7 +612,7 @@ int rec_analysis_raw(const std::string& config_name)
     (
       ! d0.HasColumn("EcalBarrelScFiRawHits") && 
       (
-        stats_n_EcalBarrelRawHits->GetMean() < 0.1
+        stats_n_EcalBarrelSciGlassRawHits->GetMean() < 0.1
       )
     ) ||
     stats_n_EcalEndcapNRawHits->GetMean() < 0.1 ||
