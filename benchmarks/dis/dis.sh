@@ -84,6 +84,7 @@ if [ "$?" -ne "0" ] ; then
   echo "ERROR running eicrecon"
   exit 1
 fi
+ln -sf ${REC_FILE}.tree.edm4eic.root ${REC_FILE}.root
 
 ## =============================================================================
 ## Step 4: Analysis
