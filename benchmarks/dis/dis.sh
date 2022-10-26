@@ -88,7 +88,7 @@ echo "Running the digitization and reconstruction"
 ## - DETECTOR:    detector package (part of global environment)
 export JUGGLER_SIM_FILE=${SIM_FILE}
 export JUGGLER_REC_FILE=${REC_FILE}
-for rec in options/*.py ; do
+for rec in options/*.py options/extra/*.py ; do
   unset tag
   [[ $(basename ${rec} .py) =~ (.*)\.(.*) ]] && tag=".${BASH_REMATCH[2]}"
   JUGGLER_REC_FILE=${JUGGLER_REC_FILE/.root/${tag:-}.root} \
