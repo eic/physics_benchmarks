@@ -3,7 +3,7 @@
 source $(dirname $0)/common.sh $*
 
 # Reconstruct
-JANA_HOME=/usr/local/lib/EICrecon run_eicrecon_reco_flags.py ${JUGGLER_SIM_FILE} ${JUGGLER_REC_FILE_BASE}
+run_eicrecon_reco_flags.py ${JUGGLER_SIM_FILE} ${JUGGLER_REC_FILE_BASE}
 
 if [ "$?" -ne "0" ] ; then
   echo "ERROR running eicrecon"

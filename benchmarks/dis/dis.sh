@@ -79,7 +79,7 @@ fi
 ## =============================================================================
 ## Step 3: Run digitization & reconstruction
 echo "Running the digitization and reconstruction"
-JANA_HOME=/usr/local/lib/EICrecon run_eicrecon_reco_flags.py ${SIM_FILE} $(basename ${REC_FILE} .root)
+run_eicrecon_reco_flags.py ${SIM_FILE} $(basename ${REC_FILE} .root)
 if [ "$?" -ne "0" ] ; then
   echo "ERROR running eicrecon"
   exit 1
