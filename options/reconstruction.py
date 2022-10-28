@@ -777,8 +777,6 @@ cb_hcal_reco = CalHitReco(
     thresholdFactor=5.0,
     samplingFraction=cb_hcal_sf,
     readoutClass="HcalBarrelHits",
-    layerField="layer",
-    sectorField="module",
     **cb_hcal_daq,
 )
 algorithms.append(cb_hcal_reco)
@@ -788,10 +786,10 @@ cb_hcal_merger = CalHitsMerger(
     inputHitCollection=cb_hcal_reco.outputHitCollection,
     outputHitCollection="HcalBarrelMergedHits",
     readoutClass="HcalBarrelHits",
-    fields=["layer", "slice"],
-    fieldRefNumbers=[1, 0],
+    fields=["tower"],
+    fieldRefNumbers=[0],
 )
-algorithms.append(cb_hcal_merger)
+#algorithms.append(cb_hcal_merger)
 
 cb_hcal_cl = IslandCluster(
     "cb_hcal_cl",
@@ -801,7 +799,7 @@ cb_hcal_cl = IslandCluster(
     minClusterCenterEdep=30.0 * MeV,
     localDistXY=[15.0 * cm, 15.0 * cm],
 )
-algorithms.append(cb_hcal_cl)
+#algorithms.append(cb_hcal_cl)
 
 cb_hcal_clreco = RecoCoG(
     "cb_hcal_clreco",
@@ -811,7 +809,7 @@ cb_hcal_clreco = RecoCoG(
     outputAssociations="HcalBarrelClustersAssoc",
     logWeightBase=6.2,
 )
-algorithms.append(cb_hcal_clreco)
+#algorithms.append(cb_hcal_clreco)
 
 # Hcal Hadron Endcap
 ci_hcal_daq = calo_daq["hcal_pos_endcap"]
@@ -1080,7 +1078,7 @@ match_clusters = MatchClusters(
         str(barrel_clus_merger.outputClusters),
         str(ci_ecal_clmerger.outputClusters),
         str(ce_hcal_clreco.outputClusterCollection),
-        str(cb_hcal_clreco.outputClusterCollection),
+        #str(cb_hcal_clreco.outputClusterCollection),
         str(ci_hcal_clreco.outputClusterCollection),
     ],
     inputClustersAssoc=[
@@ -1088,7 +1086,7 @@ match_clusters = MatchClusters(
         str(barrel_clus_merger.outputAssociations),
         str(ci_ecal_clmerger.outputAssociations),
         str(ce_hcal_clreco.outputAssociations),
-        str(cb_hcal_clreco.outputAssociations),
+        #str(cb_hcal_clreco.outputAssociations),
         str(ci_hcal_clreco.outputAssociations),
     ],
     outputParticles="ReconstructedParticles",
