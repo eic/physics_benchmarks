@@ -9,3 +9,9 @@ if [[ "$?" -ne "0" ]] ; then
   echo "ERROR analysis failed"
   exit 1
 fi
+
+python benchmarks/dis/analysis/truth_reconstruction.py --rec_file ${JUGGLER_REC_FILE} --config ${JUGGLER_FILE_NAME_TAG} --results_path ${RESULTS_PATH} --nevents ${JUGGLER_N_EVENTS}
+if [[ "$?" -ne "0" ]] ; then
+  echo "ERROR running truth_reconstruction script"
+  exit 1
+fi

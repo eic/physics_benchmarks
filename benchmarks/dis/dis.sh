@@ -128,6 +128,12 @@ if [[ "$?" -ne "0" ]] ; then
   exit 1
 fi
 
+python benchmarks/dis/analysis/truth_reconstruction.py --rec_file ${REC_FILE} --config ${PLOT_TAG} --results_path ${RESULTS_PATH} --nevents ${JUGGLER_N_EVENTS}
+if [[ "$?" -ne "0" ]] ; then
+  echo "ERROR running truth_reconstruction script"
+  exit 1
+fi
+
 CONFIG="${TMP_PATH}/${PLOT_TAG}.raw.json"
 cat << EOF > ${CONFIG}
 {
