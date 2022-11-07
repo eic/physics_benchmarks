@@ -372,7 +372,7 @@ auto getEta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return etaVec;
 }
 
-auto getEtaSpecial(const std::vector<edm4eic::ReconstructedParticle>& mom) {
+auto getEtaSpecial(const std::vector<edm4eic::ReconstructedParticleData>& mom) {
   std::vector<double> etaVec;
   for(auto& i1:mom){
     double eta = i1.momentum.z;
