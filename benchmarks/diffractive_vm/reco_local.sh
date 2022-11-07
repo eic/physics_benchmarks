@@ -48,9 +48,8 @@ source benchmarks/diffractive_vm/env.sh
 ## Get a unique file names based on the configuration options
 GEN_FILE=${INPUT_PATH}/gen-${CONFIG}_${JUGGLER_N_EVENTS}.hepmc
 
-SIM_FILE=${TMP_PATH}/sim-${CONFIG}.root
+SIM_FILE=${TMP_PATH}/sim-${CONFIG}.edm4hep.root
 SIM_LOG=${TMP_PATH}/sim-${CONFIG}.log
-
 
 REC_FILE=${TMP_PATH}/rec-${CONFIG}.root
 REC_LOG=${TMP_PATH}/sim-${CONFIG}.log
@@ -60,7 +59,7 @@ PLOT_TAG=${CONFIG}
 ## =============================================================================
 ## Step 2: Run the simulation
 echo "Running Geant4 simulation"
-npsim --runType batch \
+ddsim --runType batch \
       --part.minimalKineticEnergy 1000*GeV  \
       -v INFO \
       --numberOfEvents ${JUGGLER_N_EVENTS} \
@@ -68,7 +67,7 @@ npsim --runType batch \
       --inputFiles ${GEN_FILE} \
       --outputFile ${SIM_FILE}
 if [ "$?" -ne "0" ] ; then
-  echo "ERROR running npsim"
+  echo "ERROR running ddsim"
   exit 1
 fi
 
@@ -88,28 +87,12 @@ for rec in options/*.py ; do
   unset tag
   [[ $(basename ${rec} .py) =~ (.*)\.(.*) ]] && tag=".${BASH_REMATCH[2]}"
   JUGGLER_REC_FILE=${JUGGLER_REC_FILE/.root/${tag:-}.root} \
-    # xenv -x ${JUGGLER_INSTALL_PREFIX}/Juggler.xenv \
     gaudirun.py ${rec}
+  if [ "$?" -ne "0" ] ; then
+    echo "ERROR running juggler"
+    exit 1
+  fi
 done
-if [ "$?" -ne "0" ] ; then
-  echo "ERROR running juggler"
-  exit 1
-fi
 
-## =============================================================================
-## Step 5: finalize
-echo "Finalizing diffractive phi benchmark"
-echo "Skipping artifacts"
-## Move over reconsturction artifacts as long as we don't have
-## too many events
-# if [ "${JUGGLER_N_EVENTS}" -lt "500" ] ; then 
-#   cp ${REC_FILE} ${RESULTS_PATH}
-# fi
-
-# ## Always move over log files to the results path
-# cp ${REC_LOG} ${RESULTS_PATH}
-
-## =============================================================================
-## All done!
-echo "Diffractive VM benchmarks complete"
+echo "Diffractive VM benchmarks reco complete."
 
