@@ -14,11 +14,8 @@ CONFIG="${TMP_PATH}/${PLOT_TAG}.json"
 cat << EOF > ${CONFIG}
 {
   "rec_file": "${REC_FILE}",
-  "detector": "${JUGGLER_DETECTOR}",
+  "detector": "${DETECTOR}",
   "output_prefix": "${RESULTS_PATH}/${PLOT_TAG}",
-  "ebeam": ${EBEAM},
-  "pbeam": ${PBEAM},
-  "minq2": ${MINQ2},
   "test_tag": "${BEAM_TAG}"
 }
 EOF
