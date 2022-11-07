@@ -97,7 +97,7 @@ auto scatID_cand_value = [](const ROOT::VecOps::RVec<int>& x){
   return value;
 };
 
-auto momenta_from_reconstruction_plus(const std::vector<eicd::ReconstructedParticleData>& parts) {
+auto momenta_from_reconstruction_plus(const std::vector<edm4eic::ReconstructedParticleData>& parts) {
   std::vector<ROOT::Math::PxPyPzMVector> momenta{parts.size()};
   std::transform(parts.begin(), parts.end(), momenta.begin(), [](const auto& part) {
     if(part.charge>0){
@@ -110,7 +110,7 @@ auto momenta_from_reconstruction_plus(const std::vector<eicd::ReconstructedParti
   return momenta;
 }
 
-auto momenta_from_reconstruction_minus(const std::vector<eicd::ReconstructedParticleData>& parts) 
+auto momenta_from_reconstruction_minus(const std::vector<edm4eic::ReconstructedParticleData>& parts) 
 {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : parts){
@@ -124,7 +124,7 @@ auto momenta_from_reconstruction_minus(const std::vector<eicd::ReconstructedPart
   return momenta;
 }
 
-// auto findScatElec(const std::vector<eicd::ReconstructedParticleData>& parts, 
+// auto findScatElec(const std::vector<edm4eic::ReconstructedParticleData>& parts, 
 //       std::vector<int> scat_id,
 //     std::vector<int> scat_source) 
 // {
@@ -146,11 +146,11 @@ auto momenta_from_reconstruction_minus(const std::vector<eicd::ReconstructedPart
 //   return momenta;
 // }
 
-// auto findScatElecTest(const std::vector<eicd::ReconstructedParticleData>& parts) 
+// auto findScatElecTest(const std::vector<edm4eic::ReconstructedParticleData>& parts) 
 // {
 //   std::vector<ROOT::Math::PxPyPzMVector> momenta;
 //   for(auto& i1 : parts){
-//     eicd::ReconstructedParticle scat_e = i1.scat;
+//     edm4eic::ReconstructedParticle scat_e = i1.scat;
 //     if(scat_e.energy>1e-2){
 //       momenta.push_back(ROOT::Math::PxPyPzMVector{scat_e.momentum.x,scat_e.momentum.y,scat_e.momentum.z,scat_e.mass});
 //     }
@@ -216,7 +216,7 @@ auto findScatProtonMC(const std::vector<edm4hep::MCParticleData>& parts){
   return momenta;
 }
 
-auto findScatProton(const std::vector<eicd::ReconstructedParticleData>& FF){
+auto findScatProton(const std::vector<edm4eic::ReconstructedParticleData>& FF){
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   for(auto& i1 : FF){
     if(i1.charge==1){
@@ -372,7 +372,7 @@ auto getEta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return etaVec;
 }
 
-auto getEtaSpecial(const std::vector<eicd::ReconstructedParticle>& mom) {
+auto getEtaSpecial(const std::vector<edm4eic::ReconstructedParticle>& mom) {
   std::vector<double> etaVec;
   for(auto& i1:mom){
     double eta = i1.momentum.z;
@@ -402,7 +402,7 @@ auto getRapVM(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
   return etaVec;
 }
 
-auto getNtrk(const std::vector<eicd::ReconstructedParticleData>& parts) 
+auto getNtrk(const std::vector<edm4eic::ReconstructedParticleData>& parts) 
 {
   std::vector<int> mult;
   int n=0;
