@@ -6,6 +6,8 @@ pushd ${PROJECT_ROOT}
 
 echo "Running the diffractive_vm benchmarks"
 
+source benchmarks/diffractive_vm/env.sh
+
 GEN_FILE=${INPUT_PATH}/gen-${CONFIG}_${JUGGLER_N_EVENTS}.hepmc
 
 SIM_FILE=${TMP_PATH}/sim-${CONFIG}.edm4hep.root
