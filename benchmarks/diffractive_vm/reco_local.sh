@@ -63,7 +63,7 @@ ddsim --runType batch \
       --part.minimalKineticEnergy 1000*GeV  \
       -v INFO \
       --numberOfEvents ${JUGGLER_N_EVENTS} \
-      --compactFile ${DETECTOR_PATH}/${JUGGLER_DETECTOR}.xml \
+      --compactFile ${DETECTOR_PATH}/${DETECTOR_CONFIG}.xml \
       --inputFiles ${GEN_FILE} \
       --outputFile ${SIM_FILE}
 if [ "$?" -ne "0" ] ; then
@@ -83,7 +83,7 @@ echo "Running the digitization and reconstruction"
 ## - JUGGLER_DETECTOR:    detector package (part of global environment)
 export JUGGLER_SIM_FILE=${SIM_FILE}
 export JUGGLER_REC_FILE=${REC_FILE}
-for rec in options/*.py ; do
+for rec in options/*.py options/extra/*.py ; do
   unset tag
   [[ $(basename ${rec} .py) =~ (.*)\.(.*) ]] && tag=".${BASH_REMATCH[2]}"
   JUGGLER_REC_FILE=${JUGGLER_REC_FILE/.root/${tag:-}.root} \
