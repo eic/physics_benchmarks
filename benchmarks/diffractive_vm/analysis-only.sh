@@ -5,7 +5,7 @@ PROJECT_ROOT="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"/../..
 pushd ${PROJECT_ROOT}
 
 echo "Running the diffractive_vm benchmarks"
-
+source parse_cmd.sh $@
 source benchmarks/diffractive_vm/env.sh
 
 GEN_FILE=${INPUT_PATH}/gen-${CONFIG}_${JUGGLER_N_EVENTS}.hepmc
