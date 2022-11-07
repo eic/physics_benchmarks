@@ -6,6 +6,17 @@ pushd ${PROJECT_ROOT}
 
 echo "Running the diffractive_vm benchmarks"
 
+GEN_FILE=${INPUT_PATH}/gen-${CONFIG}_${JUGGLER_N_EVENTS}.hepmc
+
+SIM_FILE=${TMP_PATH}/sim-${CONFIG}.edm4hep.root
+SIM_LOG=${TMP_PATH}/sim-${CONFIG}.log
+
+
+REC_FILE=${TMP_PATH}/rec-${CONFIG}.root
+REC_LOG=${TMP_PATH}/sim-${CONFIG}.log
+
+PLOT_TAG=${CONFIG}
+
 ## =============================================================================
 ## Step 4: Analysis
 ## write a temporary configuration file for the analysis script
