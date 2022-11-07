@@ -375,8 +375,8 @@ auto getEta(const std::vector<ROOT::Math::PxPyPzMVector>& mom) {
 auto getEtaSpecial(const std::vector<edm4eic::ReconstructedParticle>& mom) {
   std::vector<double> etaVec;
   for(auto& i1:mom){
-    double eta = i1.momentum.z;
-    if(i1.momentum.x<-1e9){eta=-10.;}
+    double eta = i1.momentum.zz;
+    if(i1.momentum.xx<-1e9){eta=-10.;}
     etaVec.push_back(eta);
   }
   return etaVec;
