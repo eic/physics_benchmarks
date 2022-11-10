@@ -53,8 +53,10 @@ echo "Generator output for $GEN_TAG not found in cache, need to copy generator f
 
 ## =============================================================================
 ## Step 4: Copy the event generator file over
-DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DIFFRACTIVE_PHI_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_phi_ab_eAu_1.hepmc"
-mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
+# DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/DIFFRACTIVE_PHI_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_phi_ab_eAu_1.hepmc"
+# DIS event
+DATA_URL="S3/eictest/EPIC/EVGEN/DIS/NC/18x275/minQ2=1/pythia8NCDIS_18x275_minQ2=1_beamEffects_xAngle=-0.025_hiDiv_1.hepmc"
+mc-C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
 # mc -C . cat  --insecure ${DATA_URL} | awk -F '\\@' '{print $1}' > "${TMP_PATH}/${GEN_TAG}.hepmc"
 mc -C . head  -n 1004 --insecure ${DATA_URL} | awk -F '\\@' '{print $1}' > "${TMP_PATH}/${GEN_TAG}.hepmc"
 if [[ "$?" -ne "0" ]] ; then
