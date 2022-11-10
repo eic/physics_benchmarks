@@ -58,7 +58,7 @@ echo "Generator output for $GEN_TAG not found in cache, need to copy generator f
 DATA_URL="S3/eictest/EPIC/EVGEN/DIS/NC/18x275/minQ2=1/pythia8NCDIS_18x275_minQ2=1_beamEffects_xAngle=-0.025_hiDiv_1.hepmc"
 mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
 # mc -C . cat  --insecure ${DATA_URL} | awk -F '\\@' '{print $1}' > "${TMP_PATH}/${GEN_TAG}.hepmc"
-mc -C . --insecure ${DATA_URL} | awk -F '\\@' '{print $1}' > "${TMP_PATH}/${GEN_TAG}.hepmc"
+mc cp --insecure ${DATA_URL} ${TMP_PATH}/${GEN_TAG}.hepmc
 if [[ "$?" -ne "0" ]] ; then
   echo "Failed to download hepmc file"
   exit 1
