@@ -70,8 +70,8 @@ do
     exit 1
   fi
   echo "Moving generator output into ${INPUT_PATH}"
-  mv ${TMP_PATH}/${GEN_TAG}.hepmc.gz ${INPUT_PATH}/${GEN_TAG}_00${i}.hepmc.gz
-  gzip -d ${INPUT_PATH}/${GEN_TAG}_00${i}.hepmc.gz
+  mv ${TMP_PATH}/${GEN_TAG}.hepmc.gz ${INPUT_PATH}/${GEN_TAG}.hepmc.gz
+  gzip -d ${INPUT_PATH}/${GEN_TAG}.hepmc.gz
 done
 # 10-99
 for i in {10..99}
