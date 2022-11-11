@@ -60,20 +60,22 @@ echo "Generator output for $GEN_TAG not found in cache, need to copy generator f
 mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
 # mc -C . cat  --insecure ${DATA_URL} | awk -F '\\@' '{print $1}' > "${TMP_PATH}/${GEN_TAG}.hepmc"
 # DATA_URL="S3/eictest/EPIC/EVGEN/DIS/NC/18x275/minQ2=1/pythia8NCDIS_18x275_minQ2=1_beamEffects_xAngle=-0.025_hiDiv_vtxfix_1_000.hepmc.gz"
-for i in {0..10}
+for i in {0..9}
 do
   mc cp --insecure "S3/eictest/EPIC/EVGEN/DIS/NC/18x275/minQ2=1/pythia8NCDIS_18x275_minQ2=1_beamEffects_xAngle=-0.025_hiDiv_vtxfix_1_00${i}.hepmc.gz" ${TMP_PATH}/${GEN_TAG}.hepmc
   if [[ "$?" -ne "0" ]] ; then
     echo "Failed to download hepmc file"
     exit 1
   fi
+  echo "Moving generator output into ${INPUT_PATH}"
+  mv ${TMP_PATH}/${GEN_TAG}.hepmc ${INPUT_PATH}/${GEN_TAG}.hepmc
 done
 
 ## =============================================================================
 ## Step 5: Finally, move relevant output into the artifacts directory and clean up
 ## =============================================================================
-echo "Moving generator output into ${INPUT_PATH}"
-mv ${TMP_PATH}/${GEN_TAG}.hepmc ${INPUT_PATH}/${GEN_TAG}.hepmc
+# echo "Moving generator output into ${INPUT_PATH}"
+# mv ${TMP_PATH}/${GEN_TAG}.hepmc ${INPUT_PATH}/${GEN_TAG}.hepmc
 ## this step only matters for local execution
 echo "Cleaning up"
 ## does nothing
