@@ -68,7 +68,7 @@ do
     exit 1
   fi
   echo "Moving generator output into ${INPUT_PATH}"
-  mv ${TMP_PATH}/${GEN_TAG}.hepmc ${INPUT_PATH}/${GEN_TAG}.hepmc
+  mv ${TMP_PATH}/${GEN_TAG}.hepmc ${INPUT_PATH}/${GEN_TAG}_00${i}.hepmc
 done
 
 ## =============================================================================
