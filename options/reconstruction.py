@@ -105,7 +105,7 @@ n_events = int(os.environ["JUGGLER_N_EVENTS"])
 # services
 services = []
 # auditor service
-services.append(AuditorSvc("AuditorSvc", Auditors=["ChronoAuditor", "MemStatAuditor"]))
+services.append(AuditorSvc("AuditorSvc", Auditors=["ChronoAuditor"]))
 # geometry service
 ## note: old version of material map is called material-maps.XXX, new version is materials-map.XXX
 ##       these names are somewhat inconsistent, and should probably all be renamed to 'material-map.XXX'
