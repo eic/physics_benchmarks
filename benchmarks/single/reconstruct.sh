@@ -15,10 +15,11 @@ for rec in options/*.py ; do
   fi
 done
 
-/usr/bin/time -v run_eicrecon_reco_flags.py ${JUGGLER_SIM_FILE} ${JUGGLER_REC_FILE_BASE}
+/usr/bin/time -v run_eicrecon_reco_flags.py ${JUGGLER_SIM_FILE} ${JUGGLER_REC_FILE_BASE} -Pplugins=janadot
 if [ "$?" -ne "0" ] ; then
   echo "ERROR running eicrecon"
   exit 1
 fi
+if [ -f jana.dot ] ; cp jana.dot results/ ; fi
 
 rootls -t ${JUGGLER_REC_FILE_BASE}.tree.edm4eic.root
