@@ -20,6 +20,6 @@ if [ "$?" -ne "0" ] ; then
   echo "ERROR running eicrecon"
   exit 1
 fi
-if [ -f jana.dot ] ; cp jana.dot results/ ; fi
+if [ -f jana.dot ] ; then cp jana.dot results/ ; fi
 
 rootls -t ${JUGGLER_REC_FILE_BASE}.tree.edm4eic.root
