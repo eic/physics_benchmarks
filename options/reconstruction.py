@@ -777,8 +777,7 @@ cb_hcal_reco = CalHitReco(
     thresholdFactor=5.0,
     samplingFraction=cb_hcal_sf,
     readoutClass="HcalBarrelHits",
-    layerField="layer",
-    sectorField="module",
+    sectorField="sector",
     **cb_hcal_daq,
 )
 algorithms.append(cb_hcal_reco)
@@ -788,8 +787,8 @@ cb_hcal_merger = CalHitsMerger(
     inputHitCollection=cb_hcal_reco.outputHitCollection,
     outputHitCollection="HcalBarrelMergedHits",
     readoutClass="HcalBarrelHits",
-    fields=["layer", "slice"],
-    fieldRefNumbers=[1, 0],
+    fields=["tile"],
+    fieldRefNumbers=[0],
 )
 algorithms.append(cb_hcal_merger)
 
