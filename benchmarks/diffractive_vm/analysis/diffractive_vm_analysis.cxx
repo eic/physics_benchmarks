@@ -18,17 +18,6 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
   fmt::print(" - output prefix: {}\n", output_prefix);
   fmt::print(" - test tag: {}\n", test_tag);
 
-  // disable test for now - Kong.Tu
-  // create our test definition
-  // test_tag
-  // common_bench::Test dis_Q2_resolution{
-  //     {{"name", fmt::format("{}_Q2_resolution", test_tag)},
-  //      {"title", "DIS Q2 resolution"},
-  //      {"description",
-  //       fmt::format("DIS Q2 resolution with {}, estimated using a Gaussian fit.", detector)},
-  //      {"quantity", "resolution (in %)"},
-  //      {"target", "0.1"}}};
-
   // Run this in multi-threaded mode if desired
   ROOT::EnableImplicitMT(kNumThreads);
   ROOT::RDataFrame d("events", rec_file);
@@ -153,7 +142,7 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
 
   auto d4 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
              .Define("w_elec", "InclusiveKinematicsElectron.W")
-             .Define("scatElec",findScatElecTest,{"ReconstructedParticles","EcalEndcapNClusters"}).Define("e_rec_pt",getPt,{"scatElec"})
+             .Define("scatElec",findScatElec,{"ReconstructedParticles","MCParticles"}).Define("e_rec_pt",getPt,{"scatElec"})
              .Define("scatElecMC",findScatElecMC, {"MCParticles"}).Define("e_mc_pt",getPt,{"scatElecMC"}).Define("e_mc_eta",getEta,{"scatElecMC"})
              .Define("e_res_pt",resolution_MC_match_REC_electron,{"scatElecMC","scatElec"})
              .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedParticles"})
