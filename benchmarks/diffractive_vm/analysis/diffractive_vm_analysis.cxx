@@ -212,7 +212,7 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
              .Define("w_elec", "InclusiveKinematicsElectron.W")
              .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedParticles"})
              .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedParticles"})
-             .Define("scatElec","InclusiveKinematicsElectron.scat")
+             .Define("scatElec",findScatElec,{"ReconstructedParticles","MCParticles"})
              .Define("vm", vector_sum, {"p1","p2"})
              .Define("t_rec", giveme_t_L, {"vm","scatElec","MCParticles"})
              .Filter(eventVetoCut,{"ReconstructedFFParticles","ReconstructedParticles"})
