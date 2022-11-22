@@ -287,7 +287,5 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
   output->Write();
   output->Close();
 
-  // common_bench::write_test({dis_Q2_resolution}, fmt::format("{}dis_electrons.json", output_prefix));
-
   return 0;
 }
