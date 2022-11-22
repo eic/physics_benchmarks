@@ -153,7 +153,7 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
 
   auto d4 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
              .Define("w_elec", "InclusiveKinematicsElectron.W")
-             .Define("scatElec",findScatElec,{"ReconstructedParticles","MCParticles"}).Define("e_rec_pt",getPt,{"scatElec"})
+             .Define("scatElec",findScatElecTest,{"ReconstructedParticles","EcalEndcapNClusters"}).Define("e_rec_pt",getPt,{"scatElec"})
              .Define("scatElecMC",findScatElecMC, {"MCParticles"}).Define("e_mc_pt",getPt,{"scatElecMC"}).Define("e_mc_eta",getEta,{"scatElecMC"})
              .Define("e_res_pt",resolution_MC_match_REC_electron,{"scatElecMC","scatElec"})
              .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedParticles"})

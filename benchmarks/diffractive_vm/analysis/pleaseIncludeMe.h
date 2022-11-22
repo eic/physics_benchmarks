@@ -155,20 +155,31 @@ auto findScatElec(const std::vector<edm4eic::ReconstructedParticleData>& recs,
   return momenta;
 }
 
-// auto findScatElecTest(const std::vector<edm4eic::ReconstructedParticleData>& parts) 
-// {
-//   std::vector<ROOT::Math::PxPyPzMVector> momenta;
-//   for(auto& i1 : parts){
-//     edm4eic::ReconstructedParticle scat_e = i1.scat;
-//     if(scat_e.energy>1e-2){
-//       momenta.push_back(ROOT::Math::PxPyPzMVector{scat_e.momentum.x,scat_e.momentum.y,scat_e.momentum.z,scat_e.mass});
-//     }
-//     else{
-//       momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});
-//     }
-//   }
-//   return momenta;
-// }
+auto findScatElecTest(const std::vector<edm4eic::ReconstructedParticleData>& parts, 
+                        const std::vector<edm4eic::ClusterData>& clusters) 
+{
+  std::vector<ROOT::Math::PxPyPzMVector> momenta;
+  TLorentzVector escat(-1e10, -1e10, -1e10, -1e10);
+  for(auto& i1 : parts){//track
+    if(i1.charge>0) continue;//electron -
+    TVector3 trkREC(i1.momentum.x,i1.momentum.y,i1.momentum.z);
+      //EEMC
+      for(auto& i2 : clusters){
+        //need some projection, or matching the cluster here.
+        auto energy=i2.energy;
+        if( fabs(1.0-energy/trkREC.Mag())<0.05 && energ>3.6 ){//y<0.8
+          double p = sqrt(energy*energy- MASS_ELECTRON*MASS_ELECTRON );
+          double eta=i1.Eta();
+          double phi=i1.Phi();
+          double pt = TMath::Sin(i1.Theta())*p;
+          escat.SetPtEtaPhiM(pt,eta,phi,MASS_ELECTRON);
+        }
+      }
+  }
+ 
+  momenta.push_back(ROOT::Math::PxPyPzMVector{escat.Px(),escat.Py(),escat.Pz(),MASS_ELECTRON});
+  return momenta;
+}
 
 auto findScatElecMC(const std::vector<edm4hep::MCParticleData>& parts)
 {
