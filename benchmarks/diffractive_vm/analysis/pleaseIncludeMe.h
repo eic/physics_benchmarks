@@ -124,27 +124,36 @@ auto momenta_from_reconstruction_minus(const std::vector<edm4eic::ReconstructedP
   return momenta;
 }
 
-// auto findScatElec(const std::vector<edm4eic::ReconstructedParticleData>& parts, 
-//       std::vector<int> scat_id,
-//     std::vector<int> scat_source) 
-// {
-//   std::vector<ROOT::Math::PxPyPzMVector> momenta;
-//   for(auto& i1 : parts){
-//     if(scat_id.size()>0 
-//         && scat_source.size()>0
-//           &&i1.particleIDs.value==scat_id[0]
-//             &&i1.particleIDs.source==scat_source[0])
-//     {
-//       auto scat = ROOT::Math::PxPyPzMVector{i1.momentum.x, i1.momentum.y, i1.momentum.z, MASS_ELECTRON};
-//       momenta.push_back(scat);
-//     }
-//     else{
-//       momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});
-//     }
-  
-//   }
-//   return momenta;
-// }
+auto findScatElec(const std::vector<edm4eic::ReconstructedParticleData>& recs, 
+                    const std::vector<edm4hep::MCParticleData>& mcs) 
+{
+  std::vector<ROOT::Math::PxPyPzMVector> momenta;
+  //finding mc scat e'
+  TVector3 trkMC(0,0,0);
+  for(auto& i2 : mcs){
+    if(i2.charge<0 && 
+        i2.generatorStatus==genStatus_scatElec[which_mc]
+          &&i2.PDG==11){ trkMC.SetPxPyPz(i2.momentum.x,i2.momentum.y,i2.momentum.z); } 
+  }
+  //kinematic match 
+  //need to change to association and cluster matching.
+  double minR=99;
+  TVector3 matchRECTrk(-1e10,-1e10,-1e10);
+  for(auto& i1 : recs){
+    TVector3 trkREC(i1.momentum.x,i1.momentum.y,i1.momentum.z);
+    if(i1.charge<0 )
+    {
+      if(trkREC.DeltaR(trkMC)<minR){
+        minR=trkREC.DeltaR(trkMC);
+        matchRECTrk=trkREC;
+      }
+    }
+  }
+  auto scat = ROOT::Math::PxPyPzMVector{matchRECTrk.Px(), matchRECTrk.Py(), matchRECTrk.Pz(), MASS_ELECTRON};
+  momenta.push_back(scat);
+
+  return momenta;
+}
 
 // auto findScatElecTest(const std::vector<edm4eic::ReconstructedParticleData>& parts) 
 // {
