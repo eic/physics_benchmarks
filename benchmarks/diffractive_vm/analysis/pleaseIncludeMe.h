@@ -133,7 +133,7 @@ auto findScatElec(const std::vector<edm4eic::ReconstructedParticleData>& recs,
   for(auto& i2 : mcs){
     if(i2.charge<0 && 
         i2.generatorStatus==genStatus_scatElec[which_mc]
-          &&i2.PDG==11){ trkMC.SetPxPyPz(i2.momentum.x,i2.momentum.y,i2.momentum.z); } 
+          &&i2.PDG==11){ trkMC.SetXYZ(i2.momentum.x,i2.momentum.y,i2.momentum.z); } 
   }
   //kinematic match 
   //need to change to association and cluster matching.
