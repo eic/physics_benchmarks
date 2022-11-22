@@ -167,11 +167,11 @@ auto findScatElecTest(const std::vector<edm4eic::ReconstructedParticleData>& par
       for(auto& i2 : clusters){
         //need some projection, or matching the cluster here.
         auto energy=i2.energy;
-        if( fabs(1.0-energy/trkREC.Mag())<0.05 && energ>3.6 ){//y<0.8
+        if( fabs(1.0-energy/trkREC.Mag())<0.05 && energy>3.6 ){//y<0.8
           double p = sqrt(energy*energy- MASS_ELECTRON*MASS_ELECTRON );
-          double eta=i1.Eta();
-          double phi=i1.Phi();
-          double pt = TMath::Sin(i1.Theta())*p;
+          double eta=trkREC.Eta();
+          double phi=trkREC.Phi();
+          double pt = TMath::Sin(trkREC.Theta())*p;
           escat.SetPtEtaPhiM(pt,eta,phi,MASS_ELECTRON);
         }
       }
