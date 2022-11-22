@@ -81,7 +81,7 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
              .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedParticles"})
              .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedParticles"})
              .Define("ptVMREC_daugPlus",getPt,{"p1"}).Define("etaVMREC_daugPlus",getEta,{"p1"})
-             // .Define("scatElec","InclusiveKinematicsElectron.scat").Define("etaElec",getEtaSpecial,{"scatElec"})
+             .Define("scatElec",findScatElec,{"ReconstructedParticles","MCParticles"}).Define("etaElec",getEtaSpecial,{"scatElec"})
              .Define("vm", vector_sum, {"p1","p2"}).Define("Mass",getMass,{"vm"}).Define("vm_rec_pt", getPtVM, {"vm"}).Define("vm_rec_eta", getEtaVM, {"vm"}).Define("vm_rec_rap", getRapVM, {"vm"})
              .Define("protonREC",findScatProton,{"ReconstructedFFParticles"}).Define("proton_rec_p",getP,{"protonREC"})
              .Define("mult",getNtrk,{"ReconstructedParticles"})
@@ -89,7 +89,7 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
 
   auto h_Q2_elec = d1.Histo1D({"h_Q2_elec", "; GeV^2; counts", 100, -5, 25}, "Q2_elec");
   auto h_y_elec = d1.Histo1D({"h_y_elec", "; ; counts", 100, 0, 1}, "y_elec");
-  // auto h_Eta_scatElec_REC = d1.Histo1D({"h_Eta_scatElec_REC",";eta; counts",100,-11,9}, "etaElec");
+  auto h_Eta_scatElec_REC = d1.Histo1D({"h_Eta_scatElec_REC",";eta; counts",100,-11,9}, "etaElec");
   auto h_Mass_REC = d1.Histo1D({"h_Mass_REC", "; GeV; counts", 100, 0, 4}, "Mass");
   auto h_Pt_VM_REC = d1.Histo1D({"h_Pt_VM_REC", "; GeV; counts", 50, 0, 5}, "vm_rec_pt");
   auto h_Eta_VM_REC = d1.Histo1D({"h_Eta_VM_REC", "; ; counts", 100, -11, 9}, "vm_rec_eta");
@@ -130,7 +130,7 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
              .Define("w_elec", "InclusiveKinematicsElectron.W")
              .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedParticles"})
              .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedParticles"})
-             .Define("scatElec","InclusiveKinematicsElectron.scat")
+             .Define("scatElec",findScatElec,{"ReconstructedParticles","MCParticles"})
              .Define("vm", vector_sum, {"p1","p2"})
              .Define("t_rec", giveme_t_L, {"vm","scatElec","MCParticles"})
              .Define("scatElecMC",findScatElecMC, {"MCParticles"})
@@ -154,19 +154,19 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
   // auto d4 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
   //            .Define("w_elec", "InclusiveKinematicsElectron.W")
   //            .Define("scatElec","InclusiveKinematicsElectron.scat").Define("e_rec_pt",getPt,{"scatElec"})
-  //            .Define("scatElecMC",findScatElecMC, {"mcparticles"}).Define("e_mc_pt",getPt,{"scatElecMC"}).Define("e_mc_eta",getEta,{"scatElecMC"})
+  //            .Define("scatElecMC",findScatElecMC, {"MCParticles"}).Define("e_mc_pt",getPt,{"scatElecMC"}).Define("e_mc_eta",getEta,{"scatElecMC"})
   //            .Define("e_res_pt",resolution_MC_match_REC_electron,{"scatElecMC","scatElec"})
   //            .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedParticles"})
   //            .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedParticles"})
   //            .Define("vm", vector_sum, {"p1","p2"}).Define("vm_rec_pt",getPtVM,{"vm"})
-  //            .Define("VMMC",findVMMC,{"mcparticles"}).Define("vm_mc_pt",getPtVM,{"VMMC"})
+  //            .Define("VMMC",findVMMC,{"MCParticles"}).Define("vm_mc_pt",getPtVM,{"VMMC"})
   //            .Define("vm_mc_match_rec",findVM_MC_match_REC,{"VMMC","vm"})
   //            .Define("vm_mcMrec_pt",getPtVM,{"vm_mc_match_rec"})
   //            .Define("vm_rec_not_match_mc",findVM_REC_NOT_match_MC,{"vm","VMMC"})
   //            .Define("vm_recNMmc_pt",getPtVM,{"vm_rec_not_match_mc"})
   //            .Define("vm_res_pt",resolution_MC_match_REC,{"VMMC","vm"})
-  //            .Define("protonMC",findScatProtonMC,{"mcparticles"}).Define("proton_mc_p",getP,{"protonMC"})
-  //            .Define("VMMC_daugPlus",findVM_DaugPlus_MC,{"mcparticles"}).Define("ptVMMC_daugPlus",getPt,{"VMMC_daugPlus"}).Define("etaVMMC_daugPlus",getEta,{"VMMC_daugPlus"})
+  //            .Define("protonMC",findScatProtonMC,{"MCParticles"}).Define("proton_mc_p",getP,{"protonMC"})
+  //            .Define("VMMC_daugPlus",findVM_DaugPlus_MC,{"MCParticles"}).Define("ptVMMC_daugPlus",getPt,{"VMMC_daugPlus"}).Define("etaVMMC_daugPlus",getEta,{"VMMC_daugPlus"})
   //            .Define("VMMC_daugPlusMatchREC",findVM_MC_match_REC,{"VMMC_daugPlus","p1"}).Define("ptVMMC_daugPlus_match",getPt,{"VMMC_daugPlusMatchREC"}).Define("etaVMMC_daugPlus_match",getEta,{"VMMC_daugPlusMatchREC"})
   //            .Define("p1_rec_pt",getPt,{"p1"}).Define("p1_res_pt",resolution_MC_match_REC,{"VMMC_daugPlus","p1"})
   //            .Filter(kineCut,{"Q2_elec","w_elec"});
@@ -214,35 +214,12 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
   //            .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedParticles"})
   //            .Define("scatElec","InclusiveKinematicsElectron.scat")
   //            .Define("vm", vector_sum, {"p1","p2"})
-  //            .Define("t_rec", giveme_t_L, {"vm","scatElec","mcparticles"})
+  //            .Define("t_rec", giveme_t_L, {"vm","scatElec","MCParticles"})
   //            .Filter(eventVetoCut,{"ReconstructedFFParticles","ReconstructedParticles"})
   //            .Filter(kineCut,{"Q2_elec","w_elec"});
 
   // auto h_t_rec_veto = d5.Histo1D({"h_t_rec_veto", "; GeV^{2}; counts",100,0,0.2}, "t_rec");
 
-  // /*
-  // Block 7 eSTARLight specific
-  // - 
-  // */
-
-  // auto phiPhaseSpace = [](std::vector <ROOT::Math::PxPyPzMVector> VM)
-  // { 
-  //   bool keepThisEvent_ = false;
-  //   for(auto&i1 : VM){
-  //     if(fabs(i1.M()-1.019)<0.02) keepThisEvent_ = true;
-  //   }
-  //   return keepThisEvent_;
-  // };
-
-  // auto d6 = d.Define("Q2_truth", "InclusiveKinematicsTruth.Q2")
-  //            .Define("x_truth", "InclusiveKinematicsTruth.x")
-  //            .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedParticles"})
-  //            .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedParticles"})
-  //            .Define("vm", vector_sum, {"p1","p2"}).Define("VM_mass",getMass,{"vm"})
-  //            .Filter(phiPhaseSpace, {"vm"});
-
-  // auto h_Mass_eSTARlight_MC = d6.Histo1D({"h_Mass_eSTARlight_MC",";Mass; counts",100,0,4}, "VM_mass");
-  // auto h_Q2vsX_eSTARlight = d6.Histo2D({"h_Q2vsX_eSTARlight",";x;Q2",500,1e-12,1e-8,500,1e-9,1e-5},"x_truth","Q2_truth");
 
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
@@ -306,10 +283,6 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
 
   // //Block 6
   // h_t_rec_veto->Write();
-
-  // //Bloack 7
-  // h_Mass_eSTARlight_MC->Write();
-  // h_Q2vsX_eSTARlight->Write();
 
   output->Write();
   output->Close();
