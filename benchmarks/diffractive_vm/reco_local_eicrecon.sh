@@ -56,20 +56,21 @@ REC_LOG=${TMP_PATH}/sim-${CONFIG}.log
 
 PLOT_TAG=${CONFIG}
 
+# Disable now for reco only for EICrecon
 ## =============================================================================
 ## Step 2: Run the simulation
-echo "Running Geant4 simulation"
-ddsim --runType batch \
-      --part.minimalKineticEnergy 1000*GeV  \
-      -v INFO \
-      --numberOfEvents ${JUGGLER_N_EVENTS} \
-      --compactFile ${DETECTOR_PATH}/${DETECTOR_CONFIG}.xml \
-      --inputFiles ${GEN_FILE} \
-      --outputFile ${SIM_FILE}
-if [ "$?" -ne "0" ] ; then
-  echo "ERROR running ddsim"
-  exit 1
-fi
+# echo "Running Geant4 simulation"
+# ddsim --runType batch \
+#       --part.minimalKineticEnergy 1000*GeV  \
+#       -v INFO \
+#       --numberOfEvents ${JUGGLER_N_EVENTS} \
+#       --compactFile ${DETECTOR_PATH}/${DETECTOR_CONFIG}.xml \
+#       --inputFiles ${GEN_FILE} \
+#       --outputFile ${SIM_FILE}
+# if [ "$?" -ne "0" ] ; then
+#   echo "ERROR running ddsim"
+#   exit 1
+# fi
 
 ## =============================================================================
 ## Step 3: Run digitization & reconstruction
