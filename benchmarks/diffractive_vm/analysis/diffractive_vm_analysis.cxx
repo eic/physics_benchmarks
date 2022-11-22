@@ -193,32 +193,32 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
   // - t rec with veto conditions applied, including FF detectors
   // */
 
-  // auto eventVetoCut = [](const std::vector<eicd::ReconstructedParticleData>& FF,
-  //   const std::vector<eicd::ReconstructedParticleData>& parts)
-  // { 
-  //   bool keepThisEvent_ = true;
-  //   if(FF.size()>0) keepThisEvent_ = false;
-  //   int mult=0;
-  //   for(auto&i1 : parts){
-  //     TLorentzVector p(i1.momentum.x,i1.momentum.y,i1.momentum.z,i1.mass);
-  //     if(p.Pt()>0.05&&fabs(p.Eta())<3.5) mult++;
-  //   }
-  //   if(mult>3) keepThisEvent_ = false;
+  auto eventVetoCut = [](const std::vector<eicd::ReconstructedParticleData>& FF,
+    const std::vector<eicd::ReconstructedParticleData>& parts)
+  { 
+    bool keepThisEvent_ = true;
+    if(FF.size()>0) keepThisEvent_ = false;
+    int mult=0;
+    for(auto&i1 : parts){
+      TLorentzVector p(i1.momentum.x,i1.momentum.y,i1.momentum.z,i1.mass);
+      if(p.Pt()>0.05&&fabs(p.Eta())<3.5) mult++;
+    }
+    if(mult>3) keepThisEvent_ = false;
 
-  //   return keepThisEvent_;
-  // };
+    return keepThisEvent_;
+  };
 
-  // auto d5 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
-  //            .Define("w_elec", "InclusiveKinematicsElectron.W")
-  //            .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedParticles"})
-  //            .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedParticles"})
-  //            .Define("scatElec","InclusiveKinematicsElectron.scat")
-  //            .Define("vm", vector_sum, {"p1","p2"})
-  //            .Define("t_rec", giveme_t_L, {"vm","scatElec","MCParticles"})
-  //            .Filter(eventVetoCut,{"ReconstructedFFParticles","ReconstructedParticles"})
-  //            .Filter(kineCut,{"Q2_elec","w_elec"});
+  auto d5 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
+             .Define("w_elec", "InclusiveKinematicsElectron.W")
+             .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedParticles"})
+             .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedParticles"})
+             .Define("scatElec","InclusiveKinematicsElectron.scat")
+             .Define("vm", vector_sum, {"p1","p2"})
+             .Define("t_rec", giveme_t_L, {"vm","scatElec","MCParticles"})
+             .Filter(eventVetoCut,{"ReconstructedFFParticles","ReconstructedParticles"})
+             .Filter(kineCut,{"Q2_elec","w_elec"});
 
-  // auto h_t_rec_veto = d5.Histo1D({"h_t_rec_veto", "; GeV^{2}; counts",100,0,0.2}, "t_rec");
+  auto h_t_rec_veto = d5.Histo1D({"h_t_rec_veto", "; GeV^{2}; counts",100,0,0.2}, "t_rec");
 
 
   TString output_name_dir = output_prefix.c_str();
@@ -282,7 +282,7 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
   h_Eta_e_MC_res->Write();
 
   // //Block 6
-  // h_t_rec_veto->Write();
+  h_t_rec_veto->Write();
 
   output->Write();
   output->Close();
