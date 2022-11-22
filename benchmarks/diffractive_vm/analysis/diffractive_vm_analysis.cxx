@@ -151,42 +151,42 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
   // - single particle (vm, dvcs photon) efficiency, fake, resolution
   // */
 
-  // auto d4 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
-  //            .Define("w_elec", "InclusiveKinematicsElectron.W")
-  //            .Define("scatElec","InclusiveKinematicsElectron.scat").Define("e_rec_pt",getPt,{"scatElec"})
-  //            .Define("scatElecMC",findScatElecMC, {"MCParticles"}).Define("e_mc_pt",getPt,{"scatElecMC"}).Define("e_mc_eta",getEta,{"scatElecMC"})
-  //            .Define("e_res_pt",resolution_MC_match_REC_electron,{"scatElecMC","scatElec"})
-  //            .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedParticles"})
-  //            .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedParticles"})
-  //            .Define("vm", vector_sum, {"p1","p2"}).Define("vm_rec_pt",getPtVM,{"vm"})
-  //            .Define("VMMC",findVMMC,{"MCParticles"}).Define("vm_mc_pt",getPtVM,{"VMMC"})
-  //            .Define("vm_mc_match_rec",findVM_MC_match_REC,{"VMMC","vm"})
-  //            .Define("vm_mcMrec_pt",getPtVM,{"vm_mc_match_rec"})
-  //            .Define("vm_rec_not_match_mc",findVM_REC_NOT_match_MC,{"vm","VMMC"})
-  //            .Define("vm_recNMmc_pt",getPtVM,{"vm_rec_not_match_mc"})
-  //            .Define("vm_res_pt",resolution_MC_match_REC,{"VMMC","vm"})
-  //            .Define("protonMC",findScatProtonMC,{"MCParticles"}).Define("proton_mc_p",getP,{"protonMC"})
-  //            .Define("VMMC_daugPlus",findVM_DaugPlus_MC,{"MCParticles"}).Define("ptVMMC_daugPlus",getPt,{"VMMC_daugPlus"}).Define("etaVMMC_daugPlus",getEta,{"VMMC_daugPlus"})
-  //            .Define("VMMC_daugPlusMatchREC",findVM_MC_match_REC,{"VMMC_daugPlus","p1"}).Define("ptVMMC_daugPlus_match",getPt,{"VMMC_daugPlusMatchREC"}).Define("etaVMMC_daugPlus_match",getEta,{"VMMC_daugPlusMatchREC"})
-  //            .Define("p1_rec_pt",getPt,{"p1"}).Define("p1_res_pt",resolution_MC_match_REC,{"VMMC_daugPlus","p1"})
-  //            .Filter(kineCut,{"Q2_elec","w_elec"});
+  auto d4 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
+             .Define("w_elec", "InclusiveKinematicsElectron.W")
+             .Define("scatElec",findScatElec,{"ReconstructedParticles","MCParticles"}).Define("e_rec_pt",getPt,{"scatElec"})
+             .Define("scatElecMC",findScatElecMC, {"MCParticles"}).Define("e_mc_pt",getPt,{"scatElecMC"}).Define("e_mc_eta",getEta,{"scatElecMC"})
+             .Define("e_res_pt",resolution_MC_match_REC_electron,{"scatElecMC","scatElec"})
+             .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedParticles"})
+             .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedParticles"})
+             .Define("vm", vector_sum, {"p1","p2"}).Define("vm_rec_pt",getPtVM,{"vm"})
+             .Define("VMMC",findVMMC,{"MCParticles"}).Define("vm_mc_pt",getPtVM,{"VMMC"})
+             .Define("vm_mc_match_rec",findVM_MC_match_REC,{"VMMC","vm"})
+             .Define("vm_mcMrec_pt",getPtVM,{"vm_mc_match_rec"})
+             .Define("vm_rec_not_match_mc",findVM_REC_NOT_match_MC,{"vm","VMMC"})
+             .Define("vm_recNMmc_pt",getPtVM,{"vm_rec_not_match_mc"})
+             .Define("vm_res_pt",resolution_MC_match_REC,{"VMMC","vm"})
+             .Define("protonMC",findScatProtonMC,{"MCParticles"}).Define("proton_mc_p",getP,{"protonMC"})
+             .Define("VMMC_daugPlus",findVM_DaugPlus_MC,{"MCParticles"}).Define("ptVMMC_daugPlus",getPt,{"VMMC_daugPlus"}).Define("etaVMMC_daugPlus",getEta,{"VMMC_daugPlus"})
+             .Define("VMMC_daugPlusMatchREC",findVM_MC_match_REC,{"VMMC_daugPlus","p1"}).Define("ptVMMC_daugPlus_match",getPt,{"VMMC_daugPlusMatchREC"}).Define("etaVMMC_daugPlus_match",getEta,{"VMMC_daugPlusMatchREC"})
+             .Define("p1_rec_pt",getPt,{"p1"}).Define("p1_res_pt",resolution_MC_match_REC,{"VMMC_daugPlus","p1"})
+             .Filter(kineCut,{"Q2_elec","w_elec"});
 
-  // auto h_Pt_VM_MC_total = d4.Histo1D({"h_Pt_VM_MC_total", "; GeV; counts", 50, 0, 5}, "vm_mc_pt");
-  // auto h_Pt_VM_MC_match = d4.Histo1D({"h_Pt_VM_MC_match", "; GeV; counts", 50, 0, 5}, "vm_mcMrec_pt");
-  // auto h_Pt_VM_REC_total = d4.Histo1D({"h_Pt_VM_REC_total", "; GeV; counts", 50, 0, 5}, "vm_rec_pt");
-  // auto h_Pt_VM_REC_not_match = d4.Histo1D({"h_Pt_VM_REC_not_match", "; GeV; counts", 50, 0, 5}, "vm_recNMmc_pt");
-  // auto h_Pt_VM_MC_res = d4.Histo2D({"h_Pt_VM_MC_res",";pt;res",50,0,5,300,-0.15,0.15},"vm_mc_pt","vm_res_pt");
-  // auto h_P_proton_MC = d4.Histo1D({"h_P_proton_MC", "; GeV; counts", 200, 0, 200}, "proton_mc_p");
-  // auto h_Pt_track_REC = d4.Histo1D({"h_Pt_track_REC", "; GeV; counts", 50, 0, 5}, "p1_rec_pt");
-  // auto h_Pt_track_MC = d4.Histo1D({"h_Pt_track_MC", "; GeV; counts", 50, 0, 5}, "ptVMMC_daugPlus");
-  // auto h_Pt_track_MC_match = d4.Histo1D({"h_Pt_track_MC_match", "; GeV; counts", 50, 0, 5}, "ptVMMC_daugPlus_match");
-  // auto h_Pt_track_MC_res = d4.Histo2D({"h_Pt_track_MC_res",";pt;res",50,0,5,300,-0.15,0.15},"ptVMMC_daugPlus","p1_res_pt");
-  // auto h_Eta_track_MC = d4.Histo1D({"h_Eta_track_MC", "; GeV; counts", 50, -5, 5}, "etaVMMC_daugPlus");
-  // auto h_Eta_track_MC_match = d4.Histo1D({"h_Eta_track_MC_match", "; GeV; counts", 50, -5, 5}, "etaVMMC_daugPlus_match");
-  // auto h_Pt_e_REC = d4.Histo1D({"h_Pt_e_REC", "; GeV; counts", 50, 0, 5}, "e_rec_pt");
-  // auto h_Pt_e_MC = d4.Histo1D({"h_Pt_e_MC", "; GeV; counts", 50, 0, 5}, "e_mc_pt");
-  // auto h_Pt_e_MC_res = d4.Histo2D({"h_Pt_e_MC_res",";pt;res",50,0,5,300,-0.15,0.15},"e_mc_pt","e_res_pt");
-  // auto h_Eta_e_MC_res = d4.Histo2D({"h_Eta_e_MC_res",";eta;res",50,-4,2,300,-0.15,0.15},"e_mc_eta","e_res_pt");
+  auto h_Pt_VM_MC_total = d4.Histo1D({"h_Pt_VM_MC_total", "; GeV; counts", 50, 0, 5}, "vm_mc_pt");
+  auto h_Pt_VM_MC_match = d4.Histo1D({"h_Pt_VM_MC_match", "; GeV; counts", 50, 0, 5}, "vm_mcMrec_pt");
+  auto h_Pt_VM_REC_total = d4.Histo1D({"h_Pt_VM_REC_total", "; GeV; counts", 50, 0, 5}, "vm_rec_pt");
+  auto h_Pt_VM_REC_not_match = d4.Histo1D({"h_Pt_VM_REC_not_match", "; GeV; counts", 50, 0, 5}, "vm_recNMmc_pt");
+  auto h_Pt_VM_MC_res = d4.Histo2D({"h_Pt_VM_MC_res",";pt;res",50,0,5,300,-0.15,0.15},"vm_mc_pt","vm_res_pt");
+  auto h_P_proton_MC = d4.Histo1D({"h_P_proton_MC", "; GeV; counts", 200, 0, 200}, "proton_mc_p");
+  auto h_Pt_track_REC = d4.Histo1D({"h_Pt_track_REC", "; GeV; counts", 50, 0, 5}, "p1_rec_pt");
+  auto h_Pt_track_MC = d4.Histo1D({"h_Pt_track_MC", "; GeV; counts", 50, 0, 5}, "ptVMMC_daugPlus");
+  auto h_Pt_track_MC_match = d4.Histo1D({"h_Pt_track_MC_match", "; GeV; counts", 50, 0, 5}, "ptVMMC_daugPlus_match");
+  auto h_Pt_track_MC_res = d4.Histo2D({"h_Pt_track_MC_res",";pt;res",50,0,5,300,-0.15,0.15},"ptVMMC_daugPlus","p1_res_pt");
+  auto h_Eta_track_MC = d4.Histo1D({"h_Eta_track_MC", "; GeV; counts", 50, -5, 5}, "etaVMMC_daugPlus");
+  auto h_Eta_track_MC_match = d4.Histo1D({"h_Eta_track_MC_match", "; GeV; counts", 50, -5, 5}, "etaVMMC_daugPlus_match");
+  auto h_Pt_e_REC = d4.Histo1D({"h_Pt_e_REC", "; GeV; counts", 50, 0, 5}, "e_rec_pt");
+  auto h_Pt_e_MC = d4.Histo1D({"h_Pt_e_MC", "; GeV; counts", 50, 0, 5}, "e_mc_pt");
+  auto h_Pt_e_MC_res = d4.Histo2D({"h_Pt_e_MC_res",";pt;res",50,0,5,300,-0.15,0.15},"e_mc_pt","e_res_pt");
+  auto h_Eta_e_MC_res = d4.Histo2D({"h_Eta_e_MC_res",";eta;res",50,-4,2,300,-0.15,0.15},"e_mc_eta","e_res_pt");
 
   // /*
   // Block 6
@@ -237,7 +237,7 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
 
   h_Q2_elec->Write();
   h_y_elec->Write();
-  // h_Eta_scatElec_REC->Write();
+  h_Eta_scatElec_REC->Write();
   h_Mass_REC->Write();
   h_Pt_VM_REC->Write();
   h_Eta_VM_REC->Write();
@@ -264,22 +264,22 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
   h_t_res_2D->Write();
 
   // //Block 5
-  // h_Pt_VM_MC_total->Write();
-  // h_Pt_VM_MC_match->Write();
-  // h_Pt_VM_REC_total->Write();
-  // h_Pt_VM_REC_not_match->Write();
-  // h_Pt_VM_MC_res->Write();
-  // h_P_proton_MC->Write();
-  // h_Pt_track_REC->Write();
-  // h_Pt_track_MC->Write();
-  // h_Pt_track_MC_match->Write();
-  // h_Pt_track_MC_res->Write();
-  // h_Eta_track_MC->Write();
-  // h_Eta_track_MC_match->Write();
-  // h_Pt_e_REC->Write();
-  // h_Pt_e_MC->Write();
-  // h_Pt_e_MC_res->Write();
-  // h_Eta_e_MC_res->Write();
+  h_Pt_VM_MC_total->Write();
+  h_Pt_VM_MC_match->Write();
+  h_Pt_VM_REC_total->Write();
+  h_Pt_VM_REC_not_match->Write();
+  h_Pt_VM_MC_res->Write();
+  h_P_proton_MC->Write();
+  h_Pt_track_REC->Write();
+  h_Pt_track_MC->Write();
+  h_Pt_track_MC_match->Write();
+  h_Pt_track_MC_res->Write();
+  h_Eta_track_MC->Write();
+  h_Eta_track_MC_match->Write();
+  h_Pt_e_REC->Write();
+  h_Pt_e_MC->Write();
+  h_Pt_e_MC_res->Write();
+  h_Eta_e_MC_res->Write();
 
   // //Block 6
   // h_t_rec_veto->Write();
