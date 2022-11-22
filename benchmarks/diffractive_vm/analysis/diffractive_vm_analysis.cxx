@@ -193,8 +193,8 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
   // - t rec with veto conditions applied, including FF detectors
   // */
 
-  auto eventVetoCut = [](const std::vector<eicd::ReconstructedParticleData>& FF,
-    const std::vector<eicd::ReconstructedParticleData>& parts)
+  auto eventVetoCut = [](const std::vector<edm4eic::ReconstructedParticleData>& FF,
+    const std::vector<edm4eic::ReconstructedParticleData>& parts)
   { 
     bool keepThisEvent_ = true;
     if(FF.size()>0) keepThisEvent_ = false;
