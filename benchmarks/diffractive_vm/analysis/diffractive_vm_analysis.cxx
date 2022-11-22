@@ -126,25 +126,25 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
   // - t resolution
   // */
 
-  // auto d3 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
-  //            .Define("w_elec", "InclusiveKinematicsElectron.W")
-  //            .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedParticles"})
-  //            .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedParticles"})
-  //            .Define("scatElec","InclusiveKinematicsElectron.scat")
-  //            .Define("vm", vector_sum, {"p1","p2"})
-  //            .Define("t_rec", giveme_t_L, {"vm","scatElec","mcparticles"})
-  //            .Define("scatElecMC",findScatElecMC, {"mcparticles"})
-  //            .Define("VMMC",findVMMC,{"mcparticles"})
-  //            .Define("t_MC",giveme_t_MC_E,{"VMMC","scatElecMC","mcparticles"})
-  //            .Define("t_res",giveme_resolution,{"t_MC","t_rec"})
-  //            .Filter(kineCut,{"Q2_elec","w_elec"});
+  auto d3 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
+             .Define("w_elec", "InclusiveKinematicsElectron.W")
+             .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedParticles"})
+             .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedParticles"})
+             .Define("scatElec","InclusiveKinematicsElectron.scat")
+             .Define("vm", vector_sum, {"p1","p2"})
+             .Define("t_rec", giveme_t_L, {"vm","scatElec","MCParticles"})
+             .Define("scatElecMC",findScatElecMC, {"MCParticles"})
+             .Define("VMMC",findVMMC,{"MCParticles"})
+             .Define("t_MC",giveme_t_MC_E,{"VMMC","scatElecMC","MCParticles"})
+             .Define("t_res",giveme_resolution,{"t_MC","t_rec"})
+             .Filter(kineCut,{"Q2_elec","w_elec"});
 
-  // auto h_t_rec = d3.Histo1D({"h_t_rec", "; GeV^{2}; counts",72,0,0.18}, "t_rec");
-  // double t_binning[47]={0,0.0025,0.005,0.0075,0.01,0.0125,0.015,0.0175,0.02,0.0225,0.025,0.0275,0.03,0.0325,0.035,0.0375,0.04,0.0425,0.045,0.0475,0.05,0.0525,0.055,0.0575,0.06,0.0625,0.065,0.0675,0.07,0.0725,0.075,0.079,0.083,0.087,0.091,0.095,0.099,0.103,0.107,0.111,0.121,0.131,0.141,0.151,0.161,0.171,0.181};
-  // auto h_t_rec_corse = d3.Histo1D({"h_t_rec_corse", "; GeV^{2}; counts",46,t_binning}, "t_rec");
-  // auto h_t_MC = d3.Histo1D({"h_t_MC",";t; counts",100,0,0.2}, "t_MC");
-  // auto h_t_res = d3.Histo1D({"h_t_res",";res; counts",100,-1,1},"t_res");
-  // auto h_t_res_2D = d3.Histo2D({"h_t_res_2D",";-t;res",100,0,0.2,500,-5,5},"t_MC","t_res");
+  auto h_t_rec = d3.Histo1D({"h_t_rec", "; GeV^{2}; counts",72,0,0.18}, "t_rec");
+  double t_binning[47]={0,0.0025,0.005,0.0075,0.01,0.0125,0.015,0.0175,0.02,0.0225,0.025,0.0275,0.03,0.0325,0.035,0.0375,0.04,0.0425,0.045,0.0475,0.05,0.0525,0.055,0.0575,0.06,0.0625,0.065,0.0675,0.07,0.0725,0.075,0.079,0.083,0.087,0.091,0.095,0.099,0.103,0.107,0.111,0.121,0.131,0.141,0.151,0.161,0.171,0.181};
+  auto h_t_rec_corse = d3.Histo1D({"h_t_rec_corse", "; GeV^{2}; counts",46,t_binning}, "t_rec");
+  auto h_t_MC = d3.Histo1D({"h_t_MC",";t; counts",100,0,0.2}, "t_MC");
+  auto h_t_res = d3.Histo1D({"h_t_res",";res; counts",100,-1,1},"t_res");
+  auto h_t_res_2D = d3.Histo2D({"h_t_res_2D",";-t;res",100,0,0.2,500,-5,5},"t_MC","t_res");
 
   // /*
   // Block 5
@@ -280,11 +280,11 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
   h_Eta_VMdaugPlus_MC->Write();
 
   // //Block 4
-  // h_t_rec->Write();
-  // h_t_rec_corse->Write();
-  // h_t_MC->Write();
-  // h_t_res->Write();
-  // h_t_res_2D->Write();
+  h_t_rec->Write();
+  h_t_rec_corse->Write();
+  h_t_MC->Write();
+  h_t_res->Write();
+  h_t_res_2D->Write();
 
   // //Block 5
   // h_Pt_VM_MC_total->Write();
