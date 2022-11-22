@@ -81,7 +81,7 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
              .Define("p1", momenta_from_reconstruction_plus, {"ReconstructedParticles"})
              .Define("p2", momenta_from_reconstruction_minus, {"ReconstructedParticles"})
              .Define("ptVMREC_daugPlus",getPt,{"p1"}).Define("etaVMREC_daugPlus",getEta,{"p1"})
-             .Define("scatElec",findScatElec,{"ReconstructedParticles","MCParticles"}).Define("etaElec",getEtaSpecial,{"scatElec"})
+             .Define("scatElec",findScatElec,{"ReconstructedParticles","MCParticles"}).Define("etaElec",getEta,{"scatElec"})
              .Define("vm", vector_sum, {"p1","p2"}).Define("Mass",getMass,{"vm"}).Define("vm_rec_pt", getPtVM, {"vm"}).Define("vm_rec_eta", getEtaVM, {"vm"}).Define("vm_rec_rap", getRapVM, {"vm"})
              .Define("protonREC",findScatProton,{"ReconstructedFFParticles"}).Define("proton_rec_p",getP,{"protonREC"})
              .Define("mult",getNtrk,{"ReconstructedParticles"})
