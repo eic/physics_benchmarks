@@ -16,7 +16,6 @@ R__LOAD_LIBRARY(libfmt.so)
 #include "fmt/color.h"
 
 R__LOAD_LIBRARY(libedm4eic.so)
-R__LOAD_LIBRARY(libDD4pod.so)
 
 #include "edm4eic/InclusiveKinematicsCollection.h"
 #include "edm4eic/ReconstructedParticleCollection.h"

@@ -15,9 +15,7 @@ R__LOAD_LIBRARY(libfmt.so)
 #include "fmt/color.h"
 
 R__LOAD_LIBRARY(libedm4eic.so)
-R__LOAD_LIBRARY(libDD4pod.so)
 
-#include "dd4pod/Geant4ParticleCollection.h"
 #include "edm4eic/TrackParametersCollection.h"
 #include "edm4eic/ClusterCollection.h"
 #include "edm4eic/ReconstructedParticleCollection.h"
@@ -34,15 +32,6 @@ auto p_track = [](std::vector<edm4eic::TrackParametersData> const& in) {
   return result;
 };
 
-
-auto pt  = [](std::vector<dd4pod::Geant4ParticleData> const& in){
-  std::vector<float> result;
-  for (size_t i = 0; i < in.size(); ++i) {
-    result.push_back(std::sqrt(in[i].ps.x * in[i].ps.x + in[i].ps.y * in[i].ps.y));
-  }
-  return result;
-};
-
 auto momentum = [](std::vector<ROOT::Math::PxPyPzMVector> const& in) {
   std::vector<double> result;
   for (size_t i = 0; i < in.size(); ++i) {
@@ -50,6 +39,7 @@ auto momentum = [](std::vector<ROOT::Math::PxPyPzMVector> const& in) {
   }
   return result;
 };
+
 auto theta = [](std::vector<ROOT::Math::PxPyPzMVector> const& in) {
   std::vector<double> result;
   for (size_t i = 0; i < in.size(); ++i) {
@@ -57,15 +47,7 @@ auto theta = [](std::vector<ROOT::Math::PxPyPzMVector> const& in) {
   }
   return result;
 };
-auto fourvec = [](ROOT::VecOps::RVec<dd4pod::Geant4ParticleData> const& in) {
-  std::vector<ROOT::Math::PxPyPzMVector> result;
-  ROOT::Math::PxPyPzMVector lv;
-  for (size_t i = 0; i < in.size(); ++i) {
-    lv.SetCoordinates(in[i].ps.x, in[i].ps.y, in[i].ps.z, in[i].mass);
-    result.push_back(lv);
-  }
-  return result;
-};
+
 auto recfourvec = [](ROOT::VecOps::RVec<edm4eic::ReconstructedParticleData> const& in) {
   std::vector<ROOT::Math::PxPyPzMVector> result;
   ROOT::Math::PxPyPzMVector lv;
@@ -99,14 +81,6 @@ void demo(const char* fname = "rec_dvcs.root"){
   PxPyPzMVector p_ebeam = {0,0,-10, 0.000511};
   PxPyPzMVector p_pbeam = {0,0,275,  0.938 };
 
-  auto eprime = [](ROOT::VecOps::RVec<dd4pod::Geant4ParticleData> const& in) {
-    for(const auto& p : in){
-      if(p.pdgID == 11 ) {
-        return PxPyPzMVector(p.ps.x,p.ps.y,p.ps.z,p.mass);
-      }
-    }
-    return PxPyPzMVector(0,0,0,0);
-  };
   auto q_vec = [=](PxPyPzMVector const& p) {
     return p_ebeam - p;
   };
