@@ -105,20 +105,20 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
   - e', VM, and VM daughters
   */
 
-  // auto d2 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
-  //            .Define("w_elec", "InclusiveKinematicsElectron.W")
-  //            .Define("scatElecMC",findScatElecMC, {"mcparticles"}).Define("etaElecMC",getEta,{"scatElecMC"})
-  //            .Define("VMMC",findVMMC,{"mcparticles"}).Define("MassMC",getMass,{"VMMC"}).Define("vm_mc_pt",getPtVM,{"VMMC"}).Define("vm_mc_eta",getEtaVM,{"VMMC"}).Define("vm_mc_rap",getRapVM,{"VMMC"})
-  //            .Define("VMMC_daugPlus",findVM_DaugPlus_MC,{"mcparticles"}).Define("etaVMMC_daugPlus",getEta,{"VMMC_daugPlus"}).Define("ptVMMC_daugPlus",getPt,{"VMMC_daugPlus"})
-  //            .Filter(kineCut,{"Q2_elec","w_elec"});
+  auto d2 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
+             .Define("w_elec", "InclusiveKinematicsElectron.W")
+             .Define("scatElecMC",findScatElecMC, {"MCParticles"}).Define("etaElecMC",getEta,{"scatElecMC"})
+             .Define("VMMC",findVMMC,{"MCParticles"}).Define("MassMC",getMass,{"VMMC"}).Define("vm_mc_pt",getPtVM,{"VMMC"}).Define("vm_mc_eta",getEtaVM,{"VMMC"}).Define("vm_mc_rap",getRapVM,{"VMMC"})
+             .Define("VMMC_daugPlus",findVM_DaugPlus_MC,{"MCParticles"}).Define("etaVMMC_daugPlus",getEta,{"VMMC_daugPlus"}).Define("ptVMMC_daugPlus",getPt,{"VMMC_daugPlus"})
+             .Filter(kineCut,{"Q2_elec","w_elec"});
 
-  // auto h_Eta_scatElec_MC = d2.Histo1D({"h_Eta_scatElec_MC",";eta; counts",100,-11,9}, "etaElecMC");
-  // auto h_Mass_MC = d2.Histo1D({"h_Mass_MC",";Mass; counts",100,0,4}, "MassMC");
-  // auto h_Pt_VM_MC = d2.Histo1D({"h_Pt_VM_MC", "; GeV; counts", 50, 0, 5}, "vm_mc_pt");
-  // auto h_Eta_VM_MC = d2.Histo1D({"h_Eta_VM_MC", "; ; counts", 100, -11, 9}, "vm_mc_eta");
-  // auto h_Rap_VM_MC = d2.Histo1D({"h_Rap_VM_MC", "; ; counts", 100, -11, 9}, "vm_mc_rap");
-  // auto h_Pt_VMdaugPlus_MC = d2.Histo1D({"h_Pt_VMdaugPlus_MC",";pt; counts",100,0,9}, "ptVMMC_daugPlus");
-  // auto h_Eta_VMdaugPlus_MC = d2.Histo1D({"h_Eta_VMdaugPlus_MC",";eta; counts",100,-11,9}, "etaVMMC_daugPlus");
+  auto h_Eta_scatElec_MC = d2.Histo1D({"h_Eta_scatElec_MC",";eta; counts",100,-11,9}, "etaElecMC");
+  auto h_Mass_MC = d2.Histo1D({"h_Mass_MC",";Mass; counts",100,0,4}, "MassMC");
+  auto h_Pt_VM_MC = d2.Histo1D({"h_Pt_VM_MC", "; GeV; counts", 50, 0, 5}, "vm_mc_pt");
+  auto h_Eta_VM_MC = d2.Histo1D({"h_Eta_VM_MC", "; ; counts", 100, -11, 9}, "vm_mc_eta");
+  auto h_Rap_VM_MC = d2.Histo1D({"h_Rap_VM_MC", "; ; counts", 100, -11, 9}, "vm_mc_rap");
+  auto h_Pt_VMdaugPlus_MC = d2.Histo1D({"h_Pt_VMdaugPlus_MC",";pt; counts",100,0,9}, "ptVMMC_daugPlus");
+  auto h_Eta_VMdaugPlus_MC = d2.Histo1D({"h_Eta_VMdaugPlus_MC",";eta; counts",100,-11,9}, "etaVMMC_daugPlus");
 
   // /*
   // Block 4 
@@ -271,13 +271,13 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
   h_Eta_VMdaugPlus_REC->Write();
 
   //Block 3
-  // h_Eta_scatElec_MC->Write();
-  // h_Mass_MC->Write();
-  // h_Pt_VM_MC->Write();
-  // h_Eta_VM_MC->Write();
-  // h_Rap_VM_MC->Write();
-  // h_Pt_VMdaugPlus_MC->Write();
-  // h_Eta_VMdaugPlus_MC->Write();
+  h_Eta_scatElec_MC->Write();
+  h_Mass_MC->Write();
+  h_Pt_VM_MC->Write();
+  h_Eta_VM_MC->Write();
+  h_Rap_VM_MC->Write();
+  h_Pt_VMdaugPlus_MC->Write();
+  h_Eta_VMdaugPlus_MC->Write();
 
   // //Block 4
   // h_t_rec->Write();
