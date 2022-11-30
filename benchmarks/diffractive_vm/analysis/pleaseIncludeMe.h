@@ -184,7 +184,7 @@ auto findScatElecTest(const std::vector<edm4hep::MCParticleData>& mcs,
     { 
       trkMC.SetXYZ(i2.momentum.x,i2.momentum.y,i2.momentum.z); 
       mc_elect_index=index;
-      mc_energy=i2.energy;
+      mc_energy=sqrt(trkMC.Mag2()+MASS_ELECTRON*MASS_ELECTRON);
     } 
   }
 
@@ -246,11 +246,11 @@ auto findScatElecTest(const std::vector<edm4hep::MCParticleData>& mcs,
   double pt = TMath::Sin(maxtrk.Theta())*p;
   escat.SetPtEtaPhiM(pt,eta,phi,MASS_ELECTRON);
   
-  if( cluster_sim_leading == mc_elect_index && mc_elect_index != -1 ) {
+  // if( maxtrk.X()>-1E10 && maxEnergy!=0. ) {
     momenta.push_back(ROOT::Math::PxPyPzMVector{escat.Px(),escat.Py(),escat.Pz(),MASS_ELECTRON});
-      std::cout << "final rec scat' e energy = " << escat.E() << std::endl;
+    std::cout << "final rec scat' e energy = " << escat.E() << std::endl;
 
-  }
+  // }
   return momenta;
 }
 
