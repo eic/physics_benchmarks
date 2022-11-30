@@ -183,7 +183,7 @@ auto findScatElecTest(const std::vector<edm4eic::ReconstructedParticleData>& par
     }
   }
   //Find sim id in cluster
-  int cluster_sim_leading index=-1;
+  int cluster_sim_leading=-1;
   for(auto& i2 : cluster_assocs){
     int rec_clus_id=i2.recID;
     int sim_clus_id=i2.simID;
@@ -226,7 +226,7 @@ auto findScatElecTest(const std::vector<edm4eic::ReconstructedParticleData>& par
   double pt = TMath::Sin(maxtrk.Theta())*p;
   escat.SetPtEtaPhiM(pt,eta,phi,MASS_ELECTRON);
   
-  if( sim_clus_id == mc_elect_index && mc_elect_index != -1 ) {
+  if( cluster_sim_leading == mc_elect_index && mc_elect_index != -1 ) {
     momenta.push_back(ROOT::Math::PxPyPzMVector{escat.Px(),escat.Py(),escat.Pz(),MASS_ELECTRON});
   }
   return momenta;
