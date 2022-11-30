@@ -246,11 +246,11 @@ auto findScatElecTest(const std::vector<edm4hep::MCParticleData>& mcs,
   double pt = TMath::Sin(maxtrk.Theta())*p;
   escat.SetPtEtaPhiM(pt,eta,phi,MASS_ELECTRON);
   
-  // if( maxtrk.X()>-1E10 && maxEnergy!=0. ) {
+  if( maxtrk.X()>-1E10 && maxEnergy!=0. ) {
     momenta.push_back(ROOT::Math::PxPyPzMVector{escat.Px(),escat.Py(),escat.Pz(),MASS_ELECTRON});
     // std::cout << "final rec scat' e energy = " << escat.E() << std::endl;
 
-  // }
+  }
   return momenta;
 }
 
