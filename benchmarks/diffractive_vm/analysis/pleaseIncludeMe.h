@@ -28,7 +28,10 @@
 #include "nlohmann/json.hpp"
 #include "edm4eic/InclusiveKinematicsData.h"
 #include "edm4eic/ReconstructedParticleData.h"
-// #include "edm4eic/ReconstructedParticleCollection.h"
+#include "edm4eic/ClusterData.h"
+#include "edm4eic/MCRecoParticleAssociationData.h"
+#include "edm4eic/MCRecoClusterParticleAssociationData.h"
+#include "edm4hep/MCParticleData.h"
 
 #define PI            3.1415926
 #define MASS_ELECTRON 0.00051
@@ -154,30 +157,78 @@ auto findScatElec(const std::vector<edm4eic::ReconstructedParticleData>& recs,
 
   return momenta;
 }
-
-auto findScatElecTest(const std::vector<edm4eic::ReconstructedParticleData>& parts, 
-                        const std::vector<edm4eic::ClusterData>& clusters) 
+auto findScatElecTest(const std::vector<edm4eic::ReconstructedParticleData>& parts,
+                        const std::vector<edm4eic::ClusterData>& clusters,
+                            const std::vector<edm4eic::MCRecoParticleAssociationData>& assocs,
+                              const std::vector<edm4eic::MCRecoClusterParticleAssociationData>& cluster_assocs) 
 {
+  /*
+  Comment - Things to think about:
+    - We need to have some matching/projection
+    code to match between tracks and clusters.
+    Now, everything below is just for now. 
+  */
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
-  TLorentzVector escat(-1e10, -1e10, -1e10, -1e10);
-  for(auto& i1 : parts){//track
-    if(i1.charge>0) continue;//electron -
-    TVector3 trkREC(i1.momentum.x,i1.momentum.y,i1.momentum.z);
-      //EEMC
-      for(auto& i2 : clusters){
-        //need some projection, or matching the cluster here.
-        auto energy=i2.energy;
-        if( fabs(1.0-energy/trkREC.Mag())<0.05 && energy>3.6 ){//y<0.8
-          double p = sqrt(energy*energy- MASS_ELECTRON*MASS_ELECTRON );
-          double eta=trkREC.Eta();
-          double phi=trkREC.Phi();
-          double pt = TMath::Sin(trkREC.Theta())*p;
-          escat.SetPtEtaPhiM(pt,eta,phi,MASS_ELECTRON);
-        }
-      }
+  TLorentzVector escat(-1E10, -1E10, -1E10, -1E10);
+  //EEMC
+  double maxEnergy=0;
+  int index=-1;
+  int cluster_rec_leading_index=-1;
+  for(auto& i1 : clusters){
+    index++;
+    auto energy=i1.energy;
+    if(energy>maxEnergy){
+      maxEnergy=energy;
+      cluster_rec_leading_index=index;
+    }
   }
- 
-  momenta.push_back(ROOT::Math::PxPyPzMVector{escat.Px(),escat.Py(),escat.Pz(),MASS_ELECTRON});
+  //Find sim id in cluster
+  int cluster_sim_leading index=-1;
+  for(auto& i2 : cluster_assocs){
+    int rec_clus_id=i2.recID;
+    int sim_clus_id=i2.simID;
+
+    if(rec_clus_id==cluster_rec_leading_index){
+      cluster_sim_leading=sim_clus_id;
+    }
+  }
+
+  //rec finding leading momentum as scat' e
+  double maxMom=0.;
+  TVector3 maxtrk(-1E10,-1E10,-1E10);
+  int elec_index=-1;
+  index=-1;
+  for(auto& i2 : parts){
+    index++;
+    TVector3 trk(i2.momentum.x,i2.momentum.y,i2.momentum.z);
+    if(i2.charge>0) continue;
+    if(trk.Mag()>maxMom){
+      maxMom=trk.Mag();
+      maxtrk=trk;
+      elec_index=index;
+    }
+  }
+
+  //finding track assoc.
+  int mc_elect_index=-1;
+  for(auto& i3 : assocs){
+    int rec_id = i3.recID;
+    int sim_id = i3.simID;
+    if (rec_id == elec_index) mc_elect_index=sim_id;
+  }
+  
+  //3-second calibration.
+  // maxEnergy+=0.9;
+  //electron hypothesis;
+  double p = sqrt(maxEnergy*maxEnergy- MASS_ELECTRON*MASS_ELECTRON );
+  double eta=maxtrk.Eta();
+  double phi=maxtrk.Phi();
+  double pt = TMath::Sin(maxtrk.Theta())*p;
+  escat.SetPtEtaPhiM(pt,eta,phi,MASS_ELECTRON);
+  
+  if( sim_clus_id == mc_elect_index && mc_elect_index != -1 ) {
+    momenta.push_back(ROOT::Math::PxPyPzMVector{escat.Px(),escat.Py(),escat.Pz(),MASS_ELECTRON});
+  }
   return momenta;
 }
 
