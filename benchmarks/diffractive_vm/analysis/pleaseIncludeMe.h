@@ -142,6 +142,46 @@ auto momenta_from_reconstruction_minus(const std::vector<edm4eic::ReconstructedP
   }
   return momenta;
 }
+auto findScatElecCluster(const std::vector<edm4hep::MCParticleData>& mcs,
+                            const std::vector<edm4eic::ClusterData>& clusters,
+                                const std::vector<edm4eic::MCRecoClusterParticleAssociationData>& cluster_assocs) 
+{
+  std::vector<double> cluster_energy;
+
+  //finding mc scat e'
+  TVector3 trkMC(0,0,0);
+  int mc_elect_index=-1;
+  int index=-1;
+  for(auto& i2 : mcs){
+    index++;
+    if(i2.charge<0 && 
+        i2.generatorStatus==genStatus_scatElec[which_mc]
+          &&i2.PDG==11)
+    { 
+      trkMC.SetXYZ(i2.momentum.x,i2.momentum.y,i2.momentum.z); 
+      mc_elect_index=index;
+    } 
+  }
+  //association match 
+  int rec_elect_index=-1;
+  for(auto& i3 : cluster_assocs){
+    int rec_id = i3.recID;
+    int sim_id = i3.simID;
+    if (sim_id == mc_elect_index) rec_elect_index=rec_id;
+  }
+
+  index=-1;
+  double energy=-1.;;
+  for(auto& i1 : clusters){
+    index++;
+    if(index==rec_elect_index){
+      energy=i1.energy;
+    }
+  }
+  cluster_energy.push_back( energy );
+
+  return cluster_energy;
+}
 
 auto findScatElec(const std::vector<edm4eic::ReconstructedParticleData>& recs, 
                     const std::vector<edm4hep::MCParticleData>& mcs,
@@ -444,6 +484,17 @@ auto getP(const std::vector<ROOT::Math::PxPyPzMVector>& mom)
     pVec.push_back(momentum);
   }
   return pVec;
+
+}
+auto getE(const std::vector<ROOT::Math::PxPyPzMVector>& mom)
+{
+  std::vector<double> EVec;
+  for(auto& i1:mom){
+    double energy = i1.E();
+    if(i1.Px()<-1e9){energy=-10.;}
+    EVec.push_back(energy);
+  }
+  return EVec;
 
 }
 

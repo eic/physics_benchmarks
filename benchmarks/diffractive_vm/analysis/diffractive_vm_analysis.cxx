@@ -209,6 +209,16 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
 
   auto h_t_rec_veto = d5.Histo1D({"h_t_rec_veto", "; GeV^{2}; counts",100,0,0.2}, "t_rec");
 
+  //emcal
+  auto d6 = d.Define("Q2_elec", "InclusiveKinematicsElectron.Q2")
+             .Define("w_elec", "InclusiveKinematicsElectron.W")
+             .Define("e_elec_REC",findScatElecCluster,{"MCParticles","EcalEndcapNClusters","EcalEndcapNClustersAssoc"})
+             .Define("scatElecMC",findScatElecMC, {"MCParticles"}).Define("e_elec_MC",getE,{"scatElecMC"})
+             .Define("energy_res",giveme_resolution,{"e_elec_MC","e_elec_REC"})
+             .Filter(kineCut,{"Q2_elec","w_elec"});
+
+  auto h_E_e_REC = d6.Histo1D({"h_E_e_REC", "; GeV; counts",100,0,20}, "e_elec_REC");
+  auto h_E_e_res_2D = d6.Histo2D({"h_E_e_res_2D",";E_{MC};res",100,0,20,300,-1,1},"e_elec_MC","energy_res");
 
   TString output_name_dir = output_prefix.c_str();
   TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
@@ -272,6 +282,10 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
 
   // //Block 6
   h_t_rec_veto->Write();
+
+  // Block 7
+  h_E_e_REC->Write();
+  h_E_e_res_2D->Write();
 
   output->Write();
   output->Close();
