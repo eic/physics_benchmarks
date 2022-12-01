@@ -218,6 +218,7 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
              .Filter(kineCut,{"Q2_elec","w_elec"});
 
   auto h_E_e_REC = d6.Histo1D({"h_E_e_REC", "; GeV; counts",100,0,20}, "e_elec_REC");
+  auto h_E_e_MC = d6.Histo1D({"h_E_e_MC", "; GeV; counts",100,0,20}, "e_elec_MC");
   auto h_E_e_res_2D = d6.Histo2D({"h_E_e_res_2D",";E_{MC};res",100,0,20,300,-1,1},"e_elec_MC","energy_res");
 
   TString output_name_dir = output_prefix.c_str();
@@ -285,6 +286,7 @@ int diffractive_vm_analysis(const std::string& config_name, const int vm_type=1,
 
   // Block 7
   h_E_e_REC->Write();
+  h_E_e_MC->Write();
   h_E_e_res_2D->Write();
 
   output->Write();
