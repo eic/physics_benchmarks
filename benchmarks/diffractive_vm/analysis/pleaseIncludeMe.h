@@ -126,8 +126,8 @@ auto momenta_from_reconstruction_minus(const std::vector<edm4eic::ReconstructedP
   }
   int rec_index=-1;
   for(auto& i1 : assocs){
-    int rec_id = i3.recID;
-    int sim_id = i3.simID;
+    int rec_id = i1.recID;
+    int sim_id = i1.simID;
     if(sim_id==mc_index) rec_index=rec_id;
   }
   index=-1;
