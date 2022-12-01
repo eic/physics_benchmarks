@@ -143,16 +143,28 @@ auto findScatElec(const std::vector<edm4eic::ReconstructedParticleData>& recs,
   }
   //kinematic match 
   //need to change to association and cluster matching.
-  double minR=99;
+  int rec_elect_index=-1;
+  for(auto& i3 : assocs){
+    int rec_id = i3.recID;
+    int sim_id = i3.simID;
+    if (sim_id == mc_elect_index) rec_elect_index=rec_id;
+  }
+
+  // double minR=99;
   TVector3 matchRECTrk(-1e10,-1e10,-1e10);
+  index=-1;
   for(auto& i1 : recs){
+    index++;
     TVector3 trkREC(i1.momentum.x,i1.momentum.y,i1.momentum.z);
-    if(i1.charge<0 )
-    {
-      if(trkREC.DeltaR(trkMC)<minR){
-        minR=trkREC.DeltaR(trkMC);
-        matchRECTrk=trkREC;
-      }
+    // if(i1.charge<0 )
+    // {
+    //   if(trkREC.DeltaR(trkMC)<minR){
+    //     minR=trkREC.DeltaR(trkMC);
+    //     matchRECTrk=trkREC;
+    //   }
+    // }
+    if(index==rec_elect_index && i1.charge<0){
+      matchRECTrk=trkREC;
     }
   }
   auto scat = ROOT::Math::PxPyPzMVector{matchRECTrk.Px(), matchRECTrk.Py(), matchRECTrk.Pz(), MASS_ELECTRON};
