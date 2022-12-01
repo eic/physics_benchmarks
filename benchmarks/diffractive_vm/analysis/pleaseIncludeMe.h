@@ -171,12 +171,13 @@ auto findScatElecCluster(const std::vector<edm4hep::MCParticleData>& mcs,
   }
 
   index=-1;
-  double energy=-1.;;
+  double energy=-1.;
   for(auto& i1 : clusters){
     index++;
-    if(index==rec_elect_index){
-      energy=i1.energy;
-    }
+    energy+=i1.energy;
+    // if(index==rec_elect_index){
+    //   energy=i1.energy;
+    // }
   }
   cluster_energy.push_back( energy );
 
