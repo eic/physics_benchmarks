@@ -319,7 +319,7 @@ auto findScatElecMC(const std::vector<edm4hep::MCParticleData>& parts)
     if(i1.generatorStatus==genStatus_scatElec[which_mc]&&i1.PDG==11) {
       momenta.push_back(ROOT::Math::PxPyPzMVector{i1.momentum.x,i1.momentum.y,i1.momentum.z,i1.mass});
     }
-    else {momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});}
+    // else {momenta.push_back(ROOT::Math::PxPyPzMVector{-1e10, -1e10, -1e10, -1e10});}
   }
   return momenta;
 }
