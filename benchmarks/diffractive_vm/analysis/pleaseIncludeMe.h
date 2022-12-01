@@ -128,7 +128,10 @@ auto momenta_from_reconstruction_minus(const std::vector<edm4eic::ReconstructedP
 }
 
 auto findScatElec(const std::vector<edm4eic::ReconstructedParticleData>& recs, 
-                    const std::vector<edm4hep::MCParticleData>& mcs) 
+                    const std::vector<edm4hep::MCParticleData>& mcs,
+                      const std::vector<edm4eic::ClusterData>& clusters,
+                        const std::vector<edm4eic::MCRecoParticleAssociationData>& assocs,
+                          const std::vector<edm4eic::MCRecoClusterParticleAssociationData>& cluster_assocs) 
 {
   std::vector<ROOT::Math::PxPyPzMVector> momenta;
   //finding mc scat e'
@@ -157,8 +160,8 @@ auto findScatElec(const std::vector<edm4eic::ReconstructedParticleData>& recs,
 
   return momenta;
 }
-auto findScatElecTest(const std::vector<edm4hep::MCParticleData>& mcs,
-                        const std::vector<edm4eic::ReconstructedParticleData>& parts,
+auto findScatElecTest(const std::vector<edm4eic::ReconstructedParticleData>& parts,
+                        const std::vector<edm4hep::MCParticleData>& mcs,
                           const std::vector<edm4eic::ClusterData>& clusters,
                             const std::vector<edm4eic::MCRecoParticleAssociationData>& assocs,
                               const std::vector<edm4eic::MCRecoClusterParticleAssociationData>& cluster_assocs) 
@@ -188,9 +191,6 @@ auto findScatElecTest(const std::vector<edm4hep::MCParticleData>& mcs,
     } 
   }
 
-  // std::cout << "sim id for MC scat' e = " << mc_elect_index << std::endl;
-  // std::cout << " MC scat' e energy = " << mc_energy << std::endl;
-
   //Find rec id in cluster
   int cluster_rec_leading=-1;
   for(auto& i2 : cluster_assocs){
@@ -198,8 +198,6 @@ auto findScatElecTest(const std::vector<edm4hep::MCParticleData>& mcs,
     int sim_clus_id=i2.simID;
     if(sim_clus_id==mc_elect_index) cluster_rec_leading=rec_clus_id;
   }
-
-  // std::cout << "rec id for cluster scat' e = " << cluster_rec_leading << std::endl;
 
   TLorentzVector escat(-1E10, -1E10, -1E10, -1E10);
   //EEMC
@@ -212,7 +210,6 @@ auto findScatElecTest(const std::vector<edm4hep::MCParticleData>& mcs,
       maxEnergy=energy;
     }
   }
-  // std::cout << "rec cluster scat' e energy= " << maxEnergy << std::endl;
 
   //finding track assoc.
   int rec_elect_index=-1;
@@ -221,8 +218,6 @@ auto findScatElecTest(const std::vector<edm4hep::MCParticleData>& mcs,
     int sim_id = i3.simID;
     if (sim_id == mc_elect_index) rec_elect_index=rec_id;
   }
-
-  // std::cout << "rec id for track scat' e = " << rec_elect_index << std::endl;
 
   //rec finding scat' e
   TVector3 maxtrk(-1E10,-1E10,-1E10);
@@ -234,8 +229,6 @@ auto findScatElecTest(const std::vector<edm4hep::MCParticleData>& mcs,
       maxtrk=trk;
     }
   }
-  // TLorentzVector temp;temp.SetVectM(maxtrk,MASS_ELECTRON);
-  // std::cout << "rec track scat' e energy = " << temp.E() << std::endl;
 
   //3-second calibration.
   // maxEnergy+=0.9;
@@ -248,8 +241,6 @@ auto findScatElecTest(const std::vector<edm4hep::MCParticleData>& mcs,
   
   if( maxtrk.X()>-1E10 && maxEnergy!=0. ) {
     momenta.push_back(ROOT::Math::PxPyPzMVector{escat.Px(),escat.Py(),escat.Pz(),MASS_ELECTRON});
-    // std::cout << "final rec scat' e energy = " << escat.E() << std::endl;
-
   }
   return momenta;
 }
