@@ -2,7 +2,7 @@
 int diffractive_vm_simple_analysis(const std::string& config_name)
 {	
 
-	read our configuration	
+	// read our configuration	
 	std::ifstream  config_file{config_name};
 	nlohmann::json config;
 	config_file >> config;
