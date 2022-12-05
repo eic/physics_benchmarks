@@ -1,16 +1,16 @@
 #include "pleaseIncludeMe.h"
-int diffractive_vm_simple_analysis(const std::string& config_name)
+int diffractive_vm_simple_analysis(TString config_name)
 {	
 
 	// read our configuration	
-	std::ifstream  config_file{config_name};
-	nlohmann::json config;
-	config_file >> config;
+	// std::ifstream  config_file{config_name};
+	// nlohmann::json config;
+	// config_file >> config;
 
-	const std::string rec_file      = config["rec_file"];
-	const std::string detector      = config["detector"];
-	const std::string output_prefix = config["output_prefix"];
-	const std::string test_tag      = config["test_tag"];
+	// const std::string rec_file      = config["rec_file"];
+	// const std::string detector      = config["detector"];
+	// const std::string output_prefix = config["output_prefix"];
+	// const std::string test_tag      = config["test_tag"];
 
 	TString name_for_input = "/gpfs02/eic/ztu/EPIC/physics/Simulation_Campaign_Oct2022/physics_benchmarks/local_data/tmp/18on110/rec-" + config_name + ".root";
 
