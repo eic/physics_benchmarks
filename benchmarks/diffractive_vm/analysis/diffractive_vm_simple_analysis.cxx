@@ -18,7 +18,9 @@ int diffractive_vm_simple_analysis(const std::string& config_name, const int vm_
 	fmt::print(" - output prefix: {}\n", output_prefix);
 	fmt::print(" - test tag: {}\n", test_tag);
 
-	TFile* file=new TFile(rec_file);
+	TString tempname = (TString) config_name;
+
+	TFile* file=new TFile(tempname);
 	TTree* tree = new TTree("events");
 
 	tree->Draw("MCParticles.momentum.z");
