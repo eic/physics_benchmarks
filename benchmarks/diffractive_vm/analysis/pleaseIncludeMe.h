@@ -19,6 +19,8 @@
 
 #include "TFile.h"
 #include "TTree.h"
+#include <TTreeReader.h>
+#include <TTreeReaderArray.h>
 #include "TLorentzVector.h"
 #include "TLorentzRotation.h"
 #include "TVector2.h"
