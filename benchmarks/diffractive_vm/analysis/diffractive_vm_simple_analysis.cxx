@@ -91,8 +91,8 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
    	TH2D* h_VM_res = new TH2D("h_VM_res",";p_{T,MC} (GeV); p_{T,MC}-E_{T,REC}/p_{T,MC}",100,0,2,1000,-1,1);
     TH1D* h_t_REC = new TH1D("h_t_REC",";t_{REC}; counts",100,0,0.2);
     TH1D* h_t_trk_REC = new TH1D("h_t_trk_REC",";t_{REC} track; counts",100,0,0.2);
-   	TH2D* h_t_res = new TH2D("h_t_res",";t_{MC} (GeV); t_{MC}-t_{REC}/t_{MC}",100,0,0.2,1000,-1,1);
-   	TH2D* h_trk_t_res = new TH2D("h_trk_t_res",";t_{MC} (GeV); t_{MC}-t_{REC}/t_{MC} track",100,0,0.2,1000,-1,1);
+   	TH2D* h_t_res = new TH2D("h_t_res",";t_{MC} (GeV); t_{MC}-t_{REC}/t_{MC}",100,0,0.2,1000,-10,10);
+   	TH2D* h_trk_t_res = new TH2D("h_trk_t_res",";t_{MC} (GeV); t_{MC}-t_{REC}/t_{MC} track",100,0,0.2,1000,-10,10);
 
    	//energy clus
     TH2D* h_emClus_position_REC = new TH2D("h_emClus_position_REC",";x (cm);y (cm)",400,-800,800,400,-800,800);
@@ -143,6 +143,8 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	double Q2=-(qbeam).Mag2();  
 		double pq=pbeam.Dot(qbeam);
 		double y= pq/pbeam.Dot(ebeam);
+		
+		//MC level phase space cut
 		if(Q2<1.||Q2>10.) continue;
 		if(y<0.01||y>0.95) continue;
 
@@ -156,7 +158,6 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     		t_MC=method_E;
     		h_t_MC->Fill( method_E );
     	}
-
 
     	//rec level
     	double maxEnergy=-99.;
@@ -267,7 +268,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	    if( fabs(phi_mass-1.02)<0.02
 	    	&& fabs(vmREC.Rapidity())<3.5 ){
 	    	//2 versions: track and energy cluster:
-	    	double t_trk_REC = giveme_t_method_L(ebeam,scatREC,pbeam,vmREC);
+	    	double t_trk_REC = giveme_t_method_L(ebeam,scatMC,pbeam,vmREC);
 	    	double t_REC = giveme_t_method_L(ebeam,scatClusEREC,pbeam,vmREC);
 	    	h_t_trk_REC->Fill( t_trk_REC );
 	    	h_t_REC->Fill( t_REC );
