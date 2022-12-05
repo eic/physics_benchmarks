@@ -35,8 +35,10 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	TString name_of_input = (TString) rec_file;
 	std::cout << "what is this rec_file = " << name_of_input << endl;
 	
-	auto file=new TFile(name_of_input);
-	auto tree = (TTree *) file->Get("events");
+	auto tree = new TChain("events");
+	tree->Add(name_of_input);
+	// auto file=new TFile(name_of_input);
+	// auto tree = (TTree *) file->Get("events");
     TTreeReader tree_reader(tree);       // !the tree reader
     
     TTreeReaderArray<int> mc_genStatus_array = {tree_reader, "MCParticles.generatorStatus"};
@@ -117,7 +119,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	double maxPt=-99.;
     	for(int imc=0;imc<mc_px_array.GetSize();imc++){
     		TVector3 mctrk(mc_px_array[imc],mc_py_array[imc],mc_pz_array[imc]);	
-    		if(mc_genStatus_array[imc]==4){
+    		if(mc_genStatus_array[imc]==4){//4 is Sartre.
     			if(mc_pdg_array[imc]==11) ebeam.SetVectM(mctrk, MASS_ELECTRON);
   				if(mc_pdg_array[imc]==2212) pbeam.SetVectM(mctrk, MASS_PROTON);
     		}
