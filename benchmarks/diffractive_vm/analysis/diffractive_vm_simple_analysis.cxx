@@ -123,6 +123,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     			if(mc_pdg_array[imc]==11) ebeam.SetVectM(mctrk, MASS_ELECTRON);
   				if(mc_pdg_array[imc]==2212) pbeam.SetVectM(mctrk, MASS_PROTON);
     		}
+    		if(mc_genStatus_array[imc]!=1) continue;
     		if(mc_pdg_array[imc]==11 	
     			&& mctrk.Perp()>maxPt){
     			maxPt=mctrk.Perp();
@@ -238,23 +239,23 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	vmREC=kplusREC+kminusREC;
 
     	//a simple protection;
-    	if(scatREC.E()==0) continue;
+    	if(scatMCmatchREC.E()==0) continue;
 
 		//track-base DIS kine;
-		TLorentzVector qbeamREC=ebeam-scatREC;
+		TLorentzVector qbeamREC=ebeam-scatMCmatchREC;
     	double Q2REC=-(qbeamREC).Mag2();  
 		double pqREC=pbeam.Dot(qbeamREC);
 		double yREC= pqREC/pbeam.Dot(ebeam);
 		h_Q2REC_e->Fill(Q2REC);
 		h_yREC_e->Fill(yREC);
-		h_trk_energy_REC->Fill(scatREC.E());
+		h_trk_energy_REC->Fill(scatMCmatchREC.E());
 
 		//track-base energy resolution;
-		res= (scatMC.E()-scatREC.E())/scatMC.E();
+		res= (scatMC.E()-scatMCmatchREC.E())/scatMC.E();
 		h_trk_energy_res->Fill(scatMC.E(), res);
 
 		//Epz track scat' e
-	    double EpzREC= (scatREC+hfs).E() - (scatREC+hfs).Pz();
+	    double EpzREC= (scatMCmatchREC+hfs).E() - (scatMCmatchREC+hfs).Pz();
 	    h_trk_Epz_REC->Fill( EpzREC );
 	    //Epz energy cluster scat' e
     	EpzREC= (scatClusEREC+hfs).E() - (scatClusEREC+hfs).Pz();
@@ -270,7 +271,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	    if( fabs(phi_mass-1.02)<0.02
 	    	&& fabs(vmREC.Rapidity())<3.5 ){
 	    	//2 versions: track and energy cluster:
-	    	double t_trk_REC = giveme_t_method_L(ebeam,scatREC,pbeam,vmREC);
+	    	double t_trk_REC = giveme_t_method_L(ebeam,scatMCmatchREC,pbeam,vmREC);
 	    	double t_REC = giveme_t_method_L(ebeam,scatClusEREC,pbeam,vmREC);
 	    	h_t_trk_REC->Fill( t_trk_REC );
 	    	h_t_REC->Fill( t_REC );
