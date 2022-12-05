@@ -24,8 +24,8 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     TTreeReaderArray<float> mc_py_array = {tree_reader, "MCParticles.momentum.y"};
     TTreeReaderArray<float> mc_pz_array = {tree_reader, "MCParticles.momentum.z"};
     TTreeReaderArray<double> mc_mass_array = {tree_reader, "MCParticles.mass"};
-    TTreeReaderArray<unsigned int> mc_charge_array = {tree_reader, "MCParticles.charge"};
-    TTreeReaderArray<unsigned int> mc_pdg_array = {tree_reader, "MCParticles.PDG"};
+    TTreeReaderArray<float> mc_charge_array = {tree_reader, "MCParticles.charge"};
+    TTreeReaderArray<int> mc_pdg_array = {tree_reader, "MCParticles.PDG"};
 
     //Reconstructed EcalEndcapNClusters
     TTreeReaderArray<float> em_energy_array = {tree_reader, "EcalEndcapNClusters.energy"};
