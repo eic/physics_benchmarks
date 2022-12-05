@@ -30,7 +30,7 @@ int diffractive_vm_simple_analysis(TString config_name)
     TTreeReaderArray<unsigned int> rec_id = {tree_reader, "ReconstructedChargedParticlesAssociations.recID"};
     TTreeReaderArray<unsigned int> sim_id = {tree_reader, "ReconstructedChargedParticlesAssociations.simID"};
 
-    TFile* output=new TFile("rec-"+config_name+"simple-output.root");
+ 	TFile* output=new TFile("rec-"+config_name+"simple-output.root","RECREATE");
     TH1D* h_eta = new TH1D("h_eta",";#eta",100,-5,5);
 
 	tree_reader.SetEntriesRange(0, tree->GetEntries());

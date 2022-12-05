@@ -24,6 +24,7 @@
 #include "TLorentzVector.h"
 #include "TLorentzRotation.h"
 #include "TVector2.h"
+#include "TVector3.h"
 
 #include "fmt/color.h"
 #include "fmt/core.h"
