@@ -1,5 +1,5 @@
 #include "pleaseIncludeMe.h"
-int diffractive_vm_simple_analysis(TString config_name)
+int diffractive_vm_simple_analysis(const std::string& config_name)
 {	
 
 	// read our configuration	
