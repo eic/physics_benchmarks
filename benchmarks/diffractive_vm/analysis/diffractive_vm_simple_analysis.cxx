@@ -115,8 +115,8 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	h_energy_MC->Fill(scatMC.E());
 
     	if(vmMC.E()!=0){
-    		double method_E = (qbeam-vmMC).Mag2();
-    		h_t_MC->Fill( method_E);
+    		double method_E = -(qbeam-vmMC).Mag2();
+    		h_t_MC->Fill( method_E );
     	}
 
     	double maxEnergy=-99.;
