@@ -23,20 +23,20 @@ PLOT_TAG=${CONFIG}
 ## Step 4: Analysis
 ## write a temporary configuration file for the analysis script
 echo "Running analysis"
-CONFIG="${TMP_PATH}/${PLOT_TAG}.json"
-cat << EOF > ${CONFIG}
-{
-  "rec_file": "${REC_FILE}",
-  "detector": "${DETECTOR}",
-  "output_prefix": "${RESULTS_PATH}/${PLOT_TAG}",
-  "test_tag": "${BEAM_TAG}"
-}
-EOF
+# CONFIG="${TMP_PATH}/${PLOT_TAG}.json"
+# cat << EOF > ${CONFIG}
+# {
+#   "rec_file": "${REC_FILE}",
+#   "detector": "${DETECTOR}",
+#   "output_prefix": "${RESULTS_PATH}/${PLOT_TAG}",
+#   "test_tag": "${BEAM_TAG}"
+# }
+# EOF
 #cat ${CONFIG}
 export VM_TYPE_TAG=1
 export MC_TYPE_TAG=1
 # root -b -q "benchmarks/diffractive_vm/analysis/diffractive_vm_analysis.cxx+(\"${CONFIG}\",${VM_TYPE_TAG},${MC_TYPE_TAG})"
-root -b -q "benchmarks/diffractive_vm/analysis/diffractive_vm_simple_analysis.cxx+(\"${CONFIG}\",${VM_TYPE_TAG},${MC_TYPE_TAG})"
+root -b -q "benchmarks/diffractive_vm/analysis/diffractive_vm_simple_analysis.cxx+(\"${CONFIG}\")"
 if [[ "$?" -ne "0" ]] ; then
   echo "ERROR running rec_diffractive_vm_analysis script"
   exit 1
