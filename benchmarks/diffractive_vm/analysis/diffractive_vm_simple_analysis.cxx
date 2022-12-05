@@ -1,9 +1,9 @@
 #include "pleaseIncludeMe.h"
 
 auto giveme_t_method_L(TLorentzVector eIn, 
-				TLorentzVector eOut, 
-				TLorentzVector pIn, 
-				TLorentzVector vmOut)
+					   TLorentzVector eOut, 
+					   TLorentzVector pIn, 
+					   TLorentzVector vmOut)
 {
 	TLorentzVector aInVec(pIn.Px()*197,pIn.Py()*197,pIn.Pz()*197,sqrt(pIn.Px()*197*pIn.Px()*197 + pIn.Py()*197*pIn.Py()*197 + pIn.Pz()*197*pIn.Pz()*197 + MASS_AU197*MASS_AU197) );
 	double method_L = 0;
@@ -85,11 +85,14 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     TH2D* h_trk_energy_res = new TH2D("h_trk_energy_res",";E_{MC} (GeV); E_{MC}-E_{REC}/E_{MC} track ",100,0,20,1000,-1,1);
     TH1D* h_Epz_REC = new TH1D("h_Epz_REC",";E - p_{z} (GeV)",200,0,50);
     
-    //VM
+    //VM & t
     TH1D* h_VM_mass_REC = new TH1D("h_VM_mass_REC",";mass (GeV)",200,0,4);
     TH1D* h_VM_pt_REC = new TH1D("h_VM_pt_REC",";p_{T} (GeV/c)",200,0,2);
+   	TH2D* h_VM_res = new TH2D("h_VM_res",";p_{T,MC} (GeV); p_{T,MC}-E_{T,REC}/p_{T,MC}",100,0,2,1000,-1,1);
     TH1D* h_t_REC = new TH1D("h_t_REC",";t_{REC}; counts",100,0,0.2);
     TH1D* h_t_trk_REC = new TH1D("h_t_trk_REC",";t_{REC} track; counts",100,0,0.2);
+   	TH2D* h_t_res = new TH2D("h_t_res",";t_{MC} (GeV); t_{MC}-t_{REC}/t_{MC}",100,0,0.2,1000,-1,1);
+   	TH2D* h_trk_t_res = new TH2D("h_trk_t_res",";t_{MC} (GeV); t_{MC}-t_{REC}/t_{MC} track",100,0,0.2,1000,-1,1);
 
    	//energy clus
     TH2D* h_emClus_position_REC = new TH2D("h_emClus_position_REC",";x (cm);y (cm)",400,-800,800,400,-800,800);
@@ -147,8 +150,10 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 		h_y_e->Fill(y);
     	h_energy_MC->Fill(scatMC.E());
 
+    	double t_MC=0.;
     	if(vmMC.E()!=0){
     		double method_E = -(qbeam-vmMC).Mag2();
+    		t_MC=method_E;
     		h_t_MC->Fill( method_E );
     	}
 
@@ -218,16 +223,18 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     		particle.SetVectM(trk,MASS_PION);//assume pions;
     		if(itrk!=rec_electcand_index) {
 	    		hfs += particle; //hfs 4vector sum.
-	    		h_eta->Fill(trk.Eta());
 	    		//selecting phi->kk daughters;
 	    		if(fabs(trk.Eta())<3.5){
+	    			h_eta->Fill(trk.Eta());
 	    			if(reco_charge_array[itrk]>0) kplusREC.SetVectM(trk,MASS_KAON);
 	    			if(reco_charge_array[itrk]<0) kminusREC.SetVectM(trk,MASS_KAON);
 	    		}
     		}
     	}
+    	//4vector of VM;
     	vmREC=kplusREC+kminusREC;
 
+    	//a simple protection;
     	if(scatREC.E()==0) continue;
 
 		//track-base DIS kine;
@@ -264,6 +271,17 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	    	double t_REC = giveme_t_method_L(ebeam,scatClusEREC,pbeam,vmREC);
 	    	h_t_trk_REC->Fill( t_trk_REC );
 	    	h_t_REC->Fill( t_REC );
+
+	    	//t resolution;
+    		res= (t_MC-t_REC)/t_MC;
+			 h_t_res->Fill(t_MC, res);
+			//t track resolution 
+			res= (t_MC-t_trk_REC)/t_MC;
+			 h_trk_t_res->Fill(t_MC, res);
+
+	    	//VM pt resolution;
+	    	res= (vmMC.Pt()-vmREC.Pt())/vmMC.Pt();
+			h_VM_res->Fill(vmMC.Pt(), res);
 	    }
 
     }
