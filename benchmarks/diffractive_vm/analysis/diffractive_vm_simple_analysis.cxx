@@ -12,6 +12,8 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	const std::string output_prefix = config["output_prefix"];
 	const std::string test_tag      = config["test_tag"];
 
+	TString name_of_input=(TString) rec_file;
+	std::cout << "what is this rec_file = " << name_of_input << endl;
 	auto file=new TFile(rec_file);
 	auto tree = (TTree *) file->Get("events");
     TTreeReader tree_reader(tree);       // !the tree reader
