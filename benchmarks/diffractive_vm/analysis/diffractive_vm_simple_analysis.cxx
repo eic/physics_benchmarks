@@ -57,11 +57,12 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     TH1D* h_yREC_e = new TH1D("h_yREC_e",";#eta",100,0,1);
     TH1D* h_energy_REC = new TH1D("h_energy_REC",";E_{REC} (GeV)",100,0,20);
     TH1D* h_trk_energy_REC = new TH1D("h_trk_energy_REC",";E_{REC} (GeV)",100,0,20);
-    TH1D* h_Epz_REC = new TH1D("h_Epz_REC",";E - p_{z} (GeV)",200,0,50);
+    TH1D* h_trk_Epz_REC = new TH1D("h_trk_Epz_REC",";E - p_{z} (GeV)",200,0,50);
     
     //track
     TH1D* h_eta = new TH1D("h_eta",";#eta",100,-5,5);
     TH2D* h_trk_energy_res = new TH2D("h_trk_energy_res",";E_{MC} (GeV); E_{MC}-E_{REC}/E_{MC} track ",100,0,20,1000,-1,1);
+    TH1D* h_Epz_REC = new TH1D("h_Epz_REC",";E - p_{z} (GeV)",200,0,50);
 
    	//energy clus
     TH2D* h_emClus_position_REC = new TH2D("h_emClus_position_REC",";x (cm);y (cm)",400,-800,800,400,-800,800);
@@ -154,6 +155,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	    
 	    TLorentzVector scatMCmatchREC(0,0,0,0);
 	    TLorentzVector scatREC(0,0,0,0);
+	    TLorentzVector scatClusEREC(0,0,0,0);
 	    TLorentzVector hfs(0,0,0,0);
 	    TLorentzVector particle(0,0,0,0);
 
@@ -167,9 +169,17 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     			scatMCmatchREC.SetVectM(trk,MASS_ELECTRON);//Reserved to calculate t.
     		}
     		if(trk.Mag()>maxP){
+    			//track-base 4 vector
     			maxP=trk.Mag();
     			scatREC.SetVectM(trk,MASS_ELECTRON);
     			rec_electcand_index=itrk;
+
+    			//use emcal energy to define 4 vector
+				double p = sqrt(maxEnergy*maxEnergy- MASS_ELECTRON*MASS_ELECTRON );
+				double eta=scatREC.Eta();
+				double phi=scatREC.Phi();
+				double pt = TMath::Sin(scatREC.Theta())*p;
+				scatClusEREC.SetPtEtaPhiM(pt,eta,phi,MASS_ELECTRON);
     		}
     	}
     	//loop over track again;
@@ -196,9 +206,11 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 		res= (scatMC.E()-scatREC.E())/scatMC.E();
 		h_trk_energy_res->Fill(scatMC.E(), res);
 
+		//Epz track and energy from scat' e
 	    double EpzREC= (scatREC+hfs).E() - (scatREC+hfs).Pz();
+	    h_trk_Epz_REC->Fill( EpzREC );
+	    	   EpzREC= (scatClusEREC+hfs).E() - (scatClusEREC+hfs).Pz();
 	    h_Epz_REC->Fill( EpzREC );
-
 
     }
 	output->Write();
