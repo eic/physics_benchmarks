@@ -77,13 +77,15 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     		}
     	}
     	
-    	double energy = em_energy_array[rec_cluster_id];
-    	double xpos = em_x_array[rec_cluster_id];
-    	double ypos = em_y_array[rec_cluster_id];
+    	if(rec_cluster_id!=-1){
+    		double energy = em_energy_array[rec_cluster_id];
+	    	double xpos = em_x_array[rec_cluster_id];
+	    	double ypos = em_y_array[rec_cluster_id];
 
-    	h_energy_REC->Fill(energy);
-    	h_emClus_position_REC->Fill(xpos,ypos);
-
+	    	h_energy_REC->Fill(energy);
+	    	h_emClus_position_REC->Fill(xpos,ypos);
+    	}
+    	
     	for(int itrk=0;itrk<reco_pz_array.GetSize();itrk++){
     		TVector3 trk(reco_px_array[itrk],reco_py_array[itrk],reco_pz_array[itrk]);
     		h_eta->Fill(trk.Eta());
