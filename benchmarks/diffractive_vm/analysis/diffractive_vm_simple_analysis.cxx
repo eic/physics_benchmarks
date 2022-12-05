@@ -33,8 +33,8 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	const std::string test_tag      = config["test_tag"];
 
 	TString name_of_input = (TString) rec_file;
+		name_of_input = "/gpfs02/eic/ztu/EPIC/physics/Simulation_Campaign_Oct2022/physics_benchmarks/local_data/tmp/18on110/rec-batch_5_*.tree.edm4eic.root";
 	std::cout << "what is this rec_file = " << name_of_input << endl;
-	
 	auto tree = new TChain("events");
 	tree->Add(name_of_input);
 	// auto file=new TFile(name_of_input);
