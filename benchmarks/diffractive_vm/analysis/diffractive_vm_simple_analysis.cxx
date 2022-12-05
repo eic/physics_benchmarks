@@ -40,6 +40,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     TTreeReaderArray<float> reco_px_array = {tree_reader, "ReconstructedChargedParticles.momentum.x"};
     TTreeReaderArray<float> reco_py_array = {tree_reader, "ReconstructedChargedParticles.momentum.y"};
     TTreeReaderArray<float> reco_pz_array = {tree_reader, "ReconstructedChargedParticles.momentum.z"};
+    TTreeReaderArray<int> reco_charge_array = {tree_reader, "ReconstructedChargedParticles.charge"};
 
     TTreeReaderArray<unsigned int> rec_id = {tree_reader, "ReconstructedChargedParticlesAssociations.recID"};
     TTreeReaderArray<unsigned int> sim_id = {tree_reader, "ReconstructedChargedParticlesAssociations.simID"};
@@ -63,6 +64,10 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     TH1D* h_eta = new TH1D("h_eta",";#eta",100,-5,5);
     TH2D* h_trk_energy_res = new TH2D("h_trk_energy_res",";E_{MC} (GeV); E_{MC}-E_{REC}/E_{MC} track ",100,0,20,1000,-1,1);
     TH1D* h_Epz_REC = new TH1D("h_Epz_REC",";E - p_{z} (GeV)",200,0,50);
+    
+    //VM
+    TH1D* h_VM_mass_REC = new TH1D("h_VM_mass_REC",";mass (GeV)",200,0,4);
+    TH1D* h_VM_pt_REC = new TH1D("h_VM_pt_REC",";p_{T} (GeV/c)",200,0,2);
 
    	//energy clus
     TH2D* h_emClus_position_REC = new TH2D("h_emClus_position_REC",";x (cm);y (cm)",400,-800,800,400,-800,800);
@@ -158,6 +163,9 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	    TLorentzVector scatClusEREC(0,0,0,0);
 	    TLorentzVector hfs(0,0,0,0);
 	    TLorentzVector particle(0,0,0,0);
+	    TLorentzVector kplusREC(0,0,0,0);
+	    TLorentzVector kminusREC(0,0,0,0);
+	    TLorentzVector vmREC(0,0,0,0);
 
 	    double maxP=-1.;
 	    int rec_electcand_index=-1;
@@ -189,8 +197,15 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     		if(itrk!=rec_electcand_index) {
 	    		hfs += particle; //hfs 4vector sum.
 	    		h_eta->Fill(trk.Eta());
+	    		//selecting phi->kk daughters;
+	    		if(fabs(trk.Eta())<3.5){
+	    			if(reco_charge_array[itrk]>0) kplusREC.SetVectM(trk,MASS_KAON);
+	    			if(reco_charge_array[itrk]<0) kminusREC.SetVectM(trk,MASS_KAON);
+	    		}
     		}
     	}
+    	vmREC=kplusREC+kminusREC;
+
     	if(scatREC.E()==0) continue;
 
 		//track-base DIS kine;
@@ -206,11 +221,17 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 		res= (scatMC.E()-scatREC.E())/scatMC.E();
 		h_trk_energy_res->Fill(scatMC.E(), res);
 
-		//Epz track and energy from scat' e
+		//Epz track scat' e
 	    double EpzREC= (scatREC+hfs).E() - (scatREC+hfs).Pz();
 	    h_trk_Epz_REC->Fill( EpzREC );
+	    //Epz energy cluster scat' e
 	    	   EpzREC= (scatClusEREC+hfs).E() - (scatClusEREC+hfs).Pz();
 	    h_Epz_REC->Fill( EpzREC );
+
+	    //VM rec
+	    if(vmREC.E()==0) continue;
+	    h_VM_mass_REC->Fill(vmREC.M());
+	    h_VM_pt_REC->Fill(vmREC.Pt());
 
     }
 	output->Write();
