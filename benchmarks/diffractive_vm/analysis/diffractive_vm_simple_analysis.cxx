@@ -1,4 +1,24 @@
 #include "pleaseIncludeMe.h"
+
+auto giveme_t_L(TLorentzVector eOut, 
+				TLorentzVector eOut, 
+				TLorentzVector pIn, 
+				TLorentzVector vmOut)
+{
+	TLorentzVector aInVec(pIn.Px()*197,pIn.Py()*197,pIn.Pz()*197,sqrt(pIn.Px()*197*pIn.Px()*197 + pIn.Py()*197*pIn.Py()*197 + pIn.Pz()*197*pIn.Pz()*197 + MASS_AU197*MASS_AU197) );
+	double method_L = 0;
+	TLorentzVector a_beam_scattered = aInVec-(vmOut+eOut-eIn);
+	double p_Aplus = a_beam_scattered.E()+a_beam_scattered.Pz();
+	double p_TAsquared = TMath::Power(a_beam_scattered.Pt(),2);
+	double p_Aminus = (MASS_AU197*MASS_AU197 + p_TAsquared) / p_Aplus;
+	TLorentzVector a_beam_scattered_corr; 
+	a_beam_scattered_corr.SetPxPyPzE(a_beam_scattered.Px(),a_beam_scattered.Py(),(p_Aplus-p_Aminus)/2., (p_Aplus+p_Aminus)/2. );
+	method_L = -(a_beam_scattered_corr-aInVec).Mag2();
+
+	return method_L;
+}
+
+
 int diffractive_vm_simple_analysis(const std::string& config_name)
 {	
 
@@ -52,7 +72,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     TH1D* h_Q2_e = new TH1D("h_Q2_e",";#eta",100,0,20);
     TH1D* h_y_e = new TH1D("h_y_e",";#eta",100,0,1);
  	TH1D* h_energy_MC = new TH1D("h_energy_MC",";E_{MC} (GeV)",100,0,20);
-    TH1D* h_t_MC = new TH1D("h_t_MC",";t; counts",100,0,0.2);
+    TH1D* h_t_MC = new TH1D("h_t_MC",";t_{MC}; counts",100,0,0.2);
 
     TH1D* h_Q2REC_e = new TH1D("h_Q2REC_e",";#eta",100,0,20);
     TH1D* h_yREC_e = new TH1D("h_yREC_e",";#eta",100,0,1);
@@ -68,6 +88,8 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     //VM
     TH1D* h_VM_mass_REC = new TH1D("h_VM_mass_REC",";mass (GeV)",200,0,4);
     TH1D* h_VM_pt_REC = new TH1D("h_VM_pt_REC",";p_{T} (GeV/c)",200,0,2);
+    TH1D* h_t_REC = new TH1D("h_t_REC",";t_{REC}; counts",100,0,0.2);
+    TH1D* h_t_trk_REC = new TH1D("h_t_trk_REC",";t_{REC} track; counts",100,0,0.2);
 
    	//energy clus
     TH2D* h_emClus_position_REC = new TH2D("h_emClus_position_REC",";x (cm);y (cm)",400,-800,800,400,-800,800);
@@ -230,8 +252,19 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 
 	    //VM rec
 	    if(vmREC.E()==0) continue;
-	    h_VM_mass_REC->Fill(vmREC.M());
+	    double phi_mass = vmREC.M();
+	    h_VM_mass_REC->Fill(phi_mass);
 	    h_VM_pt_REC->Fill(vmREC.Pt());
+
+	    //select phi mass and rapidity window 
+	    if( fabs(phi_mass-1.02)<0.02
+	    	&& fabs(vmREC.Rapidity())<3.5 ){
+	    	//2 versions: track and energy cluster:
+	    	double t_trk_REC = giveme_t_L(ebeam,scatREC,pbeam,vmREC);
+	    	double t_REC = giveme_t_L(ebeam,scatClusEREC,pbeam,vmREC);
+	    	h_t_trk_REC->Fill( t_trk_REC );
+	    	h_t_REC->Fill( t_REC );
+	    }
 
     }
 	output->Write();
