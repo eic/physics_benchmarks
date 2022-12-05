@@ -24,7 +24,6 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     TTreeReaderArray<float> mc_py_array = {tree_reader, "MCParticles.momentum.y"};
     TTreeReaderArray<float> mc_pz_array = {tree_reader, "MCParticles.momentum.z"};
     TTreeReaderArray<double> mc_mass_array = {tree_reader, "MCParticles.mass"};
-    TTreeReaderArray<float> mc_charge_array = {tree_reader, "MCParticles.charge"};
     TTreeReaderArray<int> mc_pdg_array = {tree_reader, "MCParticles.PDG"};
 
     //Reconstructed EcalEndcapNClusters
@@ -49,7 +48,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     TH1D* h_eta = new TH1D("h_eta",";#eta",100,-5,5);
     TH1D* h_energy_MC = new TH1D("h_energy_MC",";E (GeV)",100,0,20);
     TH1D* h_energy_REC = new TH1D("h_energy_REC",";E (GeV)",100,0,20);
-    TH2D* h_emClus_position_REC = new TH2D("h_emClus_position_REC",";x (cm);y (cm)",400,-200,200,400,-200,200);
+    TH2D* h_emClus_position_REC = new TH2D("h_emClus_position_REC",";x (cm);y (cm)",400,-800,800,400,-800,800);
 
 	tree_reader.SetEntriesRange(0, tree->GetEntries());
     while (tree_reader.Next()) {
@@ -70,21 +69,21 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	h_energy_MC->Fill(scatMC.E());
 
     	//association to mc;
-    	int rec_cluster_id=-1;
-    	for(int iasso=0;iasso<em_rec_id_array.GetSize();iasso++){
-    		if(em_sim_id_array[iasso]==mc_elect_index){
-    			rec_cluster_id = em_rec_id_array[iasso];
-    		}
-    	}
+    	// int rec_cluster_id=-1;
+    	// for(int iasso=0;iasso<em_rec_id_array.GetSize();iasso++){
+    	// 	if(em_sim_id_array[iasso]==mc_elect_index){
+    	// 		rec_cluster_id = em_rec_id_array[iasso];
+    	// 	}
+    	// }
     	
-    	if(rec_cluster_id!=-1){
-    		double energy = em_energy_array[rec_cluster_id];
-	    	double xpos = em_x_array[rec_cluster_id];
-	    	double ypos = em_y_array[rec_cluster_id];
+    	// if(rec_cluster_id!=-1){
+    	// 	double energy = em_energy_array[rec_cluster_id];
+	    // 	double xpos = em_x_array[rec_cluster_id];
+	    // 	double ypos = em_y_array[rec_cluster_id];
 
-	    	h_energy_REC->Fill(energy);
-	    	h_emClus_position_REC->Fill(xpos,ypos);
-    	}
+	    // 	h_energy_REC->Fill(energy);
+	    // 	h_emClus_position_REC->Fill(xpos,ypos);
+    	// }
     	
     	for(int itrk=0;itrk<reco_pz_array.GetSize();itrk++){
     		TVector3 trk(reco_px_array[itrk],reco_py_array[itrk],reco_pz_array[itrk]);
