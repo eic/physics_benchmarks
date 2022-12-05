@@ -57,6 +57,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     TH1D* h_yREC_e = new TH1D("h_yREC_e",";#eta",100,0,1);
     TH1D* h_energy_REC = new TH1D("h_energy_REC",";E_{REC} (GeV)",100,0,20);
     TH1D* h_trk_energy_REC = new TH1D("h_trk_energy_REC",";E_{REC} (GeV)",100,0,20);
+    TH1D* h_Epz_REC = new TH1D("h_Epz_REC",";E - p_{z} (GeV)",200,0,50);
     
     //track
     TH1D* h_eta = new TH1D("h_eta",";#eta",100,-5,5);
@@ -143,30 +144,42 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 		h_emClus_position_REC->Fill(xpos,ypos);
 
 		//association of rec level scat' e
-		int rec_elecct_index=-1;
+		int rec_elect_index=-1;
 		for(int i=0;i<sim_id.GetSize();i++){
 			if(sim_id[i]==mc_elect_index){
 				//find the rec_id
-				rec_elecct_index = rec_id[i];
+				rec_elect_index = rec_id[i];
 			}
 		}
 	    
 	    TLorentzVector scatMCmatchREC(0,0,0,0);
 	    TLorentzVector scatREC(0,0,0,0);
+	    TLorentzVector hfs(0,0,0,0);
+	    TLorentzVector particle(0,0,0,0);
+
 	    double maxP=-1.;
+	    int rec_electcand_index=-1;
 	    //track loop
     	for(int itrk=0;itrk<reco_pz_array.GetSize();itrk++){
     		TVector3 trk(reco_px_array[itrk],reco_py_array[itrk],reco_pz_array[itrk]);
-    		if(rec_elecct_index!=-1
-    			&& itrk==rec_elecct_index){
-    			scatMCmatchREC.SetVectM(trk,MASS_ELECTRON);
+    		if(rec_elect_index!=-1
+    			&& itrk==rec_elect_index){
+    			scatMCmatchREC.SetVectM(trk,MASS_ELECTRON);//Reserved to calculate t.
     		}
     		if(trk.Mag()>maxP){
     			maxP=trk.Mag();
     			scatREC.SetVectM(trk,MASS_ELECTRON);
+    			rec_electcand_index=itrk;
     		}
-
-    		h_eta->Fill(trk.Eta());
+    	}
+    	//loop over track again;
+    	for(int itrk=0;itrk<reco_pz_array.GetSize();itrk++){
+    		TVector3 trk(reco_px_array[itrk],reco_py_array[itrk],reco_pz_array[itrk]);
+    		particle.SetVectM(trk,MASS_PION);//assume pions;
+    		if(itrk!=rec_electcand_index) {
+	    		hfs += particle; //hfs 4vector sum.
+	    		h_eta->Fill(trk.Eta());
+    		}
     	}
     	if(scatREC.E()==0) continue;
 
@@ -179,8 +192,14 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 		h_yREC_e->Fill(yREC);
 		h_trk_energy_REC->Fill(scatREC.E());
 
+		//track-base energy resolution;
 		res= (scatMC.E()-scatREC.E())/scatMC.E();
 		h_trk_energy_res->Fill(scatMC.E(), res);
+
+	    double EpzREC= (scatREC+hfs).E() - (scatREC+hfs).Pz();
+	    h_Epz_REC->Fill( EpzREC );
+
+
     }
 	output->Write();
 	output->Close();
