@@ -104,7 +104,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     		continue;
     	}
     	TLorentzVector qbeam=ebeam-scatMC;
-    	double Q2=-(qbeam).Mag2()  
+    	double Q2=-(qbeam).Mag2();  
 		double pq=pbeam.Dot(qbeam);
 		double y= pq/pbeam.Dot(ebeam);
 		if(Q2<1.||Q2>10.) continue;
@@ -115,7 +115,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	h_energy_MC->Fill(scatMC.E());
 
     	if(vmMC.E()!=0){
-    		double method_E = (qbeam-vmOut).Mag2();
+    		double method_E = (qbeam-vmMC).Mag2();
     		h_t_MC->Fill( method_E);
     	}
 
