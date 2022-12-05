@@ -53,14 +53,18 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
  	TH1D* h_energy_MC = new TH1D("h_energy_MC",";E_{MC} (GeV)",100,0,20);
     TH1D* h_t_MC = new TH1D("h_t_MC",";t; counts",100,0,0.2);
 
+    TH1D* h_Q2REC_e = new TH1D("h_Q2REC_e",";#eta",100,0,20);
+    TH1D* h_yREC_e = new TH1D("h_yREC_e",";#eta",100,0,1);
     TH1D* h_energy_REC = new TH1D("h_energy_REC",";E_{REC} (GeV)",100,0,20);
+    TH1D* h_trk_energy_REC = new TH1D("h_trk_energy_REC",";E_{REC} (GeV)",100,0,20);
     
     //track
     TH1D* h_eta = new TH1D("h_eta",";#eta",100,-5,5);
-   	
+    TH2D* h_trk_energy_res = new TH2D("h_trk_energy_res",";E_{MC} (GeV); E_{MC}-E_{REC}/E_{MC} track ",100,0,20,1000,-1,1);
+
    	//energy clus
     TH2D* h_emClus_position_REC = new TH2D("h_emClus_position_REC",";x (cm);y (cm)",400,-800,800,400,-800,800);
-    TH2D* h_energy_res = new TH2D("h_energy_res",";E_{MC} (GeV); E_{MC}-E_{REC}/E_{MC}",100,0,20,1000,-1,1);
+    TH2D* h_energy_res = new TH2D("h_energy_res",";E_{MC} (GeV); E_{MC}-E_{REC}/E_{MC} emcal",100,0,20,1000,-1,1);
 
 	tree_reader.SetEntriesRange(0, tree->GetEntries());
     while (tree_reader.Next()) {
@@ -75,7 +79,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	TLorentzVector kplusMC(0,0,0,0);
     	TLorentzVector kminusMC(0,0,0,0);
 
-    	//MCParticles
+    	//MC level
     	TLorentzVector scatMC(0,0,0,0);
     	int mc_elect_index=-1;
     	double maxPt=-99.;
@@ -119,6 +123,8 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     		h_t_MC->Fill( method_E );
     	}
 
+
+    	//rec level
     	double maxEnergy=-99.;
     	double xpos=-999.;
     	double ypos=-999.;
@@ -135,11 +141,38 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	
 		h_energy_REC->Fill(maxEnergy);
 		h_emClus_position_REC->Fill(xpos,ypos);
+
+		//association of rec level scat' e
+		int rec_elecct_index=-1;
+		for(int i=0;i<sim_id.GetSize();i++){
+			if(sim_id[i]==mc_elect_index){
+				//find the rec_id
+				rec_elecct_index = rec_id[i];
+			}
+		}
 	    
+	    TLorentzVector scatREC(0,0,0,0);
+	    //track loop
     	for(int itrk=0;itrk<reco_pz_array.GetSize();itrk++){
     		TVector3 trk(reco_px_array[itrk],reco_py_array[itrk],reco_pz_array[itrk]);
+    		if(rec_elecct_index!=-1
+    			&& itrk==rec_elecct_index){
+    			scatREC.SetVectM(trk,MASS_ELECTRON);
+    		}
     		h_eta->Fill(trk.Eta());
     	}
+    	if(scatREC.E()==0) continue;
+		
+		TLorentzVector qbeamREC=ebeam-scatREC;
+    	double Q2REC=-(qbeamREC).Mag2();  
+		double pqREC=pbeam.Dot(qbeamREC);
+		double yREC= pqREC/pbeam.Dot(ebeam);
+		h_Q2REC_e->Fill(Q2REC);
+		h_yREC_e->Fill(yREC);
+		h_trk_energy_REC->Fill(scatREC.E());
+
+		res= (scatMC.E()-scatREC.E())/scatMC.E();
+		h_trk_energy_res->Fill(scatMC.E(), res);
     }
 	output->Write();
 	output->Close();
