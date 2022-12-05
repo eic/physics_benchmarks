@@ -36,8 +36,8 @@ int diffractive_vm_simple_analysis(TString config_name)
 	tree_reader.SetEntriesRange(0, tree->GetEntries());
     while (tree_reader.Next()) {
 
-    	for(int itrack=0;itrk<reco_pz_array.size();itrack++){
-    		TVector3 trk(reco_px_array[itrack],reco_py_array[itrack],reco_pz_array[itrack]);
+    	for(int itrk=0;itrk<reco_pz_array.size();itrk++){
+    		TVector3 trk(reco_px_array[itrk],reco_py_array[itrk],reco_pz_array[itrk]);
     		h_eta->Fill(trk.Eta());
     	}
     }
