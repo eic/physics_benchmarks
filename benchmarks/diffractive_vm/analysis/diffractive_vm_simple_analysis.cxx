@@ -23,17 +23,17 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     TTreeReaderArray<float> mc_px_array = {tree_reader, "MCParticles.momentum.x"};
     TTreeReaderArray<float> mc_py_array = {tree_reader, "MCParticles.momentum.y"};
     TTreeReaderArray<float> mc_pz_array = {tree_reader, "MCParticles.momentum.z"};
-    TTreeReaderArray<float> mc_mass_array = {tree_reader, "MCParticles.mass"};
-    TTreeReaderArray<float> mc_charge_array = {tree_reader, "MCParticles.charge"};
-    TTreeReaderArray<float> mc_pdg_array = {tree_reader, "MCParticles.PDG"};
+    TTreeReaderArray<double> mc_mass_array = {tree_reader, "MCParticles.mass"};
+    TTreeReaderArray<unsigned int> mc_charge_array = {tree_reader, "MCParticles.charge"};
+    TTreeReaderArray<unsigned int> mc_pdg_array = {tree_reader, "MCParticles.PDG"};
 
     //Reconstructed EcalEndcapNClusters
     TTreeReaderArray<float> em_energy_array = {tree_reader, "EcalEndcapNClusters.energy"};
     TTreeReaderArray<float> em_x_array = {tree_reader, "EcalEndcapNClusters.position.x"};
     TTreeReaderArray<float> em_y_array = {tree_reader, "EcalEndcapNClusters.position.y"};
 
-    TTreeReaderArray<float> em_rec_id_array = {tree_reader, "EcalEndcapNClustersAssociations.recID"};
-    TTreeReaderArray<float> em_sim_id_array = {tree_reader, "EcalEndcapNClustersAssociations.simID"};
+    TTreeReaderArray<unsigned int> em_rec_id_array = {tree_reader, "EcalEndcapNClustersAssociations.recID"};
+    TTreeReaderArray<unsigned int> em_sim_id_array = {tree_reader, "EcalEndcapNClustersAssociations.simID"};
 
     // Reconstructed particles pz array for each reconstructed particle
     TTreeReaderArray<float> reco_px_array = {tree_reader, "ReconstructedChargedParticles.momentum.x"};
