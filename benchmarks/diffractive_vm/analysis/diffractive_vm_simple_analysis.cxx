@@ -151,18 +151,26 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 			}
 		}
 	    
+	    TLorentzVector scatMCmatchREC(0,0,0,0);
 	    TLorentzVector scatREC(0,0,0,0);
+	    double maxP=-1.;
 	    //track loop
     	for(int itrk=0;itrk<reco_pz_array.GetSize();itrk++){
     		TVector3 trk(reco_px_array[itrk],reco_py_array[itrk],reco_pz_array[itrk]);
     		if(rec_elecct_index!=-1
     			&& itrk==rec_elecct_index){
+    			scatMCmatchREC.SetVectM(trk,MASS_ELECTRON);
+    		}
+    		if(trk.Mag()>maxP){
+    			maxP=trk.Mag();
     			scatREC.SetVectM(trk,MASS_ELECTRON);
     		}
+
     		h_eta->Fill(trk.Eta());
     	}
     	if(scatREC.E()==0) continue;
-		
+
+		//track-base DIS kine;
 		TLorentzVector qbeamREC=ebeam-scatREC;
     	double Q2REC=-(qbeamREC).Mag2();  
 		double pqREC=pbeam.Dot(qbeamREC);
