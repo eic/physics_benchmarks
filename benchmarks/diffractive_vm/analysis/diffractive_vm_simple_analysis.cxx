@@ -176,14 +176,14 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     		}
     	}
 
-    	double res= (scatMC.E()-maxEnergy)/scatMC.E();
-		h_energy_res->Fill(scatMC.E(), res);
-    	
-		h_energy_REC->Fill(maxEnergy);
-		h_emClus_position_REC->Fill(xpos,ypos);
 		//ratio of reco / truth Energy
 		maxEnergy *= 1.04; //4% energy calibration.
 		h_energy_calibration_REC->Fill( maxEnergy / scatMC.E() );
+
+		double res= (scatMC.E()-maxEnergy)/scatMC.E();
+		h_energy_res->Fill(scatMC.E(), res);
+		h_energy_REC->Fill(maxEnergy);
+		h_emClus_position_REC->Fill(xpos,ypos);
 
 		//association of rec level scat' e
 		int rec_elect_index=-1;
