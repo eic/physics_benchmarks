@@ -226,7 +226,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     			scatREC.SetVectM(trk,MASS_ELECTRON);
 
     			//use emcal energy to define 4 vector
-				double p = sqrt(maxEnergy*maxEnergy- MASS_ELECTRON*MASS_ELECTRON );
+				double p = sqrt(scatMC.E()*scatMC.E()- MASS_ELECTRON*MASS_ELECTRON );
 				double eta=scatREC.Eta();
 				double phi=scatREC.Phi();
 				double pt = TMath::Sin(scatREC.Theta())*p;
