@@ -200,7 +200,6 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	    TLorentzVector vmREC(0,0,0,0);
 
 	    double maxP=-1.;
-	    int rec_electcand_index=-1;
 	    //track loop
     	for(int itrk=0;itrk<reco_pz_array.GetSize();itrk++){
     		TVector3 trk(reco_px_array[itrk],reco_py_array[itrk],reco_pz_array[itrk]);
@@ -212,7 +211,6 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     			//track-base 4 vector
     			maxP=trk.Mag();
     			scatREC.SetVectM(trk,MASS_ELECTRON);
-    			rec_electcand_index=itrk;
 
     			//use emcal energy to define 4 vector
 				double p = sqrt(maxEnergy*maxEnergy- MASS_ELECTRON*MASS_ELECTRON );
@@ -254,7 +252,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 		h_trk_energy_REC->Fill(scatMCmatchREC.E());
 
 		//track-base energy resolution;
-		res= (scatMC.E()-scatREC.E())/scatMC.E();
+		res= (scatMC.E()-scatMCmatchREC.E())/scatMC.E();
 		h_trk_energy_res->Fill(scatMC.E(), res);
 
 		//Epz track scat' e
