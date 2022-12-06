@@ -103,7 +103,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
    	//energy clus
     TH2D* h_emClus_position_REC = new TH2D("h_emClus_position_REC",";x (cm);y (cm)",400,-800,800,400,-800,800);
 	TH2D* h_emHits_position_REC = new TH2D("h_emHits_position_REC",";x (cm);y (cm)",400,-800,800,400,-800,800);
-	TH2D* h_emHits_position_2_REC = new TH2D("h_emHits_position_2_REC",";x (cm);y (cm)",400,-800,800,400,-800,800);
+	TH2D* h_emHits_position_2_REC = new TH2D("h_emHits_position_2_REC",";x (cm);y (cm)",100,-800,800,100,-800,800);
     TH2D* h_energy_res = new TH2D("h_energy_res",";E_{MC} (GeV); E_{MC}-E_{REC}/E_{MC} emcal",100,0,20,1000,-1,1);
     TH1D* h_energy_calibration_REC = new TH1D("h_energy_calibration_REC",";E (GeV)",200,0,2);
 
@@ -194,7 +194,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 		h_energy_REC->Fill(maxEnergy);
 		h_emClus_position_REC->Fill(xpos,ypos);
 		h_emHits_position_REC->Fill(xhitpos,yhitpos);
-		if(fabs(xpos)<100 && fabs(ypos)<100){
+		if( (fabs(xpos)<60 && fabs(ypos)<100) || (fabs(ypos)<60 && fabs(xpos)<100) ){
 	        h_emHits_position_2_REC->Fill(xhitpos,yhitpos,maxEnergy);
 		}
 
