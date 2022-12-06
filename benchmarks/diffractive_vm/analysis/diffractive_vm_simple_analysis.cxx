@@ -181,7 +181,8 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	
 		h_energy_REC->Fill(maxEnergy);
 		h_emClus_position_REC->Fill(xpos,ypos);
-
+		//ratio of reco / truth Energy
+		maxEnergy *= 1.04; //4% energy calibration.
 		h_energy_calibration_REC->Fill( maxEnergy / scatMC.E() );
 
 		//association of rec level scat' e
