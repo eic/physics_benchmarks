@@ -84,18 +84,18 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     
     //track
     TH1D* h_eta = new TH1D("h_eta",";#eta",100,-5,5);
-    TH2D* h_trk_energy_res = new TH2D("h_trk_energy_res",";E_{MC} (GeV); E_{MC}-E_{REC}/E_{MC} track ",100,0,20,1000,-1,1);
+    TH2D* h_trk_energy_res = new TH2D("h_trk_energy_res",";E_{MC} (GeV); E_{MC}-E_{REC}/E_{MC} track-base ",100,0,20,1000,-1,1);
     TH1D* h_Epz_REC = new TH1D("h_Epz_REC",";E - p_{z} (GeV)",200,0,50);
     
     //VM & t
     TH1D* h_VM_mass_REC = new TH1D("h_VM_mass_REC",";mass (GeV)",200,0,4);
     TH1D* h_VM_pt_REC = new TH1D("h_VM_pt_REC",";p_{T} (GeV/c)",200,0,2);
    	TH2D* h_VM_res = new TH2D("h_VM_res",";p_{T,MC} (GeV); p_{T,MC}-E_{T,REC}/p_{T,MC}",100,0,2,1000,-1,1);
-    TH1D* h_t_REC = new TH1D("h_t_REC",";t_{REC}; counts",100,0,0.2);
-    TH1D* h_t_trk_REC = new TH1D("h_t_trk_REC",";t_{REC} track; counts",100,0,0.2);
-   	TH2D* h_t_res = new TH2D("h_t_res",";t_{MC} (GeV); t_{MC}-t_{REC}/t_{MC}",100,0,0.2,1000,-10,10);
-   	TH2D* h_trk_t_res = new TH2D("h_trk_t_res",";t_{MC} (GeV); t_{MC}-t_{REC}/t_{MC} track",100,0,0.2,1000,-10,10);
-   	TH2D* h_t_2D = new TH2D("h_t_2D",";t_{MC} (GeV); t_{REC} track",100,0,0.2,100,0,0.2);
+    TH1D* h_t_REC = new TH1D("h_t_REC",";t_{REC} (GeV^{2}); counts",100,0,0.2);
+    TH1D* h_t_trk_REC = new TH1D("h_t_trk_REC",";t_{REC}(GeV^{2}) track-base; counts",100,0,0.2);
+   	TH2D* h_t_res = new TH2D("h_t_res",";t_{MC} (GeV^{2}); t_{MC}-t_{REC}/t_{MC}",100,0,0.2,1000,-10,10);
+   	TH2D* h_trk_t_res = new TH2D("h_trk_t_res",";t_{MC} (GeV^{2}); t_{MC}-t_{REC}/t_{MC} track-base",100,0,0.2,1000,-10,10);
+   	TH2D* h_t_2D = new TH2D("h_t_2D",";t_{MC} (GeV^{2}); t_{REC} (GeV^{2}) track-base",100,0,0.2,100,0,0.2);
 
    	//energy clus
     TH2D* h_emClus_position_REC = new TH2D("h_emClus_position_REC",";x (cm);y (cm)",400,-800,800,400,-800,800);
@@ -254,7 +254,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 		h_trk_energy_REC->Fill(scatMCmatchREC.E());
 
 		//track-base energy resolution;
-		res= (scatMC.E()-scatMCmatchREC.E())/scatMC.E();
+		res= (scatMC.E()-scatREC.E())/scatMC.E();
 		h_trk_energy_res->Fill(scatMC.E(), res);
 
 		//Epz track scat' e
