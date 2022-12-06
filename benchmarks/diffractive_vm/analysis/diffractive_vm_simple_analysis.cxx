@@ -100,6 +100,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
    	//energy clus
     TH2D* h_emClus_position_REC = new TH2D("h_emClus_position_REC",";x (cm);y (cm)",400,-800,800,400,-800,800);
     TH2D* h_energy_res = new TH2D("h_energy_res",";E_{MC} (GeV); E_{MC}-E_{REC}/E_{MC} emcal",100,0,20,1000,-1,1);
+    TH1D* h_energy_calibration_REC = new TH1D("h_energy_calibration_REC",";E (GeV)",200,0,2);
 
 	tree_reader.SetEntriesRange(0, tree->GetEntries());
     while (tree_reader.Next()) {
@@ -180,6 +181,8 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	
 		h_energy_REC->Fill(maxEnergy);
 		h_emClus_position_REC->Fill(xpos,ypos);
+
+		h_energy_calibration_REC->Fill( maxEnergy / scatMC.E() );
 
 		//association of rec level scat' e
 		int rec_elect_index=-1;
