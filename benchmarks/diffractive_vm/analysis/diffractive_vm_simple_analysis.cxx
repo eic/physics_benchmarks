@@ -95,6 +95,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     TH1D* h_t_trk_REC = new TH1D("h_t_trk_REC",";t_{REC} track; counts",100,0,0.2);
    	TH2D* h_t_res = new TH2D("h_t_res",";t_{MC} (GeV); t_{MC}-t_{REC}/t_{MC}",100,0,0.2,1000,-10,10);
    	TH2D* h_trk_t_res = new TH2D("h_trk_t_res",";t_{MC} (GeV); t_{MC}-t_{REC}/t_{MC} track",100,0,0.2,1000,-10,10);
+   	TH2D* h_t_2D = new TH2D("h_t_2D",";t_{MC} (GeV); t_{REC} track",100,0,0.2,100,0,0.2);
 
    	//energy clus
     TH2D* h_emClus_position_REC = new TH2D("h_emClus_position_REC",";x (cm);y (cm)",400,-800,800,400,-800,800);
@@ -225,7 +226,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	for(int itrk=0;itrk<reco_pz_array.GetSize();itrk++){
     		TVector3 trk(reco_px_array[itrk],reco_py_array[itrk],reco_pz_array[itrk]);
     		particle.SetVectM(trk,MASS_PION);//assume pions;
-    		if(itrk!=rec_electcand_index) {
+    		if(itrk!=rec_elect_index) {
 	    		hfs += particle; //hfs 4vector sum.
 	    		//selecting phi->kk daughters;
 	    		if(fabs(trk.Eta())<3.5){
@@ -236,7 +237,9 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     		}
     	}
     	//4vector of VM;
-    	vmREC=kplusREC+kminusREC;
+    	if(kplusREC.E()!=0. && kminusREC.E()!=0.){
+    		vmREC=kplusREC+kminusREC;
+    	}
 
     	//a simple protection;
     	if(scatMCmatchREC.E()==0) continue;
@@ -282,6 +285,8 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	    	//t resolution;
     		res= (t_MC-t_REC)/t_MC;
 			 h_t_res->Fill(t_MC, res);
+			//2D t
+			 h_t_2D->Fill(t_MC,t_trk_REC);
 
 	    	//VM pt resolution;
 	    	res= (vmMC.Pt()-vmREC.Pt())/vmMC.Pt();
