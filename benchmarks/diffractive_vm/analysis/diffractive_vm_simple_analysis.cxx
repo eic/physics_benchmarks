@@ -245,18 +245,18 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	}
 
     	//a simple protection;
-    	if(scatMCmatchREC.E()==0) continue;
+    	// if(scatMCmatchREC.E()==0) continue;
 
-		//track-base DIS kine;
-		TLorentzVector qbeamREC=ebeam-scatMCmatchREC;
+		//cluster-base DIS kine;
+		TLorentzVector qbeamREC=ebeam-scatClusEREC;
     	double Q2REC=-(qbeamREC).Mag2();  
 		double pqREC=pbeam.Dot(qbeamREC);
 		double yREC= pqREC/pbeam.Dot(ebeam);
 		h_Q2REC_e->Fill(Q2REC);
 		h_yREC_e->Fill(yREC);
-		h_trk_energy_REC->Fill(scatMCmatchREC.E());
-
+			
 		//track-base energy resolution;
+		h_trk_energy_REC->Fill(scatMCmatchREC.E());
 		res= (scatMC.E()-scatMCmatchREC.E())/scatMC.E();
 		h_trk_energy_res->Fill(scatMC.E(), res);
 
