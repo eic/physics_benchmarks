@@ -85,6 +85,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     //track
     TH1D* h_eta = new TH1D("h_eta",";#eta",100,-5,5);
     TH2D* h_trk_energy_res = new TH2D("h_trk_energy_res",";E_{MC} (GeV); E_{MC}-E_{REC}/E_{MC} track-base ",100,0,20,1000,-1,1);
+    TH2D* h_trk_Pt_res = new TH2D("h_trk_Pt_res",";p_{T,MC} (GeV); P_{T,MC}-P_{T,REC}/P_{T,MC} track-base ",100,0,15,1000,-1,1);
     TH1D* h_Epz_REC = new TH1D("h_Epz_REC",";E - p_{z} (GeV)",200,0,50);
     
     //VM & t
@@ -259,6 +260,9 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 		h_trk_energy_REC->Fill(scatMCmatchREC.E());
 		res= (scatMC.E()-scatMCmatchREC.E())/scatMC.E();
 		h_trk_energy_res->Fill(scatMC.E(), res);
+		//track-base pt resolution;
+		res= (scatMC.Pt()-scatMCmatchREC.Pt())/scatMC.Pt();
+		h_trk_Pt_res->Fill(scatMC.Pt(), res);
 
 		//Epz track scat' e
 	    double EpzREC= (scatMCmatchREC+hfs).E() - (scatMCmatchREC+hfs).Pz();
