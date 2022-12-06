@@ -285,8 +285,8 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	    if( fabs(phi_mass-1.02)<0.02
 	    	&& fabs(vmREC.Rapidity())<3.5 ){
 	    	//2 versions: track and energy cluster:
-	    	double t_trk_REC = giveme_t_method_L(ebeam,scatMCmatchREC,pbeam,vmMC);
-	    	double t_REC = giveme_t_method_L(ebeam,scatMC,pbeam,vmREC);
+	    	double t_trk_REC = giveme_t_method_L(ebeam,scatMCmatchREC,pbeam,vmREC);
+	    	double t_REC = giveme_t_method_L(ebeam,scatClusEREC,pbeam,vmREC);
 	    	h_t_trk_REC->Fill( t_trk_REC );
 	    	h_t_REC->Fill( t_REC );
 
