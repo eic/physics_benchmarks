@@ -177,7 +177,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	}
 
 		//ratio of reco / truth Energy
-		maxEnergy *= 1.04; //4% energy calibration.
+		maxEnergy *= 1.045; //4% energy calibration.
 		h_energy_calibration_REC->Fill( maxEnergy / scatMC.E() );
 
 		double res= (scatMC.E()-maxEnergy)/scatMC.E();
