@@ -33,7 +33,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	const std::string test_tag      = config["test_tag"];
 
 	TString name_of_input = (TString) rec_file;
-		name_of_input = "/gpfs02/eic/ztu/EPIC/physics/Simulation_Campaign_Oct2022/physics_benchmarks/local_data/tmp/18on110/rec-batch_5_*.tree.edm4eic.root";
+		// name_of_input = "/gpfs02/eic/ztu/EPIC/physics/Simulation_Campaign_Oct2022/physics_benchmarks/local_data/tmp/18on110/rec-batch_5_*.tree.edm4eic.root";
 	std::cout << "what is this rec_file = " << name_of_input << endl;
 	auto tree = new TChain("events");
 	tree->Add(name_of_input);
@@ -54,6 +54,8 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     TTreeReaderArray<float> em_energy_array = {tree_reader, "EcalEndcapNClusters.energy"};
     TTreeReaderArray<float> em_x_array = {tree_reader, "EcalEndcapNClusters.position.x"};
     TTreeReaderArray<float> em_y_array = {tree_reader, "EcalEndcapNClusters.position.y"};
+ 	TTreeReaderArray<float> emhits_x_array = {tree_reader, "EcalEndcapNRecHits.position.x"};
+    TTreeReaderArray<float> emhits_y_array = {tree_reader, "EcalEndcapNRecHits.position.y"};
 
     TTreeReaderArray<unsigned int> em_rec_id_array = {tree_reader, "EcalEndcapNClustersAssociations.recID"};
     TTreeReaderArray<unsigned int> em_sim_id_array = {tree_reader, "EcalEndcapNClustersAssociations.simID"};
@@ -100,6 +102,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 
    	//energy clus
     TH2D* h_emClus_position_REC = new TH2D("h_emClus_position_REC",";x (cm);y (cm)",400,-800,800,400,-800,800);
+	TH2D* h_emHits_position_REC = new TH2D("h_emHits_position_REC",";x (cm);y (cm)",400,-800,800,400,-800,800);
     TH2D* h_energy_res = new TH2D("h_energy_res",";E_{MC} (GeV); E_{MC}-E_{REC}/E_{MC} emcal",100,0,20,1000,-1,1);
     TH1D* h_energy_calibration_REC = new TH1D("h_energy_calibration_REC",";E (GeV)",200,0,2);
 
@@ -169,23 +172,27 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	double maxEnergy=-99.;
     	double xpos=-999.;
     	double ypos=-999.;
+        double xhitpos=-999.;
+        double yhitpos=-999.;
     	for(int iclus=0;iclus<em_energy_array.GetSize();iclus++){
     		if(em_energy_array[iclus]>maxEnergy){
     			maxEnergy=em_energy_array[iclus];
     			xpos=em_x_array[iclus];
     			ypos=em_y_array[iclus];
+                xhitpos=emhits_x_array[iclus];
+                yhitpos=emhits_y_array[iclus];
     		}
     	}
 
 		//ratio of reco / truth Energy
 		maxEnergy *= 1.045; //4% energy calibration.
 		h_energy_calibration_REC->Fill( maxEnergy / scatMC.E() );
-
-		if(fabs(xpos)<100. && fabs(ypos)<100.) continue; //100mm square hole.
+		//energy resolution
 		double res= (scatMC.E()-maxEnergy)/scatMC.E();
 		h_energy_res->Fill(scatMC.E(), res);
 		h_energy_REC->Fill(maxEnergy);
 		h_emClus_position_REC->Fill(xpos,ypos);
+        h_emHits_position_REC->Fill(xhitpos,yhitpos);
 
 		//association of rec level scat' e
 		int rec_elect_index=-1;
@@ -244,9 +251,6 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	if(kplusREC.E()!=0. && kminusREC.E()!=0.){
     		vmREC=kplusREC+kminusREC;
     	}
-
-    	//a simple protection;
-    	// if(scatMCmatchREC.E()==0) continue;
 
 		//cluster-base DIS kine;
 		TLorentzVector qbeamREC=ebeam-scatClusEREC;
