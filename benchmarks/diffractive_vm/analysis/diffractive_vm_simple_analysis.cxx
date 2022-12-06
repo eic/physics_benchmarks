@@ -180,6 +180,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 		maxEnergy *= 1.045; //4% energy calibration.
 		h_energy_calibration_REC->Fill( maxEnergy / scatMC.E() );
 
+		if(fabs(xpos)<100. || fabs(ypos)<100.) continue; //100mm square hole.
 		double res= (scatMC.E()-maxEnergy)/scatMC.E();
 		h_energy_res->Fill(scatMC.E(), res);
 		h_energy_REC->Fill(maxEnergy);
