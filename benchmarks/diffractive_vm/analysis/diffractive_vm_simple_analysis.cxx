@@ -73,13 +73,13 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
   	TFile* output = new TFile(output_name_dir+"_output.root","RECREATE");
 
   	//events
-    TH1D* h_Q2_e = new TH1D("h_Q2_e",";#eta",100,0,20);
-    TH1D* h_y_e = new TH1D("h_y_e",";#eta",100,0,1);
+    TH1D* h_Q2_e = new TH1D("h_Q2_e",";Q^{2}_{e,MC}",100,0,20);
+    TH1D* h_y_e = new TH1D("h_y_e",";y_{e,MC}",100,0,1);
  	TH1D* h_energy_MC = new TH1D("h_energy_MC",";E_{MC} (GeV)",100,0,20);
     TH1D* h_t_MC = new TH1D("h_t_MC",";t_{MC}; counts",100,0,0.2);
 
-    TH1D* h_Q2REC_e = new TH1D("h_Q2REC_e",";#eta",100,0,20);
-    TH1D* h_yREC_e = new TH1D("h_yREC_e",";#eta",100,0,1);
+    TH1D* h_Q2REC_e = new TH1D("h_Q2REC_e",";Q^{2}_{e,REC}",100,0,20);
+    TH1D* h_yREC_e = new TH1D("h_yREC_e",";y_{e,REC}",100,0,1);
     TH1D* h_energy_REC = new TH1D("h_energy_REC",";E_{REC} (GeV)",100,0,20);
     TH1D* h_trk_energy_REC = new TH1D("h_trk_energy_REC",";E_{REC} (GeV)",100,0,20);
     TH1D* h_trk_Epz_REC = new TH1D("h_trk_Epz_REC",";E - p_{z} (GeV)",200,0,50);
