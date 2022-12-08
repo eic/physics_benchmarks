@@ -33,7 +33,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	const std::string test_tag      = config["test_tag"];
 
 	TString name_of_input = (TString) rec_file;
-		name_of_input = "/gpfs02/eic/ztu/EPIC/physics/Simulation_Campaign_Oct2022/physics_benchmarks/local_data/tmp/18on110/rec-batch_5_*.tree.edm4eic.root";
+		// name_of_input = "/gpfs02/eic/ztu/EPIC/physics/Simulation_Campaign_Oct2022/physics_benchmarks/local_data/tmp/18on110/rec-batch_5_*.tree.edm4eic.root";
 	std::cout << "what is this rec_file = " << name_of_input << endl;
 	auto tree = new TChain("events");
 	tree->Add(name_of_input);
@@ -56,6 +56,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     TTreeReaderArray<float> em_y_array = {tree_reader, "EcalEndcapNClusters.position.y"};
  	TTreeReaderArray<float> emhits_x_array = {tree_reader, "EcalEndcapNRecHits.position.x"};
     TTreeReaderArray<float> emhits_y_array = {tree_reader, "EcalEndcapNRecHits.position.y"};
+    TTreeReaderArray<float> emhits_energy_array = {tree_reader, "EcalEndcapNRecHits.energy"};
 
     TTreeReaderArray<unsigned int> em_rec_id_array = {tree_reader, "EcalEndcapNClustersAssociations.recID"};
     TTreeReaderArray<unsigned int> em_sim_id_array = {tree_reader, "EcalEndcapNClustersAssociations.simID"};
@@ -171,16 +172,14 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	}
 
     	//rec level
-    	double maxEnergy=0.;
-    	double maxEnergy_e=-99;
+    	double maxEnergy=-99.;
     	double xpos=-999.;
     	double ypos=-999.;
         double xhitpos=-999.;
         double yhitpos=-999.;
     	for(int iclus=0;iclus<em_energy_array.GetSize();iclus++){
-    		maxEnergy+=em_energy_array[iclus];
-    		if(em_energy_array[iclus]>maxEnergy_e){
-    			maxEnergy_e=em_energy_array[iclus];
+    		if(em_energy_array[iclus]>maxEnergy){
+    			maxEnergy=em_energy_array[iclus];
     			xpos=em_x_array[iclus];
     			ypos=em_y_array[iclus];
                 xhitpos=emhits_x_array[iclus];
@@ -191,7 +190,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 		//ratio of reco / truth Energy
 		maxEnergy *= 1.045; //4% energy calibration.
 		double radius=sqrt(xpos*xpos+ypos*ypos);
-		if(radius<150. || radius>550. ) continue;
+		if(radius<120. || radius>550. ) continue;
 		h_energy_calibration_REC->Fill( maxEnergy / scatMC.E() );
 		//energy resolution
 		double res= (scatMC.E()-maxEnergy)/scatMC.E();
