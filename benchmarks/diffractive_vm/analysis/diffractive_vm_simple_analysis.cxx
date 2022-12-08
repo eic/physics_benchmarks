@@ -106,6 +106,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	TH2D* h_emHits_position_2_REC = new TH2D("h_emHits_position_2_REC",";x (cm);y (cm)",100,-800,800,100,-800,800);
     TH2D* h_energy_res = new TH2D("h_energy_res",";E_{MC} (GeV); E_{MC}-E_{REC}/E_{MC} emcal",100,0,20,1000,-1,1);
     TH1D* h_energy_calibration_REC = new TH1D("h_energy_calibration_REC",";E (GeV)",200,0,2);
+    TH1D* h_EoverP_REC = new TH1D("h_EoverP_REC",";E/p",200,0,2);
 
 	tree_reader.SetEntriesRange(0, tree->GetEntries());
     while (tree_reader.Next()) {
@@ -186,7 +187,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	}
 
 		//ratio of reco / truth Energy
-		maxEnergy *= 1.; //4% energy calibration.
+		maxEnergy *= 1.045; //4% energy calibration.
 		double radius=sqrt(xpos*xpos+ypos*ypos);
 		if(radius<150. || radius>550. ) continue;
 		h_energy_calibration_REC->Fill( maxEnergy / scatMC.E() );
@@ -265,7 +266,10 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 		double yREC= pqREC/pbeam.Dot(ebeam);
 		h_Q2REC_e->Fill(Q2REC);
 		h_yREC_e->Fill(yREC);
-			
+		
+		//E over p
+		h_EoverP_REC->Fill( scatClusEREC.E() / scatMCmatchREC.P() );
+
 		//track-base energy resolution;
 		h_trk_energy_REC->Fill(scatMCmatchREC.E());
 		res= (scatMC.E()-scatMCmatchREC.E())/scatMC.E();
