@@ -207,7 +207,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	}
     	h_ClusOverHit_REC->Fill( maxEnergy / maxHitEnergy );
 
-		double clusEnergy=1.0*maxHitEnergy; //xx% energy calibration.
+		double clusEnergy=1.06*maxHitEnergy; //6% energy calibration.
 		double xClus=xhitpos;
 		double yClus=yhitpos;
 		// double radius=sqrt(xClus*xClus+yClus*yClus);
