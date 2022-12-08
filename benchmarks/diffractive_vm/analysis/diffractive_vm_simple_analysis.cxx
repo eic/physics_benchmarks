@@ -172,10 +172,10 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	}
 
     	//rec level
+    	 //leading cluster
     	double maxEnergy=-99.;
     	double xpos=-999.;
     	double ypos=-999.;
-        //leading cluster
     	for(int iclus=0;iclus<em_energy_array.GetSize();iclus++){
     		if(em_energy_array[iclus]>maxEnergy){
     			maxEnergy=em_energy_array[iclus];
@@ -183,10 +183,10 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     			ypos=em_y_array[iclus];
     		}
     	}
+    	 //leading hit energy
     	double maxHitEnergy=-99.;
     	double xhitpos=-999.;
         double yhitpos=-999.;
-    	//leading hit energy
     	for(int ihit=0;ihit<emhits_energy_array.GetSize();ihit++){
     		if(emhits_energy_array[ihit]>maxHitEnergy){
     			maxHitEnergy=emhits_energy_array[ihit];
@@ -210,9 +210,8 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 		double clusEnergy=1.0*maxHitEnergy; //xx% energy calibration.
 		double xClus=xhitpos;
 		double yClus=yhitpos;
-
-		double radius=sqrt(xClus*xClus+yClus*yClus);
-		if(radius<120. || radius>550. ) continue;
+		// double radius=sqrt(xClus*xClus+yClus*yClus);
+		// if(radius<120. || radius>550. ) continue;
 		
 		h_energy_REC->Fill(clusEnergy);
 		//ratio of reco / truth Energy
