@@ -100,6 +100,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
    	TH2D* h_t_res = new TH2D("h_t_res",";t_{MC} (GeV^{2}); t_{MC}-t_{REC}/t_{MC}",100,0,0.2,1000,-10,10);
    	TH2D* h_trk_t_res = new TH2D("h_trk_t_res",";t_{MC} (GeV^{2}); t_{MC}-t_{REC}/t_{MC} track-base",100,0,0.2,1000,-10,10);
    	TH2D* h_t_2D = new TH2D("h_t_2D",";t_{MC} (GeV^{2}); t_{REC} (GeV^{2}) track-base",100,0,0.2,100,0,0.2);
+   	TH2D* h_t_REC_2D = new TH2D("h_t_REC_2D",";t_{trk,REC} (GeV^{2}); t_{EEMC,REC} (GeV^{2})",100,0,0.2,100,0,0.2);
 
    	//energy clus
     TH2D* h_emClus_position_REC = new TH2D("h_emClus_position_REC",";x (cm);y (cm)",80,-800,800,80,-800,800);
@@ -211,7 +212,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 		double xClus=xhitpos;
 		double yClus=yhitpos;
 		// double radius=sqrt(xClus*xClus+yClus*yClus);
-		// if(radius<120. || radius>550. ) continue;
+		if(radius<105. || radius>550. ) continue;
 		
 		h_energy_REC->Fill(clusEnergy);
 		//ratio of reco / truth Energy
@@ -318,8 +319,9 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	    	//2 versions: track and energy cluster:
 	    	double t_trk_REC = giveme_t_method_L(ebeam,scatMCmatchREC,pbeam,vmREC);
 	    	double t_REC = giveme_t_method_L(ebeam,scatClusEREC,pbeam,vmREC);
-	    	h_t_trk_REC->Fill( t_trk_REC );
+	    	h_t_trk_REC->Fill( t_trk_REC, t_REC );
 	    	h_t_REC->Fill( t_REC );
+	    	h_t_REC_2D->Fill()
 
 	    	//t track resolution 
 			res= (t_MC-t_trk_REC)/t_MC;
