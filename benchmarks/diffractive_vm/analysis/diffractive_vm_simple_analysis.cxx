@@ -211,7 +211,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 		double clusEnergy=1.058*maxHitEnergy; //6% energy calibration.
 		double xClus=xhitpos;
 		double yClus=yhitpos;
-		// double radius=sqrt(xClus*xClus+yClus*yClus);
+		double radius=sqrt(xClus*xClus+yClus*yClus);
 		if(radius<105. || radius>550. ) continue;
 		
 		h_energy_REC->Fill(clusEnergy);
@@ -319,9 +319,9 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	    	//2 versions: track and energy cluster:
 	    	double t_trk_REC = giveme_t_method_L(ebeam,scatMCmatchREC,pbeam,vmREC);
 	    	double t_REC = giveme_t_method_L(ebeam,scatClusEREC,pbeam,vmREC);
-	    	h_t_trk_REC->Fill( t_trk_REC, t_REC );
+	    	h_t_trk_REC->Fill( t_trk_REC );
 	    	h_t_REC->Fill( t_REC );
-	    	h_t_REC_2D->Fill()
+	    	h_t_REC_2D->Fill(t_trk_REC,t_REC);
 
 	    	//t track resolution 
 			res= (t_MC-t_trk_REC)/t_MC;
