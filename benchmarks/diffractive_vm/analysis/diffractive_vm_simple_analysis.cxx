@@ -102,12 +102,12 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
    	TH2D* h_t_2D = new TH2D("h_t_2D",";t_{MC} (GeV^{2}); t_{REC} (GeV^{2}) track-base",100,0,0.2,100,0,0.2);
 
    	//energy clus
-    TH2D* h_emClus_position_REC = new TH2D("h_emClus_position_REC",";x (cm);y (cm)",400,-800,800,400,-800,800);
-	TH2D* h_emHits_position_REC = new TH2D("h_emHits_position_REC",";x (cm);y (cm)",400,-800,800,400,-800,800);
-	TH2D* h_emHits_position_2_REC = new TH2D("h_emHits_position_2_REC",";x (cm);y (cm)",100,-800,800,100,-800,800);
+    TH2D* h_emClus_position_REC = new TH2D("h_emClus_position_REC",";x (cm);y (cm)",80,-800,800,80,-800,800);
+	TH2D* h_emHits_position_REC = new TH2D("h_emHits_position_REC",";x (cm);y (cm)",80,-800,800,80,-800,800);
     TH2D* h_energy_res = new TH2D("h_energy_res",";E_{MC} (GeV); E_{MC}-E_{REC}/E_{MC} emcal",100,0,20,1000,-1,1);
     TH1D* h_energy_calibration_REC = new TH1D("h_energy_calibration_REC",";E (GeV)",200,0,2);
     TH1D* h_EoverP_REC = new TH1D("h_EoverP_REC",";E/p",200,0,2);
+    TH1D* h_ClusOverHit_REC = new TH1D("h_ClusOverHit_REC",";cluster energy / new cluster energy",200,0,2);
 
 	tree_reader.SetEntriesRange(0, tree->GetEntries());
     while (tree_reader.Next()) {
@@ -175,33 +175,54 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	double maxEnergy=-99.;
     	double xpos=-999.;
     	double ypos=-999.;
-        double xhitpos=-999.;
-        double yhitpos=-999.;
+        //leading cluster
     	for(int iclus=0;iclus<em_energy_array.GetSize();iclus++){
     		if(em_energy_array[iclus]>maxEnergy){
     			maxEnergy=em_energy_array[iclus];
     			xpos=em_x_array[iclus];
     			ypos=em_y_array[iclus];
-                xhitpos=emhits_x_array[iclus];
-                yhitpos=emhits_y_array[iclus];
     		}
     	}
+    	double maxHitEnergy=-99.;
+    	double xhitpos=-999.;
+        double yhitpos=-999.;
+    	//leading hit energy
+    	for(int ihit=0;ihit<emhits_energy_array.GetSize();ihit++){
+    		if(emhits_energy_array[ihit]>maxHitEnergy){
+    			maxHitEnergy=emhits_energy_array[ihit];
+                xhitpos=emhits_x_array[ihit];
+                yhitpos=emhits_y_array[ihit];
+    		}
+    	}
+    	//sum over all 3x3 towers around the leading tower
+    	for(int ihit=0;ihit<emhits_energy_array.GetSize();ihit++){
+    		double hitenergy=emhits_energy_array[ihit];
+    		double x=emhits_x_array[ihit];
+    		double y=emhits_y_array[ihit];
 
-		//ratio of reco / truth Energy
-		maxEnergy *= 1.045; //4% energy calibration.
-		double radius=sqrt(xpos*xpos+ypos*ypos);
+    		double r=sqrt( (x-xhitpos)*(x-xhitpos) + (y-yhitpos)*(y-yhitpos));
+    		if(r<60. && r>0.1 && hitenergy>0.01)  {
+    			maxHitEnergy+=hitenergy;//clustering around leading tower 3 crystal = 60mm.
+    		}
+    	}
+    	h_ClusOverHit_REC->Fill( maxEnergy / maxHitEnergy );
+
+		double clusEnergy=1.0*maxHitEnergy; //xx% energy calibration.
+		double xClus=xhitpos;
+		double yClus=yhitpos;
+
+		double radius=sqrt(xClus*xClus+yClus*yClus);
 		if(radius<120. || radius>550. ) continue;
-		h_energy_calibration_REC->Fill( maxEnergy / scatMC.E() );
+		
+		h_energy_REC->Fill(clusEnergy);
+		//ratio of reco / truth Energy
+		h_energy_calibration_REC->Fill( clusEnergy / scatMC.E() );
 		//energy resolution
-		double res= (scatMC.E()-maxEnergy)/scatMC.E();
+		double res= (scatMC.E()-clusEnergy)/scatMC.E();
 		h_energy_res->Fill(scatMC.E(), res);
-		h_energy_REC->Fill(maxEnergy);
-		h_emClus_position_REC->Fill(xpos,ypos);
-		h_emHits_position_REC->Fill(xhitpos,yhitpos);
-		if( (fabs(xpos)<60 && fabs(ypos)<100) || (fabs(ypos)<60 && fabs(xpos)<100) ){
-	        h_emHits_position_2_REC->Fill(xhitpos,yhitpos,maxEnergy);
-		}
-
+		h_emClus_position_REC->Fill(xpos,ypos);//default cluster
+		h_emHits_position_REC->Fill(xClus,yClus);//default hit
+		
 		//association of rec level scat' e
 		int rec_elect_index=-1;
 		for(int i=0;i<sim_id.GetSize();i++){
@@ -234,7 +255,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     			scatREC.SetVectM(trk,MASS_ELECTRON);
 
     			//use emcal energy to define 4 vector
-				double p = sqrt(maxEnergy*maxEnergy- MASS_ELECTRON*MASS_ELECTRON );
+				double p = sqrt(clusEnergy*clusEnergy- MASS_ELECTRON*MASS_ELECTRON );
 				double eta=scatREC.Eta();
 				double phi=scatREC.Phi();
 				double pt = TMath::Sin(scatREC.Theta())*p;
