@@ -196,6 +196,8 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     		}
     	}
     	//sum over all 3x3 towers around the leading tower
+    	double xClus=xhitpos*maxHitEnergy;
+		double yClus=yhitpos*maxHitEnergy;
     	for(int ihit=0;ihit<emhits_energy_array.GetSize();ihit++){
     		double hitenergy=emhits_energy_array[ihit];
     		double x=emhits_x_array[ihit];
@@ -204,15 +206,19 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     		double r=sqrt( (x-xhitpos)*(x-xhitpos) + (y-yhitpos)*(y-yhitpos));
     		if(r<60. && r>0.1 && hitenergy>0.01)  {
     			maxHitEnergy+=hitenergy;//clustering around leading tower 3 crystal = 60mm.
+    			xClus+=x*hitenergy;
+    			yClus+=y*hitenergy;
     		}
     	}
+    	
     	h_ClusOverHit_REC->Fill( maxEnergy / maxHitEnergy );
-
-		double clusEnergy=1.058*maxHitEnergy; //6% energy calibration.
-		double xClus=xhitpos;
-		double yClus=yhitpos;
+    	//weighted average cluster position.
+    	xClus = xClus/maxHitEnergy;
+    	yClus = yClus/maxHitEnergy;
+    	//6% energy calibration.
+		double clusEnergy=1.058*maxHitEnergy; 
 		double radius=sqrt(xClus*xClus+yClus*yClus);
-		if(radius<105. || radius>550. ) continue;
+		if(radius<150. || radius>550. ) continue;
 		
 		h_energy_REC->Fill(clusEnergy);
 		//ratio of reco / truth Energy
@@ -220,8 +226,8 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 		//energy resolution
 		double res= (scatMC.E()-clusEnergy)/scatMC.E();
 		h_energy_res->Fill(scatMC.E(), res);
-		h_emClus_position_REC->Fill(xpos,ypos);//default cluster
-		h_emHits_position_REC->Fill(xClus,yClus);//default hit
+		h_emClus_position_REC->Fill(xpos,ypos);//default clustering position
+		h_emHits_position_REC->Fill(xClus,yClus); //self clustering position
 		
 		//association of rec level scat' e
 		int rec_elect_index=-1;
@@ -281,31 +287,40 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     		vmREC=kplusREC+kminusREC;
     	}
 
+    	//track-base e' energy REC;
+		h_trk_energy_REC->Fill(scatMCmatchREC.E());
+		
+		//track-base e' energy resolution;
+		res= (scatMC.E()-scatMCmatchREC.E())/scatMC.E();
+		h_trk_energy_res->Fill(scatMC.E(), res);
+		
+		//track-base e' pt resolution;
+		res= (scatMC.Pt()-scatMCmatchREC.Pt())/scatMC.Pt();
+		h_trk_Pt_res->Fill(scatMC.Pt(), res);
+
+    	//track-base Epz scat' e
+	    double EpzREC= (scatMCmatchREC+hfs).E() - (scatMCmatchREC+hfs).Pz();
+	    h_trk_Epz_REC->Fill( EpzREC );
+	    
+	    //EEMC cluster Epz scat' e
+    	EpzREC= (scatClusEREC+hfs).E() - (scatClusEREC+hfs).Pz();
+	    h_Epz_REC->Fill( EpzREC );
+
+    	//E over p
+    	double EoverP=scatClusEREC.E() / scatMCmatchREC.P();
+		h_EoverP_REC->Fill( EoverP );
+
+    	//Event selection:
+    	if( EpzREC<27||EpzREC>40 ) continue;
+    	if( EoverP<0.8||EoverP>1.18 ) continue;
+
 		//cluster-base DIS kine;
 		TLorentzVector qbeamREC=ebeam-scatClusEREC;
     	double Q2REC=-(qbeamREC).Mag2();  
 		double pqREC=pbeam.Dot(qbeamREC);
 		double yREC= pqREC/pbeam.Dot(ebeam);
 		h_Q2REC_e->Fill(Q2REC);
-		h_yREC_e->Fill(yREC);
-		
-		//E over p
-		h_EoverP_REC->Fill( scatClusEREC.E() / scatMCmatchREC.P() );
-
-		//track-base energy resolution;
-		h_trk_energy_REC->Fill(scatMCmatchREC.E());
-		res= (scatMC.E()-scatMCmatchREC.E())/scatMC.E();
-		h_trk_energy_res->Fill(scatMC.E(), res);
-		//track-base pt resolution;
-		res= (scatMC.Pt()-scatMCmatchREC.Pt())/scatMC.Pt();
-		h_trk_Pt_res->Fill(scatMC.Pt(), res);
-
-		//Epz track scat' e
-	    double EpzREC= (scatMCmatchREC+hfs).E() - (scatMCmatchREC+hfs).Pz();
-	    h_trk_Epz_REC->Fill( EpzREC );
-	    //Epz energy cluster scat' e
-    	EpzREC= (scatClusEREC+hfs).E() - (scatClusEREC+hfs).Pz();
-	    h_Epz_REC->Fill( EpzREC );
+		h_yREC_e->Fill(yREC);		
 
 	    //VM rec
 	    if(vmREC.E()==0) continue;
@@ -325,12 +340,14 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 
 	    	//t track resolution 
 			res= (t_MC-t_trk_REC)/t_MC;
-			 h_trk_t_res->Fill(t_MC, res);
-	    	//t resolution;
+			h_trk_t_res->Fill(t_MC, res);
+	    	
+	    	//t EEMC resolution;
     		res= (t_MC-t_REC)/t_MC;
-			 h_t_res->Fill(t_MC, res);
+			h_t_res->Fill(t_MC, res);
+			
 			//2D t
-			 h_t_2D->Fill(t_MC,t_trk_REC);
+			h_t_2D->Fill(t_MC,t_trk_REC);
 
 	    	//VM pt resolution;
 	    	res= (vmMC.Pt()-vmREC.Pt())/vmMC.Pt();
