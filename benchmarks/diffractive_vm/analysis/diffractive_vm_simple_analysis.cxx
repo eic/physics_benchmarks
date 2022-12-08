@@ -97,6 +97,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
    	TH2D* h_VM_res = new TH2D("h_VM_res",";p_{T,MC} (GeV); p_{T,MC}-E_{T,REC}/p_{T,MC}",100,0,2,1000,-1,1);
     TH1D* h_t_REC = new TH1D("h_t_REC",";t_{REC} (GeV^{2}); counts",100,0,0.2);
     TH1D* h_t_trk_REC = new TH1D("h_t_trk_REC",";t_{REC}(GeV^{2}) track-base; counts",100,0,0.2);
+    TH1D* h_t_combo_REC = new TH1D("h_t_combo_REC",";t_{combo,REC}(GeV^{2}); counts",100,0,0.2);
    	TH2D* h_t_res = new TH2D("h_t_res",";t_{MC} (GeV^{2}); t_{MC}-t_{REC}/t_{MC}",100,0,0.2,1000,-10,10);
    	TH2D* h_trk_t_res = new TH2D("h_trk_t_res",";t_{MC} (GeV^{2}); t_{MC}-t_{REC}/t_{MC} track-base",100,0,0.2,1000,-10,10);
    	TH2D* h_t_2D = new TH2D("h_t_2D",";t_{MC} (GeV^{2}); t_{REC} (GeV^{2}) track-base",100,0,0.2,100,0,0.2);
@@ -185,14 +186,21 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     		}
     	}
     	 //leading hit energy
-    	double maxHitEnergy=-99.;
+    	double maxHitEnergy=0.01;//threshold 10 MeV
     	double xhitpos=-999.;
         double yhitpos=-999.;
+        int hit_index=-1;
     	for(int ihit=0;ihit<emhits_energy_array.GetSize();ihit++){
+    		
+    		double radius=sqrt(emhits_x_array[ihit]*emhits_x_array[ihit]
+    			+emhits_y_array[ihit]*emhits_y_array[ihit]);
+			if(radius<105. || radius>550. ) continue; //geometric acceptance cut
+    		
     		if(emhits_energy_array[ihit]>maxHitEnergy){
     			maxHitEnergy=emhits_energy_array[ihit];
                 xhitpos=emhits_x_array[ihit];
                 yhitpos=emhits_y_array[ihit];
+                hit_index=ihit;
     		}
     	}
     	//sum over all 3x3 towers around the leading tower
@@ -202,9 +210,11 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     		double hitenergy=emhits_energy_array[ihit];
     		double x=emhits_x_array[ihit];
     		double y=emhits_y_array[ihit];
+    		double radius=sqrt(x*x+y*y);
+			if(radius<105. || radius>550. ) continue; //geometric acceptance cut
 
-    		double r=sqrt( (x-xhitpos)*(x-xhitpos) + (y-yhitpos)*(y-yhitpos));
-    		if(r<60. && r>0.1 && hitenergy>0.01)  {
+    		double d=sqrt( (x-xhitpos)*(x-xhitpos) + (y-yhitpos)*(y-yhitpos));
+    		if(d<60. && ihit!=hit_index && hitenergy>0.01)  {
     			maxHitEnergy+=hitenergy;//clustering around leading tower 3 crystal = 60mm.
     			xClus+=x*hitenergy;
     			yClus+=y*hitenergy;
@@ -217,9 +227,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	yClus = yClus/maxHitEnergy;
     	//6% energy calibration.
 		double clusEnergy=1.058*maxHitEnergy; 
-		double radius=sqrt(xClus*xClus+yClus*yClus);
-		if(radius<150. || radius>550. ) continue;
-		
+	
 		h_energy_REC->Fill(clusEnergy);
 		//ratio of reco / truth Energy
 		h_energy_calibration_REC->Fill( clusEnergy / scatMC.E() );
@@ -337,6 +345,9 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	    	h_t_trk_REC->Fill( t_trk_REC );
 	    	h_t_REC->Fill( t_REC );
 	    	h_t_REC_2D->Fill(t_trk_REC,t_REC);
+	    	if( (t_trk_REC/t_REC) > 0.5 && (t_trk_REC/t_REC) < 1.5 ){
+	    		h_t_combo_REC->Fill( (t_trk_REC+t_REC)/2. );//w=1./(fabs(1.0-(t_trk_REC/t_REC)))
+	    	} 
 
 	    	//t track resolution 
 			res= (t_MC-t_trk_REC)/t_MC;
