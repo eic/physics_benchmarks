@@ -171,14 +171,16 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	}
 
     	//rec level
-    	double maxEnergy=-99.;
+    	double maxEnergy=0.;
+    	double maxEnergy_e=-99;
     	double xpos=-999.;
     	double ypos=-999.;
         double xhitpos=-999.;
         double yhitpos=-999.;
     	for(int iclus=0;iclus<em_energy_array.GetSize();iclus++){
-    		if(em_energy_array[iclus]>maxEnergy){
-    			maxEnergy=em_energy_array[iclus];
+    		maxEnergy+=em_energy_array[iclus];
+    		if(em_energy_array[iclus]>maxEnergy_e){
+    			maxEnergy_e=em_energy_array[iclus];
     			xpos=em_x_array[iclus];
     			ypos=em_y_array[iclus];
                 xhitpos=emhits_x_array[iclus];
