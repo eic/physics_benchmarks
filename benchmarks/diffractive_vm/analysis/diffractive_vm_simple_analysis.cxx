@@ -160,7 +160,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 		
 		//MC level phase space cut
 		if(Q2<2.||Q2>10.) continue;
-		if(y<0.01||y>0.95) continue;
+		if(y<0.01||y>0.85) continue;
 
 		h_Q2_e->Fill(Q2);
 		h_y_e->Fill(y);
@@ -220,7 +220,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	xClus = xClus/maxHitEnergy;
     	yClus = yClus/maxHitEnergy;
     	double radius=sqrt(xClus*xClus+yClus*yClus);
-		if(radius<170. || radius>550. ) continue; //geometric acceptance cut
+		if(radius<150. || radius>550. ) continue; //geometric acceptance cut
     	//6% energy calibration.
 		double clusEnergy=1.044*maxHitEnergy; 
 	
@@ -325,6 +325,10 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 		//Event selection:
     	if( EpzREC<27||EpzREC>40 ) continue;
     	if( EoverP<0.8||EoverP>1.18 ) continue;		
+
+    	//MC level phase space cut
+		if(Q2REC<2.||Q2REC>10.) continue;
+		if(yREC<0.01||yREC>0.85) continue;
 
 	    //VM rec
 	    if(vmREC.E()==0) continue;
