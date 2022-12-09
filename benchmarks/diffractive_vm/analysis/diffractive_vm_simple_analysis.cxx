@@ -33,7 +33,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	const std::string test_tag      = config["test_tag"];
 
 	TString name_of_input = (TString) rec_file;
-		name_of_input = "/gpfs02/eic/ztu/EPIC/physics/Simulation_Campaign_Oct2022/physics_benchmarks/local_data/tmp/18on110/rec-batch_5_*.tree.edm4eic.root";
+		// name_of_input = "/gpfs02/eic/ztu/EPIC/physics/Simulation_Campaign_Oct2022/physics_benchmarks/local_data/tmp/18on110/rec-batch_5_*.tree.edm4eic.root";
 	std::cout << "what is this rec_file = " << name_of_input << endl;
 	auto tree = new TChain("events");
 	tree->Add(name_of_input);
@@ -192,12 +192,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	double xhitpos=-999.;
         double yhitpos=-999.;
         int hit_index=-1;
-    	for(int ihit=0;ihit<emhits_energy_array.GetSize();ihit++){
-    		
-    		double radius=sqrt(emhits_x_array[ihit]*emhits_x_array[ihit]
-    			+emhits_y_array[ihit]*emhits_y_array[ihit]);
-			if(radius<150. || radius>550. ) continue; //geometric acceptance cut
-    		
+    	for(int ihit=0;ihit<emhits_energy_array.GetSize();ihit++){	
     		if(emhits_energy_array[ihit]>maxHitEnergy){
     			maxHitEnergy=emhits_energy_array[ihit];
                 xhitpos=emhits_x_array[ihit];
@@ -212,11 +207,8 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     		double hitenergy=emhits_energy_array[ihit];
     		double x=emhits_x_array[ihit];
     		double y=emhits_y_array[ihit];
-    		double radius=sqrt(x*x+y*y);
-			if(radius<150. || radius>550. ) continue; //geometric acceptance cut
-
     		double d=sqrt( (x-xhitpos)*(x-xhitpos) + (y-yhitpos)*(y-yhitpos));
-    		if(d<60. && ihit!=hit_index && hitenergy>0.01)  {
+    		if(d<50. && ihit!=hit_index && hitenergy>0.01)  {
     			maxHitEnergy+=hitenergy;//clustering around leading tower 3 crystal = 60mm.
     			xClus+=x*hitenergy;
     			yClus+=y*hitenergy;
@@ -227,8 +219,10 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	//weighted average cluster position.
     	xClus = xClus/maxHitEnergy;
     	yClus = yClus/maxHitEnergy;
+    	double radius=sqrt(xClus*xClus+yClus*yClus);
+		if(radius<150. || radius>550. ) continue; //geometric acceptance cut
     	//6% energy calibration.
-		double clusEnergy=1.058*maxHitEnergy; 
+		double clusEnergy=1.0*maxHitEnergy; 
 	
 		h_energy_REC->Fill(clusEnergy);
 		//ratio of reco / truth Energy
@@ -340,7 +334,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 
 	    //select phi mass and rapidity window 
 	    if( fabs(phi_mass-1.02)<0.02
-	    	&& fabs(vmREC.Rapidity())<3.0 ){
+	    	&& fabs(vmREC.Rapidity())<3.5 ){
 	    	//2 versions: track and energy cluster:
 	    	double t_trk_REC = giveme_t_method_L(ebeam,scatMCmatchREC,pbeam,vmREC);
 	    	double t_REC = giveme_t_method_L(ebeam,scatClusEREC,pbeam,vmREC);
