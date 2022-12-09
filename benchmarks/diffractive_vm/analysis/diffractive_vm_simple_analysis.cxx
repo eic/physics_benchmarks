@@ -346,7 +346,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	    	h_t_trk_REC->Fill( t_trk_REC );
 	    	h_t_REC->Fill( t_REC );
 	    	h_t_REC_2D->Fill(t_trk_REC,t_REC);
-	    	if( (t_trk_REC/t_REC) > 0.7 && (t_trk_REC/t_REC) < 3 ){
+	    	if( (t_trk_REC/t_REC) > 0.5 && (t_trk_REC/t_REC) < 1.5 ){
 	    		h_t_combo_REC->Fill( (t_trk_REC+t_REC)/2. );//w=1./(fabs(1.0-(t_trk_REC/t_REC)))
 	    	} 
 	    	h_t_RECMC_2D->Fill(t_MC,t_trk_REC/t_REC);
