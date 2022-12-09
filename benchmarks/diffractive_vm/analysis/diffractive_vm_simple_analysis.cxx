@@ -102,6 +102,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
    	TH2D* h_trk_t_res = new TH2D("h_trk_t_res",";t_{MC} (GeV^{2}); t_{MC}-t_{REC}/t_{MC} track-base",100,0,0.2,1000,-10,10);
    	TH2D* h_t_2D = new TH2D("h_t_2D",";t_{MC} (GeV^{2}); t_{REC} (GeV^{2}) track-base",100,0,0.2,100,0,0.2);
    	TH2D* h_t_REC_2D = new TH2D("h_t_REC_2D",";t_{trk,REC} (GeV^{2}); t_{EEMC,REC} (GeV^{2})",100,0,0.2,100,0,0.2);
+   	TH2D* h_t_RECMC_2D = new TH2D("h_t_RECMC_2D",";t_{MC} (GeV^{2}); t_{trk,REC} / t_{EEMC,REC} ",100,0,0.2,200,-10,10);
 
    	//energy clus
     TH2D* h_emClus_position_REC = new TH2D("h_emClus_position_REC",";x (cm);y (cm)",80,-800,800,80,-800,800);
@@ -345,9 +346,10 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 	    	h_t_trk_REC->Fill( t_trk_REC );
 	    	h_t_REC->Fill( t_REC );
 	    	h_t_REC_2D->Fill(t_trk_REC,t_REC);
-	    	if( (t_trk_REC/t_REC) > 0.5 && (t_trk_REC/t_REC) < 1.5 ){
+	    	if( (t_trk_REC/t_REC) > 0.7 && (t_trk_REC/t_REC) < 3 ){
 	    		h_t_combo_REC->Fill( (t_trk_REC+t_REC)/2. );//w=1./(fabs(1.0-(t_trk_REC/t_REC)))
 	    	} 
+	    	h_t_RECMC_2D->Fill(t_MC,t_trk_REC/t_REC);
 
 	    	//t track resolution 
 			res= (t_MC-t_trk_REC)/t_MC;
