@@ -194,7 +194,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     		
     		double radius=sqrt(emhits_x_array[ihit]*emhits_x_array[ihit]
     			+emhits_y_array[ihit]*emhits_y_array[ihit]);
-			if(radius<105. || radius>550. ) continue; //geometric acceptance cut
+			if(radius<150. || radius>550. ) continue; //geometric acceptance cut
     		
     		if(emhits_energy_array[ihit]>maxHitEnergy){
     			maxHitEnergy=emhits_energy_array[ihit];
@@ -211,7 +211,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     		double x=emhits_x_array[ihit];
     		double y=emhits_y_array[ihit];
     		double radius=sqrt(x*x+y*y);
-			if(radius<105. || radius>550. ) continue; //geometric acceptance cut
+			if(radius<150. || radius>550. ) continue; //geometric acceptance cut
 
     		double d=sqrt( (x-xhitpos)*(x-xhitpos) + (y-yhitpos)*(y-yhitpos));
     		if(d<60. && ihit!=hit_index && hitenergy>0.01)  {
