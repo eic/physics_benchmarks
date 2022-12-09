@@ -283,8 +283,8 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     		if(itrk!=rec_elect_index) {
 	    		hfs += particle; //hfs 4vector sum.
 	    		//selecting phi->kk daughters;
-	    		if(fabs(trk.Eta())<3.5){
-	    			h_eta->Fill(trk.Eta());
+	    		h_eta->Fill(trk.Eta());
+	    		if(fabs(trk.Eta())<3.0){
 	    			if(reco_charge_array[itrk]>0) kplusREC.SetVectM(trk,MASS_KAON);
 	    			if(reco_charge_array[itrk]<0) kminusREC.SetVectM(trk,MASS_KAON);
 	    		}
@@ -338,7 +338,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 
 	    //select phi mass and rapidity window 
 	    if( fabs(phi_mass-1.02)<0.02
-	    	&& fabs(vmREC.Rapidity())<3.5 ){
+	    	&& fabs(vmREC.Rapidity())<3.0 ){
 	    	//2 versions: track and energy cluster:
 	    	double t_trk_REC = giveme_t_method_L(ebeam,scatMCmatchREC,pbeam,vmREC);
 	    	double t_REC = giveme_t_method_L(ebeam,scatClusEREC,pbeam,vmREC);
