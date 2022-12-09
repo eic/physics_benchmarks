@@ -159,7 +159,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
 		double y= pq/pbeam.Dot(ebeam);
 		
 		//MC level phase space cut
-		if(Q2<1.||Q2>10.) continue;
+		if(Q2<2.||Q2>10.) continue;
 		if(y<0.01||y>0.95) continue;
 
 		h_Q2_e->Fill(Q2);
@@ -220,7 +220,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	xClus = xClus/maxHitEnergy;
     	yClus = yClus/maxHitEnergy;
     	double radius=sqrt(xClus*xClus+yClus*yClus);
-		if(radius<150. || radius>550. ) continue; //geometric acceptance cut
+		if(radius<170. || radius>550. ) continue; //geometric acceptance cut
     	//6% energy calibration.
 		double clusEnergy=1.044*maxHitEnergy; 
 	
@@ -314,17 +314,17 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	double EoverP=scatClusEREC.E() / scatMCmatchREC.P();
 		h_EoverP_REC->Fill( EoverP );
 
-    	//Event selection:
-    	if( EpzREC<27||EpzREC>40 ) continue;
-    	if( EoverP<0.8||EoverP>1.18 ) continue;
-
 		//cluster-base DIS kine;
 		TLorentzVector qbeamREC=ebeam-scatClusEREC;
     	double Q2REC=-(qbeamREC).Mag2();  
 		double pqREC=pbeam.Dot(qbeamREC);
 		double yREC= pqREC/pbeam.Dot(ebeam);
 		h_Q2REC_e->Fill(Q2REC);
-		h_yREC_e->Fill(yREC);		
+		h_yREC_e->Fill(yREC);
+
+		//Event selection:
+    	if( EpzREC<27||EpzREC>40 ) continue;
+    	if( EoverP<0.8||EoverP>1.18 ) continue;		
 
 	    //VM rec
 	    if(vmREC.E()==0) continue;
