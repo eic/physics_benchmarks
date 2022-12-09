@@ -167,14 +167,16 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     	h_energy_MC->Fill(scatMC.E());
 
     	double t_MC=0.;
-    	if(vmMC.E()!=0){
+    	if(vmMC.E()!=0 
+    		&& fabs(vmMC.Rapidity())<3.5)
+    	{
     		double method_E = -(qbeam-vmMC).Mag2();
     		t_MC=method_E;
     		h_t_MC->Fill( method_E );
     	}
 
     	//rec level
-    	 //leading cluster
+    	//leading cluster
     	double maxEnergy=-99.;
     	double xpos=-999.;
     	double ypos=-999.;
@@ -185,7 +187,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     			ypos=em_y_array[iclus];
     		}
     	}
-    	 //leading hit energy
+    	//leading hit energy
     	double maxHitEnergy=0.01;//threshold 10 MeV
     	double xhitpos=-999.;
         double yhitpos=-999.;
