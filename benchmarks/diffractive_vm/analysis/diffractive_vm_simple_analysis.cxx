@@ -208,7 +208,7 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
     		double x=emhits_x_array[ihit];
     		double y=emhits_y_array[ihit];
     		double d=sqrt( (x-xhitpos)*(x-xhitpos) + (y-yhitpos)*(y-yhitpos));
-    		if(d<50. && ihit!=hit_index && hitenergy>0.01)  {
+    		if(d<65. && ihit!=hit_index && hitenergy>0.01)  {
     			maxHitEnergy+=hitenergy;//clustering around leading tower 3 crystal = 60mm.
     			xClus+=x*hitenergy;
     			yClus+=y*hitenergy;
