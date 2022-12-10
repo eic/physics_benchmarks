@@ -105,8 +105,8 @@ int diffractive_vm_simple_analysis(const std::string& config_name)
    	TH2D* h_t_RECMC_2D = new TH2D("h_t_RECMC_2D",";t_{MC} (GeV^{2}); t_{trk,REC} / t_{EEMC,REC} ",100,0,0.2,200,-10,10);
 
    	//energy clus
-    TH2D* h_emClus_position_REC = new TH2D("h_emClus_position_REC",";x (cm);y (cm)",80,-800,800,80,-800,800);
-	TH2D* h_emHits_position_REC = new TH2D("h_emHits_position_REC",";x (cm);y (cm)",80,-800,800,80,-800,800);
+    TH2D* h_emClus_position_REC = new TH2D("h_emClus_position_REC",";x (mm);y (mm)",80,-800,800,80,-800,800);
+	TH2D* h_emHits_position_REC = new TH2D("h_emHits_position_REC",";x (mm);y (mm)",80,-800,800,80,-800,800);
     TH2D* h_energy_res = new TH2D("h_energy_res",";E_{MC} (GeV); E_{MC}-E_{REC}/E_{MC} emcal",100,0,20,1000,-1,1);
     TH1D* h_energy_calibration_REC = new TH1D("h_energy_calibration_REC",";E (GeV)",200,0,2);
     TH1D* h_EoverP_REC = new TH1D("h_EoverP_REC",";E/p",200,0,2);
