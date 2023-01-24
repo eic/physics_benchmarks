@@ -36,7 +36,7 @@ if(vm_type==1){
 
 }
 else if(vm_type==2){
-	cout << "we are analyzing phi meson" << endl;
+	cout << "we are analyzing jpsi meson" << endl;
 	mass_daug=MASS_ELECTRON;
 	mass_vm=3.096916;
 	daug_pdg=11;
@@ -55,7 +55,7 @@ const std::string output_prefix = config["output_prefix"];
 const std::string test_tag      = config["test_tag"];
 
 TString name_of_input = (TString) rec_file;
-name_of_input = "/gpfs02/eic/ztu/EPIC/physics/Simulation_Campaign_Oct2022/physics_benchmarks/local_data/tmp/18on110/rec-batch_5_official_*.eicrecon.tree.edm4eic.root";
+name_of_input = "/gpfs02/eic/ztu/EPIC/physics/Simulation_Campaign_Oct2022/physics_benchmarks/local_data/tmp/18on110/rec-batch_5_jpsi_official_*.eicrecon.tree.edm4eic.root";
 std::cout << "what is this rec_file = " << name_of_input << endl;
 auto tree = new TChain("events");
 tree->Add(name_of_input);
