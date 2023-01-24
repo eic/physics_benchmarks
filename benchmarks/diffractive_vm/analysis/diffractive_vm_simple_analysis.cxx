@@ -24,16 +24,23 @@ int diffractive_vm_simple_analysis(const std::string& config_name, const int vm_
 
 double mass_daug=0.;
 double mass_vm=0.;
+int daug_pdg=0;
+double vm_mass_width=0.;
 
 if(vm_type==1){
 	cout << "we are analyzing phi meson" << endl;
 	mass_daug=MASS_KAON;
 	mass_vm=1.019461;
+	daug_pdg=321;
+	vm_mass_width=0.02;
+
 }
 else if(vm_type==2){
 	cout << "we are analyzing phi meson" << endl;
 	mass_daug=MASS_ELECTRON;
 	mass_vm=3.096916;
+	daug_pdg=11;
+	vm_mass_width=0.03;
 }
 else {cout << "wrong VM species" << endl; return 0;}
 
@@ -156,9 +163,9 @@ while (tree_reader.Next()) {
 			mc_elect_index=imc;
 			scatMC.SetVectM(mctrk,mc_mass_array[imc]);
 		}
-		if(mc_pdg_array[imc]==321
+		if(mc_pdg_array[imc]==daug_pdg
 			&& mc_genStatus_array[imc]==1) kplusMC.SetVectM(mctrk,mass_daug);
-		if(mc_pdg_array[imc]==-321
+		if(mc_pdg_array[imc]==-daug_pdg
 			&& mc_genStatus_array[imc]==1) kminusMC.SetVectM(mctrk,mass_daug);
 
 	}
@@ -352,7 +359,7 @@ while (tree_reader.Next()) {
 	h_VM_pt_REC->Fill(vmREC.Pt());
 
 	//select phi mass and rapidity window 
-	if( fabs(vm_mass-1.02)<0.02
+	if( fabs(vm_mass-mass_vm)<vm_mass_width
     		&& fabs(vmREC.Rapidity())<3.5 ){
     	//2 versions: track and energy cluster:
 	double t_trk_REC = giveme_t_method_L(ebeam,scatMCmatchREC,pbeam,vmREC);
