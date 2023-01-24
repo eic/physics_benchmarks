@@ -19,8 +19,23 @@ auto giveme_t_method_L(TLorentzVector eIn,
 }
 
 
-int diffractive_vm_simple_analysis(const std::string& config_name)
+int diffractive_vm_simple_analysis(const std::string& config_name, const int vm_type=1)
 {	
+
+double mass_daug=0.;
+double mass_vm=0.;
+
+if(vm_type==1){
+	cout << "we are analyzing phi meson" << endl;
+	mass_daug=MASS_KAON;
+	mass_vm=1.019461;
+}
+else if(vm_type==2){
+	cout << "we are analyzing phi meson" << endl;
+	mass_daug=MASS_ELECTRON;
+	mass_vm=3.096916;
+}
+else {cout << "wrong VM species" << endl; return 0;}
 
 // read our configuration	
 std::ifstream  config_file{config_name};
@@ -142,9 +157,9 @@ while (tree_reader.Next()) {
 			scatMC.SetVectM(mctrk,mc_mass_array[imc]);
 		}
 		if(mc_pdg_array[imc]==321
-			&& mc_genStatus_array[imc]==1) kplusMC.SetVectM(mctrk,MASS_KAON);
+			&& mc_genStatus_array[imc]==1) kplusMC.SetVectM(mctrk,mass_daug);
 		if(mc_pdg_array[imc]==-321
-			&& mc_genStatus_array[imc]==1) kminusMC.SetVectM(mctrk,MASS_KAON);
+			&& mc_genStatus_array[imc]==1) kminusMC.SetVectM(mctrk,mass_daug);
 
 	}
 	vmMC=kplusMC+kminusMC;
@@ -281,8 +296,8 @@ while (tree_reader.Next()) {
     		//selecting phi->kk daughters;
     		h_eta->Fill(trk.Eta());
     		if(fabs(trk.Eta())<3.0){
-    			if(reco_charge_array[itrk]>0) kplusREC.SetVectM(trk,MASS_KAON);
-    			if(reco_charge_array[itrk]<0) kminusREC.SetVectM(trk,MASS_KAON);
+    			if(reco_charge_array[itrk]>0) kplusREC.SetVectM(trk,mass_daug);
+    			if(reco_charge_array[itrk]<0) kminusREC.SetVectM(trk,mass_daug);
     		}
 		}
 	}
@@ -332,12 +347,12 @@ while (tree_reader.Next()) {
 
 	//VM rec
 	if(vmREC.E()==0) continue;
-	double phi_mass = vmREC.M();
-	h_VM_mass_REC->Fill(phi_mass);
+	double vm_mass = vmREC.M();
+	h_VM_mass_REC->Fill(vm_mass);
 	h_VM_pt_REC->Fill(vmREC.Pt());
 
 	//select phi mass and rapidity window 
-	if( fabs(phi_mass-1.02)<0.02
+	if( fabs(vm_mass-1.02)<0.02
     		&& fabs(vmREC.Rapidity())<3.5 ){
     	//2 versions: track and energy cluster:
 	double t_trk_REC = giveme_t_method_L(ebeam,scatMCmatchREC,pbeam,vmREC);
