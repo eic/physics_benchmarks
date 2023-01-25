@@ -8,7 +8,7 @@
 int analyze(std::string file)
 {
   // open dataframe
-  ROOT::RDataFrame df("events", file, {"GeneratedParticles", "ReconstructedParticles"});
+  ROOT::RDataFrame df("events", file, {"GeneratedParticles", "ReconstructedChargedParticles"});
 
   // count total events
   auto count = df.Count();
@@ -21,7 +21,7 @@ int analyze(std::string file)
 
   auto d = df
   .Define("n_tracks_gen", n_tracks, {"GeneratedParticles"})
-  .Define("n_tracks_rec", n_tracks, {"ReconstructedParticles"})
+  .Define("n_tracks_rec", n_tracks, {"ReconstructedChargedParticles"})
   ;
 
   auto stats_n_tracks_gen = d.Stats("n_tracks_gen");
