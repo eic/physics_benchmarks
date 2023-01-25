@@ -22,16 +22,16 @@ Dconfig = 'epic' + args.config.split('_epic')[1].strip() #Detector config
 config = args.config.split('_epic')[0].strip()
 
 for array in ur.iterate(rec_file + ':events',['MCParticles/MCParticles.generatorStatus',
-                                          'MCParticles/MCParticles.PDG',
-                                          'MCParticles/MCParticles.momentum.x',
-                                          'MCParticles/MCParticles.momentum.y',
-                                          'MCParticles/MCParticles.momentum.z',
-                                          'ReconstructedChargedParticles/ReconstructedChargedParticles.PDG',
+                                        'MCParticles/MCParticles.PDG',
+                                        'MCParticles/MCParticles.momentum.x',
+                                        'MCParticles/MCParticles.momentum.y',
+                                        'MCParticles/MCParticles.momentum.z',
+                                        'ReconstructedChargedParticles/ReconstructedChargedParticles.PDG',
                                         'ReconstructedChargedParticles/ReconstructedChargedParticles.momentum.x',
                                         'ReconstructedChargedParticles/ReconstructedChargedParticles.momentum.y',
                                         'ReconstructedChargedParticles/ReconstructedChargedParticles.momentum.z',
-                                        'ReconstructedChargedParticlesAssoc/ReconstructedChargedParticlesAssoc.simID',
-                                        'ReconstructedChargedParticlesAssoc/ReconstructedChargedParticlesAssoc.recID'],step_size=Nevents):
+                                        'ReconstructedChargedParticlesAssociations/ReconstructedChargedParticlesAssociations.simID',
+                                        'ReconstructedChargedParticlesAssociations/ReconstructedChargedParticlesAssociations.recID'],step_size=Nevents):
     PDG_mc = array['MCParticles/MCParticles.PDG']  #Monte Carlo (MC) particle numbering scheme.
     px_mc = array['MCParticles/MCParticles.momentum.x']
     py_mc = array['MCParticles/MCParticles.momentum.y']
@@ -40,8 +40,8 @@ for array in ur.iterate(rec_file + ':events',['MCParticles/MCParticles.generator
     px_rc = array['ReconstructedChargedParticles/ReconstructedChargedParticles.momentum.x']
     py_rc = array['ReconstructedChargedParticles/ReconstructedChargedParticles.momentum.y']
     pz_rc = array['ReconstructedChargedParticles/ReconstructedChargedParticles.momentum.z']
-    simID = array['ReconstructedChargedParticlesAssoc/ReconstructedChargedParticlesAssoc.simID']
-    recID = array['ReconstructedChargedParticlesAssoc/ReconstructedChargedParticlesAssoc.recID']
+    simID = array['ReconstructedChargedParticlesAssociations/ReconstructedChargedParticlesAssociations.simID']
+    recID = array['ReconstructedChargedParticlesAssociations/ReconstructedChargedParticlesAssociations.recID']
     #SimID and recID contain the indices of the MCParticles and ReconstructedParticles entry for that event.
 
 ### MCParticles Variables

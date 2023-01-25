@@ -484,7 +484,7 @@ ce_ecal_clreco = RecoCoG(
     mcHits="EcalEndcapNHits",  # to create truth associations
     inputProtoClusterCollection=ce_ecal_cl.outputProtoClusters,
     outputClusterCollection="EcalEndcapNClusters",
-    outputAssociations="EcalEndcapNClustersAssoc",
+    outputAssociations="EcalEndcapNClustersAssociations",
     logWeightBase=4.6,
 )
 algorithms.append(ce_ecal_clreco)
@@ -494,7 +494,7 @@ ce_ecal_clmerger = ClusterMerger(
     inputClusters=ce_ecal_clreco.outputClusterCollection,
     inputAssociations=ce_ecal_clreco.outputAssociations,
     outputClusters="EcalEndcapNMergedClusters",
-    outputAssociations="EcalEndcapNMergedClustersAssoc",
+    outputAssociations="EcalEndcapNMergedClustersAssociations",
 )
 algorithms.append(ce_ecal_clmerger)
 
@@ -558,7 +558,7 @@ ci_ecal_clreco = RecoCoG(
     mcHits=ci_ecal_cl.mcHits,
     inputProtoClusterCollection=ci_ecal_cl.outputProtoClusters,
     outputClusterCollection="EcalEndcapPClusters",
-    outputAssociations="EcalEndcapPClustersAssoc",
+    outputAssociations="EcalEndcapPClustersAssociations",
     enableEtaBounds=True,
     logWeightBase=6.2,
 )
@@ -569,7 +569,7 @@ ci_ecal_clmerger = ClusterMerger(
     inputClusters=ci_ecal_clreco.outputClusterCollection,
     inputAssociations=ci_ecal_clreco.outputAssociations,
     outputClusters="EcalEndcapPMergedClusters",
-    outputAssociations="EcalEndcapPMergedClustersAssoc",
+    outputAssociations="EcalEndcapPMergedClustersAssociations",
 )
 algorithms.append(ci_ecal_clmerger)
 
@@ -675,7 +675,7 @@ if has_ecal_barrel_imaging:
         mcHits=scfi_barrel_digi.inputHitCollection,
         inputProtoClusterCollection=scfi_barrel_cl.outputProtoClusterCollection,
         outputClusterCollection="EcalBarrelScFiClusters",
-        outputAssociations="EcalBarrelScFiClustersAssoc",
+        outputAssociations="EcalBarrelScFiClustersAssociations",
         logWeightBase=6.2,
     )
     algorithms.append(scfi_barrel_clreco)
@@ -689,7 +689,7 @@ if has_ecal_barrel_imaging:
         inputPositionClusters=img_barrel_clreco.outputClusters,
         inputPositionAssociations=img_barrel_clreco.outputAssociations,
         outputClusters="EcalBarrelMergedClusters",
-        outputAssociations="EcalBarrelMergedClustersAssoc",
+        outputAssociations="EcalBarrelMergedClustersAssociations",
     )
     algorithms.append(barrel_clus_merger)
 
@@ -744,7 +744,7 @@ else:
         mcHits="EcalBarrelSciGlassHits",
         inputProtoClusterCollection=sciglass_ecal_cl.outputProtoClusters,
         outputClusterCollection="EcalBarrelClusters",
-        outputAssociations="EcalBarrelClustersAssoc",
+        outputAssociations="EcalBarrelClustersAssociations",
         enableEtaBounds=True,
         logWeightBase=6.2,
     )
@@ -755,7 +755,7 @@ else:
         inputClusters=sciglass_ecal_clreco.outputClusterCollection,
         inputAssociations=sciglass_ecal_clreco.outputAssociations,
         outputClusters="EcalBarrelMergedClusters",
-        outputAssociations="EcalBarrelMergedClustersAssoc",
+        outputAssociations="EcalBarrelMergedClustersAssociations",
     )
     algorithms.append(barrel_clus_merger)
 
@@ -807,7 +807,7 @@ cb_hcal_clreco = RecoCoG(
     mcHits=cb_hcal_digi.inputHitCollection,
     inputProtoClusterCollection=cb_hcal_cl.outputProtoClusterCollection,
     outputClusterCollection="HcalBarrelClusters",
-    outputAssociations="HcalBarrelClustersAssoc",
+    outputAssociations="HcalBarrelClustersAssociations",
     logWeightBase=6.2,
 )
 algorithms.append(cb_hcal_clreco)
@@ -858,7 +858,7 @@ ci_hcal_clreco = RecoCoG(
     mcHits=ci_hcal_digi.inputHitCollection,
     inputProtoClusterCollection=ci_hcal_cl.outputProtoClusterCollection,
     outputClusterCollection="HcalEndcapPClusters",
-    outputAssociations="HcalEndcapPClustersAssoc",
+    outputAssociations="HcalEndcapPClustersAssociations",
     logWeightBase=6.2,
 )
 algorithms.append(ci_hcal_clreco)
@@ -909,7 +909,7 @@ ce_hcal_clreco = RecoCoG(
     mcHits=ce_hcal_digi.inputHitCollection,
     inputProtoClusterCollection=ce_hcal_cl.outputProtoClusterCollection,
     outputClusterCollection="HcalEndcapNClusters",
-    outputAssociations="HcalEndcapNClustersAssoc",
+    outputAssociations="HcalEndcapNClustersAssociations",
     logWeightBase=6.2,
 )
 algorithms.append(ce_hcal_clreco)
@@ -1065,7 +1065,7 @@ parts_with_truth_pid = ParticlesWithTruthPID(
     inputMCParticles="MCParticles",
     inputTrackParameters=parts_from_fit.outputTrackParameters,
     outputParticles="ReconstructedChargedParticles",
-    outputAssociations="ReconstructedChargedParticlesAssoc",
+    outputAssociations="ReconstructedChargedParticlesAssociations",
 )
 algorithms.append(parts_with_truth_pid)
 
@@ -1091,7 +1091,7 @@ match_clusters = MatchClusters(
         str(ci_hcal_clreco.outputAssociations),
     ],
     outputParticles="ReconstructedParticles",
-    outputParticlesAssoc="ReconstructedParticlesAssoc",
+    outputParticlesAssoc="ReconstructedParticlesAssociations",
 )
 algorithms.append(match_clusters)
 
@@ -1100,7 +1100,7 @@ fast_ff = FFSmearedParticles(
     "fast_ff",
     inputMCParticles="MCParticles",
     outputParticles="ReconstructedFFParticles",
-    outputAssociations="ReconstructedFFParticlesAssoc",
+    outputAssociations="ReconstructedFFParticlesAssociations",
     enableZDC=True,
     enableB0=True,
     enableRP=True,
