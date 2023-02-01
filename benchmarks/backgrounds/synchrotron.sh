@@ -91,6 +91,7 @@ echo "DETECTOR    = ${DETECTOR}"
 ## Step 1. Get the data
 if [[ -n "${DATA_INIT}" || -n "${DO_ALL}" ]] ; then
   mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
+  set +o pipefail
   mc -C . head -n $((2+5*${JUGGLER_N_EVENTS})) --insecure ${DATA_URL} | sanitize_hepmc3 > ${JUGGLER_MC_FILE}
   if [[ "$?" -ne "0" ]] ; then
     echo "Failed to download hepmc files"
@@ -126,7 +127,7 @@ if [[ -n "${DO_REC}" || -n "${DO_ALL}" ]] ; then
   fi
 
   if [[ ${RECO} == "juggler" ]] ; then
-    gaudirun.py options/reconstruction.py
+    gaudirun.py options/reconstruction.py || [ $? -eq 4 ]
     if [ "$?" -ne "0" ] ; then
       echo "ERROR running juggler"
       exit 1

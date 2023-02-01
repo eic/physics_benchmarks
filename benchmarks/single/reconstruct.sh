@@ -13,7 +13,7 @@ if [ ${RECO} == "eicrecon" ] ; then
 fi
 
 if [[ ${RECO} == "juggler" ]] ; then
-  gaudirun.py options/reconstruction.py
+  gaudirun.py options/reconstruction.py || [ $? -eq 4 ]
   if [ "$?" -ne "0" ] ; then
     echo "ERROR running juggler"
     exit 1

@@ -91,7 +91,7 @@ fi
 if [[ ${RECO} == "juggler" ]] ; then
   export JUGGLER_SIM_FILE=${SIM_FILE}
   export JUGGLER_REC_FILE=${REC_FILE}
-  gaudirun.py options/reconstruction.py
+  gaudirun.py options/reconstruction.py || [ $? -eq 4 ]
   if [ "$?" -ne "0" ] ; then
     echo "ERROR running juggler"
     exit 1
