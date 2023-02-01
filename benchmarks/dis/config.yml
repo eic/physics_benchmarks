@@ -38,7 +38,7 @@ dis:simulate:
       - EBEAM: 18
         PBEAM: 275
         MINQ2: [1, 10, 100, 1000]
-  timeout: 2 hour
+  timeout: 96 hour
   script:
     - bash benchmarks/dis/dis.sh --config dis_${EBEAM}x${PBEAM}_minQ2=${MINQ2} --ebeam ${EBEAM} --pbeam ${PBEAM} --minq2 ${MINQ2}
   retry:

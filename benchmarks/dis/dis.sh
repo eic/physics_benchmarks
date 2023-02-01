@@ -1,4 +1,5 @@
 #!/bin/bash
+source strict-mode.sh
 
 ## =============================================================================
 ## Run the DIS benchmarks in 5 steps:
@@ -52,7 +53,7 @@ GEN_FILE=${INPUT_PATH}/gen-${CONFIG}_${JUGGLER_N_EVENTS}.hepmc
 SIM_FILE=${TMP_PATH}/sim-${CONFIG}.edm4hep.root
 SIM_LOG=${TMP_PATH}/sim-${CONFIG}.log
 
-
+# JUGGLER_REC_FILE_BASE= ${TMP_PATH}/rec-${CONFIG}
 REC_FILE=${TMP_PATH}/rec-${CONFIG}.root
 REC_LOG=${TMP_PATH}/sim-${CONFIG}.log
 
@@ -65,7 +66,7 @@ if [ ! -f ${SIM_FILE} ] ; then
 ddsim --runType batch \
       --part.minimalKineticEnergy 1000*GeV  \
       --filter.tracker edep0 \
-      -v INFO \
+      -v WARNING \
       --numberOfEvents ${JUGGLER_N_EVENTS} \
       --compactFile ${DETECTOR_PATH}/${DETECTOR_CONFIG}.xml \
       --inputFiles ${GEN_FILE} \
@@ -79,25 +80,24 @@ fi
 ## =============================================================================
 ## Step 3: Run digitization & reconstruction
 echo "Running the digitization and reconstruction"
-## FIXME Need to figure out how to pass file name to juggler from the commandline
-## the tracker_reconstruction.py options file uses the following environment
-## variables:
-## - JUGGLER_SIM_FILE:    input detector simulation
-## - JUGGLER_REC_FILE:    output reconstructed data
-## - JUGGLER_N_EVENTS:    number of events to process (part of global environment)
-## - DETECTOR:    detector package (part of global environment)
-export JUGGLER_SIM_FILE=${SIM_FILE}
-export JUGGLER_REC_FILE=${REC_FILE}
-for rec in options/*.py options/extra/*.py ; do
-  unset tag
-  [[ $(basename ${rec} .py) =~ (.*)\.(.*) ]] && tag=".${BASH_REMATCH[2]}"
-  JUGGLER_REC_FILE=${JUGGLER_REC_FILE/.root/${tag:-}.root} \
-    gaudirun.py ${rec}
+if [ ${RECO} == "eicrecon" ] ; then
+  /usr/bin/time -v eicrecon ${SIM_FILE} -Ppodio:output_file=${REC_FILE}
+  if [ "$?" -ne "0" ] ; then
+    echo "ERROR running eicrecon"
+    exit 1
+  fi
+fi
+
+if [[ ${RECO} == "juggler" ]] ; then
+  export JUGGLER_SIM_FILE=${SIM_FILE}
+  export JUGGLER_REC_FILE=${REC_FILE}
+  gaudirun.py options/reconstruction.py
   if [ "$?" -ne "0" ] ; then
     echo "ERROR running juggler"
     exit 1
   fi
-done
+fi
+
 
 ## =============================================================================
 ## Step 4: Analysis
@@ -134,59 +134,6 @@ if [[ "$?" -ne "0" ]] ; then
   exit 1
 fi
 
-CONFIG="${TMP_PATH}/${PLOT_TAG}.raw.json"
-cat << EOF > ${CONFIG}
-{
-  "rec_file": "${REC_FILE/.root/.raw.root}",
-  "detector": "${DETECTOR}",
-  "output_prefix": "${RESULTS_PATH}/${PLOT_TAG}",
-  "ebeam": ${EBEAM},
-  "pbeam": ${PBEAM},
-  "minq2": ${MINQ2},
-  "test_tag": "${BEAM_TAG}"
-}
-EOF
-root -b -q "benchmarks/dis/analysis/rec_analysis_raw.cxx+(\"${CONFIG}\")"
-if [[ "$?" -ne "0" ]] ; then
-  echo "ERROR running rec_analysis_raw script"
-  exit 1
-fi
-
-CONFIG="${TMP_PATH}/${PLOT_TAG}.ecal.json"
-cat << EOF > ${CONFIG}
-{
-  "rec_file": "${REC_FILE/.root/.ecal.root}",
-  "detector": "${DETECTOR}",
-  "output_prefix": "${RESULTS_PATH}/${PLOT_TAG}",
-  "ebeam": ${EBEAM},
-  "pbeam": ${PBEAM},
-  "minq2": ${MINQ2},
-  "test_tag": "${BEAM_TAG}"
-}
-EOF
-root -b -q "benchmarks/dis/analysis/rec_analysis_ecal.cxx+(\"${CONFIG}\")"
-if [[ "$?" -ne "0" ]] ; then
-  echo "ERROR running rec_analysis_ecal script"
-  exit 1
-fi
-
-CONFIG="${TMP_PATH}/${PLOT_TAG}.hcal.json"
-cat << EOF > ${CONFIG}
-{
-  "rec_file": "${REC_FILE/.root/.hcal.root}",
-  "detector": "${DETECTOR}",
-  "output_prefix": "${RESULTS_PATH}/${PLOT_TAG}",
-  "ebeam": ${EBEAM},
-  "pbeam": ${PBEAM},
-  "minq2": ${MINQ2},
-  "test_tag": "${BEAM_TAG}"
-}
-EOF
-root -b -q "benchmarks/dis/analysis/rec_analysis_hcal.cxx+(\"${CONFIG}\")"
-if [[ "$?" -ne "0" ]] ; then
-  echo "ERROR running rec_analysis_hcal script"
-  exit 1
-fi
 
 ## =============================================================================
 ## Step 5: finalize
@@ -197,9 +144,6 @@ echo "Finalizing DIS benchmark"
 if [ "${JUGGLER_N_EVENTS}" -lt "500" ] ; then 
   cp ${REC_FILE} ${RESULTS_PATH}
 fi
-
-## Always move over log files to the results path
-cp ${REC_LOG} ${RESULTS_PATH}
 
 ## =============================================================================
 ## All done!

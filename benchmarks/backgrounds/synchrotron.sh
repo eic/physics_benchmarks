@@ -1,4 +1,5 @@
 #!/bin/bash
+source strict-mode.sh
 
 function print_the_help {
   echo "USAGE: ${0} [--rec] [--sim] [--ana] [--all] "
@@ -114,18 +115,23 @@ if [[ -n "${DO_SIM}" || -n "${DO_ALL}" ]] ; then
   fi
 fi
 
-### Step 3. Run the reconstruction (juggler)
+### Step 3. Run the reconstruction (eicrecon)
 if [[ -n "${DO_REC}" || -n "${DO_ALL}" ]] ; then
-  for rec in options/*.py ; do
-    unset tag
-    [[ $(basename ${rec} .py) =~ (.*)\.(.*) ]] && tag=".${BASH_REMATCH[2]}"
-    JUGGLER_REC_FILE=${JUGGLER_REC_FILE/.root/${tag:-}.root} \
-      gaudirun.py ${rec}
+  if [ ${RECO} == "eicrecon" ] ; then
+    eicrecon ${JUGGLER_SIM_FILE} -Ppodio:output_file=${JUGGLER_REC_FILE}
     if [[ "$?" -ne "0" ]] ; then
+      echo "ERROR running eicrecon"
+      exit 1
+    fi
+  fi
+
+  if [[ ${RECO} == "juggler" ]] ; then
+    gaudirun.py options/reconstruction.py
+    if [ "$?" -ne "0" ] ; then
       echo "ERROR running juggler"
       exit 1
     fi
-  done
+  fi
 
   root_filesize=$(stat --format=%s "${JUGGLER_REC_FILE}")
   if [[ "${JUGGLER_N_EVENTS}" -lt "500" ]] ; then 
@@ -145,13 +151,13 @@ if [[ -n "${DO_ANA}" || -n "${DO_ALL}" ]] ; then
   mkdir -p results/synchrotron
 
   # here you can add as many scripts as you want.
-  root -b -q "benchmarks/synchrotron/analysis/synchrotron_sim.cxx+(\"${JUGGLER_SIM_FILE}\")"
+  root -b -q "benchmarks/backgrounds/analysis/synchrotron_sim.cxx+(\"${JUGGLER_SIM_FILE}\")"
   if [[ "$?" -ne "0" ]] ; then
     echo "ERROR running root script"
     exit 1
   fi
 
-  root -b -q "benchmarks/synchrotron/analysis/synchrotron_raw.cxx+(\"${JUGGLER_REC_FILE/.root/.raw.root}\")"
+  root -b -q "benchmarks/backgrounds/analysis/synchrotron_raw.cxx+(\"${JUGGLER_REC_FILE/.root/.raw.root}\")"
   if [[ "$?" -ne "0" ]] ; then
     echo "ERROR running root script"
     exit 1

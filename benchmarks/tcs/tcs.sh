@@ -1,7 +1,5 @@
 #!/bin/bash
-set -Eu
-trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
-IFS=$'\n\t'
+source strict-mode.sh
 
 function print_the_help {
   echo "USAGE: ${0} [--rec] [--sim] [--analysis] [--all] "
@@ -111,6 +109,7 @@ echo "DETECTOR    = ${DETECTOR}"
 ## Step 1. Get the data
 if [[ -n "${DATA_INIT}" || -n "${DO_ALL}" ]] ; then
   mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
+  set +o pipefail
   mc -C . cat --insecure ${DATA_URL} | gunzip -c | head -n $((20+10*JUGGLER_N_EVENTS)) |  sanitize_hepmc3 > "${JUGGLER_MC_FILE}"
   if [[ "$?" -ne "0" ]] ; then
     echo "Failed to download hepmc file"
@@ -135,15 +134,24 @@ if [[ -n "${DO_SIM}" || -n "${DO_ALL}" ]] ; then
   fi
 fi
 
-### Step 3. Run the reconstruction (juggler)
+### Step 3. Run the reconstruction (eicrecon)
 export PBEAM
 if [[ -n "${DO_REC}" || -n "${DO_ALL}" ]] ; then
-  for rec in options/*.py ; do
-    unset tag
-    [[ $(basename ${rec} .py) =~ (.*)\.(.*) ]] && tag=".${BASH_REMATCH[2]}"
-    JUGGLER_REC_FILE=${JUGGLER_REC_FILE/.root/${tag:-}.root} \
-      gaudirun.py ${rec} || [ $? -eq 4 ]
-  done
+  if [ ${RECO} == "eicrecon" ] ; then
+    eicrecon ${JUGGLER_SIM_FILE} -Ppodio:output_file=${JUGGLER_REC_FILE}
+    if [[ "$?" -ne "0" ]] ; then
+      echo "ERROR running eicrecon"
+      exit 1
+    fi
+  fi
+
+  if [[ ${RECO} == "juggler" ]] ; then
+    gaudirun.py options/reconstruction.py
+    if [ "$?" -ne "0" ] ; then
+      echo "ERROR running juggler"
+      exit 1
+    fi
+  fi
 
   root_filesize=$(stat --format=%s "${JUGGLER_REC_FILE}")
   if [[ "${JUGGLER_N_EVENTS}" -lt "500" ]] ; then 

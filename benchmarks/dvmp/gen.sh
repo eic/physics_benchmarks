@@ -1,4 +1,5 @@
 #!/bin/bash
+source strict-mode.sh
 
 ## =============================================================================
 ## Run a single instance of the DVMP generator (lAger)

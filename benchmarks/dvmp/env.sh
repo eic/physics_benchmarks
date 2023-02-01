@@ -1,4 +1,5 @@
 #!/bin/bash
+source strict-mode.sh
 
 ## =============================================================================
 ## Local configuration variables for this particular benchmark 

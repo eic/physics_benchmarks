@@ -1,4 +1,5 @@
 #!/bin/bash
+source strict-mode.sh
 
 ## =============================================================================
 ## Standin for a proper pythia generation process, similar to how we

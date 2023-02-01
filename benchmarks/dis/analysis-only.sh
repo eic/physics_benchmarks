@@ -1,4 +1,5 @@
 #!/bin/bash
+source strict-mode.sh
 
 ## =============================================================================
 ## Run the DIS benchmarks in 5 steps:

@@ -1,5 +1,8 @@
 image: eicweb.phy.anl.gov:4567/eic/juggler/juggler:$JUGGLER_TAG
 
+variables:
+  RECO: "eicrecon"
+
 default:
   before_script:
     - source .local/bin/env.sh

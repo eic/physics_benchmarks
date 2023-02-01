@@ -89,25 +89,26 @@ else:
 particle = config.split('-')[0].strip()
 particle_dict = {'e':[boolean_electron,'Electrons'],'pi':[boolean_pion,'Pions']}
 
+
 ####################################################################################################
     #Ratio 
 ####################################################################################################
 
 for i in range(len(MC_list)): #Repeat the following steps for each variable (momentum,theta,phi,eta)
-    X1 = MC_list[i] #MCParticles events to be plotted on x-axis
-    Y1 = RC_list[i] #ReconstructedParticles events
-    X_list = [ak.Array(X1),
-          ak.Array(X1[boolean_pion]),
-          ak.Array(X1[boolean_proton]),
-          ak.Array(X1[boolean_electron]),
-          ak.Array(X1[boolean_neutron]),
-          ak.Array(X1[boolean_photon])]
-    Y_list = [ak.Array(Y1),
-          ak.Array(Y1[boolean_pion]),
-          ak.Array(Y1[boolean_proton]),
-          ak.Array(Y1[boolean_electron]),
-          ak.Array(Y1[boolean_neutron]),
-          ak.Array(Y1[boolean_photon])]
+    MCparts = MC_list[i] #MCParticles events to be plotted on x-axis
+    RCparts = RC_list[i] #ReconstructedParticles events
+    X_list = [ak.Array(MCparts),
+          ak.Array(MCparts[boolean_pion]),
+          ak.Array(MCparts[boolean_proton]),
+          ak.Array(MCparts[boolean_electron]),
+          ak.Array(MCparts[boolean_neutron]),
+          ak.Array(MCparts[boolean_photon])]
+    Y_list = [ak.Array(RCparts),
+          ak.Array(RCparts[boolean_pion]),
+          ak.Array(RCparts[boolean_proton]),
+          ak.Array(RCparts[boolean_electron]),
+          ak.Array(RCparts[boolean_neutron]),
+          ak.Array(RCparts[boolean_photon])]
     X_plot = list(np.zeros(len(X_list)))
     Y_plot = list(np.zeros(len(X_list)))
 
@@ -177,6 +178,7 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
     plt.savefig(os.path.join(r_path, '%s_%s_%s.png' %  (title_list[i],title,config)))
     plt.close()
 
+
 ###################################################################################################
      #Ratio vs momentum
 ###################################################################################################
@@ -219,19 +221,20 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
         ax1.set_title('%s Difference Vs Momentum  %s  %s events\n DETECTOR_CONFIG: %s'%(title_list[i],config,Nevents,Dconfig))
         plt.savefig(os.path.join(r_path, '%s_difference_vs_momentum_%s.png' %  (title_list[i],config)))
 
+
 ###################################################################################################
      #Correlation
 ###################################################################################################
 
     #Repeat the following steps for each variable (momentum,theta,phi,eta)
-    X_len = ak.count(X1,axis=None)
-    Y_len = ak.count(Y1,axis=None)
+    X_len = ak.count(MCparts,axis=None)
+    Y_len = ak.count(RCparts,axis=None)
     if X_len > Y_len: 
-        F_boolean = np.ones_like(Y1) == 1
+        F_boolean = np.ones_like(RCparts) == 1
     else: 
-        F_boolean = np.ones_like(X1) == 1
-    X_s = np.array(ak.flatten(X1[F_boolean])) 
-    Y_s = np.array(ak.flatten(Y1[F_boolean])) 
+        F_boolean = np.ones_like(MCparts) == 1
+    X_s = np.array(ak.flatten(MCparts[F_boolean])) 
+    Y_s = np.array(ak.flatten(RCparts[F_boolean])) 
  
     #Histogram
     if i == 0 and particle in particle_dict.keys(): #Momentum in Single events
@@ -267,6 +270,7 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
     axs[1].set_title('%s Correlation'%(title_list[i]))
     fig.suptitle('%s  %s events\n DETECTOR_CONFIG: %s'%(config,Nevents,Dconfig))
     plt.savefig(os.path.join(r_path, '%s_correlation_%s.png' %  (title_list[i],config)))
+
 
 ###################################################################################################
      #Phi vs Theta plots

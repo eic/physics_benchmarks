@@ -1,4 +1,5 @@
 #!/bin/bash
+source strict-mode.sh
 
 source $(dirname $0)/common.sh $*
 

@@ -1,4 +1,5 @@
 #!/bin/bash
+source strict-mode.sh
 
 function print_the_help {
   echo "USAGE: ${0} [--rec] [--sim] [--analysis] [--all] "
@@ -114,19 +115,23 @@ if [[ -n "${DO_SIM}" || -n "${DO_ALL}" ]] ; then
   fi
 fi
 
-### Step 3. Run the reconstruction (juggler)
+### Step 3. Run the reconstruction (eicrecon)
 if [[ -n "${DO_REC}" || -n "${DO_ALL}" ]] ; then
-  for rec in options/*.py ; do
-    unset tag
-    [[ $(basename ${rec} .py) =~ (.*)\.(.*) ]] && tag=".${BASH_REMATCH[2]}"
-    JUGGLER_REC_FILE=${JUGGLER_REC_FILE/.root/${tag:-}.root} \
-      gaudirun.py ${rec}
+  if [ ${RECO} == "eicrecon" ] ; then
+    eicrecon ${JUGGLER_SIM_FILE} -Ppodio:output_file=${JUGGLER_REC_FILE}
     if [[ "$?" -ne "0" ]] ; then
+      echo "ERROR running eicrecon"
+      exit 1
+    fi
+  fi
+
+  if [[ ${RECO} == "juggler" ]] ; then
+    gaudirun.py options/reconstruction.py
+    if [ "$?" -ne "0" ] ; then
       echo "ERROR running juggler"
       exit 1
     fi
-  done
-
+  fi
   root_filesize=$(stat --format=%s "${JUGGLER_REC_FILE}")
   if [[ "${JUGGLER_N_EVENTS}" -lt "500" ]] ; then 
     # file must be less than 10 MB to upload
