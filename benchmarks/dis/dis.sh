@@ -80,6 +80,7 @@ fi
 ## =============================================================================
 ## Step 3: Run digitization & reconstruction
 echo "Running the digitization and reconstruction"
+rm fieldmaps
 if [ ${RECO} == "eicrecon" ] ; then
   /usr/bin/time -v eicrecon ${SIM_FILE} -Ppodio:output_file=${REC_FILE}
   if [ "$?" -ne "0" ] ; then
