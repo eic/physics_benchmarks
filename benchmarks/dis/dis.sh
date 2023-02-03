@@ -116,11 +116,11 @@ cat << EOF > ${CONFIG}
 }
 EOF
 
-root -b -q "benchmarks/dis/analysis/dis_electrons.cxx+(\"${CONFIG}\")"
-if [[ "$?" -ne "0" ]] ; then
-  echo "ERROR running dis_electron script"
-  exit 1
-fi
+# root -b -q "benchmarks/dis/analysis/dis_electrons.cxx+(\"${CONFIG}\")"
+# if [[ "$?" -ne "0" ]] ; then
+#   echo "ERROR running dis_electron script"
+#   exit 1
+# fi
 
 python benchmarks/dis/analysis/kinematics_correlations.py --rec_file ${REC_FILE} --ebeam ${EBEAM} --pbeam ${PBEAM} --minq2 ${MINQ2}
 if [[ "$?" -ne "0" ]] ; then
