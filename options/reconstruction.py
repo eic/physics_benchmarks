@@ -1091,7 +1091,7 @@ match_clusters = MatchClusters(
         str(ci_hcal_clreco.outputAssociations),
     ],
     outputParticles="ReconstructedParticles",
-    outputParticlesAssoc="ReconstructedParticlesAssociations",
+    outputParticlesAssoc="ReconstructedParticleAssociations",
 )
 algorithms.append(match_clusters)
 
