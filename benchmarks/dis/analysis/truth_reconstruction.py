@@ -72,7 +72,7 @@ RC_list = [ak.Array(momentum_rc[recID][booll]),                     #Momentum
            -np.log(np.tan((ak.Array(theta_rc[recID][booll]))/2))]   #Eta
 title_list = ['Momentum','Theta','Phi','Eta']
 title_list_n = ['1','2','3','4']
-particle_name_n = {'Electron':'5','Pions':'6','Photons':'7'}
+particle_name_n = {'Electrons':'5','Pions':'6','Photons':'7'}
 ### MC Momentum for different particles list
 M_list = [ak.Array(momentum_mc[simID][booll]),
           ak.Array(momentum_mc[simID][booll][boolean_pion]),
