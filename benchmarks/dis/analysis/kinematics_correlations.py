@@ -25,7 +25,7 @@ Nevents = args.nevents
 r_path = args.results_path  #Path for output figures and file.
 Dconfig = 'epic' + args.config.split('_epic')[1].strip() #Detector config
 config = args.config.split('_epic')[0].strip()
-minq2 = int(config.split('=')[1].strip()[0])
+minq2 = int(config.split('=')[1].strip())
 k = int(config.split('x')[0].split('_')[1].strip())    #ebeam Electron beam energy
 p = int(config.split('x')[1].split('_')[0].strip())     #pbeam Proton (or ion) beam energy
 
