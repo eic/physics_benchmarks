@@ -17,7 +17,7 @@ kwargs = vars(args)
 
 rec_file = args.rec_file
 Nevents = int(args.nevents)
-r_path = args.results_path + '/truth_reconstruction/' #Path for output figures and file.
+r_path = args.results_path  #Path for output figures and file.
 Dconfig = 'epic' + args.config.split('_epic')[1].strip() #Detector config
 config = args.config.split('_epic')[0].strip()
 
@@ -71,6 +71,8 @@ RC_list = [ak.Array(momentum_rc[recID][booll]),                     #Momentum
            ak.Array(phi_rc[recID][booll]),                          #Phi
            -np.log(np.tan((ak.Array(theta_rc[recID][booll]))/2))]   #Eta
 title_list = ['Momentum','Theta','Phi','Eta']
+title_list_n = ['1','2','3','4']
+particle_name_n = {'Electron':'5','Pions':'6','Photons':'7'}
 ### MC Momentum for different particles list
 M_list = [ak.Array(momentum_mc[simID][booll]),
           ak.Array(momentum_mc[simID][booll][boolean_pion]),
@@ -175,7 +177,7 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
     fig.set_figwidth(20)
     fig.set_figheight(10)
     ax1.set_title('%s %s  %s  %s events\n DETECTOR_CONFIG: %s'%(title_list[i],title,config,Nevents,Dconfig))
-    plt.savefig(os.path.join(r_path, '%s_%s_%s.png' %  (title_list[i],title,config)))
+    plt.savefig(os.path.join(r_path, '%s_%s_%s.png' %  (title_list_n[i],title,config)))
     plt.close()
 
 
@@ -219,7 +221,7 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
         fig.set_figwidth(20)
         fig.set_figheight(10)
         ax1.set_title('%s Difference Vs Momentum  %s  %s events\n DETECTOR_CONFIG: %s'%(title_list[i],config,Nevents,Dconfig))
-        plt.savefig(os.path.join(r_path, '%s_difference_vs_momentum_%s.png' %  (title_list[i],config)))
+        plt.savefig(os.path.join(r_path, '%s_difference_vs_momentum_%s.png' %  (title_list_n[i],config)))
 
 
 ###################################################################################################
@@ -269,7 +271,7 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
     axs[1].set_ylabel('%s_rc'%(title_list[i]))
     axs[1].set_title('%s Correlation'%(title_list[i]))
     fig.suptitle('%s  %s events\n DETECTOR_CONFIG: %s'%(config,Nevents,Dconfig))
-    plt.savefig(os.path.join(r_path, '%s_correlation_%s.png' %  (title_list[i],config)))
+    plt.savefig(os.path.join(r_path, '%s_correlation_%s.png' %  (title_list_n[i],config)))
 
 
 ###################################################################################################
@@ -320,7 +322,7 @@ if particle in particle_dict.keys():
     particle_plots(boolean_particle)
 
     plt.suptitle('%s in %s  %s events\n DETECTOR_CONFIG: %s'%(particle_name,config,Nevents,Dconfig))
-    plt.savefig(os.path.join(r_path, '%s_%s.png' %  (particle_name,config)))
+    plt.savefig(os.path.join(r_path, '%s_%s.png' %  (particle_name_n[particle_name],config)))
 else:
     for i in [[boolean_photon,'Photons'],[boolean_electron,'Electrons'],[boolean_pion,'Pions']]:
         boolean_particle = i[0]
@@ -328,7 +330,7 @@ else:
         particle_plots(boolean_particle)
 
         plt.suptitle('%s in %s  %s events\n DETECTOR_CONFIG: %s'%(particle_name,config,Nevents,Dconfig))
-        plt.savefig(os.path.join(r_path, '%s_%s.png' %  (particle_name,config)))
+        plt.savefig(os.path.join(r_path, '%s_%s.png' %  (particle_name_n[particle_name],config)))
 
 
 

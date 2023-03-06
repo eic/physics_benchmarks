@@ -89,7 +89,7 @@ def Q2correlation(minq2,method): #minq2 can be 1,10,100, or 1000; method can be 
     plt.xlabel('$Q^2$ [$GeV^2$] Truth')
     plt.ylabel('$Q^2$ [$GeV^2$] {}'.format(method_dict['{}'.format(method)]))
     plt.title('{}   $Q^2$ correlation   {}x{}   $minQ^2=${}$GeV^2$\n  {} events  DETECTOR_CONFIG: {} '.format(method_dict['{}'.format(method)],k,p,minq2,Nevents,Dconfig))
-    plt.savefig(os.path.join(r_path, 'Q2_correlation_%s_%s.png' %(method,config)))
+    plt.savefig(os.path.join(r_path, 'Q2_correlation_%s_%s.png' %(method_dict_n[method],config)))
 
 
 ##########################################################################################
@@ -147,7 +147,7 @@ def Xcorrelation(minq2,method): #minq2 can be 1,10,100, or 1000; method can be '
     plt.xlabel('x Truth')
     plt.ylabel('$x$   {}'.format(method_dict['{}'.format(method)]))
     plt.title('{}   $x$ correlation   {}x{}   $minQ^2=${}$GeV^2$\n  {} events  DETECTOR_CONFIG: {} '.format(method_dict['{}'.format(method)],k,p,minq2,Nevents,Dconfig))
-    plt.savefig(os.path.join(r_path, 'x_correlation_%s_%s.png' %(method,config)))
+    plt.savefig(os.path.join(r_path, 'x_correlation_%s_%s.png' %(method_dict_n[method],config)))
 
 
 
@@ -178,6 +178,7 @@ Xvalues_S = Sigma[1]
 Xvalues_eS = eSigma[1]
 
 method_dict = {'e':'Electron','DA':'Double-Angle','JB':'Jacquet-Blondel','S':'Sigma','eS':'eSigma'}
+method_dict_n = {'e':'8','DA':'9','JB':'10','S':'11','eS':'12'}
 method_Q2values_dict = {'e':Q2values_E,'DA':Q2values_DA,'JB':Q2values_JB,'S':Q2values_S,'eS':Q2values_eS}
 method_Xvalues_dict = {'e':Xvalues_E,'DA':Xvalues_DA,'JB':Xvalues_JB,'S':Xvalues_S,'eS':Xvalues_eS}
 
@@ -197,7 +198,7 @@ Xcorrelation(minq2,'eS')
 #Kinematic coverage plot
 ##########################################################################################
 
-fig = plt.figure()
+fig = plt.figure(figsize=(20,10))
 gs = fig.add_gridspec(2, 3, wspace=0.09, hspace = 0.2)
 (ax1, ax2, ax3), (ax4, ax5, ax6) = gs.subplots()
 
@@ -220,8 +221,5 @@ ax4.set_title('Electron')
 ax5.set_title('eSigma')
 ax6.set_title('Jacquet Blondel')
 
-fig.set_figwidth(30)
-fig.set_figheight(20)
-
-plt.title('Kinematic Coverage  {}x{}   $minQ^2=${}$GeV^2$\n  {} events  DETECTOR_CONFIG: {} '.format(k,p,minq2,Nevents,Dconfig))
-plt.savefig(os.path.join(r_path, 'kinematic_coverage_%s.png' %(config)))
+fig.suptitle('Kinematic Coverage  {}x{}   $minQ^2=${}$GeV^2$\n  {} events  DETECTOR_CONFIG: {} '.format(k,p,minq2,Nevents,Dconfig))
+plt.savefig(os.path.join(r_path, 'z_kinematic_coverage_%s.png' %(config)))
