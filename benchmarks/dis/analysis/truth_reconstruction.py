@@ -71,7 +71,7 @@ RC_list = [ak.Array(momentum_rc[recID][booll]),                     #Momentum
            ak.Array(phi_rc[recID][booll]),                          #Phi
            -np.log(np.tan((ak.Array(theta_rc[recID][booll]))/2))]   #Eta
 title_list = ['Momentum','Theta','Phi','Eta']
-title_list_n = ['1','2','3','4']
+title_list_n = ['1','2','4','3']
 particle_name_n = {'Electrons':'5','Pions':'6','Photons':'7'}
 ### MC Momentum for different particles list
 M_list = [ak.Array(momentum_mc[simID][booll]),
@@ -271,7 +271,7 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
     axs[1].set_ylabel('%s_rc'%(title_list[i]))
     axs[1].set_title('%s Correlation'%(title_list[i]))
     fig.suptitle('%s  %s events\n DETECTOR_CONFIG: %s'%(config,Nevents,Dconfig))
-    plt.savefig(os.path.join(r_path, '%s_correlation_%s.png' %  (title_list_n[i],config)))
+    plt.savefig(os.path.join(r_path, '%s%s_%s.png' %  (title_list_n[i],args.config.split('_epic_')[1].strip(),config)))
 
 
 ###################################################################################################
