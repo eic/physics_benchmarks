@@ -14,18 +14,20 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--rec_file', type=str, help='Reconstructed track file.')
-parser.add_argument('--ebeam', type=float, help='Electron beam energy.')
-parser.add_argument('--pbeam', type=float, help='Proton (or ion) beam energy.')
-parser.add_argument('--minq2', type=float, help='Minimum four-momentum transfer squared Q2.')
-parser.add_argument('-o', dest='outdir', default='results/dis/', help='Output directory.')
+parser.add_argument('--config', type=str, help='Momentum configuration.')
+parser.add_argument('--nevents', type=float, help='Number of events to process.')
+parser.add_argument('--results_path', type=str, help='Output directory.')
 args = parser.parse_args()
 kwargs = vars(args)
 
 rec_file = args.rec_file
-minq2 = int(args.minq2)
-k = int(args.ebeam)
-p = int(args.pbeam)
-
+Nevents = args.nevents
+r_path = args.results_path  #Path for output figures and file.
+Dconfig = 'epic' + args.config.split('_epic')[1].strip() #Detector config
+config = args.config.split('_epic')[0].strip()
+minq2 = int(config.split('=')[1].strip())
+k = int(config.split('x')[0].split('_')[1].strip())    #ebeam Electron beam energy
+p = int(config.split('x')[1].split('_')[0].strip())     #pbeam Proton (or ion) beam energy
 
 
 #logarithmically spaced bins in Q2 and 𝑥 
@@ -33,8 +35,10 @@ Q2_bins = [0.40938507,0.64786184,1.025353587,1.626191868,2.581181894,4.091148983
 x_bins = [4.09385E-05,6.47862E-05,0.000102535,0.000162619,0.000258118,0.000409115,0.000647862,0.001025354,0.001626192,0.002581182,0.004091149,0.006478619,0.010253536,0.016261919,0.025811819,0.04091149,0.064786187,0.10253536,0.162619187,0.25811819,0.409114898,0.647861868,1.025257131]
 
 
-
+##########################################################################################
 #function to construct Q2 correlation plots
+##########################################################################################
+
 def Q2correlation(minq2,method): #minq2 can be 1,10,100, or 1000; method can be 'e','DA', or 'JB'
 
     Q2values_Y = method_Q2values_dict['{}'.format(method)]  #Q2 values of the given method, that are mapped onto the y axis 
@@ -84,13 +88,14 @@ def Q2correlation(minq2,method): #minq2 can be 1,10,100, or 1000; method can be 
     fig.set_figheight(11)
     plt.xlabel('$Q^2$ [$GeV^2$] Truth')
     plt.ylabel('$Q^2$ [$GeV^2$] {}'.format(method_dict['{}'.format(method)]))
-    plt.title('{}   $Q^2$ correlation   {}x{}   $minQ^2=${}$GeV^2$'.format(method_dict['{}'.format(method)],k,p,minq2))
-    plt.show()
-    plt.savefig(os.path.join(args.outdir, '%gon%g/minQ2=%g/Q2_correlation_%s_%gx%g_minQ2=%g.png' %(k,p,minq2,method,k,p,minq2)))
+    plt.title('{}   $Q^2$ correlation   {}x{}   $minQ^2=${}$GeV^2$\n  {} events  DETECTOR_CONFIG: {} '.format(method_dict['{}'.format(method)],k,p,minq2,Nevents,Dconfig))
+    plt.savefig(os.path.join(r_path, 'Q2_correlation_%s_%s.png' %(method,config)))
 
 
-
+##########################################################################################
 #function to construct Bjorken-x correlation plots
+##########################################################################################
+
 def Xcorrelation(minq2,method): #minq2 can be 1,10,100, or 1000; method can be 'e','DA', or 'JB'
 
     Xvalues_Y = method_Xvalues_dict['{}'.format(method)] #x values of the given method, that are mapped onto the y axis 
@@ -141,9 +146,8 @@ def Xcorrelation(minq2,method): #minq2 can be 1,10,100, or 1000; method can be '
     fig.set_figheight(11)
     plt.xlabel('x Truth')
     plt.ylabel('$x$   {}'.format(method_dict['{}'.format(method)]))
-    plt.title('{}   $x$ correlation   {}x{}   $minQ^2=${}$GeV^2$'.format(method_dict['{}'.format(method)],k,p,minq2))
-    plt.show()
-    plt.savefig(os.path.join(args.outdir, '%gon%g/minQ2=%g/x_correlation_%s_%gx%g_minQ2=%g.png' %(k,p,minq2,method,k,p,minq2)))
+    plt.title('{}   $x$ correlation   {}x{}   $minQ^2=${}$GeV^2$\n  {} events  DETECTOR_CONFIG: {} '.format(method_dict['{}'.format(method)],k,p,minq2,Nevents,Dconfig))
+    plt.savefig(os.path.join(r_path, 'x_correlation_%s_%s.png' %(method,config)))
 
 
 
@@ -155,19 +159,27 @@ keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsDA')
 DoubleAngle =  [keys['InclusiveKinematicsDA.Q2'], keys['InclusiveKinematicsDA.x']]
 keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsJB')
 JacquetBlondel =  [keys['InclusiveKinematicsJB.Q2'], keys['InclusiveKinematicsJB.x']]
+keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsSigma')
+Sigma =  [keys['InclusiveKinematicsSigma.Q2'], keys['InclusiveKinematicsSigma.x']]
+keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicseSigma')
+eSigma =  [keys['InclusiveKinematicseSigma.Q2'], keys['InclusiveKinematicseSigma.x']]
 
 Q2values_T = Truth[0]
 Q2values_E = Electron[0]
 Q2values_DA = DoubleAngle[0]
 Q2values_JB = JacquetBlondel[0]
+Q2values_S = Sigma[0]
+Q2values_eS = eSigma[0]
 Xvalues_T = Truth[1]
 Xvalues_E = Electron[1]
 Xvalues_DA = DoubleAngle[1]
 Xvalues_JB = JacquetBlondel[1]
+Xvalues_S = Sigma[1]
+Xvalues_eS = eSigma[1]
 
-method_dict = {'e':'Electron','DA':'Double-Angle','JB':'Jacquet-Blondel'}
-method_Q2values_dict = {'e':Q2values_E,'DA':Q2values_DA,'JB':Q2values_JB}
-method_Xvalues_dict = {'e':Xvalues_E,'DA':Xvalues_DA,'JB':Xvalues_JB}
+method_dict = {'e':'Electron','DA':'Double-Angle','JB':'Jacquet-Blondel','S':'Sigma','eS':'eSigma'}
+method_Q2values_dict = {'e':Q2values_E,'DA':Q2values_DA,'JB':Q2values_JB,'S':Q2values_S,'eS':Q2values_eS}
+method_Xvalues_dict = {'e':Xvalues_E,'DA':Xvalues_DA,'JB':Xvalues_JB,'S':Xvalues_S,'eS':Xvalues_eS}
 
 Q2correlation(minq2,'e')
 Xcorrelation(minq2,'e')
@@ -175,3 +187,38 @@ Q2correlation(minq2,'DA')
 Xcorrelation(minq2,'DA')
 Q2correlation(minq2,'JB')
 Xcorrelation(minq2,'JB')
+Q2correlation(minq2,'S')
+Xcorrelation(minq2,'S')
+Q2correlation(minq2,'eS')
+Xcorrelation(minq2,'eS')
+
+
+##########################################################################################
+#Kinematic coverage plot
+##########################################################################################
+
+fig = plt.figure(figsize=(20,10))
+gs = fig.add_gridspec(2, 3, wspace=0.09, hspace = 0.2)
+(ax1, ax2, ax3), (ax4, ax5, ax6) = gs.subplots()
+
+ax1.hist2d(ak.to_numpy(ak.flatten(Xvalues_T)), ak.to_numpy(ak.flatten(Q2values_T)), bins = [x_bins, Q2_bins])
+ax2.hist2d(ak.to_numpy(ak.flatten(Xvalues_S)), ak.to_numpy(ak.flatten(Q2values_S)), bins = [x_bins, Q2_bins])
+ax3.hist2d(ak.to_numpy(ak.flatten(Xvalues_DA)), ak.to_numpy(ak.flatten(Q2values_DA)), bins = [x_bins, Q2_bins])
+ax4.hist2d(ak.to_numpy(ak.flatten(Xvalues_E)), ak.to_numpy(ak.flatten(Q2values_E)), bins = [x_bins, Q2_bins])
+ax5.hist2d(ak.to_numpy(ak.flatten(Xvalues_eS)), ak.to_numpy(ak.flatten(Q2values_eS)), bins = [x_bins, Q2_bins])
+ax6.hist2d(ak.to_numpy(ak.flatten(Xvalues_JB)), ak.to_numpy(ak.flatten(Q2values_JB)), bins = [x_bins, Q2_bins])
+
+for axes in [ax1,ax2,ax3,ax4,ax5,ax6]:
+    axes.set_xscale('log')
+    axes.set_yscale('log')
+    axes.set_ylabel('$Q^2$ [$GeV^2$]')
+    axes.set_xlabel('$x$')
+ax1.set_title('Truth')
+ax2.set_title('Sigma')
+ax3.set_title('Double Angle')
+ax4.set_title('Electron')
+ax5.set_title('eSigma')
+ax6.set_title('Jacquet Blondel')
+
+fig.suptitle('Kinematic Coverage  {}x{}   $minQ^2=${}$GeV^2$\n  {} events  DETECTOR_CONFIG: {} '.format(k,p,minq2,Nevents,Dconfig))
+plt.savefig(os.path.join(r_path, 'kinematic_coverage_%s.png' %(config)))
