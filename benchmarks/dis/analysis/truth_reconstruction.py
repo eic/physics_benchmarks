@@ -331,7 +331,7 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
         fig.set_figheight(10)
         ax1.set_title('%s Difference Vs Momentum  %s  %s events\n DETECTOR_CONFIG: %s'%(title_list[i],config,Nevents,Dconfig))
         plt.savefig(os.path.join(r_path, '%s_difference_vs_momentum_%s.png' %  (title_list_n[i],config)))
-        plt..close()
+        plt.close()
 
                 title ='difference vs momentum'    
         particle_nlist = ['All','Pions','Protons','Electrons','Neutrons','Photons']
