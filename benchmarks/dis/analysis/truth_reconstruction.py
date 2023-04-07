@@ -333,7 +333,7 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
         plt.savefig(os.path.join(r_path, '%s_difference_vs_momentum_%s.png' %  (title_list_n[i],config)))
         plt.close()
 
-                title ='difference vs momentum'    
+        title ='difference vs momentum'    
         particle_nlist = ['All','Pions','Protons','Electrons','Neutrons','Photons']
         for j in range(len(X_list)):#Repeat the following steps for each particle (pions,protons,electrons,neutrons,photons)
             Y_error[j] = error_bars(X_plot[j], Y_plot[j], x_range)
