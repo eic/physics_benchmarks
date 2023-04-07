@@ -426,7 +426,7 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
     axs[1].set_ylabel('%s_rc'%(title_list[i]))
     axs[1].set_title('%s Correlation'%(title_list[i]))
     fig.suptitle('%s  %s events\n DETECTOR_CONFIG: %s'%(config,Nevents,Dconfig))
-    plt.savefig(os.path.join(r_path, '%s%s_%s.png' %  (title_list_n[i],args.config.split('_epic_')[1].strip(),config)))
+    # plt.savefig(os.path.join(r_path, '%s%s_%s.png' %  (title_list_n[i],args.config.split('_epic_')[1].strip(),config)))
 
 
 ###################################################################################################
@@ -477,7 +477,7 @@ if particle in particle_dict.keys():
     particle_plots(boolean_particle)
 
     plt.suptitle('%s in %s  %s events\n DETECTOR_CONFIG: %s'%(particle_name,config,Nevents,Dconfig))
-    plt.savefig(os.path.join(r_path, '%s_%s.png' %  (particle_name_n[particle_name],config)))
+    # plt.savefig(os.path.join(r_path, '%s_%s.png' %  (particle_name_n[particle_name],config)))
 else:
     for i in [[boolean_photon,'Photons'],[boolean_electron,'Electrons'],[boolean_pion,'Pions']]:
         boolean_particle = i[0]
@@ -485,7 +485,7 @@ else:
         particle_plots(boolean_particle)
 
         plt.suptitle('%s in %s  %s events\n DETECTOR_CONFIG: %s'%(particle_name,config,Nevents,Dconfig))
-        plt.savefig(os.path.join(r_path, '%s_%s.png' %  (particle_name_n[particle_name],config)))
+        # plt.savefig(os.path.join(r_path, '%s_%s.png' %  (particle_name_n[particle_name],config)))
 
 
 
