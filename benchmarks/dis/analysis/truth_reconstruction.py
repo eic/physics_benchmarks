@@ -329,6 +329,7 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
         ax6.set_title('Photons')
         fig.set_figwidth(20)
         fig.set_figheight(10)
+        x_range = list(ax1.get_xlim())
         ax1.set_title('%s Difference Vs Momentum  %s  %s events\n DETECTOR_CONFIG: %s'%(title_list[i],config,Nevents,Dconfig))
         plt.savefig(os.path.join(r_path, '%s_difference_vs_momentum_%s.png' %  (title_list_n[i],config)))
         plt.close()
