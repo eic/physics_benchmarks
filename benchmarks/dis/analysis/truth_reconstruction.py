@@ -84,15 +84,46 @@ if Nevents == 100:
     ssize = 1
 else:
     ssize = 0.01
+text_size = 8
 
 #Particle type for Single events
 particle = config.split('-')[0].strip()
 particle_dict = {'e':[boolean_electron,'Electrons'],'pi':[boolean_pion,'Pions']}
 
-
-####################################################################################################
-    #Ratio 
-####################################################################################################
+def error_bars(plot_x, plot_y, x_axis_range):
+    if i == 0 or title == 'difference vs momentum':
+        xbins = np.geomspace(x_axis_range[0],x_axis_range[-1],12)
+    else:
+        xbins = 11
+    if np.any(plot_x):
+        plot_x, plot_y = zip(*sorted(zip(plot_x, plot_y)))
+    n, xedges = np.histogram(plot_x, bins=xbins, range = x_axis_range)
+    sum_y, xedges = np.histogram(plot_x, bins=xbins, range = x_axis_range, weights=plot_y)
+    mean = sum_y / n
+    mean_list = np.zeros(len(plot_y))
+    start = 0
+    for index in range(len(n)):
+        mean_list[start:start+n[index]] = mean[index]
+        start = start+n[index]
+    sum_yy, xedges = np.histogram(plot_x, bins=xbins, range = x_axis_range, weights=(plot_y-mean_list)**2)
+    std = np.sqrt(sum_yy/(n-1))
+    no_nan_std = std[np.invert(np.logical_or(np.isnan(std),std == 0))]
+    if np.any(no_nan_std):
+        min_std = no_nan_std.min()
+    else:
+        min_std = np.nan
+    bin_Midpoint = (xedges[1:] + xedges[:-1])/2
+    bin_HalfWidth = (xedges[1:] - xedges[:-1])/2
+    return bin_Midpoint, mean, bin_HalfWidth, std, min_std
+    
+def same_length_lists(plot_x, plot_y):
+    X_length = ak.count(plot_x,axis=None)
+    Y_length = ak.count(plot_y,axis=None)
+    if X_length > Y_length: 
+        F_boolean = np.ones_like(plot_y) == 1
+    else: 
+        F_boolean = np.ones_like(plot_x) == 1
+    return F_boolean
 
 for i in range(len(MC_list)): #Repeat the following steps for each variable (momentum,theta,phi,eta)
     MCparts = MC_list[i] #MCParticles events to be plotted on x-axis
@@ -111,74 +142,104 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
           ak.Array(RCparts[boolean_photon])]
     X_plot = list(np.zeros(len(X_list)))
     Y_plot = list(np.zeros(len(X_list)))
+    Y_error = list(np.zeros(len(X_list)))
+
+
+####################################################################################################
+    #Ratio 
+####################################################################################################
 
     for j in range(len(X_list)): #Repeat the following steps for each particle (pions,protons,electrons,neutrons,photons)
-        X = X_list[j]
-        Y = Y_list[j]
-        X_len = ak.count(X,axis=None)
-        Y_len = ak.count(Y,axis=None)
-        if X_len > Y_len: 
-            F_boolean = np.ones_like(Y) == 1
-        else: 
-            F_boolean = np.ones_like(X) == 1
-        X_s = np.array(ak.flatten(X[F_boolean])) #Filtered lists
-        Y_s = np.array(ak.flatten(Y[F_boolean]))
+        F_boolean = same_length_lists(X_list[j],Y_list[j])
+        X_s = np.array(ak.flatten(X_list[j][F_boolean])) #Filtered lists
+        Y_s = np.array(ak.flatten(Y_list[j][F_boolean]))
         if i == 0:   #Momentum
             ratio = np.array((ak.Array(Y_s)/ak.Array(X_s)))
         else: #Angle difference
             ratio = np.array((ak.Array(Y_s)-(ak.Array(X_s))))
         X_plot[j] = X_s
         Y_plot[j] = ratio
-
-    fig = plt.figure()
-    gs = fig.add_gridspec(3, 2, wspace=0)
-    (ax1, ax2), (ax3, ax4),(ax5, ax6) = gs.subplots(sharex=True, sharey=True)
-    # fig.suptitle('')
     if i == 1:   # for theta
         X_plot[0],X_plot[1],X_plot[2],X_plot[3],X_plot[4],X_plot[5] = -X_plot[0],-X_plot[1],-X_plot[2],-X_plot[3],-X_plot[4],-X_plot[5]
-    ax1.scatter(X_plot[0], Y_plot[0], s = ssize)
-    ax2.scatter(X_plot[1], Y_plot[1], s = ssize)
-    ax3.scatter(X_plot[2], Y_plot[2], s = ssize)
-    ax4.scatter(X_plot[3], Y_plot[3], s = ssize)
-    ax5.scatter(X_plot[4], Y_plot[4], s = ssize)
-    ax6.scatter(X_plot[5], Y_plot[5], s = ssize)
+    
+    particle_nlist = ['All','Pions','Protons','Electrons','Neutrons','Photons']
+    for iterate in [0,1]:
+        fig = plt.figure()
+        gs = fig.add_gridspec(3, 2, wspace=0)
+        (ax1, ax2), (ax3, ax4),(ax5, ax6) = gs.subplots(sharex=True, sharey=True)
+        ax1.scatter(X_plot[0], Y_plot[0], s = ssize)
+        ax2.scatter(X_plot[1], Y_plot[1], s = ssize)
+        ax3.scatter(X_plot[2], Y_plot[2], s = ssize)
+        ax4.scatter(X_plot[3], Y_plot[3], s = ssize)
+        ax5.scatter(X_plot[4], Y_plot[4], s = ssize)
+        ax6.scatter(X_plot[5], Y_plot[5], s = ssize)
+        
+        if i == 0:  # for momentum
+            ax1.set_ylabel('rc/mc') #ratio
+            ax3.set_ylabel('rc/mc')
+            ax5.set_ylabel('rc/mc')
+            title ='ratio'
+            ax1.set_yscale('log')
+            ax1.set_xscale('log')
+        else:       # for angles
+            ax1.set_ylabel('rc-mc') #difference
+            ax3.set_ylabel('rc-mc')
+            ax5.set_ylabel('rc-mc')
+            title ='difference'
+        ax2.set_title('Pions')
+        ax3.set_title('Protons')
+        ax4.set_title('Electrons')
+        ax5.set_title('Neutrons')
+        ax6.set_title('Photons')
 
-    if i == 0:  # for momentum
-        ax1.set_ylabel('rc/mc') #ratio
-        ax3.set_ylabel('rc/mc')
-        ax5.set_ylabel('rc/mc') 
-        title ='ratio'
-        ax1.set_yscale('log')
-        ax1.set_xscale('log')
-    else:       # for angles
-        ax1.set_ylabel('rc-mc') #difference
-        ax3.set_ylabel('rc-mc')
-        ax5.set_ylabel('rc-mc') 
-        title ='difference'
-    ax2.set_title('Pions')
-    ax3.set_title('Protons')
-    ax4.set_title('Electrons')
-    ax5.set_title('Neutrons')
-    ax6.set_title('Photons')
+        if i == 3: #Eta
+            ax1.set_xlim(-5.5,5.5)
+        if i == 1: #Theta
+            ax1.set_xlim(-np.pi,0)
+            ax5.set_xlabel('- %s mc'%(title_list[i]))
+            ax6.set_xlabel('- %s mc'%(title_list[i]))
+            x_range = [0,np.pi]
+        else:
+            ax5.set_xlabel('%s mc'%(title_list[i]))
+            ax6.set_xlabel('%s mc'%(title_list[i]))
+            x_range = list(ax1.get_xlim())
+            if i == 0:
+                momentum_range = x_range
+        fig.set_figwidth(20)
+        fig.set_figheight(10)
+        
+        if iterate == 0:
+            for j in range(len(X_list)):#Repeat the following steps for each particle (pions,protons,electrons,neutrons,photons)
+                if i == 1: #theta
+                    Y_error[j] = error_bars(X_plot[j], Y_plot[j], [-np.pi,0])
+                else:
+                    Y_error[j] = error_bars(X_plot[j], Y_plot[j], x_range)
+            ax1.errorbar(Y_error[0][0], Y_error[0][1], yerr=Y_error[0][3], xerr=Y_error[0][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
+            ax2.errorbar(Y_error[1][0], Y_error[1][1], yerr=Y_error[1][3], xerr=Y_error[1][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
+            ax3.errorbar(Y_error[2][0], Y_error[2][1], yerr=Y_error[2][3], xerr=Y_error[2][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
+            ax4.errorbar(Y_error[3][0], Y_error[3][1], yerr=Y_error[3][3], xerr=Y_error[3][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
+            ax5.errorbar(Y_error[4][0], Y_error[4][1], yerr=Y_error[4][3], xerr=Y_error[4][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
+            ax6.errorbar(Y_error[5][0], Y_error[5][1], yerr=Y_error[5][3], xerr=Y_error[5][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
 
-    if i == 3: #Eta
-        ax1.set_xlim(-5.5,5.5)
-    if i == 1: #Theta
-        ax1.set_xlim(-np.pi,0)
-        ax5.set_xlabel('- %s mc'%(title_list[i]))
-        ax6.set_xlabel('- %s mc'%(title_list[i]))
-        x_range = [0,np.pi]
-    else:
-        ax5.set_xlabel('%s mc'%(title_list[i]))
-        ax6.set_xlabel('%s mc'%(title_list[i]))
-        x_range = list(ax1.get_xlim())
-    fig.set_figwidth(20)
-    fig.set_figheight(10)
-    ax1.set_title('%s %s  %s  %s events\n DETECTOR_CONFIG: %s'%(title_list[i],title,config,Nevents,Dconfig))
-    plt.savefig(os.path.join(r_path, '%s_%s_%s.png' %  (title_list[i],title,config)))
-    plt.close()
+            if i == 0:  # for momentum
+                ax1.set_ylim(1-(Y_error[0][4]*10),1+(Y_error[0][4]*10))
+                center = 1
+                shift = 0
+            else:       # for angles
+                ax1.set_ylim(0-(Y_error[0][4]*10),0+(Y_error[0][4]*10))
+                center = 0
+                shift = 0.1
+            for each_bin in range(len(Y_error[0][0])):
+                ax1.text(x=Y_error[0][0][each_bin]-shift,y=center + Y_error[0][4]*7, s= '\u03BC = %.3f\n\u03C3 = %.3f' % (Y_error[0][1][each_bin],Y_error[0][3][each_bin]),size=text_size)
 
-
+            ax1.set_title('%s %s with error bars %s  %s events\n DETECTOR_CONFIG: %s'%(title_list[i],title,config,Nevents,Dconfig))
+            plt.savefig(os.path.join(r_path, '%s_%s_error_%s.png' %  (title_list[i],title,config)))
+        else:
+            ax1.set_title('%s %s  %s  %s events\n DETECTOR_CONFIG: %s'%(title_list[i],title,config,Nevents,Dconfig))
+            plt.savefig(os.path.join(r_path, '%s_%s_%s.png' %  (title_list[i],title,config)))
+        plt.close()
+    
+    
 ###################################################################################################
      #Ratio vs momentum
 ###################################################################################################
@@ -196,52 +257,66 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
             X_plot[j] = M_s
             Y_plot[j] = ratio
 
-        fig = plt.figure()
-        gs = fig.add_gridspec(3, 2, wspace=0)
-        (ax1, ax2), (ax3, ax4),(ax5, ax6) = gs.subplots(sharex=True, sharey=True)
-        ax1.scatter(X_plot[0], Y_plot[0], s = ssize)
-        ax2.scatter(X_plot[1], Y_plot[1], s = ssize)
-        ax3.scatter(X_plot[2], Y_plot[2], s = ssize)
-        ax4.scatter(X_plot[3], Y_plot[3], s = ssize)
-        ax5.scatter(X_plot[4], Y_plot[4], s = ssize)
-        ax6.scatter(X_plot[5], Y_plot[5], s = ssize)
-        ax1.set_xscale('log')
-        ax1.set_ylabel('rc-mc')
-        ax3.set_ylabel('rc-mc')
-        ax5.set_ylabel('rc-mc')
-        ax5.set_xlabel('Momentum mc')
-        ax6.set_xlabel('Momentum mc')
-        ax2.set_title('Pions')
-        ax3.set_title('Protons')
-        ax4.set_title('Electrons')
-        ax5.set_title('Neutrons')
-        ax6.set_title('Photons')
-        fig.set_figwidth(20)
-        fig.set_figheight(10)
-        ax1.set_title('%s Difference Vs Momentum  %s  %s events\n DETECTOR_CONFIG: %s'%(title_list[i],config,Nevents,Dconfig))
-        plt.savefig(os.path.join(r_path, '%s_difference_vs_momentum_%s.png' %  (title_list[i],config)))
-
+        title ='difference vs momentum'    
+        particle_nlist = ['All','Pions','Protons','Electrons','Neutrons','Photons']
+        for iterate in [0,1]:
+            fig = plt.figure()
+            gs = fig.add_gridspec(3, 2, wspace=0)
+            (ax1, ax2), (ax3, ax4),(ax5, ax6) = gs.subplots(sharex=True, sharey=True)
+            ax1.scatter(X_plot[0], Y_plot[0], s = ssize)
+            ax2.scatter(X_plot[1], Y_plot[1], s = ssize)
+            ax3.scatter(X_plot[2], Y_plot[2], s = ssize)
+            ax4.scatter(X_plot[3], Y_plot[3], s = ssize)
+            ax5.scatter(X_plot[4], Y_plot[4], s = ssize)
+            ax6.scatter(X_plot[5], Y_plot[5], s = ssize)
+            ax1.set_xscale('log')
+            ax1.set_ylabel('rc-mc')
+            ax3.set_ylabel('rc-mc')
+            ax5.set_ylabel('rc-mc')
+            ax5.set_xlabel('Momentum mc')
+            ax6.set_xlabel('Momentum mc')
+            ax2.set_title('Pions')
+            ax3.set_title('Protons')
+            ax4.set_title('Electrons')
+            ax5.set_title('Neutrons')
+            ax6.set_title('Photons')
+            fig.set_figwidth(20)
+            fig.set_figheight(10)
+            if iterate == 0:
+                for j in range(len(X_list)):#Repeat the following steps for each particle (pions,protons,electrons,neutrons,photons)
+                    Y_error[j] = error_bars(X_plot[j], Y_plot[j], momentum_range) 
+                ax1.errorbar(Y_error[0][0], Y_error[0][1], yerr=Y_error[0][3], xerr=Y_error[0][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
+                ax2.errorbar(Y_error[1][0], Y_error[1][1], yerr=Y_error[1][3], xerr=Y_error[1][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
+                ax3.errorbar(Y_error[2][0], Y_error[2][1], yerr=Y_error[2][3], xerr=Y_error[2][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
+                ax4.errorbar(Y_error[3][0], Y_error[3][1], yerr=Y_error[3][3], xerr=Y_error[3][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
+                ax5.errorbar(Y_error[4][0], Y_error[4][1], yerr=Y_error[4][3], xerr=Y_error[4][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
+                ax6.errorbar(Y_error[5][0], Y_error[5][1], yerr=Y_error[5][3], xerr=Y_error[5][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
+                ax1.set_ylim(0-(Y_error[0][4]*10),0+(Y_error[0][4]*10))
+                for each_bin in range(len(Y_error[0][0])):
+                    ax1.text(x=Y_error[0][0][each_bin],y=0 + Y_error[0][4]*7,
+                        s= '\u03BC = %.3f\n\u03C3 = %.3f' % (Y_error[0][1][each_bin],Y_error[0][3][each_bin]),size=text_size)
+                ax1.set_title('%s %s with error bars %s  %s events\n DETECTOR_CONFIG: %s'%(title_list[i],title,config,Nevents,Dconfig))
+                plt.savefig(os.path.join(r_path, '%s_difference_vs_momentum_error_%s.png' %  (title_list[i],config)))
+            else:
+                ax1.set_title('%s Difference Vs Momentum  %s  %s events\n DETECTOR_CONFIG: %s'%(title_list[i],config,Nevents,Dconfig))
+                plt.savefig(os.path.join(r_path, '%s_difference_vs_momentum_%s.png' %  (title_list[i],config)))
+            plt.close()
+        
 
 ###################################################################################################
      #Correlation
 ###################################################################################################
 
     #Repeat the following steps for each variable (momentum,theta,phi,eta)
-    X_len = ak.count(MCparts,axis=None)
-    Y_len = ak.count(RCparts,axis=None)
-    if X_len > Y_len: 
-        F_boolean = np.ones_like(RCparts) == 1
-    else: 
-        F_boolean = np.ones_like(MCparts) == 1
-    X_s = np.array(ak.flatten(MCparts[F_boolean])) 
+    F_boolean = same_length_lists(MCparts,RCparts)
+    X_s = np.array(ak.flatten(MCparts[F_boolean])) #Filtered lists
     Y_s = np.array(ak.flatten(RCparts[F_boolean])) 
- 
+
     #Histogram
     if i == 0 and particle in particle_dict.keys(): #Momentum in Single events
-        h, xedges, yedges, image = plt.hist2d(x=X_s,y= Y_s,  bins = 11) 
+        h, xedges, yedges = np.histogram2d(x=X_s,y= Y_s,  bins = 11) 
     else:    
-        h, xedges, yedges, image = plt.hist2d(x=X_s,y= Y_s,  bins = 11, range = [x_range,x_range]) 
-    plt.close()
+        h, xedges, yedges = np.histogram2d(x=X_s,y= Y_s,  bins = 11, range = [x_range,x_range]) 
 
     col_sum = ak.sum(h,axis=-1) #number of events in each (verticle) column 
     norm_h = [] #norm_h is the normalized matrix
@@ -261,16 +336,16 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
     else: 
         axs[0].hist2d(x=X_s,y=Y_s, bins = 11,range = [x_range,x_range]) 
     mplhep.hist2dplot(H=norm_h,norm=mpl.colors.LogNorm(vmin= 1e-4, vmax= 1),labels=norm_h_text, xbins = xedges, ybins = yedges, ax=axs[1])
-    
     axs[0].set_title('%s Histogram'%(title_list[i]))
-    axs[0].set_xlabel('%s_mc'%(title_list[i]))
     axs[0].set_ylabel('%s_rc'%(title_list[i]))
-    axs[1].set_xlabel('%s_mc'%(title_list[i]))
     axs[1].set_ylabel('%s_rc'%(title_list[i]))
+    axs[0].set_xlabel('%s_mc'%(title_list[i]))
+    axs[1].set_xlabel('%s_mc'%(title_list[i]))
     axs[1].set_title('%s Correlation'%(title_list[i]))
     fig.suptitle('%s  %s events\n DETECTOR_CONFIG: %s'%(config,Nevents,Dconfig))
     plt.savefig(os.path.join(r_path, '%s_correlation_%s.png' %  (title_list[i],config)))
-
+    plt.close()
+    
 
 ###################################################################################################
      #Phi vs Theta plots
@@ -282,38 +357,60 @@ def particle_plots(boolean_particle):
     theta_rc_fil = ak.Array(theta_rc[recID][booll])[boolean_particle]
     phi_mc_fil = ak.Array(phi_mc[simID][booll])[boolean_particle]
     phi_rc_fil = ak.Array(phi_rc[recID][booll])[boolean_particle]
-
-    theta_mc_fil_len = ak.count(theta_mc_fil,axis=None)
-    theta_rc_fil_len = ak.count(theta_rc_fil,axis=None)
-    if theta_mc_fil_len > theta_rc_fil_len:
-        F_boolean = np.ones_like(theta_rc_fil) == 1
-    else: 
-        F_boolean = np.ones_like(theta_mc_fil) == 1
+    
+    F_boolean = same_length_lists(theta_mc_fil, theta_rc_fil)
     #filtered lists w.r.t length
     theta_mc_F = np.array(ak.flatten(theta_mc_fil[F_boolean]))
     theta_rc_F = np.array(ak.flatten(theta_rc_fil[F_boolean]))
     phi_mc_F = np.array(ak.flatten(phi_mc_fil[F_boolean]))
     phi_rc_F = np.array(ak.flatten(phi_rc_fil[F_boolean]))
     ratio = np.array((ak.Array(theta_rc_F)-(ak.Array(theta_mc_F))))
-
+    x_range = [0,np.pi]
+    Y_error = [error_bars(theta_mc_F, ratio, x_range),error_bars(theta_rc_F, ratio, x_range)]
     fig = plt.figure()
-    gs = fig.add_gridspec(2, 2, wspace=0.01)
-    (ax1, ax2), (ax3, ax4) = gs.subplots(sharex=True, sharey=True)
+    gs = fig.add_gridspec(3, 2, wspace=0, hspace = 0.3)
+    (ax1, ax2), (ax3, ax4), (ax5, ax6) = gs.subplots(sharex=True, sharey='row')
     ax1.scatter(-theta_mc_F, ratio, s = ssize)
     ax2.scatter(-theta_rc_F, ratio, s = ssize)
-    ax3.scatter(-theta_mc_F, phi_mc_F, s = ssize)
-    ax4.scatter(-theta_rc_F, phi_rc_F, s = ssize)
-    ax1.set_ylabel('rc-mc')
-    ax2.set_ylabel('rc-mc')
-    ax3.set_ylabel('Phi mc')
-    ax4.set_ylabel('Phi rc')
+    ax3.scatter(-theta_mc_F, ratio, s = ssize)
+    ax4.scatter(-theta_rc_F, ratio, s = ssize)
+    ax5.scatter(-theta_mc_F, phi_mc_F, s = ssize)
+    ax6.scatter(-theta_rc_F, phi_rc_F, s = ssize)
+    ax1.set_ylabel('Theta rc-mc')
+    ax2.set_ylabel('Theta rc-mc')
+    ax3.set_ylabel('Theta rc-mc')
+    ax4.set_ylabel('Theta rc-mc')
+    ax5.set_ylabel('Phi mc')
+    ax6.set_ylabel('Phi rc')
     ax1.set_xlabel('- Theta mc')
     ax2.set_xlabel('- Theta rc')
     ax3.set_xlabel('- Theta mc')
     ax4.set_xlabel('- Theta rc')
+    ax5.set_xlabel('- Theta mc')
+    ax6.set_xlabel('- Theta rc')
+    ax1.set_title('Zoom-in')
+    ax2.set_title('Zoom-in')
+    ax3.set_title('Zoom-out')
+    ax4.set_title('Zoom-out')
+    ax5.set_title('Phi vs Theta mc')
+    ax6.set_title('Phi vs Theta rc')
+    ax1.errorbar(-Y_error[0][0], Y_error[0][1], yerr=Y_error[0][3], xerr=Y_error[0][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
+    ax2.errorbar(-Y_error[1][0], Y_error[1][1], yerr=Y_error[1][3], xerr=Y_error[1][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
+    ax3.errorbar(-Y_error[0][0], Y_error[0][1], yerr=Y_error[0][3], xerr=Y_error[0][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
+    ax4.errorbar(-Y_error[1][0], Y_error[1][1], yerr=Y_error[1][3], xerr=Y_error[1][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
+    for each_bin in range(len(Y_error[0][0])):
+        if not np.isnan(Y_error[0][1][each_bin]):
+            ax3.text(x=-Y_error[0][0][each_bin]-0.1,y=0 - Y_error[0][4]*50,
+                    s= '\u03BC = %.3f\n\u03C3 = %.3f' % (Y_error[0][1][each_bin],Y_error[0][3][each_bin]),size=text_size)
+        if not np.isnan(Y_error[1][1][each_bin]):
+            ax4.text(x=-Y_error[1][0][each_bin]-0.1,y=0 - Y_error[1][4]*50,
+                    s= '\u03BC = %.3f\n\u03C3 = %.3f' % (Y_error[1][1][each_bin],Y_error[1][3][each_bin]),size=text_size)
+    if not np.isnan(Y_error[0][4]):
+        ax1.set_ylim(0-(Y_error[1][4]*10),0+(Y_error[1][4]*10))
+        ax2.set_ylim(0-(Y_error[1][4]*10),0+(Y_error[1][4]*10))
     fig.set_figwidth(20)
     fig.set_figheight(10)
-
+title ='difference'
 if particle in particle_dict.keys():
     boolean_particle = particle_dict[particle][0]
     particle_name = particle_dict[particle][1]
@@ -329,8 +426,3 @@ else:
 
         plt.suptitle('%s in %s  %s events\n DETECTOR_CONFIG: %s'%(particle_name,config,Nevents,Dconfig))
         plt.savefig(os.path.join(r_path, '%s_%s.png' %  (particle_name,config)))
-
-
-
-
-
