@@ -400,10 +400,10 @@ def particle_plots(boolean_particle):
     ax4.errorbar(-Y_error[1][0], Y_error[1][1], yerr=Y_error[1][3], xerr=Y_error[1][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
     for each_bin in range(len(Y_error[0][0])):
         if not np.isnan(Y_error[0][1][each_bin]):
-            ax3.text(x=-Y_error[0][0][each_bin]-0.1,y=0 - Y_error[0][4]*50,
+            ax3.text(x=-Y_error[0][0][each_bin]-0.1,y=y_limits[1] - Y_error[0][4]*10,
                     s= '\u03BC = %.3f\n\u03C3 = %.3f' % (Y_error[0][1][each_bin],Y_error[0][3][each_bin]),size=text_size)
         if not np.isnan(Y_error[1][1][each_bin]):
-            ax4.text(x=-Y_error[1][0][each_bin]-0.1,y=0 - Y_error[1][4]*50,
+            ax4.text(x=-Y_error[1][0][each_bin]-0.1,y=y_limits[1] - Y_error[0][4]*10,
                     s= '\u03BC = %.3f\n\u03C3 = %.3f' % (Y_error[1][1][each_bin],Y_error[1][3][each_bin]),size=text_size)
     if not np.isnan(Y_error[0][4]):
         ax1.set_ylim(0-(Y_error[1][4]*10),0+(Y_error[1][4]*10))
