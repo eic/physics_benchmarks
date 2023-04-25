@@ -233,10 +233,10 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
                 ax1.text(x=Y_error[0][0][each_bin],y=center + Y_error[0][4]*7, s= '\u03BC = %.3f\n\u03C3 = %.3f' % (Y_error[0][1][each_bin],Y_error[0][3][each_bin]),size=text_size,horizontalalignment='center',verticalalignment='top')
 
             ax1.set_title('%s %s with error bars %s  %s events\n DETECTOR_CONFIG: %s'%(title_list[i],title,config,Nevents,Dconfig))
-            plt.savefig(os.path.join(r_path, '%s_%s_2_error_%s.png' %  (title_list_n[i],title,config)))
+            plt.savefig(os.path.join(r_path, '%s_%s_1_error_%s.png' %  (title_list_n[i],title,config)))
         else:
             ax1.set_title('%s %s  %s  %s events\n DETECTOR_CONFIG: %s'%(title_list[i],title,config,Nevents,Dconfig))
-            plt.savefig(os.path.join(r_path, '%s_%s_1_%s.png' %  (title_list_n[i],title,config)))
+            plt.savefig(os.path.join(r_path, '%s_%s_2_%s.png' %  (title_list_n[i],title,config)))
     
     
 ###################################################################################################
@@ -295,10 +295,10 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
                     ax1.text(x=Y_error[0][0][each_bin],y=0 + Y_error[0][4]*7,
                         s= '\u03BC = %.3f\n\u03C3 = %.3f' % (Y_error[0][1][each_bin],Y_error[0][3][each_bin]),size=text_size,horizontalalignment='center',verticalalignment='top')
                 ax1.set_title('%s %s with error bars %s  %s events\n DETECTOR_CONFIG: %s'%(title_list[i],title,config,Nevents,Dconfig))
-                plt.savefig(os.path.join(r_path, '%s_difference_vs_momentum_2_error_%s.png' %  (title_list_n[i],config)))
+                plt.savefig(os.path.join(r_path, '%s_difference_vs_momentum_1_error_%s.png' %  (title_list_n[i],config)))
             else:
                 ax1.set_title('%s Difference Vs Momentum  %s  %s events\n DETECTOR_CONFIG: %s'%(title_list[i],config,Nevents,Dconfig))
-                plt.savefig(os.path.join(r_path, '%s_difference_vs_momentum_1_%s.png' %  (title_list_n[i],config)))
+                plt.savefig(os.path.join(r_path, '%s_difference_vs_momentum_2_%s.png' %  (title_list_n[i],config)))
             
 
 ###################################################################################################
@@ -341,7 +341,7 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
     axs[1].set_xlabel('%s_mc'%(title_list[i]))
     axs[1].set_title('%s Correlation'%(title_list[i]))
     fig.suptitle('%s  %s events\n DETECTOR_CONFIG: %s'%(config,Nevents,Dconfig))
-    plt.savefig(os.path.join(r_path, '%s%s_%s.png' %  (title_list_n[i],args.config.split('_epic_')[1].strip(),config)))
+    plt.savefig(os.path.join(r_path, '%s_1_%s_%s.png' %  (title_list_n[i],args.config.split('_epic_')[1].strip(),config)))
 
 
 ###################################################################################################
