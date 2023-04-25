@@ -16,6 +16,6 @@ echo "Setting up the local environment for the ${BENCHMARK_TAG^^} benchmarks"
 
 RESULTS_PATH="results/${BENCHMARK_TAG}"
 mkdir -p ${RESULTS_PATH}
-mkdir -p "${RESULTS_PATH}/truth_reconstruction"
+# mkdir -p "${RESULTS_PATH}/truth_reconstruction"
 export RESULTS_PATH=`realpath ${RESULTS_PATH}`
 echo "RESULTS_PATH:           ${RESULTS_PATH}"
