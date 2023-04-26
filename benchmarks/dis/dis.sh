@@ -123,11 +123,11 @@ EOF
 #   exit 1
 # fi
 
-# python benchmarks/dis/analysis/kinematics_correlations.py --rec_file ${REC_FILE} --config ${PLOT_TAG}_${DETECTOR_CONFIG} --results_path ${RESULTS_PATH} --nevents ${JUGGLER_N_EVENTS}
-# if [[ "$?" -ne "0" ]] ; then
-#   echo "ERROR running kinematics_correlations script"
-#   exit 1
-# fi
+python benchmarks/dis/analysis/kinematics_correlations.py --rec_file ${REC_FILE} --config ${PLOT_TAG}_${DETECTOR_CONFIG} --results_path ${RESULTS_PATH} --nevents ${JUGGLER_N_EVENTS}
+if [[ "$?" -ne "0" ]] ; then
+  echo "ERROR running kinematics_correlations script"
+  exit 1
+fi
 
 python benchmarks/dis/analysis/truth_reconstruction.py --rec_file ${REC_FILE} --config ${PLOT_TAG}_${DETECTOR_CONFIG} --results_path ${RESULTS_PATH} --nevents ${JUGGLER_N_EVENTS}
 if [[ "$?" -ne "0" ]] ; then
