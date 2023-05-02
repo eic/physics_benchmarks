@@ -30,8 +30,8 @@ for array in ur.iterate(rec_file + ':events',['MCParticles/MCParticles.generator
                                         'ReconstructedChargedParticles/ReconstructedChargedParticles.momentum.x',
                                         'ReconstructedChargedParticles/ReconstructedChargedParticles.momentum.y',
                                         'ReconstructedChargedParticles/ReconstructedChargedParticles.momentum.z',
-                                        'ReconstructedChargedParticlesAssociations/ReconstructedChargedParticlesAssociations.simID',
-                                        'ReconstructedChargedParticlesAssociations/ReconstructedChargedParticlesAssociations.recID'],step_size=Nevents):
+                                        'ReconstructedChargedParticleAssociations/ReconstructedChargedParticleAssociations.simID',
+                                        'ReconstructedChargedParticleAssociations/ReconstructedChargedParticleAssociations.recID'],step_size=Nevents):
     PDG_mc = array['MCParticles/MCParticles.PDG']  #Monte Carlo (MC) particle numbering scheme.
     px_mc = array['MCParticles/MCParticles.momentum.x']
     py_mc = array['MCParticles/MCParticles.momentum.y']
@@ -40,8 +40,8 @@ for array in ur.iterate(rec_file + ':events',['MCParticles/MCParticles.generator
     px_rc = array['ReconstructedChargedParticles/ReconstructedChargedParticles.momentum.x']
     py_rc = array['ReconstructedChargedParticles/ReconstructedChargedParticles.momentum.y']
     pz_rc = array['ReconstructedChargedParticles/ReconstructedChargedParticles.momentum.z']
-    simID = array['ReconstructedChargedParticlesAssociations/ReconstructedChargedParticlesAssociations.simID']
-    recID = array['ReconstructedChargedParticlesAssociations/ReconstructedChargedParticlesAssociations.recID']
+    simID = array['ReconstructedChargedParticleAssociations/ReconstructedChargedParticleAssociations.simID']
+    recID = array['ReconstructedChargedParticleAssociations/ReconstructedChargedParticleAssociations.recID']
     #SimID and recID contain the indices of the MCParticles and ReconstructedParticles entry for that event.
 
 ### MCParticles Variables
