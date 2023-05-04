@@ -30,8 +30,8 @@ for array in ur.iterate(rec_file + ':events',['MCParticles/MCParticles.generator
                                         'ReconstructedChargedParticles/ReconstructedChargedParticles.momentum.x',
                                         'ReconstructedChargedParticles/ReconstructedChargedParticles.momentum.y',
                                         'ReconstructedChargedParticles/ReconstructedChargedParticles.momentum.z',
-                                        'ReconstructedChargedParticlesAssociations/ReconstructedChargedParticlesAssociations.simID',
-                                        'ReconstructedChargedParticlesAssociations/ReconstructedChargedParticlesAssociations.recID'],step_size=Nevents):
+                                        'ReconstructedChargedParticleAssociations/ReconstructedChargedParticleAssociations.simID',
+                                        'ReconstructedChargedParticleAssociations/ReconstructedChargedParticleAssociations.recID'],step_size=Nevents):
     PDG_mc = array['MCParticles/MCParticles.PDG']  #Monte Carlo (MC) particle numbering scheme.
     px_mc = array['MCParticles/MCParticles.momentum.x']
     py_mc = array['MCParticles/MCParticles.momentum.y']
@@ -40,8 +40,8 @@ for array in ur.iterate(rec_file + ':events',['MCParticles/MCParticles.generator
     px_rc = array['ReconstructedChargedParticles/ReconstructedChargedParticles.momentum.x']
     py_rc = array['ReconstructedChargedParticles/ReconstructedChargedParticles.momentum.y']
     pz_rc = array['ReconstructedChargedParticles/ReconstructedChargedParticles.momentum.z']
-    simID = array['ReconstructedChargedParticlesAssociations/ReconstructedChargedParticlesAssociations.simID']
-    recID = array['ReconstructedChargedParticlesAssociations/ReconstructedChargedParticlesAssociations.recID']
+    simID = array['ReconstructedChargedParticleAssociations/ReconstructedChargedParticleAssociations.simID']
+    recID = array['ReconstructedChargedParticleAssociations/ReconstructedChargedParticleAssociations.recID']
     #SimID and recID contain the indices of the MCParticles and ReconstructedParticles entry for that event.
 
 ### MCParticles Variables
@@ -53,33 +53,33 @@ momentum_rc = np.sqrt(((px_rc**2)+(py_rc**2)+(pz_rc**2)))
 theta_rc = np.arctan2(np.sqrt(px_rc**2+py_rc**2), pz_rc)
 phi_rc = np.arctan2(py_rc, px_rc)
 
-booll = (PDG_mc[simID])==(PDG_rc[recID]) #boolean that allows events where the same particle is reconstructed
-boolean_pion = np.logical_or(ak.Array(PDG_mc[simID][booll])==-211, ak.Array(PDG_mc[simID][booll])==+211) #boolean that allows events involving pions
-boolean_proton = np.logical_or(ak.Array(PDG_mc[simID][booll])==-2212, ak.Array(PDG_mc[simID][booll])==+2212) #boolean that allows events involving protons
-boolean_electron = ak.Array(PDG_mc[simID][booll])==11 #boolean that allows events involving electrons
-boolean_neutron = ak.Array(PDG_mc[simID][booll])==2112 #boolean that allows events involving neutrons
-boolean_photon = ak.Array(PDG_mc[simID][booll])==22 #boolean that allows events involving photons
+boolean_pion = np.logical_or(ak.Array(PDG_mc[simID])==-211, ak.Array(PDG_mc[simID])==+211) #boolean that allows events involving pions
+boolean_proton = np.logical_or(ak.Array(PDG_mc[simID])==-2212, ak.Array(PDG_mc[simID])==+2212) #boolean that allows events involving protons
+boolean_electron = ak.Array(PDG_mc[simID])==11 #boolean that allows events involving electrons
+boolean_neutron = ak.Array(PDG_mc[simID])==2112 #boolean that allows events involving neutrons
+boolean_photon = ak.Array(PDG_mc[simID])==22 #boolean that allows events involving photons
 
 ### MCParticles variables list
-MC_list = [ak.Array(momentum_mc[simID][booll]),                     #Momentum
-           ak.Array(theta_mc[simID][booll]),                        #Theta
-           ak.Array(phi_mc[simID][booll]),                          #Phi
-           -np.log(np.tan((ak.Array(theta_mc[simID][booll]))/2))]   #Eta
+MC_list = [ak.Array(theta_mc[simID]),                        #Theta
+           ak.Array(momentum_mc[simID]),                     #Momentum
+           ak.Array(phi_mc[simID]),                          #Phi
+           -np.log(np.tan((ak.Array(theta_mc[simID]))/2))]   #Eta
 ### ReconstructedParticles variables list
-RC_list = [ak.Array(momentum_rc[recID][booll]),                     #Momentum
-           ak.Array(theta_rc[recID][booll]),                        #Theta
-           ak.Array(phi_rc[recID][booll]),                          #Phi
-           -np.log(np.tan((ak.Array(theta_rc[recID][booll]))/2))]   #Eta
-title_list = ['Momentum','Theta','Phi','Eta']
-title_list_n = ['1','2','4','3']
+RC_list = [ak.Array(theta_rc[recID]),                        #Theta
+           ak.Array(momentum_rc[recID]),                     #Momentum
+           ak.Array(phi_rc[recID]),                          #Phi
+           -np.log(np.tan((ak.Array(theta_rc[recID]))/2))]   #Eta
+title_list = ['Theta','Momentum','Phi','Eta']
+title_list_n = ['2','1','4','3']
 particle_name_n = {'Electrons':'5','Pions':'6','Photons':'7'}
 ### MC Momentum for different particles list
-M_list = [ak.Array(momentum_mc[simID][booll]),
-          ak.Array(momentum_mc[simID][booll][boolean_pion]),
-          ak.Array(momentum_mc[simID][booll][boolean_proton]),
-          ak.Array(momentum_mc[simID][booll][boolean_electron]),
-          ak.Array(momentum_mc[simID][booll][boolean_neutron]),
-          ak.Array(momentum_mc[simID][booll][boolean_photon])]
+M_list = [ak.Array(momentum_mc[simID]),
+          ak.Array(momentum_mc[simID][boolean_pion]),
+          ak.Array(momentum_mc[simID][boolean_proton]),
+          ak.Array(momentum_mc[simID][boolean_electron]),
+          ak.Array(momentum_mc[simID][boolean_neutron]),
+          ak.Array(momentum_mc[simID][boolean_photon])]
+
 
 #Marker Size in plots
 if Nevents == 100:
@@ -93,7 +93,7 @@ particle = config.split('-')[0].strip()
 particle_dict = {'e':[boolean_electron,'Electrons'],'pi':[boolean_pion,'Pions']}
 
 def error_bars(plot_x, plot_y, x_axis_range):
-    if i == 0 or title == 'difference vs momentum':
+    if i == 1 or title == 'difference vs momentum':
         xbins = np.geomspace(x_axis_range[0],x_axis_range[-1],12)
     else:
         xbins = 11
@@ -127,7 +127,8 @@ def same_length_lists(plot_x, plot_y):
         F_boolean = np.ones_like(plot_x) == 1
     return F_boolean
 
-for i in range(len(MC_list)): #Repeat the following steps for each variable (momentum,theta,phi,eta)
+boolean_tilt = list(np.zeros(len(M_list)))
+for i in range(len(MC_list)): #Repeat the following steps for each variable (theta,momentum,phi,eta)
     MCparts = MC_list[i] #MCParticles events to be plotted on x-axis
     RCparts = RC_list[i] #ReconstructedParticles events
     X_list = [ak.Array(MCparts),
@@ -155,15 +156,18 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
         F_boolean = same_length_lists(X_list[j],Y_list[j])
         X_s = np.array(ak.flatten(X_list[j][F_boolean])) #Filtered lists
         Y_s = np.array(ak.flatten(Y_list[j][F_boolean]))
-        if i == 0:   #Momentum
+        if i == 1:   #Momentum
             ratio = np.array((ak.Array(Y_s)/ak.Array(X_s)))
         else: #Angle difference
             ratio = np.array((ak.Array(Y_s)-(ak.Array(X_s))))
         X_plot[j] = X_s
         Y_plot[j] = ratio
-    if i == 1:   # for theta
-        X_plot[0],X_plot[1],X_plot[2],X_plot[3],X_plot[4],X_plot[5] = -X_plot[0],-X_plot[1],-X_plot[2],-X_plot[3],-X_plot[4],-X_plot[5]
-    
+        if i == 0:  # for theta
+            X_plot[j] = -X_plot[j]
+            boolean_tilt_x = np.logical_and(X_plot[j] < 0 , X_plot[j] > - 0.5)
+            boolean_tilt_y = np.logical_or(Y_plot[j] < -0.02 , Y_plot[j] > 0.02)
+            boolean_tilt[j] = np.logical_and(boolean_tilt_x, boolean_tilt_y)
+ 
     particle_nlist = ['All','Pions','Protons','Electrons','Neutrons','Photons']
     for iterate in [0,1]:
         fig = plt.figure()
@@ -175,8 +179,14 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
         ax4.scatter(X_plot[3], Y_plot[3], s = ssize)
         ax5.scatter(X_plot[4], Y_plot[4], s = ssize)
         ax6.scatter(X_plot[5], Y_plot[5], s = ssize)
+        ax1.scatter(X_plot[0][boolean_tilt[0]], Y_plot[0][boolean_tilt[0]], s = ssize, c = 'red')
+        ax2.scatter(X_plot[1][boolean_tilt[1]], Y_plot[1][boolean_tilt[1]], s = ssize, c = 'red')
+        ax3.scatter(X_plot[2][boolean_tilt[2]], Y_plot[2][boolean_tilt[2]], s = ssize, c = 'red')
+        ax4.scatter(X_plot[3][boolean_tilt[3]], Y_plot[3][boolean_tilt[3]], s = ssize, c = 'red')
+        ax5.scatter(X_plot[4][boolean_tilt[4]], Y_plot[4][boolean_tilt[4]], s = ssize, c = 'red')
+        ax6.scatter(X_plot[5][boolean_tilt[5]], Y_plot[5][boolean_tilt[5]], s = ssize, c = 'red')
         
-        if i == 0:  # for momentum
+        if i == 1:  # for momentum
             ax1.set_ylabel('rc/mc') #ratio
             ax3.set_ylabel('rc/mc')
             ax5.set_ylabel('rc/mc')
@@ -196,23 +206,26 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
 
         if i == 3: #Eta
             ax1.set_xlim(-5.5,5.5)
-        if i == 1: #Theta
+        if i == 0: #Theta
             ax1.set_xlim(-np.pi,0)
             ax5.set_xlabel('- %s mc'%(title_list[i]))
             ax6.set_xlabel('- %s mc'%(title_list[i]))
             x_range = [0,np.pi]
+            flatten_momentum = M_list[0]
+            momentum_range = (min(np.array(ak.flatten(flatten_momentum))),max(np.array(ak.flatten(flatten_momentum))))
+            
         else:
             ax5.set_xlabel('%s mc'%(title_list[i]))
             ax6.set_xlabel('%s mc'%(title_list[i]))
             x_range = list(ax1.get_xlim())
-            if i == 0:
+            if i == 1:
                 momentum_range = x_range
         fig.set_figwidth(20)
         fig.set_figheight(10)
         
         if iterate == 0:
             for j in range(len(X_list)):#Repeat the following steps for each particle (pions,protons,electrons,neutrons,photons)
-                if i == 1: #theta
+                if i == 0: #theta
                     Y_error[j] = error_bars(X_plot[j], Y_plot[j], [-np.pi,0])
                 else:
                     Y_error[j] = error_bars(X_plot[j], Y_plot[j], x_range)
@@ -223,7 +236,7 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
             ax5.errorbar(Y_error[4][0], Y_error[4][1], yerr=Y_error[4][3], xerr=Y_error[4][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
             ax6.errorbar(Y_error[5][0], Y_error[5][1], yerr=Y_error[5][3], xerr=Y_error[5][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
 
-            if i == 0:  # for momentum
+            if i == 1:  # for momentum
                 ax1.set_ylim(1-(Y_error[0][4]*10),1+(Y_error[0][4]*10))
                 center = 1
             else:       # for angles
@@ -238,12 +251,12 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
             ax1.set_title('%s %s  %s  %s events\n DETECTOR_CONFIG: %s'%(title_list[i],title,config,Nevents,Dconfig))
             plt.savefig(os.path.join(r_path, '%s_%s_2_%s.png' %  (title_list_n[i],title,config)))
     
-    
+
 ###################################################################################################
      #Ratio vs momentum
 ###################################################################################################
 
-    if i > 0: #for each variable theta, phi, and eta
+    if i != 1: #for each variable theta, phi, and eta
         for j in range(len(M_list)): #Repeat the following steps for each particle (pions,protons,electrons,neutrons,photons)
             X = X_list[j]
             Y = Y_list[j]
@@ -268,6 +281,12 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
             ax4.scatter(X_plot[3], Y_plot[3], s = ssize)
             ax5.scatter(X_plot[4], Y_plot[4], s = ssize)
             ax6.scatter(X_plot[5], Y_plot[5], s = ssize)
+            ax1.scatter(X_plot[0][boolean_tilt[0]], Y_plot[0][boolean_tilt[0]], s = ssize, c = 'red')
+            ax2.scatter(X_plot[1][boolean_tilt[1]], Y_plot[1][boolean_tilt[1]], s = ssize, c = 'red')
+            ax3.scatter(X_plot[2][boolean_tilt[2]], Y_plot[2][boolean_tilt[2]], s = ssize, c = 'red')
+            ax4.scatter(X_plot[3][boolean_tilt[3]], Y_plot[3][boolean_tilt[3]], s = ssize, c = 'red')
+            ax5.scatter(X_plot[4][boolean_tilt[4]], Y_plot[4][boolean_tilt[4]], s = ssize, c = 'red')
+            ax6.scatter(X_plot[5][boolean_tilt[5]], Y_plot[5][boolean_tilt[5]], s = ssize, c = 'red')
             ax1.set_xscale('log')
             ax1.set_ylabel('rc-mc')
             ax3.set_ylabel('rc-mc')
@@ -299,22 +318,25 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
             else:
                 ax1.set_title('%s Difference Vs Momentum  %s  %s events\n DETECTOR_CONFIG: %s'%(title_list[i],config,Nevents,Dconfig))
                 plt.savefig(os.path.join(r_path, '%s_difference_vs_momentum_2_%s.png' %  (title_list_n[i],config)))
-            
+        
 
 ###################################################################################################
      #Correlation
 ###################################################################################################
 
-    #Repeat the following steps for each variable (momentum,theta,phi,eta)
+    #Repeat the following steps for each variable (theta,momentum,phi,eta)
     F_boolean = same_length_lists(MCparts,RCparts)
     X_s = np.array(ak.flatten(MCparts[F_boolean])) #Filtered lists
     Y_s = np.array(ak.flatten(RCparts[F_boolean])) 
 
     #Histogram
-    if i == 0 and particle in particle_dict.keys(): #Momentum in Single events
-        h, xedges, yedges = np.histogram2d(x=X_s,y= Y_s,  bins = 11) 
+    fig, axs = plt.subplots(1, 2, figsize=(20, 10))
+    if i == 1 and particle in particle_dict.keys(): #Momentum in Single events
+        h, xedges, yedges = np.histogram2d(x=X_s,y= Y_s,  bins = 11)
+        axs[0].hist2d(x=X_s,y=Y_s, bins = 11)
     else:    
-        h, xedges, yedges = np.histogram2d(x=X_s,y= Y_s,  bins = 11, range = [x_range,x_range]) 
+        h, xedges, yedges = np.histogram2d(x=X_s,y= Y_s,  bins = 11, range = [x_range,x_range])
+        axs[0].hist2d(x=X_s,y=Y_s, bins = 11,range = [x_range,x_range])
 
     col_sum = ak.sum(h,axis=-1) #number of events in each (verticle) column 
     norm_h = [] #norm_h is the normalized matrix
@@ -328,11 +350,6 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
         norm_c_text = [ '%.3f' % elem for elem in norm_c ] #display value to 3 dp
         norm_h_text.append(norm_c_text)
     
-    fig, axs = plt.subplots(1, 2, figsize=(20, 10))
-    if i == 0 and particle in particle_dict.keys(): #Momentum in Single events
-        axs[0].hist2d(x=X_s,y=Y_s, bins = 11)
-    else: 
-        axs[0].hist2d(x=X_s,y=Y_s, bins = 11,range = [x_range,x_range]) 
     mplhep.hist2dplot(H=norm_h,norm=mpl.colors.LogNorm(vmin= 1e-4, vmax= 1),labels=norm_h_text, xbins = xedges, ybins = yedges, ax=axs[1])
     axs[0].set_title('%s Histogram'%(title_list[i]))
     axs[0].set_ylabel('%s_rc'%(title_list[i]))
@@ -350,10 +367,10 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
 
 def particle_plots(boolean_particle):
     #filtered lists w.r.t the particle
-    theta_mc_fil = ak.Array(theta_mc[simID][booll])[boolean_particle]
-    theta_rc_fil = ak.Array(theta_rc[recID][booll])[boolean_particle]
-    phi_mc_fil = ak.Array(phi_mc[simID][booll])[boolean_particle]
-    phi_rc_fil = ak.Array(phi_rc[recID][booll])[boolean_particle]
+    theta_mc_fil = ak.Array(theta_mc[simID])[boolean_particle]
+    theta_rc_fil = ak.Array(theta_rc[recID])[boolean_particle]
+    phi_mc_fil = ak.Array(phi_mc[simID])[boolean_particle]
+    phi_rc_fil = ak.Array(phi_rc[recID])[boolean_particle]
     
     F_boolean = same_length_lists(theta_mc_fil, theta_rc_fil)
     #filtered lists w.r.t length
