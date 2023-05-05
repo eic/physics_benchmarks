@@ -145,7 +145,7 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (the
             ratio = Y_list[j]-X_list[j]
         Y_plot[j] = ratio
         if i == 0:  #Theta
-            boolean_tilt_x = np.logical_and(X_list[j] > 0 , X_list[j] < 0.5)
+            boolean_tilt_x = np.logical_and(X_list[j] > 0 , X_list[j] < 0.25)
             boolean_tilt_y = np.logical_or(Y_plot[j] < -0.002 , Y_plot[j] > 0.002)
             boolean_tilt[j] = np.logical_and(boolean_tilt_x, boolean_tilt_y)
 
