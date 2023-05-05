@@ -73,13 +73,13 @@ title_list = ['Theta','Momentum','Phi','Eta']
 title_list_n = ['2','1','4','3']
 particle_name_n = {'Electrons':'5','Pions':'6','Photons':'7'}
 ### MC Momentum for different particles list
-M_list = [ak.Array(momentum_mc[simID]),
-          ak.Array(momentum_mc[simID][boolean_pion]),
-          ak.Array(momentum_mc[simID][boolean_proton]),
-          ak.Array(momentum_mc[simID][boolean_electron]),
-          ak.Array(momentum_mc[simID][boolean_neutron]),
-          ak.Array(momentum_mc[simID][boolean_photon])]
-
+M_list = [np.array(ak.flatten(ak.Array(momentum_mc[simID]))),
+          np.array(ak.flatten(ak.Array(momentum_mc[simID][boolean_pion]))),
+          np.array(ak.flatten(ak.Array(momentum_mc[simID][boolean_proton]))),
+          np.array(ak.flatten(ak.Array(momentum_mc[simID][boolean_electron]))),
+          np.array(ak.flatten(ak.Array(momentum_mc[simID][boolean_neutron]))),
+          np.array(ak.flatten(ak.Array(momentum_mc[simID][boolean_photon])))]
+momentum_range = (min(M_list[0]),max(M_list[0]))
 
 #Marker Size in plots
 if Nevents == 100:
@@ -118,56 +118,45 @@ def error_bars(plot_x, plot_y, x_axis_range):
     bin_HalfWidth = (xedges[1:] - xedges[:-1])/2
     return bin_Midpoint, mean, bin_HalfWidth, std, min_std
     
-def same_length_lists(plot_x, plot_y):
-    X_length = ak.count(plot_x,axis=None)
-    Y_length = ak.count(plot_y,axis=None)
-    if X_length > Y_length: 
-        F_boolean = np.ones_like(plot_y) == 1
-    else: 
-        F_boolean = np.ones_like(plot_x) == 1
-    return F_boolean
 
 boolean_tilt = list(np.zeros(len(M_list)))
 for i in range(len(MC_list)): #Repeat the following steps for each variable (theta,momentum,phi,eta)
     MCparts = MC_list[i] #MCParticles events to be plotted on x-axis
     RCparts = RC_list[i] #ReconstructedParticles events
-    X_list = [ak.Array(MCparts),
-          ak.Array(MCparts[boolean_pion]),
-          ak.Array(MCparts[boolean_proton]),
-          ak.Array(MCparts[boolean_electron]),
-          ak.Array(MCparts[boolean_neutron]),
-          ak.Array(MCparts[boolean_photon])]
-    Y_list = [ak.Array(RCparts),
-          ak.Array(RCparts[boolean_pion]),
-          ak.Array(RCparts[boolean_proton]),
-          ak.Array(RCparts[boolean_electron]),
-          ak.Array(RCparts[boolean_neutron]),
-          ak.Array(RCparts[boolean_photon])]
+    X_list = [np.array(ak.flatten(MCparts)),
+          np.array(ak.flatten(MCparts[boolean_pion])),
+          np.array(ak.flatten(MCparts[boolean_proton])),
+          np.array(ak.flatten(MCparts[boolean_electron])),
+          np.array(ak.flatten(MCparts[boolean_neutron])),
+          np.array(ak.flatten(MCparts[boolean_photon]))]
+    Y_list = [np.array(ak.flatten(RCparts)),
+          np.array(ak.flatten(RCparts[boolean_pion])),
+          np.array(ak.flatten(RCparts[boolean_proton])),
+          np.array(ak.flatten(RCparts[boolean_electron])),
+          np.array(ak.flatten(RCparts[boolean_neutron])),
+          np.array(ak.flatten(RCparts[boolean_photon]))]
     X_plot = list(np.zeros(len(X_list)))
     Y_plot = list(np.zeros(len(X_list)))
     Y_error = list(np.zeros(len(X_list)))
+    for j in range(len(X_list)): #Repeat the following steps for each particle (pions,protons,electrons,neutrons,photons)
+        if i == 1:   #Momentum
+            ratio = Y_list[j]/X_list[j]
+        else: #Angle difference
+            ratio = Y_list[j]-X_list[j]
+        Y_plot[j] = ratio
+        if i == 0:  #Theta
+            boolean_tilt_x = np.logical_and(X_list[j] > 0 , X_list[j] < 0.5)
+            boolean_tilt_y = np.logical_or(Y_plot[j] < -0.02 , Y_plot[j] > 0.02)
+            boolean_tilt[j] = np.logical_and(boolean_tilt_x, boolean_tilt_y)
 
 
 ####################################################################################################
     #Ratio 
 ####################################################################################################
 
-    for j in range(len(X_list)): #Repeat the following steps for each particle (pions,protons,electrons,neutrons,photons)
-        F_boolean = same_length_lists(X_list[j],Y_list[j])
-        X_s = np.array(ak.flatten(X_list[j][F_boolean])) #Filtered lists
-        Y_s = np.array(ak.flatten(Y_list[j][F_boolean]))
-        if i == 1:   #Momentum
-            ratio = np.array((ak.Array(Y_s)/ak.Array(X_s)))
-        else: #Angle difference
-            ratio = np.array((ak.Array(Y_s)-(ak.Array(X_s))))
-        X_plot[j] = X_s
-        Y_plot[j] = ratio
-        if i == 0:  # for theta
-            X_plot[j] = -X_plot[j]
-            boolean_tilt_x = np.logical_and(X_plot[j] < 0 , X_plot[j] > - 0.5)
-            boolean_tilt_y = np.logical_or(Y_plot[j] < -0.02 , Y_plot[j] > 0.02)
-            boolean_tilt[j] = np.logical_and(boolean_tilt_x, boolean_tilt_y)
- 
+    X_plot = X_list
+    if i == 0:  #Theta
+        X_plot = -1*np.array(X_plot)
     particle_nlist = ['All','Pions','Protons','Electrons','Neutrons','Photons']
     for iterate in [0,1]:
         fig = plt.figure()
@@ -211,15 +200,10 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (the
             ax5.set_xlabel('- %s mc'%(title_list[i]))
             ax6.set_xlabel('- %s mc'%(title_list[i]))
             x_range = [0,np.pi]
-            flatten_momentum = M_list[0]
-            momentum_range = (min(np.array(ak.flatten(flatten_momentum))),max(np.array(ak.flatten(flatten_momentum))))
-            
         else:
             ax5.set_xlabel('%s mc'%(title_list[i]))
             ax6.set_xlabel('%s mc'%(title_list[i]))
             x_range = list(ax1.get_xlim())
-            if i == 1:
-                momentum_range = x_range
         fig.set_figwidth(20)
         fig.set_figheight(10)
         
@@ -257,17 +241,7 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (the
 ###################################################################################################
 
     if i != 1: #for each variable theta, phi, and eta
-        for j in range(len(M_list)): #Repeat the following steps for each particle (pions,protons,electrons,neutrons,photons)
-            X = X_list[j]
-            Y = Y_list[j]
-            M_mc = M_list[j]
-            boolean_M = np.ones_like(M_mc) == 1
-            X_s = np.array(ak.flatten(X[boolean_M])) 
-            Y_s = np.array(ak.flatten(Y[boolean_M])) 
-            M_s = np.array(ak.flatten(M_mc))
-            ratio = np.array((ak.Array(Y_s)-(ak.Array(X_s))))
-            X_plot[j] = M_s
-            Y_plot[j] = ratio
+        X_plot = M_list
 
         title ='difference vs momentum'    
         particle_nlist = ['All','Pions','Protons','Electrons','Neutrons','Photons']
@@ -325,9 +299,8 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (the
 ###################################################################################################
 
     #Repeat the following steps for each variable (theta,momentum,phi,eta)
-    F_boolean = same_length_lists(MCparts,RCparts)
-    X_s = np.array(ak.flatten(MCparts[F_boolean])) #Filtered lists
-    Y_s = np.array(ak.flatten(RCparts[F_boolean])) 
+    X_s = X_list[0]
+    Y_s = Y_list[0]
 
     #Histogram
     fig, axs = plt.subplots(1, 2, figsize=(20, 10))
@@ -367,29 +340,34 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (the
 
 def particle_plots(boolean_particle):
     #filtered lists w.r.t the particle
-    theta_mc_fil = ak.Array(theta_mc[simID])[boolean_particle]
-    theta_rc_fil = ak.Array(theta_rc[recID])[boolean_particle]
-    phi_mc_fil = ak.Array(phi_mc[simID])[boolean_particle]
-    phi_rc_fil = ak.Array(phi_rc[recID])[boolean_particle]
+    theta_mc_filtered = np.array(ak.flatten(ak.Array(theta_mc[simID])[boolean_particle]))
+    theta_rc_filtered = np.array(ak.flatten(ak.Array(theta_rc[recID])[boolean_particle]))
+    phi_mc_filtered = np.array(ak.flatten(ak.Array(phi_mc[simID])[boolean_particle]))
+    phi_rc_filtered = np.array(ak.flatten(ak.Array(phi_rc[recID])[boolean_particle]))
+    theta_mc_filtered_with_tilt = np.array(ak.flatten(theta_mc[simID])[np.logical_and(ak.flatten(boolean_particle),boolean_tilt[0])])
+    theta_rc_filtered_with_tilt = np.array(ak.flatten(theta_rc[recID])[np.logical_and(ak.flatten(boolean_particle),boolean_tilt[0])])
+    phi_mc_filtered_with_tilt = np.array(ak.flatten(phi_mc[simID])[np.logical_and(ak.flatten(boolean_particle),boolean_tilt[0])])
+    phi_rc_filtered_with_tilt = np.array(ak.flatten(phi_rc[recID])[np.logical_and(ak.flatten(boolean_particle),boolean_tilt[0])])
     
-    F_boolean = same_length_lists(theta_mc_fil, theta_rc_fil)
-    #filtered lists w.r.t length
-    theta_mc_F = np.array(ak.flatten(theta_mc_fil[F_boolean]))
-    theta_rc_F = np.array(ak.flatten(theta_rc_fil[F_boolean]))
-    phi_mc_F = np.array(ak.flatten(phi_mc_fil[F_boolean]))
-    phi_rc_F = np.array(ak.flatten(phi_rc_fil[F_boolean]))
-    ratio = np.array((ak.Array(theta_rc_F)-(ak.Array(theta_mc_F))))
+    ratio = theta_rc_filtered-theta_mc_filtered
+    ratio_tilt = theta_rc_filtered_with_tilt-theta_mc_filtered_with_tilt
     x_range = [0,np.pi]
-    Y_error = [error_bars(theta_mc_F, ratio, x_range),error_bars(theta_rc_F, ratio, x_range)]
+    Y_error = [error_bars(theta_mc_filtered, ratio, x_range),error_bars(theta_rc_filtered, ratio, x_range)]
     fig = plt.figure()
     gs = fig.add_gridspec(3, 2, wspace=0, hspace = 0.3)
     (ax1, ax2), (ax3, ax4), (ax5, ax6) = gs.subplots(sharex=True, sharey='row')
-    ax1.scatter(-theta_mc_F, ratio, s = ssize)
-    ax2.scatter(-theta_rc_F, ratio, s = ssize)
-    ax3.scatter(-theta_mc_F, ratio, s = ssize)
-    ax4.scatter(-theta_rc_F, ratio, s = ssize)
-    ax5.scatter(-theta_mc_F, phi_mc_F, s = ssize)
-    ax6.scatter(-theta_rc_F, phi_rc_F, s = ssize)
+    ax1.scatter(-theta_mc_filtered, ratio, s = ssize)
+    ax2.scatter(-theta_rc_filtered, ratio, s = ssize)
+    ax3.scatter(-theta_mc_filtered, ratio, s = ssize)
+    ax4.scatter(-theta_rc_filtered, ratio, s = ssize)
+    ax5.scatter(-theta_mc_filtered, phi_mc_filtered, s = ssize)
+    ax6.scatter(-theta_rc_filtered, phi_rc_filtered, s = ssize)
+    ax1.scatter(-theta_mc_filtered_with_tilt, ratio_tilt, s = ssize, c = 'red')
+    ax2.scatter(-theta_rc_filtered_with_tilt, ratio_tilt, s = ssize, c = 'red')
+    ax3.scatter(-theta_mc_filtered_with_tilt, ratio_tilt, s = ssize, c = 'red')
+    ax4.scatter(-theta_rc_filtered_with_tilt, ratio_tilt, s = ssize, c = 'red')
+    ax5.scatter(-theta_mc_filtered_with_tilt, phi_mc_filtered_with_tilt, s = ssize, c = 'red')
+    ax6.scatter(-theta_rc_filtered_with_tilt, phi_rc_filtered_with_tilt, s = ssize, c = 'red')
     ax1.set_ylabel('Theta rc-mc')
     ax2.set_ylabel('Theta rc-mc')
     ax3.set_ylabel('Theta rc-mc')
