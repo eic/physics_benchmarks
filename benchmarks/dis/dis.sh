@@ -80,6 +80,7 @@ fi
 ## =============================================================================
 ## Step 3: Run digitization & reconstruction
 echo "Running the digitization and reconstruction"
+rm fieldmaps
 if [ ${RECO} == "eicrecon" ] ; then
   /usr/bin/time -v eicrecon ${SIM_FILE} -Ppodio:output_file=${REC_FILE}
   if [ "$?" -ne "0" ] ; then
@@ -139,11 +140,11 @@ fi
 ## Step 5: finalize
 echo "Finalizing DIS benchmark"
 
-## Move over reconsturction artifacts as long as we don't have
-## too many events
-if [ "${JUGGLER_N_EVENTS}" -lt "500" ] ; then 
-  cp ${REC_FILE} ${RESULTS_PATH}
-fi
+## Move over reconsturction artifacts 
+# as long as we don't have too many events
+# if [ "${JUGGLER_N_EVENTS}" -lt "500" ] ; then 
+cp ${REC_FILE} ${RESULTS_PATH}
+# fi
 
 ## =============================================================================
 ## All done!
