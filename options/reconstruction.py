@@ -14,14 +14,14 @@ detector_config = str(os.environ.get("DETECTOR_CONFIG", detector_name))
 detector_version = str(os.environ.get("DETECTOR_VERSION", "main"))
 
 # Detector features that affect reconstruction
-has_ecal_barrel_imaging = False
-has_pid_backward_pfrich = False
-if "epic" in detector_name and "imaging" in detector_config:
-    has_ecal_barrel_imaging = True
-    has_pid_backward_pfrich = True
-if "epic" in detector_name and "brycecanyon" in detector_config:
-    has_ecal_barrel_imaging = True
-    has_pid_backward_pfrich = True
+has_ecal_barrel_imaging = True
+has_pid_backward_pfrich = True
+if "epic" in detector_name and "sciglass" in detector_config:
+    has_ecal_barrel_imaging = False
+    has_pid_backward_pfrich = False
+if "epic" in detector_name and "arches" in detector_config:
+    has_ecal_barrel_imaging = False
+    has_pid_backward_pfrich = False
 
 if "PBEAM" in os.environ:
     ionBeamEnergy = str(os.environ["PBEAM"])
