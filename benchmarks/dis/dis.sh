@@ -116,7 +116,7 @@ cat << EOF > ${CONFIG}
 }
 EOF
 
-root -b -q "benchmarks/dis/analysis/dis_electrons.cxx+(\"${CONFIG}\")"
+root -b -q "benchmarks/dis/analysis/dis_electrons.cxx+g(\"${CONFIG}\")"
 if [[ "$?" -ne "0" ]] ; then
   echo "ERROR running dis_electron script"
   exit 1
