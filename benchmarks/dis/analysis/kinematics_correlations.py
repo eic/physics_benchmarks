@@ -46,8 +46,8 @@ def Q2correlation(minq2,method): #minq2 can be 1,10,100, or 1000; method can be 
     Q2_List_T = Q2values_T #Truth Q2 values, mapped along x axis
     Q2_List_Y = Q2values_Y #method (E/DA/JB) Q2 values, mapped along y axis
 
-    T_len = ak.count(Q2_List_T,axis=0) #total number of events in Truth
-    Y_len = ak.count(Q2_List_Y,axis=0) #total number of events in method
+    T_len = ak.num(Q2_List_T,axis=0) #total number of events in Truth
+    Y_len = ak.num(Q2_List_Y,axis=0) #total number of events in method
 
     if T_len > Y_len: #if total number of events for Truth is greater
         Y_boolean = ak.count(Q2_List_Y,axis=-1) >= 1 #boolean to filter ak.Arrays wrt single events in method 
@@ -103,8 +103,8 @@ def Xcorrelation(minq2,method): #minq2 can be 1,10,100, or 1000; method can be '
     X_List_T = Xvalues_T #Truth x values, mapped along x axis
     X_List_Y = Xvalues_Y #method (E/DA/JB) x values, mapped along y axis
 
-    T_len = ak.count(X_List_T,axis=0) #total number of events in Truth
-    Y_len = ak.count(X_List_Y,axis=0) #total number of events in method
+    T_len = ak.num(X_List_T,axis=0) #total number of events in Truth
+    Y_len = ak.num(X_List_Y,axis=0) #total number of events in method
 
     if T_len > Y_len: #if total number of events for Truth is greater
         Y_boolean = ak.count(X_List_Y,axis=-1) >= 1 #boolean to filter ak.Arrays wrt single events in method 
