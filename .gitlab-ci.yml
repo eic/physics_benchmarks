@@ -108,6 +108,7 @@ include:
   - local: 'benchmarks/dis/config.yml'
     #- local: 'benchmarks/dvmp/config.yml'
   - local: 'benchmarks/dvcs/config.yml'
+  - local: 'benchmarks/diffractive_vmp/config.yml'
   - local: 'benchmarks/tcs/config.yml'
   - local: 'benchmarks/u_omega/config.yml'
   - local: 'benchmarks/single/config.yml'
@@ -118,6 +119,7 @@ summary:
   needs:
     - "dis:results"
     - "dvcs:results"
+    - "diffractive_vmp:results"
     - "tcs:results"
     - "u_omega:results"
     - "single:results"
