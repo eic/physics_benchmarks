@@ -21,6 +21,11 @@
 #include <TVector2.h>
 #include <TVector3.h>
 
+#include "fmt/color.h"
+#include "fmt/core.h"
+
+#include "nlohmann/json.hpp"
+
 #define PI            3.1415926
 #define MASS_ELECTRON 0.00051
 #define MASS_PROTON   0.93827
@@ -48,13 +53,31 @@ auto giveme_t_method_L(TLorentzVector eIn,
 }
 
 
-int diffractive_vm_simple_analysis(TString rec_file, TString outputfile)
-{	
-// read our configuration	
-TString name_of_input = (TString) rec_file;
-std::cout << "Input file = " << name_of_input << endl;
+int diffractive_vm(const std::string& config_name)
+{
+  // read our configuration
+  std::ifstream  config_file{config_name};
+  nlohmann::json config;
+  config_file >> config;
+
+  const std::string rec_file      = config["rec_file"];
+  const std::string detector      = config["detector"];
+  const std::string output_prefix = config["output_prefix"];
+  const std::string test_tag      = config["test_tag"];
+  const int ebeam                 = config["ebeam"];
+  const int pbeam                 = config["pbeam"];
+
+  fmt::print(fmt::emphasis::bold | fg(fmt::color::forest_green),
+             "Running DIS electron analysis...\n");
+  fmt::print(" - Detector package: {}\n", detector);
+  fmt::print(" - input file: {}\n", rec_file);
+  fmt::print(" - output prefix: {}\n", output_prefix);
+  fmt::print(" - test tag: {}\n", test_tag);
+  fmt::print(" - ebeam: {}\n", ebeam);
+  fmt::print(" - pbeam: {}\n", pbeam);
+
 auto tree = new TChain("events");
-tree->Add(name_of_input);
+tree->Add(rec_file);
 TTreeReader tree_reader(tree);       // !the tree reader
 
 TTreeReaderArray<int> mc_genStatus_array = {tree_reader, "MCParticles.generatorStatus"};

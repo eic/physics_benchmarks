@@ -116,7 +116,7 @@ EOF
 #cat ${CONFIG}
 
 ## run the analysis script with this configuration
-root -b -q "benchmarks/exclusive/diffractive_vmp/analysis/simple_analysis.cxx+(\"${CONFIG}\")"
+root -b -q "benchmarks/diffractive_vmp/analysis/simple_analysis.cxx+(\"${CONFIG}\")"
 if [ "$?" -ne "0" ] ; then
   echo "ERROR running vm_mass script"
   exit 1
