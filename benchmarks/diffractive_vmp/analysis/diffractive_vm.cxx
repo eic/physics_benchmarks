@@ -77,7 +77,7 @@ int diffractive_vm(const std::string& config_name)
   fmt::print(" - pbeam: {}\n", pbeam);
 
 auto tree = new TChain("events");
-tree->Add(rec_file);
+tree->Add(rec_file.c_str());
 TTreeReader tree_reader(tree);       // !the tree reader
 
 TTreeReaderArray<int> mc_genStatus_array = {tree_reader, "MCParticles.generatorStatus"};
@@ -108,9 +108,8 @@ TTreeReaderArray<float> reco_charge_array = {tree_reader, "ReconstructedChargedP
 TTreeReaderArray<unsigned int> rec_id = {tree_reader, "ReconstructedChargedParticlesAssociations.recID"};
 TTreeReaderArray<unsigned int> sim_id = {tree_reader, "ReconstructedChargedParticlesAssociations.simID"};
 
-TString output_name_dir = outputfile+"_output.root";
-cout << "Output file = " << output_name_dir << endl;
-TFile* output = new TFile(output_name_dir,"RECREATE");
+std::string output_file = output_prefix + "/output.root";
+TFile* output = new TFile(output_file.c_str(), "RECREATE");
 
 //events
 TH1D* h_Q2_e = new TH1D("h_Q2_e",";Q^{2}_{e,MC}",100,0,20);
