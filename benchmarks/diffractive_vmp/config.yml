@@ -13,7 +13,8 @@ diffractive_vmp:generate:
       - VM: jpsi
   timeout: 1 hours
   script:
-    - bash benchmarks/diffractive_vmp/get.sh --config diffractive_${vm} --ebeam 0 --pbeam 0
+    # FIXME eAu beams
+    - bash benchmarks/diffractive_vmp/get.sh --config diffractive_${vm} --ebeam 18 --pbeam 110
 
 diffractive_vmp:simulate:
   stage: simulate
@@ -24,7 +25,8 @@ diffractive_vmp:simulate:
       - VM: jpsi
   timeout: 96 hour
   script:
-    - bash benchmarks/diffractive_vmp/diffractive_vmp.sh --config diffractive_${vm} --ebeam 0 --pbeam 0
+    # FIXME eAu beams
+    - bash benchmarks/diffractive_vmp/diffractive_vmp.sh --config diffractive_${vm} --ebeam 18 --pbeam 110
   retry:
     max: 2
     when:
