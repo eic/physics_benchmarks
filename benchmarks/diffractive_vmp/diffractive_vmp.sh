@@ -26,7 +26,7 @@ echo "Running the Diffractive VMP benchmarks"
 ## - EBEAM:    The electron beam energy
 ## - PBEAM:    The ion beam energy
 ## - LEADING:  Leading particle of interest (J/psi)
-#export REQUIRE_LEADING=1
+export REQUIRE_LEADING=1
 source parse_cmd.sh $@
 
 ## We also need the following benchmark-specific variables:
@@ -109,6 +109,8 @@ cat << EOF > ${CONFIG}
   "rec_file": "${REC_FILE}",
   "vm_name": "${LEADING}",
   "detector": "${DETECTOR_CONFIG}",
+  "ebeam": ${EBEAM},
+  "pbeam": ${PBEAM},
   "output_prefix": "${RESULTS_PATH}/${PLOT_TAG}",
   "test_tag": "${LEADING}_${BEAM_TAG}"
 }
