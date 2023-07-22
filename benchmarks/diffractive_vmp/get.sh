@@ -22,6 +22,7 @@ pushd ${PROJECT_ROOT}
 ## - CONFIG:   The specific generator configuration --> not currenlty used FIXME
 ## - EBEAM:    The electron beam energy --> not currently used FIXME
 ## - PBEAM:    The ion beam energy --> not currently used FIXME
+export REQUIRE_LEADING=1
 source parse_cmd.sh $@
 
 ## To run the generator, we need the following global variables:
