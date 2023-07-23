@@ -108,7 +108,7 @@ TTreeReaderArray<float> reco_charge_array = {tree_reader, "ReconstructedChargedP
 TTreeReaderArray<unsigned int> rec_id = {tree_reader, "ReconstructedChargedParticleAssociations.recID"};
 TTreeReaderArray<unsigned int> sim_id = {tree_reader, "ReconstructedChargedParticleAssociations.simID"};
 
-std::string output_file = output_prefix + "/output.root";
+std::string output_file = fmt::format("{}.root", output_prefix);
 TFile* output = new TFile(output_file.c_str(), "RECREATE");
 
 //events
