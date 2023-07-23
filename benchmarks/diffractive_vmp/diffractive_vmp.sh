@@ -134,10 +134,6 @@ if [ "${JUGGLER_N_EVENTS}" -lt "500" ] ; then
   cp ${REC_FILE} ${RESULTS_PATH}
 fi
 
-## Always move over log files to the results path
-mv ${REC_LOG} ${RESULTS_PATH}
-
-
 ## cleanup output files
 #rm -f ${REC_FILE} ${SIM_FILE} ## --> not needed for CI
 
