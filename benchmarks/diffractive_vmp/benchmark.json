@@ -1,0 +1,6 @@
+{
+  "name": "DIFFRACTIVE_VM",
+  "title": "Diffractive VM Benchmark",
+  "description": "Benchmark for diffractive vector meson prodcution physics",
+  "target": "0.8"
+}
