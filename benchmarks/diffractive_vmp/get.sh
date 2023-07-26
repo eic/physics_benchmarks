@@ -56,11 +56,9 @@ if [ -f "${INPUT_PATH}/${GEN_TAG}.hepmc" ]; then
 fi
 
 ## =============================================================================
-## Step 3: Copy the file (about 180 lines per event in DIS NC files)
-nlines=$((190*${JUGGLER_N_EVENTS}))
+## Step 3: Copy the file
 DATA_URL=S3/eictest/EPIC/EVGEN/EXCLUSIVE/DIFFRACTIVE_JPSI_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_jpsi_ab_eAu_1_000.hepmc.gz
 mc config host add S3 https://dtn01.sdcc.bnl.gov:9000 ${S3_ACCESS_KEY} ${S3_SECRET_KEY}
-#mc head -n ${nlines} ${DATA_URL} | gzip -c | sanitize_hepmc3 > ${TMP_PATH}/${GEN_TAG}.hepmc
 mc cp ${DATA_URL} ${TMP_PATH}/${GEN_TAG}.hepmc.gz
 gunzip ${TMP_PATH}/${GEN_TAG}.hepmc.gz
 if [[ "$?" -ne "0" ]] ; then
