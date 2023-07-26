@@ -160,9 +160,6 @@ TTreeReaderArray<float> reco_charge_array = {tree_reader, "ReconstructedChargedP
 TTreeReaderArray<unsigned int> rec_id = {tree_reader, "ReconstructedChargedParticleAssociations.recID"};
 TTreeReaderArray<unsigned int> sim_id = {tree_reader, "ReconstructedChargedParticleAssociations.simID"};
 
-std::string output_file = fmt::format("{}.root", output_prefix);
-TFile* output = new TFile(output_file.c_str(), "RECREATE");
-
 //events
 TH1D* h_Q2_e = new TH1D("h_Q2_e",";Q^{2}_{e,MC}",100,0,20);
 TH1D* h_y_e = new TH1D("h_y_e",";y_{e,MC}",100,0,1);
@@ -458,8 +455,6 @@ while (tree_reader.Next()) {
     	}
 
 }
-output->Write();
-output->Close();
 
 //using namespace std;
 {
