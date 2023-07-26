@@ -11,6 +11,8 @@
 #include <TFitResult.h>
 #include <TRandom3.h>
 #include <TCanvas.h>
+#include <TLatex.h>
+#include <TLegend.h>
 #include <TTreeReader.h>
 #include <TTreeReaderArray.h>
 #include <TChain.h>
@@ -52,6 +54,56 @@ auto giveme_t_method_L(TLorentzVector eIn,
 	return method_L;
 }
 
+TH1D* makeHist(const char*name, const char*title, const char*xtit, const char*ytit, const int nBins, const double lower, const double higher, EColor color = kBlack ){
+
+	TH1D* temp = new TH1D(name, title, nBins, lower, higher);
+	
+	temp->SetMarkerSize(1.0);
+	temp->SetMarkerStyle(20);
+	temp->SetMarkerColor(color);
+	temp->SetLineColor(color);
+	temp->SetStats(kFALSE);
+
+	temp->GetXaxis()->SetTitle( xtit );
+	temp->GetXaxis()->SetTitleSize(0.05);
+	temp->GetXaxis()->SetTitleFont(42);
+	temp->GetXaxis()->SetTitleOffset(1.25);
+	temp->GetXaxis()->SetLabelSize(0.05);
+	temp->GetXaxis()->SetLabelOffset(0.01);
+	temp->GetXaxis()->SetLabelFont(42);
+	temp->GetXaxis()->SetLabelColor(kBlack);
+	temp->GetXaxis()->CenterTitle();
+
+	temp->GetYaxis()->SetTitle( ytit );
+	temp->GetYaxis()->SetTitleSize(0.05);
+	temp->GetYaxis()->SetTitleFont(42);
+	temp->GetYaxis()->SetTitleOffset(1.4);
+	temp->GetYaxis()->SetLabelSize(0.05);
+	temp->GetYaxis()->SetLabelOffset(0.01);
+	temp->GetYaxis()->SetLabelFont(42);
+	temp->GetYaxis()->SetLabelColor(kBlack);
+	temp->GetYaxis()->CenterTitle();
+
+	return temp;
+}
+
+void fixedFontHist1D(TH1 * h, Float_t xoffset=1.5, Float_t yoffset=2.3)
+{
+  h->SetLabelFont(43,"X");
+  h->SetLabelFont(43,"Y");
+  //h->SetLabelOffset(0.01);
+  h->SetLabelSize(16);
+  h->SetTitleFont(43);
+  h->SetTitleSize(20);
+  h->SetLabelSize(15,"Y");
+  h->SetTitleFont(43,"Y");
+  h->SetTitleSize(20,"Y");
+  h->SetTitleOffset(xoffset,"X");
+  h->SetTitleOffset(yoffset,"Y");
+  h->GetXaxis()->CenterTitle();
+  h->GetYaxis()->CenterTitle();
+  
+}
 
 int diffractive_vm(const std::string& config_name)
 {
