@@ -46,7 +46,7 @@ source parse_cmd.sh $@
 source benchmarks/diffractive_vm/env.sh
 
 ## Get a unique file name prefix based on the configuration options
-GEN_TAG=gen-${CONFIG}_${JUGGLER_N_EVENTS} ## Generic file prefix
+GEN_TAG=gen-${CONFIG}_${LEADING}_${JUGGLER_N_EVENTS} ## Generic file prefix
 
 ## =============================================================================
 ## Step 2: Check if we can find the file
@@ -57,7 +57,7 @@ fi
 
 ## =============================================================================
 ## Step 3: Copy the file
-DATA_URL=S3/eictest/EPIC/EVGEN/EXCLUSIVE/DIFFRACTIVE_JPSI_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_jpsi_ab_eAu_1_000.hepmc.gz
+DATA_URL=S3/eictest/EPIC/EVGEN/EXCLUSIVE/DIFFRACTIVE_${LEADING^^}_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_${LEADING}_ab_eAu_1_000.hepmc.gz
 mc config host add S3 https://dtn01.sdcc.bnl.gov:9000 ${S3_ACCESS_KEY} ${S3_SECRET_KEY}
 mc cp ${DATA_URL} ${TMP_PATH}/${GEN_TAG}.hepmc.gz
 gunzip ${TMP_PATH}/${GEN_TAG}.hepmc.gz

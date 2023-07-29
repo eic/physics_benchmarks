@@ -41,7 +41,7 @@ source parse_cmd.sh $@
 source benchmarks/diffractive_vm/env.sh
 
 ## Get a unique file names based on the configuration options
-GEN_FILE=${INPUT_PATH}/gen-${CONFIG}_${JUGGLER_N_EVENTS}.hepmc
+GEN_FILE=${INPUT_PATH}/gen-${CONFIG}_${LEADING}_${JUGGLER_N_EVENTS}.hepmc
 
 SIM_FILE=${TMP_PATH}/sim-${CONFIG}.edm4hep.root
 SIM_LOG=${TMP_PATH}/sim-${CONFIG}.log
@@ -128,7 +128,7 @@ fi
 ## Step 5: finalize
 echo "Finalizing Diffractive VMP benchmark"
 
-## Copy over reconsturction artifacts as long as we don't have
+## Copy over reconstruction artifacts as long as we don't have
 ## too many events
 if [ "${JUGGLER_N_EVENTS}" -lt "500" ] ; then 
   cp ${REC_FILE} ${RESULTS_PATH}

@@ -113,6 +113,7 @@ int diffractive_vm(const std::string& config_name)
   config_file >> config;
 
   const std::string rec_file      = config["rec_file"];
+  const std::string vm_name       = config["vm_name"];
   const std::string detector      = config["detector"];
   const std::string output_prefix = config["output_prefix"];
   const std::string test_tag      = config["test_tag"];
@@ -458,9 +459,17 @@ while (tree_reader.Next()) {
 
 //using namespace std;
 {
-	TString vm_label="#phi";
-	TString daug_label="K^{+}K^{-}";
-	//if(filename=="jpsi") {vm_label="J/#psi";daug_label="e^{+}e^{-}";}
+	TString vm_label;
+	TString daug_label;
+        if (vm_name == "phi") {
+          vm_label = "#phi";
+          daug_label = "K^{+}K^{-}";
+        } else if (vm_name == "jpsi") {
+          vm_label = "J/#psi";
+          daug_label = "e^{+}e^{-}";
+        } else {
+          throw std::runtime_error(fmt::format("Unknown vm_name = \"{}\"", vm_name));
+        }
 
 	TCanvas c("c1","c1",1,1,600,600);
 	gPad->SetLogy(1);
@@ -559,7 +568,7 @@ while (tree_reader.Next()) {
 
 	w7->Draw("same");
 
-        c.Print(fmt::format("{}_benchmark-phi-dsigmadt.pdf", output_prefix).c_str());
+        c.Print(fmt::format("{}_benchmark-{}-dsigmadt.pdf", output_prefix, vm_name).c_str());
 
 }
 
