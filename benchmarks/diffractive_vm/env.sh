@@ -20,7 +20,7 @@ source strict-mode.sh
 ## this particular benchmark set (for clarity). 
 ## This tag is used for the output artifacts directory (results/${JUGGLER_TAG}) 
 ## and a tag in some of the output files.
-export BENCHMARK_TAG="diffractive_vmp"
+export BENCHMARK_TAG="diffractive_vm"
 echo "Setting up the local environment for the ${BENCHMARK_TAG^^} benchmarks"
 
 ## Extra beam tag to identify the desired beam configuration

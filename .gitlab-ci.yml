@@ -105,12 +105,12 @@ common:detector:
       - runner_system_failure
 
 include:
-  - local: 'benchmarks/diffractive_vmp/config.yml'
+  - local: 'benchmarks/diffractive_vm/config.yml'
 
 summary:
   stage: finish
   needs:
-    - "diffractive_vmp:results"
+    - "diffractive_vm:results"
   script:
     - collect_benchmarks.py
   artifacts:

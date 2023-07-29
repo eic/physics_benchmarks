@@ -38,7 +38,7 @@ source parse_cmd.sh $@
 ## - RESULTS_PATH:  Path for benchmark output figures and files
 ##
 ## You can read dvmp/env.sh for more in-depth explanations of the variables.
-source benchmarks/diffractive_vmp/env.sh
+source benchmarks/diffractive_vm/env.sh
 
 ## Get a unique file names based on the configuration options
 GEN_FILE=${INPUT_PATH}/gen-${CONFIG}_${JUGGLER_N_EVENTS}.hepmc
@@ -118,7 +118,7 @@ EOF
 #cat ${CONFIG}
 
 ## run the analysis script with this configuration
-root -b -q "benchmarks/diffractive_vmp/analysis/diffractive_vm.cxx+(\"${CONFIG}\")"
+root -b -q "benchmarks/diffractive_vm/analysis/diffractive_vm.cxx+(\"${CONFIG}\")"
 if [ "$?" -ne "0" ] ; then
   echo "ERROR running vm_mass script"
   exit 1
