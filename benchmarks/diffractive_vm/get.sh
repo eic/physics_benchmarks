@@ -57,14 +57,18 @@ fi
 
 ## =============================================================================
 ## Step 3: Copy the file
-DATA_URL=S3/eictest/EPIC/EVGEN/EXCLUSIVE/DIFFRACTIVE_${LEADING^^}_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_${LEADING}_ab_eAu_1_000.hepmc.gz
-mc config host add S3 https://dtn01.sdcc.bnl.gov:9000 ${S3_ACCESS_KEY} ${S3_SECRET_KEY}
-mc cp ${DATA_URL} ${TMP_PATH}/${GEN_TAG}.hepmc.gz
-gunzip ${TMP_PATH}/${GEN_TAG}.hepmc.gz
-if [[ "$?" -ne "0" ]] ; then
-  echo "ERROR downloading file"
-  exit 1
-fi
+events_per_file=100
+nfiles=$(( (${JUGGLER_N_EVENTS} + ${events_per_file} - 1) / ${events_per_file} ))
+for ix in $(seq -f "%03g" 0 10); do
+  DATA_URL=S3/eictest/EPIC/EVGEN/EXCLUSIVE/DIFFRACTIVE_${LEADING^^}_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_${LEADING}_ab_eAu_1_${ix}.hepmc.gz
+  mc config host add S3 https://dtn01.sdcc.bnl.gov:9000 ${S3_ACCESS_KEY} ${S3_SECRET_KEY}
+  mc cp ${DATA_URL} ${TMP_PATH}/${GEN_TAG}.hepmc.gz
+  if [[ "$?" -ne "0" ]] ; then
+    echo "ERROR downloading file"
+    exit 1
+  fi
+  gunzip -c ${TMP_PATH}/${GEN_TAG}.hepmc.gz >> ${TMP_PATH}/${GEN_TAG}.hepmc
+done
 
 ## =============================================================================
 ## Step 4: Finally, move relevant output into the artifacts directory and clean up
