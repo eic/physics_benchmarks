@@ -584,7 +584,6 @@ while (tree_reader.Next()) {
 	TH1D* base1 = makeHist("base1", "", "|#it{t} | (GeV^{2})", " #delta t/t (resolution) ", 100,0,0.2,kBlack);
 	base1->GetYaxis()->SetRangeUser(1e-2, 1000);
 	base1->GetXaxis()->SetTitleColor(kBlack);
-	TGaxis::SetMaxDigits(3);
 	fixedFontHist1D(base1,1.2,1.6);
 	base1->GetYaxis()->SetTitleSize(base1->GetYaxis()->GetTitleSize()*1.5);
 	base1->GetXaxis()->SetTitleSize(base1->GetXaxis()->GetTitleSize()*1.5);
@@ -648,7 +647,6 @@ while (tree_reader.Next()) {
 	TH1D* base2 = makeHist("base2", "", "MC", " resolution ", 100,0,0.2,kBlack);
 	base2->GetYaxis()->SetRangeUser(-10, 2);
 	base2->GetXaxis()->SetTitleColor(kBlack);
-	TGaxis::SetMaxDigits(3);
 	fixedFontHist1D(base2,3,3);
 	base2->GetYaxis()->SetTitleSize(base2->GetYaxis()->GetTitleSize()*1);
 	base2->GetXaxis()->SetTitleSize(base2->GetXaxis()->GetTitleSize()*1);
