@@ -595,7 +595,7 @@ if has_ecal_barrel_imaging:
         samplingFraction=img_barrel_sf,
         readoutClass="EcalBarrelImagingHits",  # readout class
         layerField="layer",  # field to get layer id
-        sectorField="module",  # field to get sector id
+        sectorField="sector",  # field to get sector id
         **img_barrel_daq,
     )
     algorithms.append(img_barrel_reco)
@@ -640,11 +640,11 @@ if has_ecal_barrel_imaging:
         samplingFraction=scifi_barrel_sf,
         readoutClass="EcalBarrelScFiHits",
         layerField="layer",
-        sectorField="module",
+        sectorField="sector",
         localDetFields=[
             "system",
-            "module",
-        ],  # use local coordinates in each module (stave)
+            "sector",
+        ],  # use local coordinates in each sector
         **scfi_barrel_daq,
     )
     algorithms.append(scfi_barrel_reco)
