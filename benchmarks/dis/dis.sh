@@ -141,9 +141,9 @@ echo "Finalizing DIS benchmark"
 
 ## Move over reconsturction artifacts as long as we don't have
 ## too many events
-if [ "${JUGGLER_N_EVENTS}" -lt "500" ] ; then 
-  cp ${REC_FILE} ${RESULTS_PATH}
-fi
+# if [ "${JUGGLER_N_EVENTS}" -lt "500" ] ; then 
+cp ${REC_FILE} ${RESULTS_PATH}
+# fi
 
 ## =============================================================================
 ## All done!
