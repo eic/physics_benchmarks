@@ -124,6 +124,13 @@ summary:
     - "backgrounds:results"
   script:
     - collect_benchmarks.py
+    - |
+      cat templates/report_header.tex > report.tex ;
+      find results -name "*.png" -exec echo "\result{{}}" \; >> report.tex ;
+      cat templates/report_footer.tex >> report.tex ;
+      pdflatex report.tex ;
+      pdflatex report.tex ;
+      mv report.pdf results
   artifacts:
     paths:
       - results/*
