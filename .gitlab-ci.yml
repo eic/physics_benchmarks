@@ -127,6 +127,7 @@ summary:
     - echo "<html><head>Summary</head><body><p>$(cat results/dis.json)</p><img src=\"dis/10on100/minQ2=1/Q2_correlation_DA_dis_10x100_minQ2=1.png\"/></body></html>" >> public/index.html
   artifacts:
     paths:
+      - public
       - results/*
 #    reports:
 #      junit: ["results/dvcs/report2.xml"]
