@@ -130,7 +130,8 @@ summary:
       cat templates/report_footer.tex >> report.tex ;
       pdflatex report.tex ;
       pdflatex report.tex ;
-      mv report.pdf results
+      mv report.pdf results ;
+      echo "TARGET_URL=https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks/-/jobs/${CI_JOB_ID}/artifacts/raw/results/report.pdf?job=summary" | tee -a .env
   artifacts:
     paths:
       - results/*
@@ -143,6 +144,7 @@ benchmarks:physics:success:
   variables:
     STATE: "success"
     DESCRIPTION: "Succeeded!"
+    TARGET_URL: "${TARGET_URL}"
   when: on_success
 
 benchmarks:physics:failure:
