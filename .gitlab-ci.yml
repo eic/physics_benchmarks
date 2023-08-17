@@ -19,9 +19,9 @@ default:
       - .local/root_build
       - results
       - config
-      - juggler.env
+      - .env
     reports:
-      dotenv: juggler.env
+      dotenv: .env
 
 stages:
   - status-pending
