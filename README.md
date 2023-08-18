@@ -31,9 +31,7 @@ See [common_bench](https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench) for d
 Here we setup to use our local build of the `juggler` library.
 First set some environment variables.
 ```
-export JUGGLER_INSTALL_PREFIX=/usr/local 
 export DETECTOR=epic             # athena is the default
-export BEAMLINE_CONFIG=ip6       # ip6 is the default
 ```
 
 ```

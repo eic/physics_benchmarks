@@ -27,7 +27,6 @@ echo "Running the DIS benchmarks"
 source parse_cmd.sh $@
 
 ## To run the reconstruction, we need the following global variables:
-## - JUGGLER_INSTALL_PREFIX: Install prefix for Juggler (simu/recon)
 ## - DETECTOR:       the detector package we want to use for this benchmark
 ## - DETECTOR_PATH:          full path to the detector definitions
 ##
