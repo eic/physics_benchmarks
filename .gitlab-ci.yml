@@ -105,6 +105,7 @@ common:detector:
       - runner_system_failure
 
 include:
+  - local: 'benchmarks/diffractive_vm/config.yml'
   - local: 'benchmarks/dis/config.yml'
     #- local: 'benchmarks/dvmp/config.yml'
   - local: 'benchmarks/dvcs/config.yml'
@@ -116,6 +117,7 @@ include:
 summary:
   stage: finish
   needs:
+    - "diffractive_vm:results"
     - "dis:results"
     - "dvcs:results"
     - "tcs:results"
