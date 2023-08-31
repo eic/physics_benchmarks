@@ -133,6 +133,12 @@ if [[ "$?" -ne "0" ]] ; then
   exit 1
 fi
 
+root -b -q "benchmarks/dis/analysis/jets.cxx+g(\"${CONFIG}\")"
+if [[ "$?" -ne "0" ]] ; then
+  echo "ERROR running dis_electron script"
+  exit 1
+fi
+
 
 ## =============================================================================
 ## Step 5: finalize
