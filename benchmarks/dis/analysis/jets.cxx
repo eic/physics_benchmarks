@@ -4,8 +4,9 @@
 #include "common_bench/plot.h"
 
 #include "ROOT/RDataFrame.hxx"
-#include <TH1D.h>
 #include <TCanvas.h>
+#include <TH1D.h>
+#include <TVector3.h>
 
 #include "fmt/color.h"
 #include "fmt/core.h"
