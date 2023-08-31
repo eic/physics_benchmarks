@@ -28,12 +28,13 @@ int jets(const std::string& config_name)
   nlohmann::json config;
   config_file >> config;
 
-  const std::string rec_file      = config["rec_file"];
-  const std::string detector      = config["detector"];
-  const std::string output_prefix = config["output_prefix"];
-  const std::string test_tag      = config["test_tag"];
-  const int ebeam                 = config["ebeam"];
-  const int pbeam                 = config["pbeam"];
+  const std::string rec_file     = config["rec_file"];
+  const std::string detector     = config["detector"];
+  const std::string results_path = config["results_path"];
+  const std::string plot_tag     = config["plot_tag"];
+  const std::string test_tag     = config["test_tag"];
+  const int ebeam                = config["ebeam"];
+  const int pbeam                = config["pbeam"];
 
   fmt::print(fmt::emphasis::bold | fg(fmt::color::forest_green),
              "Running jet analysis...\n");
@@ -49,7 +50,7 @@ int jets(const std::string& config_name)
   ROOT::EnableImplicitMT(kNumThreads);
   ROOT::RDataFrame d("events", rec_file);
 
-  TFile output(fmt::format("{}_jets.hist.root", output_prefix).c_str(), "RECREATE");
+  TFile output(fmt::format("{}/jets/{}.hist.root", results_path, plot_tag).c_str(), "RECREATE");
 
   // Define Lambdas for Selection
   auto getNJetsThresh = [](ints &type, floats &E){
@@ -465,47 +466,47 @@ int jets(const std::string& config_name)
   auto h_jetMatchEResVsEtaDRDup = d1.Histo2D({"h_jetMatchEResVsEtaDRDup","(Reco - Truth)/Truth Jet Energy Vs Reco Eta (Delta R < 0.25 No Duplicate);Reco Jet Eta;Energy Diff",100,-5.,5.,2000,-10.,10.}, "jetEtaThreshDRDup", "matchJetResEDRDup");
 
   // Render histograms
-  { TCanvas c; h_type->Draw(); c.Print(fmt::format("{}_type.png", output_prefix).c_str()); }
-  { TCanvas c; h_nJetsThresh->Draw(); c.Print(fmt::format("{}_nJetsThresh.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetEnergyThresh->Draw(); c.Print(fmt::format("{}_jetEnergyThresh.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetTrackDRThresh->Draw(); c.Print(fmt::format("{}_jetTrackDRThresh.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetDupTrackThresh->Draw(); c.Print(fmt::format("{}_jetDupTrackThresh.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetPtThresh->Draw(); c.Print(fmt::format("{}_jetPtThresh.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetEtaThresh->Draw(); c.Print(fmt::format("{}_jetEtaThresh.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetPhiThresh->Draw(); c.Print(fmt::format("{}_jetPhiThresh.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetPhiVsEtaThresh->Draw(); c.Print(fmt::format("{}_jetPhiVsEtaThresh.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetEVsEtaThresh->Draw(); c.Print(fmt::format("{}_jetEVsEtaThresh.png", output_prefix).c_str()); }
+  { TCanvas c; h_type->Draw(); c.Print(fmt::format("{}/jets/{}_type.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_nJetsThresh->Draw(); c.Print(fmt::format("{}/jets/{}_nJetsThresh.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetEnergyThresh->Draw(); c.Print(fmt::format("{}/jets/{}_jetEnergyThresh.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetTrackDRThresh->Draw(); c.Print(fmt::format("{}/jets/{}_jetTrackDRThresh.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetDupTrackThresh->Draw(); c.Print(fmt::format("{}/jets/{}_jetDupTrackThresh.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetPtThresh->Draw(); c.Print(fmt::format("{}/jets/{}_jetPtThresh.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetEtaThresh->Draw(); c.Print(fmt::format("{}/jets/{}_jetEtaThresh.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetPhiThresh->Draw(); c.Print(fmt::format("{}/jets/{}_jetPhiThresh.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetPhiVsEtaThresh->Draw(); c.Print(fmt::format("{}/jets/{}_jetPhiVsEtaThresh.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetEVsEtaThresh->Draw(); c.Print(fmt::format("{}/jets/{}_jetEVsEtaThresh.png", results_path, plot_tag).c_str()); }
 
-  { TCanvas c; h_nGenJets->Draw(); c.Print(fmt::format("{}_nGenJets.png", output_prefix).c_str()); }
-  { TCanvas c; h_genJetEnergy->Draw(); c.Print(fmt::format("{}_genJetEnergy.png", output_prefix).c_str()); }
-  { TCanvas c; h_genJetTrackDR->Draw(); c.Print(fmt::format("{}_genJetTrackDR.png", output_prefix).c_str()); }
-  { TCanvas c; h_genJetPt->Draw(); c.Print(fmt::format("{}_genJetPt.png", output_prefix).c_str()); }
-  { TCanvas c; h_genJetEta->Draw(); c.Print(fmt::format("{}_genJetEta.png", output_prefix).c_str()); }
-  { TCanvas c; h_genJetPhi->Draw(); c.Print(fmt::format("{}_genJetPhi.png", output_prefix).c_str()); }
-  { TCanvas c; h_genJetPhiVsEta->Draw(); c.Print(fmt::format("{}_genJetPhiVsEta.png", output_prefix).c_str()); }
-  { TCanvas c; h_genJetEVsEta->Draw(); c.Print(fmt::format("{}_genJetEVsEta.png", output_prefix).c_str()); }
+  { TCanvas c; h_nGenJets->Draw(); c.Print(fmt::format("{}/jets/{}_nGenJets.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_genJetEnergy->Draw(); c.Print(fmt::format("{}/jets/{}_genJetEnergy.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_genJetTrackDR->Draw(); c.Print(fmt::format("{}/jets/{}_genJetTrackDR.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_genJetPt->Draw(); c.Print(fmt::format("{}/jets/{}_genJetPt.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_genJetEta->Draw(); c.Print(fmt::format("{}/jets/{}_genJetEta.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_genJetPhi->Draw(); c.Print(fmt::format("{}/jets/{}_genJetPhi.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_genJetPhiVsEta->Draw(); c.Print(fmt::format("{}/jets/{}_genJetPhiVsEta.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_genJetEVsEta->Draw(); c.Print(fmt::format("{}/jets/{}_genJetEVsEta.png", results_path, plot_tag).c_str()); }
 
-  { TCanvas c; h_jetMatchDeltaR->Draw(); c.Print(fmt::format("{}_jetMatchDeltaR.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetMatchTruthVsRecoE->Draw(); c.Print(fmt::format("{}_jetMatchTruthVsRecoE.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetMatchTruthVsRecoEta->Draw(); c.Print(fmt::format("{}_jetMatchTruthVsRecoEta.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetMatchTruthVsRecoPhi->Draw(); c.Print(fmt::format("{}_jetMatchTruthVsRecoPhi.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetMatchERes->Draw(); c.Print(fmt::format("{}_jetMatchERes.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetMatchEResVsE->Draw(); c.Print(fmt::format("{}_jetMatchEResVsE.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetMatchEResVsEta->Draw(); c.Print(fmt::format("{}_jetMatchEResVsEta.png", output_prefix).c_str()); }
+  { TCanvas c; h_jetMatchDeltaR->Draw(); c.Print(fmt::format("{}/jets/{}_jetMatchDeltaR.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetMatchTruthVsRecoE->Draw(); c.Print(fmt::format("{}/jets/{}_jetMatchTruthVsRecoE.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetMatchTruthVsRecoEta->Draw(); c.Print(fmt::format("{}/jets/{}_jetMatchTruthVsRecoEta.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetMatchTruthVsRecoPhi->Draw(); c.Print(fmt::format("{}/jets/{}_jetMatchTruthVsRecoPhi.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetMatchERes->Draw(); c.Print(fmt::format("{}/jets/{}_jetMatchERes.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetMatchEResVsE->Draw(); c.Print(fmt::format("{}/jets/{}_jetMatchEResVsE.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetMatchEResVsEta->Draw(); c.Print(fmt::format("{}/jets/{}_jetMatchEResVsEta.png", results_path, plot_tag).c_str()); }
 
-  { TCanvas c; h_jetMatchTruthVsRecoEDR->Draw(); c.Print(fmt::format("{}_jetMatchTruthVsRecoEDR.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetMatchTruthVsRecoEtaDR->Draw(); c.Print(fmt::format("{}_jetMatchTruthVsRecoEtaDR.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetMatchTruthVsRecoPhiDR->Draw(); c.Print(fmt::format("{}_jetMatchTruthVsRecoPhiDR.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetMatchEResDR->Draw(); c.Print(fmt::format("{}_jetMatchEResDR.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetMatchEResVsEDR->Draw(); c.Print(fmt::format("{}_jetMatchEResVsEDR.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetMatchEResVsEtaDR->Draw(); c.Print(fmt::format("{}_jetMatchEResVsEtaDR.png", output_prefix).c_str()); }
+  { TCanvas c; h_jetMatchTruthVsRecoEDR->Draw(); c.Print(fmt::format("{}/jets/{}_jetMatchTruthVsRecoEDR.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetMatchTruthVsRecoEtaDR->Draw(); c.Print(fmt::format("{}/jets/{}_jetMatchTruthVsRecoEtaDR.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetMatchTruthVsRecoPhiDR->Draw(); c.Print(fmt::format("{}/jets/{}_jetMatchTruthVsRecoPhiDR.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetMatchEResDR->Draw(); c.Print(fmt::format("{}/jets/{}_jetMatchEResDR.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetMatchEResVsEDR->Draw(); c.Print(fmt::format("{}/jets/{}_jetMatchEResVsEDR.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetMatchEResVsEtaDR->Draw(); c.Print(fmt::format("{}/jets/{}_jetMatchEResVsEtaDR.png", results_path, plot_tag).c_str()); }
 
-  { TCanvas c; h_jetMatchTruthVsRecoEDRDup->Draw(); c.Print(fmt::format("{}_jetMatchTruthVsRecoEDRDup.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetMatchTruthVsRecoEtaDRDup->Draw(); c.Print(fmt::format("{}_jetMatchTruthVsRecoEtaDRDup.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetMatchTruthVsRecoPhiDRDup->Draw(); c.Print(fmt::format("{}_jetMatchTruthVsRecoPhiDRDup.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetMatchEResDRDup->Draw(); c.Print(fmt::format("{}_jetMatchEResDRDup.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetMatchEResVsEDRDup->Draw(); c.Print(fmt::format("{}_jetMatchEResVsEDRDup.png", output_prefix).c_str()); }
-  { TCanvas c; h_jetMatchEResVsEtaDRDup->Draw(); c.Print(fmt::format("{}_jetMatchEResVsEtaDRDup.png", output_prefix).c_str()); }
+  { TCanvas c; h_jetMatchTruthVsRecoEDRDup->Draw(); c.Print(fmt::format("{}/jets/{}_jetMatchTruthVsRecoEDRDup.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetMatchTruthVsRecoEtaDRDup->Draw(); c.Print(fmt::format("{}/jets/{}_jetMatchTruthVsRecoEtaDRDup.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetMatchTruthVsRecoPhiDRDup->Draw(); c.Print(fmt::format("{}/jets/{}_jetMatchTruthVsRecoPhiDRDup.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetMatchEResDRDup->Draw(); c.Print(fmt::format("{}/jets/{}_jetMatchEResDRDup.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetMatchEResVsEDRDup->Draw(); c.Print(fmt::format("{}/jets/{}_jetMatchEResVsEDRDup.png", results_path, plot_tag).c_str()); }
+  { TCanvas c; h_jetMatchEResVsEtaDRDup->Draw(); c.Print(fmt::format("{}/jets/{}_jetMatchEResVsEtaDRDup.png", results_path, plot_tag).c_str()); }
 
   // Write Histograms
   h_type->Write();

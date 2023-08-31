@@ -108,6 +108,8 @@ cat << EOF > ${CONFIG}
   "rec_file": "${REC_FILE}",
   "detector": "${DETECTOR}",
   "output_prefix": "${RESULTS_PATH}/${PLOT_TAG}",
+  "results_path": "${RESULTS_PATH}",
+  "plot_tag": "${PLOT_TAG}",
   "ebeam": ${EBEAM},
   "pbeam": ${PBEAM},
   "minq2": ${MINQ2},
