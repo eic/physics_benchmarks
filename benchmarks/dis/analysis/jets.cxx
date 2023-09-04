@@ -40,7 +40,6 @@ int jets(const std::string& config_name)
              "Running jet analysis...\n");
   fmt::print(" - Detector package: {}\n", detector);
   fmt::print(" - input file: {}\n", rec_file);
-  fmt::print(" - output prefix: {}\n", output_prefix);
   fmt::print(" - test tag: {}\n", test_tag);
   fmt::print(" - ebeam: {}\n", ebeam);
   fmt::print(" - pbeam: {}\n", pbeam);
