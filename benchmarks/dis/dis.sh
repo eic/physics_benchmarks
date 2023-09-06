@@ -108,6 +108,8 @@ cat << EOF > ${CONFIG}
   "rec_file": "${REC_FILE}",
   "detector": "${DETECTOR}",
   "output_prefix": "${RESULTS_PATH}/${PLOT_TAG}",
+  "results_path": "${RESULTS_PATH}",
+  "plot_tag": "${PLOT_TAG}",
   "ebeam": ${EBEAM},
   "pbeam": ${PBEAM},
   "minq2": ${MINQ2},
@@ -130,6 +132,12 @@ fi
 python benchmarks/dis/analysis/truth_reconstruction.py --rec_file ${REC_FILE} --config ${PLOT_TAG}_${DETECTOR_CONFIG} --results_path ${RESULTS_PATH} --nevents ${JUGGLER_N_EVENTS}
 if [[ "$?" -ne "0" ]] ; then
   echo "ERROR running truth_reconstruction script"
+  exit 1
+fi
+
+root -b -q "benchmarks/dis/analysis/jets.cxx+g(\"${CONFIG}\")"
+if [[ "$?" -ne "0" ]] ; then
+  echo "ERROR running dis_electron script"
   exit 1
 fi
 
