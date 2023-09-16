@@ -88,7 +88,7 @@ echo "DETECTOR    = ${DETECTOR}"
 
 ## Step 1. Get the data
 if [[ -n "${DATA_INIT}" || -n "${DO_ALL}" ]] ; then
-  mc -C . config host add S3 https://dtn01.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
+  mc -C . config host add S3 https://eics3.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
   set +o pipefail
   mc -C . head  -n 1004  --insecure ${DATA_URL} | sanitize_hepmc3 > "${JUGGLER_MC_FILE}"
   if [[ "$?" -ne "0" ]] ; then
