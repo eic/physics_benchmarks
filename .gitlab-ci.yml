@@ -20,6 +20,7 @@ default:
       - results
       - config
       - .env
+      - summary.txt
     reports:
       dotenv: .env
 
@@ -126,6 +127,7 @@ summary:
     - "backgrounds:results"
   script:
     - collect_benchmarks.py
+    - find results -print | sort | tee summary.txt
   artifacts:
     paths:
       - results/*
