@@ -130,6 +130,7 @@ summary:
     - find results -print | sort | tee summary.txt
   artifacts:
     paths:
+      - summary.txt
       - results/*
 #    reports:
 #      junit: ["results/dvcs/report2.xml"]
