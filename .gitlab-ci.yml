@@ -2,6 +2,11 @@ image: ${BENCHMARKS_REGISTRY}/${BENCHMARKS_CONTAINER}:${BENCHMARKS_TAG}
 
 variables:
   RECO: "eicrecon"
+  DETECTOR: epic
+  DETECTOR_CONFIG: epic_craterlake
+  DETECTOR_REPOSITORYURL: 'https://github.com/eic/epic.git'
+
+
 
 default:
   before_script:
