@@ -72,10 +72,10 @@ common:setup:
       if [[ -z "${COMMON_BENCH_VERSION}" ]] ; then
         export COMMON_BENCH_VERSION="master" 
       fi
-      echo "COMMON_BENCH_VERSION=${COMMON_BENCH_VERSION}" >> .env
       echo "COMMON_BENCH_VERSION = ${COMMON_BENCH_VERSION}" 
-      git clone -b "${COMMON_BENCH_VERSION}" https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git setup 
+      echo "COMMON_BENCH_VERSION=${COMMON_BENCH_VERSION}" >> .env
   script:
+    - git clone -b "${COMMON_BENCH_VERSION}" https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git setup 
     - source setup/bin/env.sh && ./setup/bin/install_common.sh
 
 common:detector:
