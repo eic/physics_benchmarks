@@ -6,8 +6,6 @@ variables:
   DETECTOR_CONFIG: epic_craterlake
   DETECTOR_REPOSITORYURL: 'https://github.com/eic/epic.git'
 
-
-
 default:
   before_script:
     - source .local/bin/env.sh
@@ -71,9 +69,10 @@ common:setup:
   stage: config
   before_script:
     - |
-      if [[ "${COMMON_BENCH_VERSION}" == "" ]] ; then
+      if [[ -z "${COMMON_BENCH_VERSION}" ]] ; then
         export COMMON_BENCH_VERSION="master" 
       fi
+      echo "COMMON_BENCH_VERSION=${COMMON_BENCH_VERSION}" >> .env
       echo "COMMON_BENCH_VERSION = ${COMMON_BENCH_VERSION}" 
       git clone -b "${COMMON_BENCH_VERSION}" https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git setup 
   script:
