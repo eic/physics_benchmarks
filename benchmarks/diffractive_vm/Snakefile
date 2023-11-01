@@ -1,0 +1,164 @@
+import os
+
+from snakemake.remote.S3 import RemoteProvider as S3RemoteProvider
+
+
+S3 = S3RemoteProvider(
+    endpoint_url="https://dtn01.sdcc.bnl.gov:9000",
+    access_key_id=os.environ["S3_ACCESS_KEY"],
+    secret_access_key=os.environ["S3_SECRET_KEY"],
+)
+
+
+rule diffractive_vm_compile:
+    input:
+        "benchmarks/diffractive_vm/analysis/diffractive_vm_cxx.so",
+
+
+rule diffractive_vm_get:
+    input:
+        lambda wildcards: S3.remote(f"eictest/EPIC/EVGEN/EXCLUSIVE/DIFFRACTIVE_{wildcards.PARTICLE.upper()}_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_{wildcards.PARTICLE}_ab_eAu_1_{wildcards.INDEX}.hepmc.gz"),
+    output:
+        "sartre_{PARTICLE}_{INDEX}.hepmc.gz",
+    shell:
+        """
+ln {input} {output}
+"""
+
+rule diffractive_vm_campaign_sim_get:
+    input:
+        lambda wildcards: S3.remote(f"eictest/EPIC/RECO/22.11.3/epic_arches/EXCLUSIVE/DIFFRACTIVE_{wildcards.PARTICLE.upper()}_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_{wildcards.PARTICLE}_ab_eAu_1.0{wildcards.INDEX}.eicrecon.tree.edm4eic.root")
+    output:
+        "campaign_22.11.3_sartre_{PARTICLE}_{INDEX}_eicrecon.edm4eic.root",
+    shell:
+        """
+ln {input} {output}
+"""
+
+rule diffractive_vm_sim:
+    input:
+        "sartre_{PARTICLE}_{INDEX}.hepmc.gz",
+    output:
+        "sartre_{PARTICLE}_{INDEX}.edm4hep.root",
+    params:
+        N_EVENTS=100
+    shell:
+        """
+ddsim \
+  --runType batch \
+  --part.minimalKineticEnergy 100*GeV  \
+  --filter.tracker edep0 \
+  -v WARNING \
+  --numberOfEvents {params.N_EVENTS} \
+  --compactFile $DETECTOR_PATH/$DETECTOR_CONFIG.xml \
+  --inputFiles {input} \
+  --outputFile {output}
+"""
+
+
+rule diffractive_vm_reco_eicrecon:
+    input:
+        "{file}.edm4hep.root",
+    output:
+        "{file}_eicrecon.edm4eic.root",
+    shell:
+        """
+eicrecon {input} -Ppodio:output_file={output}
+"""
+
+
+rule diffractive_vm_analysis:
+    input:
+        script="benchmarks/diffractive_vm/analysis/diffractive_vm.cxx",
+        script_compiled="benchmarks/diffractive_vm/analysis/diffractive_vm_cxx.so",
+        data="{SIM}.edm4eic.root",
+    params:
+        LEADING="phi",
+        EBEAM=18,
+        PBEAM=110,
+        PLOT_TAG="plot",
+        BEAM_TAG="beam",
+        output_prefix="{SIM}/plots",
+    output:
+        config="{SIM}/config.json",
+        plots="{SIM}/plots.root",
+    shell:
+        """
+cat > {output.config} <<EOF
+{{
+  "rec_file": "{input.data}",
+  "vm_name": "{params.LEADING}",
+  "detector": "$DETECTOR_CONFIG",
+  "ebeam": {params.EBEAM},
+  "pbeam": {params.PBEAM},
+  "output_prefix": "{wildcards.SIM}/plots",
+  "test_tag": "{params.LEADING}_{params.BEAM_TAG}"
+}}
+EOF
+mkdir -p $(dirname "{output.plots}")
+root -l -b -q '{input.script}+("{output.config}")'
+"""
+
+
+rule diffractive_vm_combine_sartre:
+    input:
+        lambda wildcards: [f"{wildcards.PREFIX}sartre_{wildcards.PARTICLE}_{ix:03d}_eicrecon/plots.root" for ix in range(int(wildcards.NUM_FILES))],
+    params:
+        LEADING="phi",
+        EBEAM=18,
+        PBEAM=110,
+        PLOT_TAG="plot",
+        BEAM_TAG="beam",
+#    wildcard_constraints:
+#        PREFIX="[]*",
+    output:
+        config="{PREFIX}sartre_{PARTICLE}_combined_{NUM_FILES}/config.json",
+        plots="{PREFIX}sartre_{PARTICLE}_combined_{NUM_FILES}/plots.root",
+    shell:
+        """
+cat > {output.config} <<EOF
+{{
+  "rec_file": "",
+  "vm_name": "{params.LEADING}",
+  "detector": "$DETECTOR_CONFIG",
+  "ebeam": {params.EBEAM},
+  "pbeam": {params.PBEAM},
+  "output_prefix": "local_sartre_{wildcards.NUM_FILES}/plots",
+  "test_tag": "{params.LEADING}_{params.BEAM_TAG}"
+}}
+EOF
+hadd {output.plots} {input}
+"""
+
+ruleorder: diffractive_vm_combine_sartre > diffractive_vm_analysis
+
+
+rule diffractive_vm_plots:
+    input:
+        script="benchmarks/diffractive_vm/analysis/plot.cxx",
+        script_compiled="benchmarks/diffractive_vm/analysis/plot_cxx.so",
+        config="{SIM}/config.json",
+    output:
+        "{SIM}/plots_benchmark-phi-dsigmadt.pdf",
+        "{SIM}/plots_benchmark-phi-t-resolution.pdf",
+        "{SIM}/plots_benchmark-phi-DIS-kinematics.pdf",
+    shell:
+        """
+root -l -b -q '{input.script}+("{input.config}")'
+"""
+
+
+# Couple examples of invocation:
+
+rule diffractive_vm_run_over_a_campaign:
+    input:
+        "campaign_22.11.3_sartre_phi_combined_9/plots_benchmark-phi-dsigmadt.pdf",
+    message:
+        "See output in {input[0]}"
+
+
+rule diffractive_vm_run_locally:
+    input:
+        "sartre_phi_combined_9/plots_benchmark-phi-dsigmadt.pdf",
+    message:
+        "See output in {input[0]}"

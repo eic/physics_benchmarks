@@ -2,7 +2,7 @@ diffractive_vm:compile:
   stage: compile
   extends: .compile_benchmark
   script:
-    - compile_analyses.py diffractive_vm
+    - snakemake --cores 1 diffractive_vm_compile
 
 diffractive_vm:generate:
   stage: generate
@@ -14,8 +14,7 @@ diffractive_vm:generate:
       - VM: jpsi
   timeout: 1 hours
   script:
-    # FIXME eAu beams
-    - bash benchmarks/diffractive_vm/get.sh --config diffractive_${VM} --leading ${VM} --ebeam 18 --pbeam 110
+    - snakemake --cores 1 sartre_${VM}_{000,001,002,003,004,005,006,007,008,009}.hepmc.gz
 
 diffractive_vm:simulate:
   stage: simulate
@@ -27,8 +26,7 @@ diffractive_vm:simulate:
       - VM: jpsi
   timeout: 96 hour
   script:
-    # FIXME eAu beams
-    - bash benchmarks/diffractive_vm/diffractive_vm.sh --config diffractive_${VM} --leading ${VM} --ebeam 18 --pbeam 110
+    - snakemake --cores 1 sartre_${VM}_combined_9/plots_benchmark-phi-dsigmadt.pdf
   retry:
     max: 2
     when:
