@@ -19,17 +19,17 @@ rule diffractive_vm_get:
     input:
         lambda wildcards: S3.remote(f"eictest/EPIC/EVGEN/EXCLUSIVE/DIFFRACTIVE_{wildcards.PARTICLE.upper()}_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_{wildcards.PARTICLE}_ab_eAu_1_{wildcards.INDEX}.hepmc.gz"),
     output:
-        "sartre_{PARTICLE}_{INDEX}.hepmc.gz",
+        "input/diffractive_vm/sartre_{PARTICLE}_{INDEX}.hepmc.gz",
     shell:
         """
 ln {input} {output}
 """
 
-rule diffractive_vm_campaign_sim_get:
+rule diffractive_vm_campaign_reco_get:
     input:
         lambda wildcards: S3.remote(f"eictest/EPIC/RECO/22.11.3/epic_arches/EXCLUSIVE/DIFFRACTIVE_{wildcards.PARTICLE.upper()}_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_{wildcards.PARTICLE}_ab_eAu_1.0{wildcards.INDEX}.eicrecon.tree.edm4eic.root")
     output:
-        "campaign_22.11.3_sartre_{PARTICLE}_{INDEX}_eicrecon.edm4eic.root",
+        "reco/epic_arches/campaign_22.11.3_sartre_{PARTICLE}_{INDEX}_eicrecon.edm4eic.root",
     shell:
         """
 ln {input} {output}
@@ -37,9 +37,9 @@ ln {input} {output}
 
 rule diffractive_vm_sim:
     input:
-        "sartre_{PARTICLE}_{INDEX}.hepmc.gz",
+        "input/diffractive_vm/sartre_{PARTICLE}_{INDEX}.hepmc.gz",
     output:
-        "sartre_{PARTICLE}_{INDEX}.edm4hep.root",
+        "sim/{DETECTOR_CONFIG}/sartre_{PARTICLE}_{INDEX}.edm4hep.root",
     params:
         N_EVENTS=100
     shell:
@@ -50,7 +50,7 @@ ddsim \
   --filter.tracker edep0 \
   -v WARNING \
   --numberOfEvents {params.N_EVENTS} \
-  --compactFile $DETECTOR_PATH/$DETECTOR_CONFIG.xml \
+  --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
   --inputFiles {input} \
   --outputFile {output}
 """
@@ -58,12 +58,12 @@ ddsim \
 
 rule diffractive_vm_reco_eicrecon:
     input:
-        "{file}.edm4hep.root",
+        "sim/{DETECTOR_CONFIG}/{file}.edm4hep.root",
     output:
-        "{file}_eicrecon.edm4eic.root",
+        "reco/{DETECTOR_CONFIG}/{file}_eicrecon.edm4eic.root",
     shell:
         """
-eicrecon {input} -Ppodio:output_file={output}
+DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file={output}
 """
 
 
@@ -71,28 +71,29 @@ rule diffractive_vm_analysis:
     input:
         script="benchmarks/diffractive_vm/analysis/diffractive_vm.cxx",
         script_compiled="benchmarks/diffractive_vm/analysis/diffractive_vm_cxx.so",
-        data="{SIM}.edm4eic.root",
+        data="reco/{DETECTOR_CONFIG}/{SIM}sartre_{PARTICLE}{SUFFIX}.edm4eic.root",
     params:
-        LEADING="phi",
         EBEAM=18,
         PBEAM=110,
-        PLOT_TAG="plot",
-        BEAM_TAG="beam",
-        output_prefix="{SIM}/plots",
+        BEAM_TAG="18on110",
+    wildcard_constraints:
+        SIM=".*", # can be empty
+        PARTICLE="[^_]*",
+        SUFFIX=".*", # can be empty
     output:
-        config="{SIM}/config.json",
-        plots="{SIM}/plots.root",
+        config="results/{DETECTOR_CONFIG}/diffractive_vm/{SIM}sartre_{PARTICLE}{SUFFIX}/config.json",
+        plots="results/{DETECTOR_CONFIG}/diffractive_vm/{SIM}sartre_{PARTICLE}{SUFFIX}/plots.root",
     shell:
         """
 cat > {output.config} <<EOF
 {{
   "rec_file": "{input.data}",
-  "vm_name": "{params.LEADING}",
-  "detector": "$DETECTOR_CONFIG",
+  "vm_name": "{wildcards.PARTICLE}",
+  "detector": "{wildcards.DETECTOR_CONFIG}",
   "ebeam": {params.EBEAM},
   "pbeam": {params.PBEAM},
-  "output_prefix": "{wildcards.SIM}/plots",
-  "test_tag": "{params.LEADING}_{params.BEAM_TAG}"
+  "output_prefix": "$(dirname "{output.plots}")/plots",
+  "test_tag": "{wildcards.PARTICLE}_{params.BEAM_TAG}"
 }}
 EOF
 mkdir -p $(dirname "{output.plots}")
@@ -102,29 +103,30 @@ root -l -b -q '{input.script}+("{output.config}")'
 
 rule diffractive_vm_combine_sartre:
     input:
-        lambda wildcards: [f"{wildcards.PREFIX}sartre_{wildcards.PARTICLE}_{ix:03d}_eicrecon/plots.root" for ix in range(int(wildcards.NUM_FILES))],
+        lambda wildcards: [f"results/{wildcards.DETECTOR_CONFIG}/diffractive_vm/{wildcards.PREFIX}sartre_{wildcards.PARTICLE}_{ix:03d}{wildcards.SUFFIX}/plots.root" for ix in range(int(wildcards.NUM_FILES))],
     params:
-        LEADING="phi",
         EBEAM=18,
         PBEAM=110,
-        PLOT_TAG="plot",
-        BEAM_TAG="beam",
-#    wildcard_constraints:
-#        PREFIX="[]*",
+        BEAM_TAG="18on110",
+    wildcard_constraints:
+        PREFIX=".*", # can be empty
+        PARTICLE="[^_]*",
+        NUM_FILES="\d+",
+        SUFFIX=".*", # can be empty
     output:
-        config="{PREFIX}sartre_{PARTICLE}_combined_{NUM_FILES}/config.json",
-        plots="{PREFIX}sartre_{PARTICLE}_combined_{NUM_FILES}/plots.root",
+        config="results/{DETECTOR_CONFIG}/diffractive_vm/{PREFIX}sartre_{PARTICLE}_combined_{NUM_FILES}{SUFFIX}/config.json",
+        plots="results/{DETECTOR_CONFIG}/diffractive_vm/{PREFIX}sartre_{PARTICLE}_combined_{NUM_FILES}{SUFFIX}/plots.root",
     shell:
         """
 cat > {output.config} <<EOF
 {{
   "rec_file": "",
-  "vm_name": "{params.LEADING}",
-  "detector": "$DETECTOR_CONFIG",
+  "vm_name": "{wildcards.PARTICLE}",
+  "detector": "{wildcards.DETECTOR_CONFIG}",
   "ebeam": {params.EBEAM},
   "pbeam": {params.PBEAM},
-  "output_prefix": "local_sartre_{wildcards.NUM_FILES}/plots",
-  "test_tag": "{params.LEADING}_{params.BEAM_TAG}"
+  "output_prefix": "$(dirname "{output.plots}")/plots",
+  "test_tag": "{wildcards.PARTICLE}_{params.BEAM_TAG}"
 }}
 EOF
 hadd {output.plots} {input}
@@ -137,11 +139,11 @@ rule diffractive_vm_plots:
     input:
         script="benchmarks/diffractive_vm/analysis/plot.cxx",
         script_compiled="benchmarks/diffractive_vm/analysis/plot_cxx.so",
-        config="{SIM}/config.json",
+        config="{RESULT_PREFIX}/config.json",
     output:
-        "{SIM}/plots_benchmark-phi-dsigmadt.pdf",
-        "{SIM}/plots_benchmark-phi-t-resolution.pdf",
-        "{SIM}/plots_benchmark-phi-DIS-kinematics.pdf",
+        "{RESULT_PREFIX}/plots_benchmark-phi-dsigmadt.pdf",
+        "{RESULT_PREFIX}/plots_benchmark-phi-t-resolution.pdf",
+        "{RESULT_PREFIX}/plots_benchmark-phi-DIS-kinematics.pdf",
     shell:
         """
 root -l -b -q '{input.script}+("{input.config}")'
@@ -152,13 +154,13 @@ root -l -b -q '{input.script}+("{input.config}")'
 
 rule diffractive_vm_run_over_a_campaign:
     input:
-        "campaign_22.11.3_sartre_phi_combined_9/plots_benchmark-phi-dsigmadt.pdf",
+        "results/epic_arches/diffractive_vm/campaign_22.11.3_sartre_phi_combined_9/plots_benchmark-phi-dsigmadt.pdf",
     message:
         "See output in {input[0]}"
 
 
 rule diffractive_vm_run_locally:
     input:
-        "sartre_phi_combined_9/plots_benchmark-phi-dsigmadt.pdf",
+        "results/" + os.environ["DETECTOR_CONFIG"] + "/diffractive_vm/sartre_phi_combined_9_eicrecon/plots_benchmark-phi-dsigmadt.pdf",
     message:
         "See output in {input[0]}"
