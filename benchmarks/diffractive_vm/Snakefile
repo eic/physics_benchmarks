@@ -13,7 +13,7 @@ S3 = S3RemoteProvider(
 rule diffractive_vm_compile:
     input:
         "benchmarks/diffractive_vm/analysis/diffractive_vm_cxx.so",
-
+        "benchmarks/diffractive_vm/analysis/plot_cxx.so",
 
 rule diffractive_vm_get:
     input:
