@@ -15,15 +15,17 @@ rule diffractive_vm_compile:
         "benchmarks/diffractive_vm/analysis/diffractive_vm_cxx.so",
         "benchmarks/diffractive_vm/analysis/plot_cxx.so",
 
+
 rule diffractive_vm_get:
     input:
         lambda wildcards: S3.remote(f"eictest/EPIC/EVGEN/EXCLUSIVE/DIFFRACTIVE_{wildcards.PARTICLE.upper()}_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_{wildcards.PARTICLE}_ab_eAu_1_{wildcards.INDEX}.hepmc.gz"),
     output:
-        "input/diffractive_vm/sartre_{PARTICLE}_{INDEX}.hepmc.gz",
+        "input/diffractive_vm/sartre_{PARTICLE}_{INDEX}.hepmc",
     shell:
         """
-ln {input} {output}
+gunzip -c {input} > {output}
 """
+
 
 rule diffractive_vm_campaign_reco_get:
     input:
@@ -35,9 +37,10 @@ rule diffractive_vm_campaign_reco_get:
 ln {input} {output}
 """
 
+
 rule diffractive_vm_sim:
     input:
-        "input/diffractive_vm/sartre_{PARTICLE}_{INDEX}.hepmc.gz",
+        "input/diffractive_vm/sartre_{PARTICLE}_{INDEX}.hepmc",
     output:
         "sim/{DETECTOR_CONFIG}/sartre_{PARTICLE}_{INDEX}.edm4hep.root",
     params:
