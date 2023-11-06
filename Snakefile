@@ -1,13 +1,19 @@
+ROOT_BUILD_DIR = os.getenv("ROOT_BUILD_DIR", None)
+
+if ROOT_BUILD_DIR is not None:
+    ROOT_BUILD_DIR_PREFIX = f"{ROOT_BUILD_DIR.rstrip('/')}/{os.getcwd().lstrip('/')}/"
+else:
+    ROOT_BUILD_DIR_PREFIX = ""
+
 rule compile_analysis:
     input:
         "{path}/{filename}.cxx",
     output:
-        "{path}/{filename}_cxx.d",
-        "{path}/{filename}_cxx.so",
-        "{path}/{filename}_cxx_ACLiC_dict_rdict.pcm",
+        ROOT_BUILD_DIR_PREFIX + "{path}/{filename}_cxx.d",
+        ROOT_BUILD_DIR_PREFIX + "{path}/{filename}_cxx.so",
+        ROOT_BUILD_DIR_PREFIX + "{path}/{filename}_cxx_ACLiC_dict_rdict.pcm",
     shell:
         """
-unset ROOT_BUILD_DIR # use shadow rules in Snakemake instead
 root -l -b -q -e '.L {input}+'
 """
 
