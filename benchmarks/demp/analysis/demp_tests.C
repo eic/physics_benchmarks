@@ -1,22 +1,43 @@
+#include "ZDC_neutron_recon.h"
+
+void draw_title(const char* txt){
+  cout << txt <<endl;
+  TLatex *title = new TLatex(0.5, 0.96,txt);
+  title->SetTextColor(kBlack);
+  title->SetNDC();
+  title->SetTextAlign(22);
+  //title->SetTextSize(0.05); // Adjust the size as needed
+  title->Draw();
+  
+  gPad->Update();
+}
 //------------------
-void DEMP_reco(const char* fname = "rec_demp.root"){
+void demp_tests(const char* fname = "rec_demp.root"){
 
     //Define Style
     gStyle->SetOptStat(0);
-    gStyle->SetPadBorderMode(0);
+    //titles in ROOT don't do what you want them to do.
+    //use TLatex instead
+    gStyle->SetOptTitle(0);
+    gStyle->SetPadTopMargin(0.1);
+    //gStyle->SetTitleSize(1,"T");
+    //gStyle->SetTitleOffset(1, "T");
+    //gStyle->SetTitleSize(14, "T");
+    /*gStyle->SetPadBorderMode(0);
     gStyle->SetFrameBorderMode(0);
     gStyle->SetFrameLineWidth(2);
     gStyle->SetLabelSize(0.035,"X");
     gStyle->SetLabelSize(0.035,"Y");
     //gStyle->SetLabelOffset(0.01,"X");
     //gStyle->SetLabelOffset(0.01,"Y");
+    
     gStyle->SetTitleXSize(0.04);
     gStyle->SetTitleXOffset(0.9);
     gStyle->SetTitleYSize(0.04);
-    gStyle->SetTitleYOffset(0.9);
+    gStyle->SetTitleYOffset(0.9);//*/
 
     //Define histograms
-    TH2 *h1_elec = new TH2D("h1_elec","Scattered electron true momentum vs. polar angle",100,110,170,100,4.6,6.8);
+    TH2 *h1_elec = new TH2D("h1_elec","Scattered electron true momentum vs polar angle",100,110,170,100,4.6,6.8);
     h1_elec->GetXaxis()->SetTitle("#theta [deg]"); h1_elec->GetXaxis()->CenterTitle();
     h1_elec->GetYaxis()->SetTitle("p [GeV/c]"); h1_elec->GetYaxis()->CenterTitle();
    
@@ -35,7 +56,19 @@ void DEMP_reco(const char* fname = "rec_demp.root"){
     TH2 *h2_pion = new TH2D("h2_pion","#pi^{+} reconstructed momentum vs. polar angle",100,0,50,100,0,50);
     h2_pion->GetXaxis()->SetTitle("#theta [deg]"); h2_pion->GetXaxis()->CenterTitle();
     h2_pion->GetYaxis()->SetTitle("p [GeV/c]"); h2_pion->GetYaxis()->CenterTitle();
-  
+
+    TH2 *h2_neut = new TH2D("h2_neut","Neutron reconstructed momentum vs. polar angle",100,0.4,2.4,100,40,100);
+    h2_neut->GetXaxis()->SetTitle("#theta [deg]"); h2_neut->GetXaxis()->CenterTitle();
+    h2_neut->GetYaxis()->SetTitle("p [GeV/c]"); h2_neut->GetYaxis()->CenterTitle();
+
+    TH1 *h3_neut = new TH1D("h3_neut","Neutron theta resolution",100,-1,1);
+    h3_neut->GetXaxis()->SetTitle("#Delta#theta [mrad]"); h3_neut->GetXaxis()->CenterTitle();
+    h3_neut->GetYaxis()->SetTitle("events"); h3_neut->GetYaxis()->CenterTitle();
+
+    TH1 *h4_neut = new TH1D("h4_neut","Neutron energy resolution",100,-30,10);
+    h4_neut->GetXaxis()->SetTitle("#Delta{}E/E [%]"); h4_neut->GetXaxis()->CenterTitle();
+    h4_neut->GetYaxis()->SetTitle("events"); h4_neut->GetYaxis()->CenterTitle();
+    
     TFile *f = new TFile(fname);
     TTree *tree = (TTree*) f->Get("events");
 
@@ -59,6 +92,13 @@ void DEMP_reco(const char* fname = "rec_demp.root"){
     TTreeReaderArray<float> rec_pz(tr, "ReconstructedChargedParticles.momentum.z");
     TTreeReaderArray<float> rec_mass(tr, "ReconstructedChargedParticles.mass");
 
+    //local positions and energies in the ZDC
+    TTreeReaderArray<float> zdc_hit_energies(tr, "ZDCRecHits.energy");
+    TTreeReaderArray<float> zdc_hit_times(tr, "ZDCRecHits.time");
+    TTreeReaderArray<float> zdc_hit_local_x(tr, "ZDCRecHits.local.x");
+    TTreeReaderArray<float> zdc_hit_local_y(tr, "ZDCRecHits.local.y");
+    TTreeReaderArray<float> zdc_hit_local_z(tr, "ZDCRecHits.local.z");
+    
     //Other variables
     TLorentzVector gen_vec;
     TVector3 gen_vertex;
@@ -70,7 +110,8 @@ void DEMP_reco(const char* fname = "rec_demp.root"){
 	
 	if(counter%100==0) cout<<"Analyzing event "<<counter<<endl;
 	counter++;
-
+	double theta_neut_truth;
+	double E_neut_truth;
         //Loop over generated particles, select primary electron, pi-plus, neutron
         for(int igen=0;igen<gen_status.GetSize();igen++){
         	if(gen_status[igen]==1){
@@ -79,7 +120,12 @@ void DEMP_reco(const char* fname = "rec_demp.root"){
 			
 			if(gen_pid[igen]==11)  h1_elec->Fill(gen_vec.Theta()*TMath::RadToDeg(),gen_vec.P());
 			if(gen_pid[igen]==211) h1_pion->Fill(gen_vec.Theta()*TMath::RadToDeg(),gen_vec.P());
-			if(gen_pid[igen]==2112) h1_neut->Fill(gen_vec.Theta()*TMath::RadToDeg(),gen_vec.P());
+			if(gen_pid[igen]==2112) {
+			  h1_neut->Fill(gen_vec.Theta()*TMath::RadToDeg(),gen_vec.P());
+			  theta_neut_truth=gen_vec.Theta();
+			  E_neut_truth=gen_vec.E();
+			}
+			  
                 }
         } //End loop over generated particles
      
@@ -92,24 +138,51 @@ void DEMP_reco(const char* fname = "rec_demp.root"){
 
 	}//End loop over reconstructed particles
 
+	TLorentzVector neutron = ZDC_neutron_recon(zdc_hit_energies, zdc_hit_times, zdc_hit_local_x, zdc_hit_local_y,
+						   zdc_hit_local_z);
+	//cout << "neutron theta " << neutron.Theta() << endl;
+        h2_neut->Fill(neutron.Theta()*TMath::RadToDeg(),neutron.P());
+	h3_neut->Fill((neutron.Theta()-theta_neut_truth)*1000);
+        h4_neut->Fill((neutron.E()/E_neut_truth-1)*100);
      } //End loop over events
 
     //Make plots
-    TCanvas *c1 = new TCanvas("c1");
+    int w=800, h=600;
+    TCanvas *c1 = new TCanvas("c1", "", w,h);
     h1_elec->Draw("colz");
-
-    TCanvas *c2 = new TCanvas("c2");
+    draw_title(h1_elec->GetTitle());
+    
+    TCanvas *c2 = new TCanvas("c2", "", w,h);
     h1_pion->Draw("colz");
-
-    TCanvas *c3 = new TCanvas("c3");
+    draw_title(h1_pion->GetTitle());
+    
+    TCanvas *c3 = new TCanvas("c3", "", w,h);
     h1_neut->Draw("colz");
-
-    TCanvas *c4 = new TCanvas("c4");
+    draw_title(h1_neut->GetTitle());
+    
+    TCanvas *c4 = new TCanvas("c4", "", w,h);
     h2_elec->Draw("colz");
+    draw_title(h2_elec->GetTitle());
 
-    TCanvas *c5 = new TCanvas("c5");
+    TCanvas *c5 = new TCanvas("c5", "", w,h);
     h2_pion->Draw("colz");
+    draw_title(h2_pion->GetTitle());
 
+    TCanvas *c6 = new TCanvas("c6", "", w,h);
+    h2_neut->Draw("colz");
+    draw_title(h2_neut->GetTitle());
+
+    gStyle->SetOptFit();
+    TCanvas *c7 = new TCanvas("c7", "", w,h);
+    TF1* fnc = new TF1("f1", "gaus(0)", -1,1);
+    h3_neut->Draw("colz");
+    h3_neut->Fit(fnc);
+    draw_title(h3_neut->GetTitle());
+    
+    TCanvas *c8 = new TCanvas("c8", "", w,h);
+    h4_neut->Draw("colz");
+    h4_neut->Fit(fnc);    
+    draw_title(h4_neut->GetTitle());
     //Print plots to file
     c1->Print("results/demp/DEMP_reco.pdf[");
     c1->Print("results/demp/DEMP_reco.pdf");
@@ -117,6 +190,8 @@ void DEMP_reco(const char* fname = "rec_demp.root"){
     c3->Print("results/demp/DEMP_reco.pdf");
     c4->Print("results/demp/DEMP_reco.pdf");
     c5->Print("results/demp/DEMP_reco.pdf");  
-    c5->Print("results/demp/DEMP_reco.pdf]");
-
+    c6->Print("results/demp/DEMP_reco.pdf");
+    c7->Print("results/demp/DEMP_reco.pdf");
+    c8->Print("results/demp/DEMP_reco.pdf");
+    c8->Print("results/demp/DEMP_reco.pdf]");
 }
