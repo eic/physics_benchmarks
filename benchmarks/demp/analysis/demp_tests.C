@@ -67,7 +67,7 @@ void demp_tests(const char* fname = "rec_demp.root"){
     h3_neut->GetYaxis()->SetTitle("events"); h3_neut->GetYaxis()->CenterTitle();
 
     TH1 *h4_neut = new TH1D("h4_neut","Neutron energy resolution",100,-30,10);
-    h4_neut->GetXaxis()->SetTitle("#Delta{}E/E [%]"); h4_neut->GetXaxis()->CenterTitle();
+    h4_neut->GetXaxis()->SetTitle("#Delta E/E [%]"); h4_neut->GetXaxis()->CenterTitle();
     h4_neut->GetYaxis()->SetTitle("events"); h4_neut->GetYaxis()->CenterTitle();
 
     TH2 *h5_neut = new TH2D("h5_neut","Neutron truth azimuth vs. polar angle",100,0.4,2.4,100,160,200);
@@ -77,6 +77,15 @@ void demp_tests(const char* fname = "rec_demp.root"){
     TH2 *h6_neut = new TH2D("h6_neut","Neutron reconstructed azimuth vs. polar angle",100,0.4,2.4,100,160,200);
     h6_neut->GetXaxis()->SetTitle("#theta [deg]"); h6_neut->GetXaxis()->CenterTitle();
     h6_neut->GetYaxis()->SetTitle("#phi [deg]"); h6_neut->GetYaxis()->CenterTitle();
+
+    TH2 *h7_neut = new TH2D("h7_neut","Neutron truth azimuth vs. polar angle around p axis",100,0,0.5,100,-180,180);
+    h7_neut->GetXaxis()->SetTitle("#theta^{*} [deg]"); h7_neut->GetXaxis()->CenterTitle();
+    h7_neut->GetYaxis()->SetTitle("#phi^{*} [deg]"); h7_neut->GetYaxis()->CenterTitle();
+
+    TH2 *h8_neut = new TH2D("h8_neut","Neutron reconstructed azimuth vs. polar angle around p axis",100,0,0.5,100,-180,180);
+    h8_neut->GetXaxis()->SetTitle("#theta^{*} [deg]"); h8_neut->GetXaxis()->CenterTitle();
+    h8_neut->GetYaxis()->SetTitle("#phi^{*} [deg]"); h8_neut->GetYaxis()->CenterTitle();
+
     
     TFile *f = new TFile(fname);
     TTree *tree = (TTree*) f->Get("events");
@@ -134,6 +143,10 @@ void demp_tests(const char* fname = "rec_demp.root"){
 			  h5_neut->Fill(gen_vec.Theta()*TMath::RadToDeg(),(gen_vec.Phi()+(gen_vec.Phi()<0)*2*M_PI)*TMath::RadToDeg());
 			  theta_neut_truth=gen_vec.Theta();
 			  E_neut_truth=gen_vec.E();
+
+			  TLorentzVector rotated = gen_vec;
+			  rotated.RotateY(0.025);
+			  h7_neut->Fill(rotated.Theta()*TMath::RadToDeg(),rotated.Phi()*TMath::RadToDeg());
 			}
 			  
                 }
@@ -155,6 +168,11 @@ void demp_tests(const char* fname = "rec_demp.root"){
 	h3_neut->Fill((neutron.Theta()-theta_neut_truth)*1000);
         h4_neut->Fill((neutron.E()/E_neut_truth-1)*100);
 	h6_neut->Fill(neutron.Theta()*TMath::RadToDeg(),(neutron.Phi()+(neutron.Phi()<0)*2*M_PI)*TMath::RadToDeg());
+
+	TLorentzVector rotated = neutron;
+	rotated.RotateY(0.025);
+	h8_neut->Fill(rotated.Theta()*TMath::RadToDeg(),rotated.Phi()*TMath::RadToDeg());
+	
      } //End loop over events
 
     //Make plots
@@ -204,6 +222,14 @@ void demp_tests(const char* fname = "rec_demp.root"){
     TCanvas *c10 = new TCanvas("c10", "", w,h);
     h6_neut->Draw("colz");
     draw_title(h6_neut->GetTitle());
+
+    TCanvas *c11 = new TCanvas("c11", "", w,h);
+    h7_neut->Draw("colz");
+    draw_title(h7_neut->GetTitle());
+
+    TCanvas *c12 = new TCanvas("c12", "", w,h);
+    h8_neut->Draw("colz");
+    draw_title(h8_neut->GetTitle());
     
     //Print plots to file
     c1->Print("results/demp/DEMP_reco.pdf[");
@@ -217,5 +243,7 @@ void demp_tests(const char* fname = "rec_demp.root"){
     c8->Print("results/demp/DEMP_reco.pdf");
     c9->Print("results/demp/DEMP_reco.pdf");
     c10->Print("results/demp/DEMP_reco.pdf");
-    c10->Print("results/demp/DEMP_reco.pdf]");
+    c11->Print("results/demp/DEMP_reco.pdf");
+    c12->Print("results/demp/DEMP_reco.pdf");
+    c12->Print("results/demp/DEMP_reco.pdf]");
 }
