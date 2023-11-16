@@ -20,6 +20,7 @@ void demp_tests(const char* fname = "rec_demp.root"){
     //use TLatex instead
     gStyle->SetOptTitle(0);
     gStyle->SetPadTopMargin(0.1);
+    gStyle->SetOptFit(1);
     //gStyle->SetTitleSize(1,"T");
     //gStyle->SetTitleOffset(1, "T");
     //gStyle->SetTitleSize(14, "T");
@@ -68,6 +69,14 @@ void demp_tests(const char* fname = "rec_demp.root"){
     TH1 *h4_neut = new TH1D("h4_neut","Neutron energy resolution",100,-30,10);
     h4_neut->GetXaxis()->SetTitle("#Delta{}E/E [%]"); h4_neut->GetXaxis()->CenterTitle();
     h4_neut->GetYaxis()->SetTitle("events"); h4_neut->GetYaxis()->CenterTitle();
+
+    TH2 *h5_neut = new TH2D("h5_neut","Neutron truth azimuth vs. polar angle",100,0.4,2.4,100,160,200);
+    h5_neut->GetXaxis()->SetTitle("#theta [deg]"); h5_neut->GetXaxis()->CenterTitle();
+    h5_neut->GetYaxis()->SetTitle("#phi [deg]"); h5_neut->GetYaxis()->CenterTitle();
+    
+    TH2 *h6_neut = new TH2D("h6_neut","Neutron reconstructed azimuth vs. polar angle",100,0.4,2.4,100,160,200);
+    h6_neut->GetXaxis()->SetTitle("#theta [deg]"); h6_neut->GetXaxis()->CenterTitle();
+    h6_neut->GetYaxis()->SetTitle("#phi [deg]"); h6_neut->GetYaxis()->CenterTitle();
     
     TFile *f = new TFile(fname);
     TTree *tree = (TTree*) f->Get("events");
@@ -122,6 +131,7 @@ void demp_tests(const char* fname = "rec_demp.root"){
 			if(gen_pid[igen]==211) h1_pion->Fill(gen_vec.Theta()*TMath::RadToDeg(),gen_vec.P());
 			if(gen_pid[igen]==2112) {
 			  h1_neut->Fill(gen_vec.Theta()*TMath::RadToDeg(),gen_vec.P());
+			  h5_neut->Fill(gen_vec.Theta()*TMath::RadToDeg(),(gen_vec.Phi()+(gen_vec.Phi()<0)*2*M_PI)*TMath::RadToDeg());
 			  theta_neut_truth=gen_vec.Theta();
 			  E_neut_truth=gen_vec.E();
 			}
@@ -144,6 +154,7 @@ void demp_tests(const char* fname = "rec_demp.root"){
         h2_neut->Fill(neutron.Theta()*TMath::RadToDeg(),neutron.P());
 	h3_neut->Fill((neutron.Theta()-theta_neut_truth)*1000);
         h4_neut->Fill((neutron.E()/E_neut_truth-1)*100);
+	h6_neut->Fill(neutron.Theta()*TMath::RadToDeg(),(neutron.Phi()+(neutron.Phi()<0)*2*M_PI)*TMath::RadToDeg());
      } //End loop over events
 
     //Make plots
@@ -159,6 +170,7 @@ void demp_tests(const char* fname = "rec_demp.root"){
     TCanvas *c3 = new TCanvas("c3", "", w,h);
     h1_neut->Draw("colz");
     draw_title(h1_neut->GetTitle());
+    cout << "generated neutron count " << h1_neut->Integral();
     
     TCanvas *c4 = new TCanvas("c4", "", w,h);
     h2_elec->Draw("colz");
@@ -171,8 +183,9 @@ void demp_tests(const char* fname = "rec_demp.root"){
     TCanvas *c6 = new TCanvas("c6", "", w,h);
     h2_neut->Draw("colz");
     draw_title(h2_neut->GetTitle());
+    cout << "reconstructed neutron count " << h2_neut->Integral();
 
-    gStyle->SetOptFit();
+
     TCanvas *c7 = new TCanvas("c7", "", w,h);
     TF1* fnc = new TF1("f1", "gaus(0)", -1,1);
     h3_neut->Draw("colz");
@@ -183,6 +196,15 @@ void demp_tests(const char* fname = "rec_demp.root"){
     h4_neut->Draw("colz");
     h4_neut->Fit(fnc);    
     draw_title(h4_neut->GetTitle());
+
+    TCanvas *c9 = new TCanvas("c9", "", w,h);
+    h5_neut->Draw("colz");
+    draw_title(h5_neut->GetTitle());
+
+    TCanvas *c10 = new TCanvas("c10", "", w,h);
+    h6_neut->Draw("colz");
+    draw_title(h6_neut->GetTitle());
+    
     //Print plots to file
     c1->Print("results/demp/DEMP_reco.pdf[");
     c1->Print("results/demp/DEMP_reco.pdf");
@@ -193,5 +215,7 @@ void demp_tests(const char* fname = "rec_demp.root"){
     c6->Print("results/demp/DEMP_reco.pdf");
     c7->Print("results/demp/DEMP_reco.pdf");
     c8->Print("results/demp/DEMP_reco.pdf");
-    c8->Print("results/demp/DEMP_reco.pdf]");
+    c9->Print("results/demp/DEMP_reco.pdf");
+    c10->Print("results/demp/DEMP_reco.pdf");
+    c10->Print("results/demp/DEMP_reco.pdf]");
 }
