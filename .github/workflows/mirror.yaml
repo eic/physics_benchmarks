@@ -24,7 +24,7 @@ jobs:
     - name: Push to EICweb
       uses: eic/gitlab-sync@master
       with:
-        url: https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks.git/
+        url: https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git/
         token: ${{ secrets.GITLAB_TOKEN }}
         username: ${{ secrets.GITLAB_USERNAME }}
         ciskip: true
@@ -33,7 +33,7 @@ jobs:
       with:
         url: https://eicweb.phy.anl.gov
         project_id: 400
-        token: ${{ secrets.EICWEB_DETECTOR_BENCHMARKS_TRIGGER }}
+        token: ${{ secrets.EICWEB_PHYSICS_BENCHMARKS_TRIGGER }}
         ref_name: ${{ github.event.pull_request.head.ref || github.ref }}
         variables:
           GITHUB_REPOSITORY=${{ github.repository }}
