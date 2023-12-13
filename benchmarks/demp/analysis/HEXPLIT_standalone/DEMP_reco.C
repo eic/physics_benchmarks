@@ -55,30 +55,50 @@ void DEMP_reco(){
     ht_true->GetYaxis()->SetTitle("Yield"); ht_true->GetYaxis()->CenterTitle();
     ht_true->SetLineWidth(2);ht_true->SetLineColor(kBlue);
 
-    TH1 *ht_rec1 = new TH1D("ht_rec1","",100,-0.1,2); //Reconstructed t -- using only electron and pion
+    TH1 *ht_rec1 = new TH1D("ht_rec1","",100,-0.1,2); //Reconstructed t -- 4 vector reconstruction using only electron and pion
     ht_rec1->GetXaxis()->SetTitle("-t [GeV^{2}]"); ht_rec1->GetXaxis()->CenterTitle();
     ht_rec1->GetYaxis()->SetTitle("Yield"); ht_rec1->GetYaxis()->CenterTitle();
     ht_rec1->SetLineWidth(2);ht_rec1->SetLineColor(kRed);
 
-    TH1 *ht_rec2 = new TH1D("ht_rec2","",100,-0.1,2); //Reconstructed t -- using electron and pion + neutron angle
+    TH1 *ht_rec2 = new TH1D("ht_rec2","",100,-0.1,2); //Reconstructed t -- ECCE method using electron and pion + neutron angle
     ht_rec2->GetXaxis()->SetTitle("-t [GeV^{2}]"); ht_rec2->GetXaxis()->CenterTitle();
     ht_rec2->GetYaxis()->SetTitle("Yield"); ht_rec2->GetYaxis()->CenterTitle();
     ht_rec2->SetLineWidth(2);ht_rec2->SetLineColor(kGreen);
+
+    TH1 *ht_rec3 = new TH1D("ht_rec3","",100,-0.1,2); //Reconstructed t -- Pt-based reconstruction using only electron and pion
+    ht_rec3->GetXaxis()->SetTitle("-t [GeV^{2}]"); ht_rec3->GetXaxis()->CenterTitle();
+    ht_rec3->GetYaxis()->SetTitle("Yield"); ht_rec3->GetYaxis()->CenterTitle();
+    ht_rec3->SetLineWidth(2);ht_rec3->SetLineColor(kOrange);
+
+    TH1 *ht_rec4 = new TH1D("ht_rec4","",100,-0.1,2); //Reconstructed t -- 4 vector reconstruction using only neutron
+    ht_rec4->GetXaxis()->SetTitle("-t [GeV^{2}]"); ht_rec4->GetXaxis()->CenterTitle();
+    ht_rec4->GetYaxis()->SetTitle("Yield"); ht_rec4->GetYaxis()->CenterTitle();
+    ht_rec4->SetLineWidth(2);ht_rec4->SetLineColor(kMagenta);
 
     TH1 *htw_true = new TH1D("htw_true","",100,-0.1,2); //True t weighted
     htw_true->GetXaxis()->SetTitle("-t [GeV^{2}]"); htw_true->GetXaxis()->CenterTitle();
     htw_true->GetYaxis()->SetTitle("Yield [arb.]"); htw_true->GetYaxis()->CenterTitle();
     htw_true->SetLineWidth(2);htw_true->SetLineColor(kBlue);
 
-    TH1 *htw_rec1 = new TH1D("htw_rec1","",100,-0.1,2); //Reconstructed t weighted -- using only electron and pion
+    TH1 *htw_rec1 = new TH1D("htw_rec1","",100,-0.1,2); //Reconstructed t weighted
     htw_rec1->GetXaxis()->SetTitle("-t [GeV^{2}]"); htw_rec1->GetXaxis()->CenterTitle();
     htw_rec1->GetYaxis()->SetTitle("Yield [arb.]"); htw_rec1->GetYaxis()->CenterTitle();
     htw_rec1->SetLineWidth(2);htw_rec1->SetLineColor(kRed);
 
-    TH1 *htw_rec2 = new TH1D("htw_rec2","",100,-0.1,2); //Reconstructed t weighted -- using electron and pion + neutron angle
+    TH1 *htw_rec2 = new TH1D("htw_rec2","",100,-0.1,2); //Reconstructed t weighted
     htw_rec2->GetXaxis()->SetTitle("-t [GeV^{2}]"); htw_rec2->GetXaxis()->CenterTitle();
     htw_rec2->GetYaxis()->SetTitle("Yield [arb.]"); htw_rec2->GetYaxis()->CenterTitle();
     htw_rec2->SetLineWidth(2);htw_rec2->SetLineColor(kGreen);
+
+    TH1 *htw_rec3 = new TH1D("htw_rec3","",100,-0.1,2); //Reconstructed t
+    htw_rec3->GetXaxis()->SetTitle("-t [GeV^{2}]"); htw_rec3->GetXaxis()->CenterTitle();
+    htw_rec3->GetYaxis()->SetTitle("Yield"); htw_rec3->GetYaxis()->CenterTitle();
+    htw_rec3->SetLineWidth(2);htw_rec3->SetLineColor(kOrange);
+
+    TH1 *htw_rec4 = new TH1D("htw_rec4","",100,-0.1,2); //Reconstructed t
+    htw_rec4->GetXaxis()->SetTitle("-t [GeV^{2}]"); htw_rec4->GetXaxis()->CenterTitle();
+    htw_rec4->GetYaxis()->SetTitle("Yield"); htw_rec4->GetYaxis()->CenterTitle();
+    htw_rec4->SetLineWidth(2);htw_rec4->SetLineColor(kMagenta);
 
     TFile *f = new TFile("eicrecon_out.root");
     TTree *tree = (TTree*) f->Get("events");
@@ -215,14 +235,26 @@ void DEMP_reco(){
 
         auto t_rec2 = (p_beam - neut_opt).Mag2();
 
+        //Method 3
+        auto sum_epi = e_s_rec + pi_rec;
+	sum_epi.RotateY(0.025);
+	auto t_rec3 = -1.*(sum_epi).Perp2(); //Make sure t is negative
+
+        //Method 4
+	auto t_rec4 = (p_beam - neut_rec).Mag2();
+
         //Fill additional histograms
         ht_true->Fill(-1.*t_true);
 	ht_rec1->Fill(-1.*t_rec1);
 	ht_rec2->Fill(-1.*t_rec2);
+	ht_rec3->Fill(-1.*t_rec3);
+        ht_rec4->Fill(-1.*t_rec4);
 
 	htw_true->Fill(-1.*t_true,weight);
         htw_rec1->Fill(-1.*t_rec1,weight);
         htw_rec2->Fill(-1.*t_rec2,weight);
+	htw_rec3->Fill(-1.*t_rec3,weight);
+        htw_rec4->Fill(-1.*t_rec4,weight);
 
      } //End loop over events
 
@@ -255,19 +287,25 @@ void DEMP_reco(){
     ht_true->Draw("hist");
     ht_rec1->Draw("hist same");
     ht_rec2->Draw("hist same");
+    ht_rec3->Draw("hist same");
+    ht_rec4->Draw("hist same");
 
     TLegend *leg1 = new TLegend(0.5,0.6,0.85,0.85);
     leg1->SetBorderSize(0);leg1->SetTextSize(0.03);
     leg1->SetFillStyle(0);
-    leg1->AddEntry(ht_true,"Truth","l");
-    leg1->AddEntry(ht_rec1,"Electron+Pion Reconstruction","l");
-    leg1->AddEntry(ht_rec2,"Optimized Reconstruction","l");
+    leg1->AddEntry(ht_true,"Truth (after beam-effects)","l");
+    leg1->AddEntry(ht_rec1,"Electron+Pion 4-vector","l");
+    leg1->AddEntry(ht_rec4,"Neutron only","l");
+    leg1->AddEntry(ht_rec3,"Electron+Pion P_{T}-based","l");
+    leg1->AddEntry(ht_rec2,"ECCE paper method","l");
     leg1->Draw();
 
     TCanvas *c10 = new TCanvas("c10");
     htw_true->Draw("hist");
     htw_rec1->Draw("hist same");
     htw_rec2->Draw("hist same");
+    htw_rec3->Draw("hist same");
+    htw_rec4->Draw("hist same");
     leg1->Draw();
 
     //Print plots to file
