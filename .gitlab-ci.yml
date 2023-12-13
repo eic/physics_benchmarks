@@ -41,6 +41,7 @@ stages:
   - status-report
 
 .status:
+  image: curlimages/curl:latest
   before_script: []
   script:
     - |
