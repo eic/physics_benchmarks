@@ -1,0 +1,23 @@
+u_channel_rho:compile:
+  stage: compile
+  extends: .compile_benchmark
+  script:
+    - snakemake --cores 1 uchannelrho_compile
+
+#u_channel_rho:sim:
+#  extends: .det_benchmark 
+#  stage: simulate
+#  script:
+#    - echo "I will be simulating u-channel rho events here!"
+#    - echo $LOCAL_DATA_PATH/u_channel_rho
+
+u_channel_rho:bench:
+  extends: .det_benchmark
+  stage: benchmarks
+  needs:
+    - ["u_channel_rho:compile"]
+  script:
+    - echo "I will be analyzing events here!"
+    - snakemake --cores 2 benchmark_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf
+    - cp benchmark_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots_figures/*.pdf figures/
+    - echo "Finished" 
