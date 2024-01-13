@@ -5,14 +5,14 @@ u_channel_rho:compile:
     - snakemake --cores 1 uchannelrho_compile
 
 #u_channel_rho:sim:
-#  extends: .det_benchmark 
+#  extends: .phy_benchmark 
 #  stage: simulate
 #  script:
 #    - echo "I will be simulating u-channel rho events here!"
 #    - echo $LOCAL_DATA_PATH/u_channel_rho
 
 u_channel_rho:bench:
-  extends: .det_benchmark
+  extends: .phy_benchmark
   stage: benchmarks
   needs:
     - ["u_channel_rho:compile"]
