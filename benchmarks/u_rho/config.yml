@@ -19,7 +19,10 @@ u_channel_rho:generate:
   script:
     - echo "I will be analyzing events here!"
     - snakemake --cores 2 benchmark_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf
-    - echo "Finished" 
+    - echo "Finished, copying over figures now"
+    - mkdir results
+    - cp benchmark_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots_figures/*.pdf results/
+    - echo "Finished copying!" 
 
 u_channel_rho:simulate:
   stage: simulate
@@ -37,4 +40,4 @@ u_channel_rho:results:
   stage: collect
   needs: ["u_channel_rho:simulate"]
   script:
-    - cp benchmark_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots_figures/*.pdf figures/
+    - echo "The results rule does in config.yml does nothing for now"
