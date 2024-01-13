@@ -24,8 +24,13 @@ auto giveme_u(TLorentzVector pIn, TLorentzVector vmOut){
 }
 
 
-int uchannelrho(TString rec_file, TString outputfile)
+int uchannelrho(TString rec_file="input.root", TString outputfile="output.root")
 {	
+if (gSystem->AccessPathName(rec_file.Data()) != 0) {
+   // File does not exist
+   cout<<Form("File %s does not exist.", rec_file.Data())<<endl;
+   return 0;
+}
 
 // read our configuration	
 auto tree = new TChain("events");
