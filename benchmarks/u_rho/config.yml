@@ -21,6 +21,18 @@ u_channel_rho:generate:
     - snakemake --cores 2 benchmark_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf
     - echo "Finished" 
 
+u_channel_rho:simulate:
+  stage: simulate
+  extends: .phy_benchmark
+  needs: ["u_channel_rho:generate"]
+  timeout: 96 hour
+  script:
+    - echo "The simulate task in config.yml does nothing for now"
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+
 u_channel_rho:results:
   stage: collect
   needs: ["u_channel_rho:simulate"]
