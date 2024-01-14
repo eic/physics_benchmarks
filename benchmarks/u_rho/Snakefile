@@ -12,9 +12,7 @@ S3 = S3RemoteProvider(
 
 rule uchannelrho_compile:
     input:
-        ROOT_BUILD_DIR_PREFIX + "analysis/uchannelrho.cxx",
-    output:
-        ROOT_BUILD_DIR_PREFIX + "analysis/uchannelrho_cxx.so",
+        "benchmarks/u_rho/analysis/uchannelrho.cxx",
     shell:
         """
 root -l -b -q '{input}++' 
@@ -35,8 +33,8 @@ ln {input} {output}
 
 rule uchannelrho_analysis:
     input:
-        script="analysis/uchannelrho.cxx",
-        #script_compiled="analysis/uchannelrho_cxx.so",
+        script="benchmarks/u_rho/analysis/uchannelrho.cxx",
+        #script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/u_rho/analysis/uchannelrho_cxx.so",
         data="benchmark_output/campaign_23.12.0_rho_10x100_uChannel_Q2of0to10_hiDiv_{INDEX}_eicrecon.edm4eic.root",
     output:
         plots="benchmark_output/campaign_23.12.0_{INDEX}_eicrecon.edm4eic/plots.root",
@@ -69,7 +67,7 @@ ruleorder: uchannelrho_combine > uchannelrho_analysis
 
 rule uchannelrho_plots:
     input:
-        script="macros/plot_rho_physics_benchmark.C",
+        script="benchmarks/u_rho/macros/plot_rho_physics_benchmark.C",
         plots="benchmark_output/campaign_23.12.0_combined_{N}files_eicrecon.edm4eic.plots.root",
     output:
         "benchmark_output/campaign_23.12.0_combined_{N}files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf",
