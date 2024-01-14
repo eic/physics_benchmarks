@@ -12,11 +12,7 @@ S3 = S3RemoteProvider(
 
 rule uchannelrho_compile:
     input:
-        ROOT_BUILD_DIR_PREFIX + "benchmarks/u_rho/analysis/uchannelrho.cxx",
-    shell:
-        """
-root -l -b -q '{input}++' 
-"""
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/u_rho/analysis/uchannelrho_cxx.so",
 
 
 rule uchannelrho_campaign_reco_get:
