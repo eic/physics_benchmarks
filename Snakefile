@@ -18,3 +18,4 @@ root -l -b -q -e '.L {input}+'
 """
 
 include: "benchmarks/diffractive_vm/Snakefile"
+include: "benchmarks/u_rho/Snakefile"
