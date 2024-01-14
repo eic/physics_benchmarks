@@ -1,8 +1,8 @@
-u_channel_rho:compile:
-  stage: compile
-  extends: .compile_benchmark
-  script:
-    - snakemake --cores 1 uchannelrho_compile
+#u_channel_rho:compile:
+#  stage: compile
+#  extends: .compile_benchmark
+#  script:
+#    - snakemake --cores 1 uchannelrho_compile
 
 #u_channel_rho:sim:
 #  extends: .phy_benchmark 
