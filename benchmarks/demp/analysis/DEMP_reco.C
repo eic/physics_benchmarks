@@ -1,5 +1,3 @@
-#include "ZDC_neutron_recon.h" 
-
 //------------------
 void DEMP_reco(){
 
@@ -123,12 +121,11 @@ void DEMP_reco(){
     TTreeReaderArray<float> rec_pz(tr, "ReconstructedChargedParticles.momentum.z");
     TTreeReaderArray<float> rec_mass(tr, "ReconstructedChargedParticles.mass");
 
-    //local positions and energies in the ZDC
-    TTreeReaderArray<float> zdc_hit_energies(tr, "ZDCRecHits.energy");
-    TTreeReaderArray<float> zdc_hit_times(tr, "ZDCRecHits.time");
-    TTreeReaderArray<float> zdc_hit_local_x(tr, "ZDCRecHits.local.x");
-    TTreeReaderArray<float> zdc_hit_local_y(tr, "ZDCRecHits.local.y");
-    TTreeReaderArray<float> zdc_hit_local_z(tr, "ZDCRecHits.local.z");
+    //HEXPLIT Clusters
+    TTreeReaderArray<float> zdc_cluster_energy(tr, "HcalFarForwardZDCClusters.energy");
+    TTreeReaderArray<float> zdc_cluster_x(tr, "HcalFarForwardZDCClusters.position.x");
+    TTreeReaderArray<float> zdc_cluster_y(tr, "HcalFarForwardZDCClusters.position.y");
+    TTreeReaderArray<float> zdc_cluster_z(tr, "HcalFarForwardZDCClusters.position.z");
 
     TTreeReaderArray<pair<string,vector<string>>> weight_map(tr,"_stringMap");
 
@@ -207,54 +204,74 @@ void DEMP_reco(){
 	}//End loop over reconstructed particles
 
 	//Neutron Reconstruction using HEXSPLIT algorithm
-	TLorentzVector neut_rec = ZDC_neutron_recon(zdc_hit_energies, zdc_hit_times, 
-						   zdc_hit_local_x, zdc_hit_local_y,zdc_hit_local_z);
 
-	h2_neut->Fill(neut_rec.Theta()*TMath::RadToDeg(),neut_rec.E());
+	double ZDC_theta(0),ZDC_phi(0),neut_rec_E(0);
+	double neut_rec_p(0),neut_rec_px(0),neut_rec_py(0),neut_rec_pz(0);
+	double neut_mass = 0.9396;
+	TLorentzVector neut_rec;
 
-        //W.r.t proton beam direction
-        TLorentzVector rotated = neut_rec;
-        rotated.RotateY(0.025);
-        h4_neut->Fill(rotated.Theta()*TMath::RadToDeg(),rotated.Phi()*TMath::RadToDeg());
+	if(zdc_cluster_x.GetSize()>0){
+		//Just take first cluster for now
+		ZDC_theta = std::atan( std::hypot(zdc_cluster_x[0],zdc_cluster_y[0])/zdc_cluster_z[0] );
+		ZDC_phi = std::atan2(zdc_cluster_y[0],zdc_cluster_x[0]);
+		neut_rec_E = zdc_cluster_energy[0];
+		neut_rec_p = std::sqrt( neut_rec_E*neut_rec_E - neut_mass*neut_mass );
+		neut_rec_px = neut_rec_p * sin(ZDC_theta) * cos(ZDC_phi);
+		neut_rec_py = neut_rec_p * sin(ZDC_theta) * sin(ZDC_phi);
+		neut_rec_pz = neut_rec_p * cos(ZDC_theta);
+	
 
-        //Calculate reconstructed t
+		neut_rec.SetPxPyPzE(neut_rec_px,neut_rec_py,neut_rec_pz,neut_rec_E);
+
+		h2_neut->Fill(neut_rec.Theta()*TMath::RadToDeg(),neut_rec.E());
+
+        	//W.r.t proton beam direction
+        	TLorentzVector rotated = neut_rec;
+        	rotated.RotateY(0.025);
+        	h4_neut->Fill(rotated.Theta()*TMath::RadToDeg(),rotated.Phi()*TMath::RadToDeg());
+	}
+
+        //Calculate reconstructed t and fill histograms
+
+	//Truth
+	ht_true->Fill(-1.*t_true);
+	htw_true->Fill(-1.*t_true,weight);
 
         //Method 1
 	auto t_rec1 = (e_beam - e_s_rec - pi_rec).Mag2();
+	ht_rec1->Fill(-1.*t_rec1);
+	htw_rec1->Fill(-1.*t_rec1,weight);
 	
 	//Method 2
-	auto p_miss = (e_beam + p_beam - e_s_rec - pi_rec);
+	if(zdc_cluster_x.GetSize()>0){
+		auto p_miss = (e_beam + p_beam - e_s_rec - pi_rec);
 	
-	TLorentzVector neut_opt;
-	auto neut_opt_px = p_miss.P()*sin(neut_rec.Theta())*cos(neut_rec.Phi());
-	auto neut_opt_py = p_miss.P()*sin(neut_rec.Theta())*sin(neut_rec.Phi());
-	auto neut_opt_pz = p_miss.P()*cos(neut_rec.Theta());
-	double neut_mass = 0.9396;
+		TLorentzVector neut_opt;
+		auto neut_opt_px = p_miss.P()*sin(neut_rec.Theta())*cos(neut_rec.Phi());
+		auto neut_opt_py = p_miss.P()*sin(neut_rec.Theta())*sin(neut_rec.Phi());
+		auto neut_opt_pz = p_miss.P()*cos(neut_rec.Theta());
 
-	neut_opt.SetXYZM(neut_opt_px,neut_opt_py,neut_opt_pz,neut_mass);
+		neut_opt.SetXYZM(neut_opt_px,neut_opt_py,neut_opt_pz,neut_mass);
 
-        auto t_rec2 = (p_beam - neut_opt).Mag2();
+        	auto t_rec2 = (p_beam - neut_opt).Mag2();
+
+		ht_rec2->Fill(-1.*t_rec2);
+		htw_rec2->Fill(-1.*t_rec2,weight);
+	}
 
         //Method 3
         auto sum_epi = e_s_rec + pi_rec;
 	sum_epi.RotateY(0.025);
 	auto t_rec3 = -1.*(sum_epi).Perp2(); //Make sure t is negative
+	ht_rec3->Fill(-1.*t_rec3);
+        htw_rec3->Fill(-1.*t_rec3,weight);	
 
         //Method 4
-	auto t_rec4 = (p_beam - neut_rec).Mag2();
-
-        //Fill additional histograms
-        ht_true->Fill(-1.*t_true);
-	ht_rec1->Fill(-1.*t_rec1);
-	ht_rec2->Fill(-1.*t_rec2);
-	ht_rec3->Fill(-1.*t_rec3);
-        ht_rec4->Fill(-1.*t_rec4);
-
-	htw_true->Fill(-1.*t_true,weight);
-        htw_rec1->Fill(-1.*t_rec1,weight);
-        htw_rec2->Fill(-1.*t_rec2,weight);
-	htw_rec3->Fill(-1.*t_rec3,weight);
-        htw_rec4->Fill(-1.*t_rec4,weight);
+	if(zdc_cluster_x.GetSize()>0){
+		auto t_rec4 = (p_beam - neut_rec).Mag2();
+        	ht_rec4->Fill(-1.*t_rec4);
+        	htw_rec4->Fill(-1.*t_rec4,weight);
+	}
 
      } //End loop over events
 
