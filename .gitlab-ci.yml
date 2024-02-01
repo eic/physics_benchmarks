@@ -117,6 +117,7 @@ include:
   - local: 'benchmarks/dvcs/config.yml'
   - local: 'benchmarks/tcs/config.yml'
   - local: 'benchmarks/u_omega/config.yml'
+  - local: 'benchmarks/u_rho/config.yml'
   - local: 'benchmarks/single/config.yml'
   - local: 'benchmarks/backgrounds/config.yml'
 

@@ -1,0 +1,43 @@
+u_channel_rho:compile:
+  stage: compile
+  extends: .compile_benchmark
+  script:
+    - snakemake --cores 1 uchannelrho_compile
+
+#u_channel_rho:sim:
+#  extends: .phy_benchmark 
+#  stage: simulate
+#  script:
+#    - echo "I will be simulating u-channel rho events here!"
+#    - echo $LOCAL_DATA_PATH/u_channel_rho
+
+u_channel_rho:generate:
+  extends: .phy_benchmark
+  stage: generate
+  needs:
+    - ["u_channel_rho:compile"]
+  script:
+    - echo "I will be analyzing events here!"
+    - snakemake --cores 2 benchmark_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf
+    - echo "Finished, copying over figures now"
+    - mkdir results
+    - cp benchmark_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots_figures/*.pdf results/
+    - echo "Finished copying!" 
+
+u_channel_rho:simulate:
+  stage: simulate
+  extends: .phy_benchmark
+  needs: ["u_channel_rho:generate"]
+  timeout: 96 hour
+  script:
+    - echo "The simulate task in config.yml does nothing for now"
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+
+u_channel_rho:results:
+  stage: collect
+  needs: ["u_channel_rho:simulate"]
+  script:
+    - echo "The results rule does in config.yml does nothing for now"
