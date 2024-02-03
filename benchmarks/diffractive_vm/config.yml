@@ -26,7 +26,7 @@ diffractive_vm:simulate:
       - VM: jpsi
   timeout: 96 hour
   script:
-    - snakemake --cores 1 diffractive_vm_run_locally
+    - snakemake --cores 10 diffractive_vm_run_locally
   retry:
     max: 2
     when:
