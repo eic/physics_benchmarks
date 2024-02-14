@@ -40,7 +40,8 @@ ln {input} {output}
 
 rule diffractive_vm_sim:
     input:
-        "input/diffractive_vm/sartre_{PARTICLE}_{INDEX}.hepmc",
+        hepmc="input/diffractive_vm/sartre_{PARTICLE}_{INDEX}.hepmc",
+        warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
     output:
         "sim/{DETECTOR_CONFIG}/sartre_{PARTICLE}_{INDEX}.edm4hep.root",
     params:
@@ -54,7 +55,7 @@ ddsim \
   -v WARNING \
   --numberOfEvents {params.N_EVENTS} \
   --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
-  --inputFiles {input} \
+  --inputFiles {input.hepmc} \
   --outputFile {output}
 """
 
