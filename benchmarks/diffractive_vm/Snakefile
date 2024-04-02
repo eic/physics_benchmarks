@@ -29,9 +29,9 @@ gunzip -c {input} > {output}
 
 rule diffractive_vm_campaign_reco_get:
     input:
-        lambda wildcards: S3.remote(f"eictest/EPIC/RECO/22.11.3/epic_arches/EXCLUSIVE/DIFFRACTIVE_{wildcards.PARTICLE.upper()}_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_{wildcards.PARTICLE}_ab_eAu_1.0{wildcards.INDEX}.eicrecon.tree.edm4eic.root")
+        lambda wildcards: S3.remote(f"eictest/EPIC/RECO/{wildcards.RELEASE_TAG}/{wildcards.DETECTOR_CONFIG}/EXCLUSIVE/DIFFRACTIVE_{wildcards.PARTICLE.upper()}_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_{wildcards.PARTICLE}_ab_eAu_1.0{wildcards.INDEX}.eicrecon.tree.edm4eic.root")
     output:
-        "reco/epic_arches/campaign_22.11.3_sartre_{PARTICLE}_{INDEX}_eicrecon.edm4eic.root",
+        "reco/{DETECTOR_CONFIG}/campaign_{RELEASE_TAG}_sartre_{PARTICLE}_{INDEX}.edm4eic.root",
     shell:
         """
 ln {input} {output}
@@ -156,9 +156,11 @@ root -l -b -q '{input.script}+("{input.config}")'
 
 # Couple examples of invocation:
 
-rule diffractive_vm_run_over_a_campaign:
+rule diffractive_vm_run_over_campaigns:
     input:
         "results/epic_arches/diffractive_vm/campaign_22.11.3_sartre_phi_combined_9/plots_benchmark-phi-dsigmadt.pdf",
+        "results/epic_craterlake/diffractive_vm/campaign_23.12.0_sartre_phi_combined_9/plots_benchmark-phi-dsigmadt.pdf",
+        "results/epic_craterlake/diffractive_vm/campaign_24.03.1_sartre_phi_combined_9/plots_benchmark-phi-dsigmadt.pdf",
     message:
         "See output in {input[0]}"
 
