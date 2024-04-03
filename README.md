@@ -102,8 +102,4 @@ Below are few examples of job artifacts from the `master` branch pipeline.
 </a>
 <br>
 Artifacts can be browsed via the web interface, for example, the latest in reconstruction benchmark results in the 
-[`final_report` job can be browsed](https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks/-/jobs/artifacts/master/browse/results?job=final_report).
-<br>
-<a href="https://eicweb.phy.anl.gov/api/v4/projects/400/jobs/artifacts/master/raw/results/dvcs/Q2.png?job=dvcs:results">
-<img src="https://eicweb.phy.anl.gov/api/v4/projects/400/jobs/artifacts/master/raw/results/dvcs/Q2.png?job=dvcs:results" width="600px" />
-</a>
+[`summary` job can be browsed](https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks/-/jobs/artifacts/master/browse/results?job=summary).
