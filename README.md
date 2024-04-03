@@ -1,26 +1,25 @@
 Physics Benchmarks for the EIC
 ==============================
 
+[![Mirror and Trigger EICweb](https://github.com/eic/physics_benchmarks/actions/workflows/mirror.yaml/badge.svg)](https://github.com/eic/physics_benchmarks/actions/workflows/mirror.yaml)
 ![pipeline status](https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks/badges/master/pipeline.svg)
 
 ## Documentation Links
 
-- [`eicd`](https://eic.phy.anl.gov/eicd) - EIC Data Model. (See [`ReconstructedParticle`](https://eic.phy.anl.gov/eicd/classeic_1_1_reconstructed_particle.html) for most needs)
-- [`juggler`](https://eic.phy.anl.gov/juggler) reconstruction framework.
+- [`EDM4eic`](https://github.com/eic/EDM4eic) - EIC data model. (See [`ReconstructedParticle`](https://eic.github.io/EDM4eic/classedm4eic_1_1_reconstructed_particle.html) for most needs)
+- [`EICrecon`](https://github.com/eic/EICrecon) reconstruction framework.
 - Benchmark repository common code - [common_bench](https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench)
-- [Guide to tracking](https://eicweb.phy.anl.gov/EIC/documentation/guide_to_tracking/-/blob/master/README.md)
 - ROOT's [`RDataFrame`](https://root.cern/doc/master/classROOT_1_1RDataFrame.html)
 
 ## Adding new benchmarks
 
-See the [`benchmarks/DVCS`](https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks/-/tree/master/benchmarks/dvcs)
+See the [`benchmarks/diffractive_vm`](https://github.com/eic/physics_benchmarks/tree/master/benchmarks/diffractive_vm)
 directory for a basic example. Note currently the reconstruction is far from perfect.
 
 ### Pass/Fail tests
 
 - Create a script that returns exit status 0 for success.
 - Any non-zero value will be considered failure.
-- Script  
 
 See [common_bench](https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench) for details.
 
@@ -53,18 +52,17 @@ The collaboration uses [the EIC group on eicweb](https://eicweb.phy.anl.gov/EIC)
 [benchmarks](https://eicweb.phy.anl.gov/EIC/benchmarks). 
 
 The main software components locally developed are:
-- [`juggler`](https://eicweb.phy.anl.gov/EIC/juggler) ([documentation](https://eic.phy.anl.gov/juggler)) - Event processing framework (i.e. algorithms live)
-- [`eicd`](https://eicweb.phy.anl.gov/EIC/eicd) ([documentation](https://eic.phy.anl.gov/eicd)) - EIC data model
-- [`npdet`](https://eicweb.phy.anl.gov/EIC/npdet) - collection of dd4hep simulation plugins and tools.
+- [`EICrecon`](https://github.com/eic/EICrecon) ([documentation](https://eicrecon.epic-eic.org/#/)) - Event processing framework (i.e. algorithms live)
+- [`EDM4eic`](https://github.com/eic/EDM4eic) - EIC data model
+- [`npsim`](https://github.com/eic/npsim) - DD4hep simulation steering
+-
+- The key collaboration/user code repositories are:
 
-The key collaboration/user code repositories are:
-
-- [detectors/ip6](https://eicweb.phy.anl.gov/EIC/detectors/ip6) - IP6 specifics (forward and backward beamline and detectors).
-- [detectors/athena](https://eicweb.phy.anl.gov/EIC/detectors/athena) - ATHENA detector
-- [Detector benchmarks](https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks) - Set of analysis scripts  run on the Geant4 output before any digitization or reconstruction. Also contains some detector calibrations.
-- [Reconstruction benchmarks](https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks) - Analysis of the many aspects of reconstruction. This is where the tracking performance benchmarks and plots live. Also a good place for developing new algorithms.
-- [Physics benchmarks](https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks) - Analysis of reconstructed for physics performance.  The goal is to provide metrics for optimizing detector design and reconstruction. 
-
+- [epic](https://github.com/eic/epic/) - ePIC at IP6
+- [D2EIC](https://github.com/eic/D2EIC) - Detector II at IP8
+- [Detector benchmarks](https://github.com/eic/detector_benchmarks) ([eicweb mirror](https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks)) - Set of analysis scripts  run on the Geant4 output before any digitization or reconstruction. Also contains some detector calibrations.
+- [Physics benchmarks](https://github.com/eic/physics_benchmarks) ([eicweb mirror](https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks)) - Analysis of reconstructed for physics performance.  The goal is to provide metrics for optimizing detector design and reconstruction.
+- [Reconstruction benchmarks](https://eicweb.phy.anl.gov/EIC/benchmarks/reconstruction_benchmarks) (legacy only)
 
 ### Pipelines and Artifacts
 
@@ -79,12 +77,11 @@ Typically there is one pipeline per repository but there can multiple and a pipl
 The graph below show some of the downstream pipeline triggers (arrows) between different repositories.
 ```mermaid
 graph TD;
-  ip[IP6<br>detectors/ip6] --> athena[ATHENA<br>detectors/athena]
-  athena-->db[Detector Benchmarks<br>benchmarks/detector_benchmarks];
-  db-->rb[Reconstruct Benchmarks<br>benchmarks/reconstruction_benchmarks];
-  db-->pb[Physics Benchmarks<br>benchmarks/physics_benchmarks];
-  juggler[juggler<br>algorithms]-->rb;
-  juggler-->pb;
+  epic[ePIC<br>eic/epic]-->db[Detector Benchmarks<br>eic/detector_benchmarks];
+  db-->rb[Reconstruction Benchmarks<br>eicweb:benchmarks/reconstruction_benchmarks];
+  db-->pb[Physics Benchmarks<br>eic/physics_benchmarks];
+  eicrecon[EICrecon<br>eic/EICrecon]-->container[EIC container/eic-shell<br>eic/container];
+  container-->db;
 ```
 
 Note that on any change to the detectors will cause all the benchmarks to be run.
@@ -97,19 +94,12 @@ All pipeline jobs have "artifacts" which are just selected files that are saved 
 
 Note artifacts are not the output data which is far too big. Artifacts are small files such as images, plots, text files, reports, etc.
 
-Below is an image and link to a pdf of the latest ATHENA detector version generated by a job artifact from the `master` branch pipeline.
+Below are few examples of job artifacts from the `master` branch pipeline.
 <br>
-<a href="https://eicweb.phy.anl.gov/api/v4/projects/473/jobs/artifacts/master/raw/images/view01.pdf?job=report">
-<img src="https://eicweb.phy.anl.gov/api/v4/projects/473/jobs/artifacts/master/raw/images/view01.png?job=report" width="600px" />
+
+<a href="https://gitlab.com/api/v4/projects/400/jobs/artifacts/master/raw/results/dis/18on275/minQ2=10/kinematic_coverage_dis_18x275_minQ2=10.png?job=dis:results">
+<img src="https://gitlab.com/api/v4/projects/400/jobs/artifacts/master/raw/results/dis/18on275/minQ2=10/kinematic_coverage_dis_18x275_minQ2=10.png?job=dis:results" width="600px" />
 </a>
 <br>
 Artifacts can be browsed via the web interface, for example, the latest in reconstruction benchmark results in the 
-[`final_report` job can be browsed](https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks/-/jobs/artifacts/master/browse/results?job=final_report).
-<br>
-<a href="https://eicweb.phy.anl.gov/api/v4/projects/400/jobs/artifacts/master/raw/results/dvcs/Q2.png?job=dvcs:results">
-<img src="https://eicweb.phy.anl.gov/api/v4/projects/400/jobs/artifacts/master/raw/results/dvcs/Q2.png?job=dvcs:results" width="600px" />
-</a>
-<br>
-
-
-
+[`summary` job can be browsed](https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks/-/jobs/artifacts/master/browse/results?job=summary).
