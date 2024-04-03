@@ -28,10 +28,6 @@ See [common_bench](https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench) for d
 ### Local development example
 
 Here we setup to use our local build of the `juggler` library.
-First set some environment variables.
-```
-export DETECTOR=epic             # athena is the default
-```
 
 ```
 git clone https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git && cd physics_benchmarks
@@ -55,9 +51,8 @@ The main software components locally developed are:
 - [`EICrecon`](https://github.com/eic/EICrecon) ([documentation](https://eicrecon.epic-eic.org/#/)) - Event processing framework (i.e. algorithms live)
 - [`EDM4eic`](https://github.com/eic/EDM4eic) - EIC data model
 - [`npsim`](https://github.com/eic/npsim) - DD4hep simulation steering
--
-- The key collaboration/user code repositories are:
 
+The key collaboration/user code repositories are:
 - [epic](https://github.com/eic/epic/) - ePIC at IP6
 - [D2EIC](https://github.com/eic/D2EIC) - Detector II at IP8
 - [Detector benchmarks](https://github.com/eic/detector_benchmarks) ([eicweb mirror](https://eicweb.phy.anl.gov/EIC/benchmarks/detector_benchmarks)) - Set of analysis scripts  run on the Geant4 output before any digitization or reconstruction. Also contains some detector calibrations.
@@ -94,12 +89,5 @@ All pipeline jobs have "artifacts" which are just selected files that are saved 
 
 Note artifacts are not the output data which is far too big. Artifacts are small files such as images, plots, text files, reports, etc.
 
-Below are few examples of job artifacts from the `master` branch pipeline.
-<br>
-
-<a href="https://gitlab.com/api/v4/projects/400/jobs/artifacts/master/raw/results/dis/18on275/minQ2=10/kinematic_coverage_dis_18x275_minQ2=10.png?job=dis:results">
-<img src="https://gitlab.com/api/v4/projects/400/jobs/artifacts/master/raw/results/dis/18on275/minQ2=10/kinematic_coverage_dis_18x275_minQ2=10.png?job=dis:results" width="600px" />
-</a>
-<br>
 Artifacts can be browsed via the web interface, for example, the latest in reconstruction benchmark results in the 
-[`summary` job can be browsed](https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks/-/jobs/artifacts/master/browse/results?job=summary).
+[summary job can be browsed](https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks/-/jobs/artifacts/master/browse/results?job=summary).
