@@ -17,4 +17,17 @@ rule compile_analysis:
 root -l -b -q -e '.L {input}+'
 """
 
+rule warmup_run:
+    output:
+        "warmup/{DETECTOR_CONFIG}.edm4hep.root",
+    message: "Ensuring that calibrations/fieldmaps are available for {wildcards.DETECTOR_CONFIG}"
+    shell: """
+ddsim \
+  --runType batch \
+  --numberOfEvents 1 \
+  --compactFile "$DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml" \
+  --outputFile "{output}" \
+  --enableGun
+"""
+
 include: "benchmarks/diffractive_vm/Snakefile"
