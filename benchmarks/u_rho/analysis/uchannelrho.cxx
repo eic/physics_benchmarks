@@ -32,6 +32,35 @@ if (gSystem->AccessPathName(rec_file.Data()) != 0) {
    return 0;
 }
 
+void setbenchstatus(double eff){
+        ///////////// Set benchmark status!
+        // create our test definition
+        // test_tag
+        common_bench::Test rho_reco_eff_test{
+          {
+            {"name", "rho_reconstruction_efficiency"},
+            {"title", "rho Reconstruction Efficiency for rho -> pi+pi- in the B0"},
+            {"description", "u-channel rho->pi+pi- reconstruction efficiency "
+                       "when both pions should be within B0 acceptance"},
+            {"quantity", "efficiency"},
+            {"target", "0.9"}
+          }
+        };      //these 2 need to be consistent 
+        double eff_target = 0.9;    //going to find a way to use the same variable
+
+        if(eff<0 || eff>1){
+          rho_reco_eff_test.error(-1);
+        }else if(eff > eff_target){
+          rho_reco_eff_test.pass(eff);
+        }else{
+          rho_reco_eff_test.fail(eff);
+        }
+
+
+        // write out our test data
+        common_bench::write_test(rho_reco_eff_test, fmt::format("rhorecoeff.json", output_prefix));
+}
+
 // read our configuration	
 auto tree = new TChain("events");
 TString name_of_input = (TString) rec_file;
@@ -550,8 +579,15 @@ h_u_REC_justpionsB0->Scale(1.0/u_binwidth);
 h_u_REC_notjustpionsB0->Scale(1.0/u_binwidth);
 h_u_MC->Scale(1.0/u_binwidth);
 
+double minbineff = h_VM_mass_MC_etacut->FindBin(0.6);
+double maxbineff = h_VM_mass_MC_etacut->FindBin(1.0);
+double rhorecoeff = (1.0*h_VM_mass_REC_etacut->Integral(minbineff,maxbineff))/(1.0*h_VM_mass_MC_etacut->Integral(minbineff,maxbineff));
+
 output->Write();
 output->Close();
+
+
+setbenchstatus(rhorecoeff);
 
 return 0;
 }
