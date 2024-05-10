@@ -23,15 +23,6 @@ auto giveme_u(TLorentzVector pIn, TLorentzVector vmOut){
 	return uvalue;
 }
 
-
-int uchannelrho(TString rec_file="input.root", TString outputfile="output.root")
-{	
-if (gSystem->AccessPathName(rec_file.Data()) != 0) {
-   // File does not exist
-   cout<<Form("File %s does not exist.", rec_file.Data())<<endl;
-   return 0;
-}
-
 int setbenchstatus(double eff){
 	///////////// Set benchmark status!
         // create our test definition
@@ -59,6 +50,15 @@ int setbenchstatus(double eff){
         // write out our test data
         common_bench::write_test(rho_reco_eff_test, "rhorecoeff.json");
 	return 0;
+}
+
+
+int uchannelrho(TString rec_file="input.root", TString outputfile="output.root")
+{	
+if (gSystem->AccessPathName(rec_file.Data()) != 0) {
+   // File does not exist
+   cout<<Form("File %s does not exist.", rec_file.Data())<<endl;
+   return 0;
 }
 
 // read our configuration	
