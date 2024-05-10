@@ -33,7 +33,7 @@ if (gSystem->AccessPathName(rec_file.Data()) != 0) {
 }
 
 void setbenchstatus(double eff){
-        ///////////// Set benchmark status!
+	///////////// Set benchmark status!
         // create our test definition
         // test_tag
         common_bench::Test rho_reco_eff_test{
@@ -58,7 +58,7 @@ void setbenchstatus(double eff){
 
 
         // write out our test data
-        common_bench::write_test(rho_reco_eff_test, fmt::format("rhorecoeff.json", output_prefix));
+        common_bench::write_test(rho_reco_eff_test, "rhorecoeff.json");
 }
 
 // read our configuration	
