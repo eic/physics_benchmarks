@@ -1,5 +1,35 @@
 #include "RiceStyle.h"
 using namespace std;
+
+int setbenchstatus(double eff){
+	///////////// Set benchmark status!
+        // create our test definition
+        // test_tag
+        common_bench::Test rho_reco_eff_test{
+          {
+            {"name", "rho_reconstruction_efficiency"},
+            {"title", "rho Reconstruction Efficiency for rho -> pi+pi- in the B0"},
+            {"description", "u-channel rho->pi+pi- reconstruction efficiency "
+                       "when both pions should be within B0 acceptance"},
+            {"quantity", "efficiency"},
+            {"target", "0.9"}
+          }
+        };      //these 2 need to be consistent 
+        double eff_target = 0.9;    //going to find a way to use the same variable
+
+        if(eff<0 || eff>1){
+          rho_reco_eff_test.error(-1);
+        }else if(eff > eff_target){
+          rho_reco_eff_test.pass(eff);
+        }else{
+          rho_reco_eff_test.fail(eff);
+        }
+
+        // write out our test data
+        common_bench::write_test(rho_reco_eff_test, "rhorecoeff.json");
+	return 0;
+}
+
 void plot_rho_physics_benchmark(TString filename="./benchmark_output/plot_combined.root"){
 	Ssiz_t dotPosition = filename.Last('.');
 	TString figure_directory = filename(0, dotPosition);
@@ -701,5 +731,7 @@ void plot_rho_physics_benchmark(TString filename="./benchmark_output/plot_combin
         TString figure6name = figure_directory+"/benchmark_rho_recoquality.pdf";
         c6->Print(figure6name);
 
+	double rhorecoeff = thiseff/100.0;
+	setbenchstatus(rhorecoeff);
 
 }
