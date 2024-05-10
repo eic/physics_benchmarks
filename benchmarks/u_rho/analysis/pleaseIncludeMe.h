@@ -28,8 +28,6 @@
 #include "edm4eic/ReconstructedParticleData.h"
 #include "edm4hep/MCParticleData.h"
 
-#include "common_bench/benchmark.h"
-
 #define PI            3.1415926
 #define MASS_ELECTRON 0.00051
 #define MASS_PROTON   0.93827
