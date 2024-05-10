@@ -61,6 +61,11 @@ TTreeReaderArray<float> emhits_energy_array = {tree_reader, "EcalEndcapNRecHits.
 TTreeReaderArray<unsigned int> em_rec_id_array = {tree_reader, "EcalEndcapNClusterAssociations.recID"};
 TTreeReaderArray<unsigned int> em_sim_id_array = {tree_reader, "EcalEndcapNClusterAssociations.simID"};
 
+//B0 Tracker hits
+TTreeReaderArray<double> reco_x_array = {tree_reader, "MCParticles.endpoint.x"};//= {tree_reader, "B0TrackerHits.position.x"};
+TTreeReaderArray<double> reco_y_array = {tree_reader, "MCParticles.endpoint.y"};//= {tree_reader, "B0TrackerHits.position.y"};
+TTreeReaderArray<double> reco_z_array = {tree_reader, "MCParticles.endpoint.z"};//= {tree_reader, "B0TrackerHits.position.z"};
+
 // Reconstructed particles pz array for each reconstructed particle
 TTreeReaderArray<float> reco_px_array = {tree_reader, "ReconstructedChargedParticles.momentum.x"};
 TTreeReaderArray<float> reco_py_array = {tree_reader, "ReconstructedChargedParticles.momentum.y"};
@@ -93,11 +98,47 @@ TH1D* h_eta = new TH1D("h_eta",";#eta",100,-5,5);
 TH2D* h_trk_energy_res = new TH2D("h_trk_energy_res",";E_{MC} (GeV); E_{MC}-E_{REC}/E_{MC} track-base ",100,0,20,1000,-1,1);
 TH2D* h_trk_Pt_res = new TH2D("h_trk_Pt_res",";p_{T,MC} (GeV); P_{T,MC}-P_{T,REC}/P_{T,MC} track-base ",100,0,15,1000,-1,1);
 TH1D* h_Epz_REC = new TH1D("h_Epz_REC",";E - p_{z} (GeV)",200,0,50);
+TH2D* h_Acceptance_REC = new TH2D("h_Acceptance_REC",";#eta; p_{T}(GeV/c REC)",500,0,10,500,0,10);
+TH2D* h_Acceptance_angular_REC = new TH2D("h_Acceptance_angular_REC",";#phi (radians); #theta (mrad)",100,0,6.4,200,0,100);
+TH2D* h_Acceptance_angular_RECPI = new TH2D("h_Acceptance_angular_RECPI",";#phi (radians); #theta (mrad)",100,0,6.4,200,0,100);
+TH2D* h_Acceptance_angular_RECPIP = new TH2D("h_Acceptance_angular_RECPIP",";#phi (radians); #theta (mrad)",100,0,6.4,200,0,100);
+TH2D* h_Acceptance_angular_RECPIM = new TH2D("h_Acceptance_angular_RECPIM",";#phi (radians); #theta (mrad)",100,0,6.4,200,0,100);
+TH2D* h_Acceptance_xy_RECPI = new TH2D("h_Acceptance_xy_RECPI",";x(mm); y(mm)",1000,-1000,1000,1000,-1000,1000);
+TH2D* h_Acceptance_angular_MC  = new TH2D("h_Acceptance_angular_MC" ,";#phi (radians); #theta (mrad)",500,0,6.4,500,0,100);
+TH2D* h_etavseta_MC = new TH2D("h_etavseta_MC",";#eta(#pi^{+} MC); #eta(#pi^{-} MC)",250,0,10,250,0,10);
+TH2D* h_etavseta_REC = new TH2D("h_etavseta_REC",";#eta(#pi^{+} REC); #eta(#pi^{-} REC)",250,0,10,250,0,10);
+
+TProfile2D* h_effEtaPtPi  = new TProfile2D("h_effEtaPtPi",";#eta; p_{T}(GeV/c)",50,4,6,30,0,1.6);
+TProfile2D* h_effEtaPtPip = new TProfile2D("h_effEtaPtPip",";#eta; p_{T}(GeV/c)",50,4,6,30,0,1.6);
+TProfile2D* h_effEtaPtPim = new TProfile2D("h_effEtaPtPim",";#eta; p_{T}(GeV/c)",50,4,6,30,0,1.6);
+
+TProfile2D* h_effPhiEtaPi  = new TProfile2D("h_effPhiEtaPi",";#phi (rad);#eta",50,0,6.4,50,4,6);
+TProfile2D* h_effPhiEtaPip = new TProfile2D("h_effPhiEtaPip",";#phi (rad);#eta",50,0,6.4,50,4,6);
+TProfile2D* h_effPhiEtaPim = new TProfile2D("h_effPhiEtaPim",";#phi (rad);#eta",50,0,6.4,50,4,6);
+
+TH2D* h_RecoMomPi  = new TH2D("h_RecoMomPi", ";p (GeV/c) MC;p (GeV/c) reco.",100,0,100,100,0,100);
+TH2D* h_RecoMomPip = new TH2D("h_RecoMomPip",";p (GeV/c) MC;p (GeV/c) reco.",100,0,100,100,0,100);
+TH2D* h_RecoMomPim = new TH2D("h_RecoMomPim",";p (GeV/c) MC;p (GeV/c) reco.",100,0,100,100,0,100);
+
+TH2D* h_RecoTransMomPi  = new TH2D("h_RecoTransMomPi", ";p_{T} (GeV/c) MC;p_{T} (GeV/c) reco.",100,0,1.6,100,0,1.6);
+TH2D* h_RecoTransMomPip = new TH2D("h_RecoTransMomPip",";p_{T} (GeV/c) MC;p_{T} (GeV/c) reco.",100,0,1.6,100,0,1.6);
+TH2D* h_RecoTransMomPim = new TH2D("h_RecoTransMomPim",";p_{T} (GeV/c) MC;p_{T} (GeV/c) reco.",100,0,1.6,100,0,1.6);
+
+TH1D* h_PiMomRecoQuality = new TH1D("h_PiMomRecoQuality",";(p_{reco}-p_{MC})/p_{MC};counts",500,-1,1);
+TH1D* h_PipMomRecoQuality = new TH1D("h_PipMomRecoQuality",";(p_{reco}-p_{MC})/p_{MC};counts",500,-1,1);
+TH1D* h_PimMomRecoQuality = new TH1D("h_PimMomRecoQuality",";(p_{reco}-p_{MC})/p_{MC};counts",500,-1,1);
+TH1D* h_PiTransMomRecoQuality = new TH1D("h_PiTransMomRecoQuality",";(p_{T,reco}-p_{T,MC})/p_{T,MC};counts",500,-1,1);
+TH1D* h_PipTransMomRecoQuality = new TH1D("h_PipTransMomRecoQuality",";(p_{T,reco}-p_{T,MC})/p_{T,MC};counts",500,-1,1);
+TH1D* h_PimTransMomRecoQuality = new TH1D("h_PimTransMomRecoQuality",";(p_{T,reco}-p_{T,MC})/p_{T,MC};counts",500,-1,1);
 
 //VM & t
 TH1D* h_VM_mass_MC = new TH1D("h_VM_mass_MC",";mass (GeV)",200,0,4);
+TH1D* h_VM_mass_MC_etacut = new TH1D("h_VM_mass_MC_etacut",";mass (GeV)",200,0,4);
 TH1D* h_VM_mass_REC = new TH1D("h_VM_mass_REC",";mass (GeV)",200,0,4);
+TH1D* h_VM_mass_REC_etacut = new TH1D("h_VM_mass_REC_etacut",";mass (GeV)",200,0,4);
 TH1D* h_VM_mass_REC_justpions = new TH1D("h_VM_mass_REC_justpions",";mass (GeV)",200,0,4);
+TH1D* h_VM_mass_REC_justpionsB0 = new TH1D("h_VM_mass_REC_justpionsB0",";mass (GeV)",200,0,4);
+TH1D* h_VM_mass_REC_notjustpionsB0 = new TH1D("h_VM_mass_REC_notjustpionsB0",";mass (GeV)",200,0,4);
 TH1D* h_VM_pt_REC = new TH1D("h_VM_pt_REC",";p_{T} (GeV/c)",200,0,2);
 TH2D* h_VM_res = new TH2D("h_VM_res",";p_{T,MC} (GeV); p_{T,MC}-E_{T,REC}/p_{T,MC}",100,0,2,1000,-1,1);
 TH1D* h_t_REC = new TH1D("h_t_REC",";t_{REC} (GeV^{2}); counts",1000,0,5);
@@ -116,6 +157,9 @@ double umax = 5.0;
 int n_ubins = 100;
 double u_binwidth = (umax-umin)/((double)n_ubins);
 TH1D* h_u_REC = new TH1D("h_u_REC", ";-#it{u}_{REC} (GeV^{2}); dN/d|#it{u}| (GeV^{-2} scaled)",n_ubins,umin,umax);
+TH1D* h_u_REC_justpions = new TH1D("h_u_REC_justpions", ";-#it{u}_{REC} (GeV^{2}); dN/d|#it{u}| (GeV^{-2} scaled)",n_ubins,umin,umax);
+TH1D* h_u_REC_justpionsB0 = new TH1D("h_u_REC_justpionsB0", ";-#it{u}_{REC} (GeV^{2}); dN/d|#it{u}| (GeV^{-2} scaled)",n_ubins,umin,umax);
+TH1D* h_u_REC_notjustpionsB0 = new TH1D("h_u_REC_notjustpionsB0", ";-#it{u}_{REC} (GeV^{2}); dN/d|#it{u}| (GeV^{-2} scaled)",n_ubins,umin,umax);
 TH1D* h_u_MC = new TH1D("h_u_MC", ";-#it{u}_{MC} (GeV^{2}); dN/d|#it{u}| (GeV^{-2} scaled)",n_ubins,umin,umax);
 
 //energy clus
@@ -125,6 +169,9 @@ TH2D* h_energy_res = new TH2D("h_energy_res",";E_{MC} (GeV); E_{MC}-E_{REC}/E_{M
 TH1D* h_energy_calibration_REC = new TH1D("h_energy_calibration_REC",";E (GeV)",200,0,2);
 TH1D* h_EoverP_REC = new TH1D("h_EoverP_REC",";E/p",200,0,2);
 TH1D* h_ClusOverHit_REC = new TH1D("h_ClusOverHit_REC",";cluster energy / new cluster energy",200,0,2);
+
+//
+TH1D* h_numPositiveTracks = new TH1D("h_numPositiveTracks",";number of positive tracks;counts",10,-0.5,9.5);
 
 cout<<"There are "<<tree->GetEntries()<<" events!!!!!!!"<<endl;
 tree_reader.SetEntriesRange(0, tree->GetEntries());
@@ -146,6 +193,7 @@ while (tree_reader.Next()) {
 	double maxPt=-99.;
 	for(unsigned int imc=0;imc<mc_px_array.GetSize();imc++){
 		TVector3 mctrk(mc_px_array[imc],mc_py_array[imc],mc_pz_array[imc]);	
+		if(mc_pdg_array[imc]!=11) mctrk.RotateY(0.025);//Rotate all non-electrons to hadron beam coordinate system
 		if(mc_genStatus_array[imc]==4){//4 is Sartre.
 			if(mc_pdg_array[imc]==11) ebeam.SetVectM(mctrk, MASS_ELECTRON);
 				if(mc_pdg_array[imc]==2212) pbeam.SetVectM(mctrk, MASS_PROTON);
@@ -157,12 +205,23 @@ while (tree_reader.Next()) {
 			mc_elect_index=imc;
 			scatMC.SetVectM(mctrk,mc_mass_array[imc]);
 		}
-		if(mc_pdg_array[imc]==211
-                        && mc_genStatus_array[imc]==1){ piplusMC.SetVectM(mctrk,MASS_PION);  h_VM_endpointXY_MC->Fill(mc_endx_array[imc],mc_endy_array[imc]);  h_VM_endpointZ_MC->Fill(mc_endz_array[imc]);}
-                if(mc_pdg_array[imc]==-211
-                        && mc_genStatus_array[imc]==1){ piminusMC.SetVectM(mctrk,MASS_PION); h_VM_endpointXY_MC->Fill(mc_endx_array[imc],mc_endy_array[imc]);  h_VM_endpointZ_MC->Fill(mc_endz_array[imc]);}
+		if(mc_pdg_array[imc]==211 && mc_genStatus_array[imc]==1){ 
+		  piplusMC.SetVectM(mctrk,MASS_PION);  
+		  h_VM_endpointXY_MC->Fill(mc_endx_array[imc],mc_endy_array[imc]);  
+		  h_VM_endpointZ_MC->Fill(mc_endz_array[imc]);
+		  double phi = mctrk.Phi()>0 ? mctrk.Phi() : mctrk.Phi()+6.2831853;
+                  h_Acceptance_angular_MC->Fill(phi,1000.0*mctrk.Theta());
+		}
+                if(mc_pdg_array[imc]==-211 && mc_genStatus_array[imc]==1){ 
+		  piminusMC.SetVectM(mctrk,MASS_PION); 
+		  h_VM_endpointXY_MC->Fill(mc_endx_array[imc],mc_endy_array[imc]);  
+		  h_VM_endpointZ_MC->Fill(mc_endz_array[imc]);
+                  double phi = mctrk.Phi()>0 ? mctrk.Phi() : mctrk.Phi()+6.2831853;
+                  h_Acceptance_angular_MC->Fill(phi,1000.0*mctrk.Theta());
+		}
 	}
 	vmMC=piplusMC+piminusMC;
+	h_etavseta_MC->Fill(piplusMC.Eta(),piminusMC.Eta());
 	//protection.
 	if(ebeam.E()==pbeam.E() && ebeam.E()==0) {
 		std::cout << "problem with MC incoming beams" << std::endl;
@@ -188,6 +247,8 @@ while (tree_reader.Next()) {
 		t_MC=method_E;
 		h_t_MC->Fill( method_E );
 		h_VM_mass_MC->Fill(vmMC.M());
+		if(piplusMC.Theta()>0.009  && piplusMC.Theta()<0.013 && 
+		    piminusMC.Theta()>0.009 && piminusMC.Theta()<0.013 ) h_VM_mass_MC_etacut->Fill(vmMC.M());
 	}
 
 	//rec level
@@ -262,12 +323,16 @@ while (tree_reader.Next()) {
     TLorentzVector scatClusEREC(0,0,0,0);
     TLorentzVector hfs(0,0,0,0);
     TLorentzVector particle(0,0,0,0);
+    TLorentzVector protonREC(0,0,0,0);
+    TLorentzVector protonRECasifpion(0,0,0,0);
     TLorentzVector piplusREC(0,0,0,0);
     TLorentzVector piminusREC(0,0,0,0);
     TLorentzVector vmREC(0,0,0,0);
+    TLorentzVector vmRECfromproton(0,0,0,0);
 
     bool isPiMinusFound = false;
     bool isPiPlusFound = false;
+    bool isProtonFound = false;
 
     double maxP=-1.;
     //track loop
@@ -291,23 +356,91 @@ while (tree_reader.Next()) {
 		}
 	}
 	//loop over track again;
+	int numpositivetracks = 0;
 	for(unsigned int itrk=0;itrk<reco_pz_array.GetSize();itrk++){
 		TVector3 trk(reco_px_array[itrk],reco_py_array[itrk],reco_pz_array[itrk]);
+		trk.RotateY(0.025);	
 		particle.SetVectM(trk,MASS_PION);//assume pions;
 		if(itrk!=rec_elect_index) {
     		hfs += particle; //hfs 4vector sum.
     		//selecting rho->pi+pi- daughters;
     		h_eta->Fill(trk.Eta());
     		//if(fabs(trk.Eta())<3.0){
-    			if(reco_charge_array[itrk]>0){ piplusREC.SetVectM(trk,MASS_PION); if(reco_PDG[itrk]==211)isPiPlusFound=true;}
+    			if(reco_charge_array[itrk]>0){ 
+			  numpositivetracks++; 
+			  if(reco_PDG[itrk]==211){
+			    piplusREC.SetVectM(trk,MASS_PION); 
+			    isPiPlusFound=true;
+			  }
+                          if(reco_PDG[itrk]==2212){
+                            protonREC.SetVectM(trk,MASS_PROTON); 
+                            protonRECasifpion.SetVectM(trk,MASS_PION);
+                            isProtonFound=true; 
+                          }
+			}
     			if(reco_charge_array[itrk]<0){ piminusREC.SetVectM(trk,MASS_PION); if(reco_PDG[itrk]==-211)isPiMinusFound=true;}
     		//}
+		double pt = sqrt(reco_px_array[itrk]*reco_px_array[itrk] + reco_py_array[itrk]*reco_py_array[itrk]);
+		h_Acceptance_REC->Fill(fabs(trk.Eta()),pt);
+	        double phi = trk.Phi()>0 ? trk.Phi() : trk.Phi()+6.2831853;
+		h_Acceptance_angular_REC->Fill(phi,1000.0*trk.Theta());
+		if(reco_PDG[itrk]==211 || reco_PDG[itrk]==-211) h_Acceptance_angular_RECPI->Fill(phi,1000.0*trk.Theta());
+                if(reco_PDG[itrk]==211) h_Acceptance_angular_RECPIP->Fill(phi,1000.0*trk.Theta());
+                if(reco_PDG[itrk]==-211) h_Acceptance_angular_RECPIM->Fill(phi,1000.0*trk.Theta());
 		}
+	}
+	h_numPositiveTracks->Fill(numpositivetracks);
+        //loop over B0 hits
+	for(unsigned int ihit=0; ihit<reco_x_array.GetSize();ihit++){
+		TVector3 hit(reco_x_array[ihit],reco_y_array[ihit],reco_z_array[ihit]);
+		hit.RotateY(0.025);
+		h_Acceptance_xy_RECPI->Fill(hit.X(),hit.Y());
 	}
 	//4vector of VM;
 	if(piplusREC.E()!=0. && piminusREC.E()!=0.){
 		vmREC=piplusREC+piminusREC;
 	}
+        if(protonRECasifpion.E()!=0. && piminusREC.E()!=0.){
+                vmRECfromproton=protonRECasifpion+piminusREC;
+        }
+
+	//pion reconstruction
+	double thispipeff  = (isPiPlusFound) ? 1.0 : 0.0;
+        double thispimeff = (isPiMinusFound) ? 1.0 : 0.0;
+	h_effEtaPtPi ->Fill(piplusMC.Eta(), piplusMC.Pt(), thispipeff);
+        h_effEtaPtPi ->Fill(piminusMC.Eta(),piminusMC.Pt(),thispimeff);
+        h_effEtaPtPip->Fill(piplusMC.Eta(), piplusMC.Pt(), thispipeff);
+        h_effEtaPtPim->Fill(piminusMC.Eta(),piminusMC.Pt(),thispimeff);
+	//
+	double thispipphi = piplusMC.Phi()>0  ? piplusMC.Phi()  : piplusMC.Phi()+6.2831853;
+        double thispimphi = piminusMC.Phi()>0 ? piminusMC.Phi() : piminusMC.Phi()+6.2831853;
+        if(piplusMC.Pt() >0.2) h_effPhiEtaPi ->Fill(thispipphi, piplusMC.Eta(), thispipeff);
+        if(piminusMC.Pt()>0.2) h_effPhiEtaPi ->Fill(thispimphi,piminusMC.Eta(),thispimeff);
+        if(piplusMC.Pt() >0.2) h_effPhiEtaPip->Fill(thispipphi, piplusMC.Eta(), thispipeff);
+        if(piminusMC.Pt()>0.2) h_effPhiEtaPim->Fill(thispimphi,piminusMC.Eta(),thispimeff);
+	//
+	if(isPiPlusFound)  h_RecoMomPi ->Fill(piplusMC.P() ,piplusREC.P() );
+        if(isPiMinusFound) h_RecoMomPi ->Fill(piminusMC.P(),piminusREC.P());
+        if(isPiPlusFound)  h_RecoMomPip->Fill(piplusMC.P() ,piplusREC.P() );
+        if(isPiMinusFound) h_RecoMomPim->Fill(piminusMC.P(),piminusREC.P());
+        //
+        if(isPiPlusFound)  h_RecoTransMomPi ->Fill(piplusMC.Pt() ,piplusREC.Pt() );
+        if(isPiMinusFound) h_RecoTransMomPi ->Fill(piminusMC.Pt(),piminusREC.Pt());
+        if(isPiPlusFound)  h_RecoTransMomPip->Fill(piplusMC.Pt() ,piplusREC.Pt() );
+        if(isPiMinusFound) h_RecoTransMomPim->Fill(piminusMC.Pt(),piminusREC.Pt());
+	//
+	if(isPiPlusFound){
+	  h_PiMomRecoQuality->Fill((piplusREC.P()-piplusMC.P())/piplusMC.P());
+          h_PipMomRecoQuality->Fill((piplusREC.P()-piplusMC.P())/piplusMC.P());
+          h_PiTransMomRecoQuality->Fill((piplusREC.Pt()-piplusMC.Pt())/piplusMC.Pt());
+          h_PipTransMomRecoQuality->Fill((piplusREC.Pt()-piplusMC.Pt())/piplusMC.Pt());
+	}
+        if(isPiMinusFound){
+          h_PiMomRecoQuality->Fill((piminusREC.P()-piminusMC.P())/piminusMC.P());
+          h_PimMomRecoQuality->Fill((piminusREC.P()-piminusMC.P())/piminusMC.P());
+          h_PiTransMomRecoQuality->Fill((piminusREC.Pt()-piminusMC.Pt())/piminusMC.Pt());
+          h_PimTransMomRecoQuality->Fill((piminusREC.Pt()-piminusMC.Pt())/piminusMC.Pt());
+        }
 
 	//track-base e' energy REC;
 	h_trk_energy_REC->Fill(scatMCmatchREC.E());
@@ -349,10 +482,19 @@ while (tree_reader.Next()) {
 	//if(yREC<0.01||yREC>0.85) continue;
 
 	//VM rec
-	if(vmREC.E()==0) continue;
+	if(vmREC.E()==0 && vmRECfromproton.E()==0) continue;
 	double rho_mass = vmREC.M();
+        double rho_mass_fromproton = vmRECfromproton.M();
 	h_VM_mass_REC->Fill(rho_mass);
-	if(isPiMinusFound && isPiPlusFound){ h_VM_mass_REC_justpions->Fill(rho_mass);}
+        h_VM_mass_REC->Fill(rho_mass_fromproton);
+	if(piplusMC.Theta()>0.009  && piplusMC.Theta()<0.013 &&
+                    piminusMC.Theta()>0.009 && piminusMC.Theta()<0.013 ) h_VM_mass_REC_etacut->Fill(vmREC.M());
+        if(piplusREC.Eta()>3.9 && piminusREC.Eta()>3.9) h_VM_mass_REC_notjustpionsB0->Fill(rho_mass);
+	if(isPiMinusFound && isPiPlusFound){ 
+	  h_VM_mass_REC_justpions->Fill(rho_mass);
+	  h_etavseta_REC->Fill(piplusREC.Eta(),piminusREC.Eta());
+	  if(piplusREC.Eta()>3.9 && piminusREC.Eta()>3.9) h_VM_mass_REC_justpionsB0->Fill(rho_mass);
+	}
 	h_VM_pt_REC->Fill(vmREC.Pt());
 
     	//2 versions: track and energy cluster:
@@ -362,13 +504,28 @@ while (tree_reader.Next()) {
     	h_t_REC->Fill( t_REC );
     	h_t_REC_2D->Fill(t_trk_REC,t_REC);
 	double u_REC = giveme_u(pbeam,vmREC);
+        double u_REC_fromproton = giveme_u(pbeam,vmRECfromproton);
 	double u_MC = giveme_u(pbeam,vmMC);
+        //4vector of VM;
+        if(piplusREC.E()!=0. && piminusREC.E()!=0.){
+                h_u_REC->Fill(u_REC);
+                h_u_REC_justpions->Fill(u_REC);
+        }
+        if(protonRECasifpion.E()!=0. && piminusREC.E()!=0.){
+                h_u_REC->Fill(u_REC_fromproton);
+        }
 	h_u_REC_2D->Fill(u_MC,u_REC);
-	h_u_REC->Fill(u_REC);
+	/*h_u_REC->Fill(u_REC);
+	if(piplusREC.Eta()>3.9 && piminusREC.Eta()>3.9) h_u_REC_notjustpionsB0->Fill(u_REC);
+        if(isPiMinusFound && isPiPlusFound){ 
+          h_u_REC_justpions->Fill(u_REC);
+          if(piplusREC.Eta()>3.9 && piminusREC.Eta()>3.9) h_u_REC_justpionsB0->Fill(u_REC);
+        }
+	*/
 	h_u_MC->Fill(u_MC);
     	if( (t_trk_REC/t_REC) > 0.5 && (t_trk_REC/t_REC) < 1.5 ){
     		h_t_combo_REC->Fill( (t_trk_REC+t_REC)/2. );//w=1./(fabs(1.0-(t_trk_REC/t_REC)))
-    	} 
+    	}
     	h_t_RECMC_2D->Fill(t_MC,t_trk_REC/t_REC);
 
     	//t track resolution 
@@ -388,6 +545,9 @@ while (tree_reader.Next()) {
 
 }
 h_u_REC->Scale(1.0/u_binwidth);
+h_u_REC_justpions->Scale(1.0/u_binwidth);
+h_u_REC_justpionsB0->Scale(1.0/u_binwidth);
+h_u_REC_notjustpionsB0->Scale(1.0/u_binwidth);
 h_u_MC->Scale(1.0/u_binwidth);
 
 output->Write();
