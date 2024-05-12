@@ -40,4 +40,4 @@ u_channel_rho:results:
   stage: collect
   needs: ["u_channel_rho:simulate"]
   script:
-    - echo "The results rule does in config.yml does nothing for now"
+     - collect_tests.py u_rho
