@@ -128,7 +128,6 @@ summary:
     - "dis:results"
     - "dvcs:results"
     - "tcs:results"
-    - "u_rho:results"
     - "u_omega:results"
     - "single:results"
     - "backgrounds:results"
