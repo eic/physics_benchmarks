@@ -26,7 +26,7 @@ int setbenchstatus(double eff){
         }
 
         // write out our test data
-        common_bench::write_test(rho_reco_eff_test, "rhorecoeff.json");
+        common_bench::write_test(rho_reco_eff_test, "benchmark.json");
 	return 0;
 }
 
