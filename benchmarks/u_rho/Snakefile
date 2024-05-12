@@ -77,6 +77,7 @@ else
 fi
 root -l -b -q '{input.script}("{input.plots}")'
 cat *.json
+cp *.json results/
 #cp {input.plots}_figures/*.pdf figures/
 """
 
