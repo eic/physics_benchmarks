@@ -129,6 +129,7 @@ summary:
     - "dvcs:results"
     - "tcs:results"
     - "u_omega:results"
+    - "u_channel_rho:results"
     - "single:results"
     - "backgrounds:results"
   script:
