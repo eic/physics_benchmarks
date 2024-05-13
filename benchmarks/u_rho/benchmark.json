@@ -1,0 +1,6 @@
+{
+  "name": "u-Channel Rho",
+  "title": "u-Channel Rho Benchmarks",
+  "description": "Benchmark for u-channel rho production",
+  "target": "0.9"
+}
