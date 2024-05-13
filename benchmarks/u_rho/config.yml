@@ -41,4 +41,5 @@ u_channel_rho:results:
   stage: collect
   needs: ["u_channel_rho:simulate"]
   script:
-     - collect_tests.py u_rho
+     #- collect_tests.py u_rho
+     - echo "The results task in config.yml does nothing for now"
