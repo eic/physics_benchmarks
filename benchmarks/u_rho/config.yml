@@ -42,3 +42,4 @@ u_channel_rho:results:
   needs: ["u_channel_rho:simulate"]
   script:
      - collect_tests.py u_rho
+     - echo "Finished collecting!"
