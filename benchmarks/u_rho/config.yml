@@ -23,6 +23,7 @@ u_channel_rho:generate:
     - mkdir results
     - mkdir results/u_rho
     - cp benchmark_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots_figures/*.pdf results/u_rho/
+    - cp benchmark_output/u_rho_eff.json results/u_rho/
     #- cp u_rho_eff.json results/
     - echo "Finished copying!" 
 
