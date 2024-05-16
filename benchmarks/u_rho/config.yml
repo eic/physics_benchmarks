@@ -21,7 +21,8 @@ u_channel_rho:generate:
     - snakemake --cores 2 benchmark_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf
     - echo "Finished, copying over figures now"
     - mkdir results
-    - cp benchmark_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots_figures/*.pdf results/
+    - mkdir results/u_rho
+    - cp benchmark_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots_figures/*.pdf results/u_rho/
     #- cp u_rho_eff.json results/
     - echo "Finished copying!" 
 
