@@ -1,4 +1,3 @@
-
 u_channel_rho:compile:
   stage: compile
   extends: .compile_benchmark
