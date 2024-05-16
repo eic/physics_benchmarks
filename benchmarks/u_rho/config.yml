@@ -11,7 +11,7 @@ u_channel_rho:generate:
     - ["u_channel_rho:compile"]
   script:
     - echo "Gathering events here!"
-    - config_file=./setup.config
+    - config_file=benchmarks/u_rho/setup.config
     - source $config_file
     - if [ "$USE_SIMULATION_CAMPAIGN" = true ] ; then
     -     echo "Using simulation campaign so skipping this step!"
