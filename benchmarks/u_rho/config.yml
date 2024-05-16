@@ -18,7 +18,7 @@ u_channel_rho:generate:
     - else
     -     echo "Not using simulation campaign but still skipping this step!"
     - fi
-    - echo "Finished, gathering events"
+    - echo "Finished gathering events"
 
 u_channel_rho:simulate:
   stage: simulate
@@ -26,7 +26,15 @@ u_channel_rho:simulate:
   needs: ["u_channel_rho:generate"]
   timeout: 96 hour
   script:
-    - echo "The simulate task in config.yml does nothing for now"
+    - echo "Simulating detector response here!"
+    - config_file=benchmarks/u_rho/setup.config
+    - source $config_file
+    - if [ "$USE_SIMULATION_CAMPAIGN" = true ] ; then
+    -     echo "Using simulation campaign so skipping this step!"
+    - else
+    -     echo "Not using simulation campaign but still skipping this step!"
+    - fi
+    - echo "Finished simulating detector response"
   retry:
     max: 2
     when:
@@ -38,7 +46,16 @@ u_channel_rho:reconstruct:
   needs: ["u_channel_rho:simulate"]
   timeout: 96 hour
   script:
-    - snakemake --cores 2 benchmark_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots.root
+    - echo "Performing reconstruction here!"
+    - config_file=benchmarks/u_rho/setup.config
+    - source $config_file
+    - if [ "$USE_SIMULATION_CAMPAIGN" = true ] ; then
+    -     echo "Using simulation campaign so grabbing files from S3"
+    -     snakemake --cores 2 benchmark_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots.root
+    - else
+    -     echo "Not using simulation campaign!"
+    - fi
+    - echo "Finished reconstruction"
   retry:
     max: 2
     when:
