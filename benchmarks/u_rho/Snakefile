@@ -24,6 +24,7 @@ rule uchannelrho_campaign_reco_get:
         """
 echo "Getting file for INDEX {wildcards.INDEX}"
 ln {input} {output}
+ls benchmark_output/
 """
 
 rule uchannelrho_campaign_raw_get:
