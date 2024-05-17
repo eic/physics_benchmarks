@@ -3,6 +3,10 @@ source strict-mode.sh
 
 source benchmarks/u_rho/setup.config $*
 
+JUGGLER_IN_FILE=$1
+JUGGLER_OUT_FILE=$2
+JUGGLER_N_EVENTS=$3
+
 if [ -f ${JUGGLER_IN_FILE} ]; then
   echo "ERROR: Input simulation file does ${JUGGLER_IN_FILE} not exist."
 else
