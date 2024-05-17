@@ -35,7 +35,7 @@ rule uchannelrho_campaign_raw_get:
         """
 echo "Getting afterburned event-generator file"
 ln {input} {output}
-ls benchmark_output/
+ls benchmark_output/*
 """
 
 rule uchannelrho_simulate:
@@ -43,20 +43,20 @@ rule uchannelrho_simulate:
         "benchmark_output/rho_10x100_uChannel_Q2of0to10_hiDiv.hepmc3.tree.root",
     output:
         "benchmark_output/rho_10x100_uChannel_Q2of0to10_hiDiv.hepmc3.tree.detectorsim.root",
+    params:
+        N_EVENTS=100
     shell:
         """
 echo "Simulating detector response!"
-source strict-mode.sh
-source benchmarks/u_rho/setup.config $*
-if [ -f ${JUGGLER_IN_FILE} ]; then
-  echo "ERROR: Input simulation file does ${JUGGLER_IN_FILE} not exist."
+if [ -f {input} ]; then
+  echo "ERROR: Input simulation file does {input} not exist."
 else
-  echo "GOOD: Input simulation file ${JUGGLER_IN_FILE} exists!"
+  echo "GOOD: Input simulation file {input} exists!"
 fi
 # Simulate
 ddsim --runType batch \
       -v WARNING \
-      --numberOfEvents ${JUGGLER_N_EVENTS} \
+      --numberOfEvents {params.N_EVENTS} \
       --part.minimalKineticEnergy 100*GeV  \
       --filter.tracker edep0 \
       --compactFile ${DETECTOR_PATH}/${DETECTOR_CONFIG}.xml \
