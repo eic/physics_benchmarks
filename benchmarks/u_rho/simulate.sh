@@ -4,18 +4,20 @@ source strict-mode.sh
 source benchmarks/u_rho/setup.config $*
 
 if [ -f ${JUGGLER_IN_FILE} ]; then
-  echo "Input simulation file does ${JUGGLER_IN_FILE} not exist."
+  echo "ERROR: Input simulation file does ${JUGGLER_IN_FILE} not exist."
+else
+  echo "GOOD: Input simulation file ${JUGGLER_IN_FILE} exists!"
 fi
 
 # Simulate
 /usr/bin/time -v \
-ddsim --runType run \
-      --printLevel WARNING \
+ddsim --runType batch \
+      -v WARNING \
       --numberOfEvents ${JUGGLER_N_EVENTS} \
-      --part.minimalKineticEnergy 1*TeV  \
+      --part.minimalKineticEnergy 100*GeV  \
       --filter.tracker edep0 \
       --compactFile ${DETECTOR_PATH}/${DETECTOR_CONFIG}.xml \
-      --inputFile ${JUGGLER_IN_FILE} \
+      --inputFiles ${JUGGLER_IN_FILE} \
       --outputFile  ${JUGGLER_OUT_FILE}
 if [[ "$?" -ne "0" ]] ; then
   echo "ERROR running ddsim"
