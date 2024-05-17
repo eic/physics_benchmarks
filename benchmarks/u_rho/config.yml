@@ -34,7 +34,7 @@ u_channel_rho:simulate:
     -     echo "Using simulation campaign so skipping this step!"
     - else
     -     echo "Running Geant4"
-    -     snakemake --cores 2 benchmark_output/rho_10x100_uChannel_Q2of0to10_hiDiv.hepmc3.tree.detectorsim.root
+    -     bash benchmarks/u_rho/simulate.sh
     - fi
     - echo "Finished simulating detector response"
   retry:
@@ -55,7 +55,7 @@ u_channel_rho:reconstruct:
     -     echo "Using simulation campaign so skipping this step!"
     - else
     -     echo "Running eicrecon!"
-    -     bash reconstruct.sh
+    -     bash benchmarks/u_rho/reconstruct.sh
     - fi
     - echo "Finished reconstruction"
   retry:
