@@ -36,6 +36,10 @@ rule uchannelrho_campaign_raw_get:
 echo "Getting afterburned event-generator file"
 ln {input} {output}
 ls benchmark_output/
+mkdir -p input/u_rho
+cp {output} input/u_rho/
+echo "File in input/u_rho/:"
+ls input/u_rho/
 """
 
 
