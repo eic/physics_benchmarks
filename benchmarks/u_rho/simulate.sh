@@ -10,7 +10,6 @@ else
 fi
 
 # Simulate
-/usr/bin/time -v \
 ddsim --runType batch \
       -v WARNING \
       --numberOfEvents ${JUGGLER_N_EVENTS} \
