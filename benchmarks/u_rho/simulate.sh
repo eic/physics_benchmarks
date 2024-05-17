@@ -1,8 +1,11 @@
 #!/bin/bash
 source strict-mode.sh
 
-source benchmarks/u_rho/setup.config
+source benchmarks/u_rho/setup.config $*
 
+if [ -f ${JUGGLER_IN_FILE} ]; then
+  echo "Input simulation file does ${JUGGLER_IN_FILE} not exist."
+fi
 
 # Simulate
 /usr/bin/time -v \
