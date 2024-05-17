@@ -46,7 +46,7 @@ u_channel_rho:reconstruct:
   stage: reconstruct
   extends: .phy_benchmark
   needs: ["u_channel_rho:simulate"]
-  timeout: 96 hour
+  timeout: 10 hour
   script:
     - echo "Performing reconstruction here!"
     - config_file=benchmarks/u_rho/setup.config
@@ -54,7 +54,8 @@ u_channel_rho:reconstruct:
     - if [ "$USE_SIMULATION_CAMPAIGN" = true ] ; then
     -     echo "Using simulation campaign so skipping this step!"
     - else
-    -     echo "Not using simulation campaign!"
+    -     echo "Running eicrecon!"
+    -     bash reconstruct.sh
     - fi
     - echo "Finished reconstruction"
   retry:
