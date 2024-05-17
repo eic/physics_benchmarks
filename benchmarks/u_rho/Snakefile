@@ -48,24 +48,7 @@ rule uchannelrho_simulate:
     shell:
         """
 echo "Simulating detector response!"
-if [ -f {input} ]; then
-  echo "ERROR: Input simulation file does {input} not exist."
-else
-  echo "GOOD: Input simulation file {input} exists!"
-fi
-# Simulate
-ddsim --runType batch \
-      -v WARNING \
-      --numberOfEvents {params.N_EVENTS} \
-      --part.minimalKineticEnergy 100*GeV  \
-      --filter.tracker edep0 \
-      --compactFile ${DETECTOR_PATH}/${DETECTOR_CONFIG}.xml \
-      --inputFiles {input} \
-      --outputFile  {output}
-if [[ "$?" -ne "0" ]] ; then
-  echo "ERROR running ddsim"
-  exit 1
-fi
+bash benchmarks/u_rho/simulate.sh {input} {output} {params.N_EVENTS}
 """
 
 
