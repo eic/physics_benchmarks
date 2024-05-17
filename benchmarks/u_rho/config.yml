@@ -35,7 +35,7 @@ u_channel_rho:simulate:
     -     echo "Using simulation campaign so skipping this step!"
     - else
     -     echo "Running Geant4"
-    -     ddsim --runType batch --part.minimalKineticEnergy 1000*GeV --filter.tracker edep0 -v WARNING --numberOfEvents 5 --compactFile ${DETECTOR_PATH}/${DETECTOR_CONFIG}.xml --inputFiles benchmark_output/rho_10x100_uChannel_Q2of0to10_hiDiv.hepmc3.tree.root --outputFile benchmark_output/rho_10x100_uChannel_Q2of0to10_hiDiv.hepmc3.tree.detectorsim.root
+    -     bash benchmarks/u_rho/simulate.sh
     - fi
     - echo "Finished simulating detector response"
   retry:
