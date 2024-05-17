@@ -25,8 +25,8 @@ u_channel_rho:generate:
 u_channel_rho:simulate:
   stage: simulate
   extends: .phy_benchmark
-  needs: ["u_channel_rho:generate"]
-  timeout: 96 hour
+  needs: ["common:detector"]
+  timeout: 10 hour
   script:
     - echo "Simulating detector response here!"
     - config_file=benchmarks/u_rho/setup.config
