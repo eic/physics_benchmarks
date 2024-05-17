@@ -17,7 +17,7 @@ u_channel_rho:generate:
     -     echo "Using simulation campaign so skipping this step!"
     - else
     -     echo "Not using simulation campaign so grab raw events from S3!"
-    #-     snakemake --cores 2 benchmark_output/rho_10x100_uChannel_Q2of0to10_hiDiv.hepmc3.tree.root
+    -     snakemake --cores 2 benchmark_output/rho_10x100_uChannel_Q2of0to10_hiDiv.hepmc3.tree.root
     - fi
     - echo "Finished gathering events"
 
@@ -33,7 +33,7 @@ u_channel_rho:simulate:
     - if [ "$USE_SIMULATION_CAMPAIGN" = true ] ; then
     -     echo "Using simulation campaign so skipping this step!"
     - else
-    -     snakemake --cores 2 benchmark_output/rho_10x100_uChannel_Q2of0to10_hiDiv.hepmc3.tree.root
+    #-     snakemake --cores 2 benchmark_output/rho_10x100_uChannel_Q2of0to10_hiDiv.hepmc3.tree.root
     -     echo "Running Geant4"
     -     bash benchmarks/u_rho/simulate.sh
     - fi
