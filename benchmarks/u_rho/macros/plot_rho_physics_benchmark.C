@@ -26,11 +26,11 @@ int setbenchstatus(double eff){
         }
 
         // write out our test data
-        common_bench::write_test(rho_reco_eff_test, "./benchmark_output/u_rho_eff.json");
+        common_bench::write_test(rho_reco_eff_test, "./sim_output/u_rho_eff.json");
 	return 0;
 }
 
-void plot_rho_physics_benchmark(TString filename="./benchmark_output/plot_combined.root"){
+void plot_rho_physics_benchmark(TString filename="./sim_output/plot_combined.root"){
 	Ssiz_t dotPosition = filename.Last('.');
 	TString figure_directory = filename(0, dotPosition);
 	figure_directory += "_figures";	
@@ -140,7 +140,7 @@ void plot_rho_physics_benchmark(TString filename="./benchmark_output/plot_combin
 	w7->AddEntry(h_t_REC, "eSTARlight "+vm_label+" RECO ", "P");
 	w7->Draw("same");
 
-	//c1->Print("./benchmark_output/figures/benchmark_rho_dsigmadt.pdf");
+	//c1->Print("./sim_output/figures/benchmark_rho_dsigmadt.pdf");
 	TString figure1name = figure_directory+"/benchmark_rho_dsigmadt.pdf";
         c1->Print(figure1name);
 
