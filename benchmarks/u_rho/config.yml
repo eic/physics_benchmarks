@@ -33,7 +33,7 @@ u_channel_rho:simulate:
     -     echo "Using simulation campaign so skipping this step!"
     - else
     -     echo "Grabbing raw events from S3"
-    -     snakemake --cores 2 benchmark_output/rho_10x100_uChannel_Q2of0to10_hiDiv.hepmc3.tree.root
+    -     snakemake --cores 2 sim_output/rho_10x100_uChannel_Q2of0to10_hiDiv.hepmc3.tree.root
     -     echo "Running Geant4"
     -     bash benchmarks/u_rho/simulate.sh
     - fi
@@ -77,14 +77,14 @@ u_channel_rho:analyze:
     - source $config_file
     - if [ "$USE_SIMULATION_CAMPAIGN" = true ] ; then
     -     echo "Using simulation campaign!"
-    -     snakemake --cores 2 benchmark_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf
-    -     cp benchmark_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots_figures/*.pdf results/u_rho/
+    -     snakemake --cores 2 sim_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf
+    -     cp sim_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots_figures/*.pdf results/u_rho/
     - else
     -     echo "Not using simulation campaign!"
     -     bash benchmarks/u_rho/analyze.sh
     - fi
     - echo "Finished, copying over json now"
-    - cp benchmark_output/u_rho_eff.json results/u_rho/
+    - cp sim_output/u_rho_eff.json results/u_rho/
     - echo "Finished copying!" 
 
 u_channel_rho:results:
