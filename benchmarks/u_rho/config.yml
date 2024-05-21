@@ -82,6 +82,7 @@ u_channel_rho:analyze:
     - else
     -     echo "Not using simulation campaign!"
     -     bash benchmarks/u_rho/analyze.sh
+    -     cp sim_output/nocampaign/**.pdf results/u_rho/
     - fi
     - echo "Finished, copying over json now"
     - cp sim_output/u_rho_eff.json results/u_rho/
