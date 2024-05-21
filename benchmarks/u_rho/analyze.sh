@@ -3,7 +3,7 @@ source strict-mode.sh
 
 source benchmarks/u_rho/setup.config $*
 
-OUTPUT_PLOTS_DIR=benchmark_output/nocampaign
+OUTPUT_PLOTS_DIR=sim_output/nocampaign
 mkdir -p ${OUTPUT_PLOTS_DIR}
 # Analyze
 /usr/bin/time -v \
@@ -20,4 +20,4 @@ else
     echo "${OUTPUT_PLOTS_DIR}_figures directory already exists."
 fi
 root -l -b -q benchmarks/u_rho/macros/plot_rho_physics_benchmark.C("${OUTPUT_PLOTS_DIR}/plots.root")
-cat benchmark_output/*.json
+cat sim_output/*.json
