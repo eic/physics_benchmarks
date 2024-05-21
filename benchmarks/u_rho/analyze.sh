@@ -1,7 +1,6 @@
 #!/bin/bash
 source strict-mode.sh
 
-
 source benchmarks/u_rho/setup.config $*
 
 OUTPUT_PLOTS_DIR=benchmark_output/nocampaign
