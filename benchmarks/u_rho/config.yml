@@ -33,7 +33,7 @@ u_channel_rho:simulate:
     -     echo "Using simulation campaign so skipping this step!"
     - else
     -     echo "Grabbing raw events from S3"
-    -     snakemake --cores 2 sim_output/rho_10x100_uChannel_Q2of0to10_hiDiv.hepmc3.tree.root
+    -     snakemake --cores 2 ../../sim_output/rho_10x100_uChannel_Q2of0to10_hiDiv.hepmc3.tree.root
     -     echo "Running Geant4"
     -     bash benchmarks/u_rho/simulate.sh
     - fi
