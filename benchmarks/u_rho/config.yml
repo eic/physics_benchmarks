@@ -71,8 +71,7 @@ u_channel_rho:analyze:
     - ["u_channel_rho:reconstruct"]
   script:
     - echo "I will be analyzing events here!"
-    - mkdir results
-    - mkdir results/u_rho
+    - mkdir -p results/u_rho
     - config_file=benchmarks/u_rho/setup.config
     - source $config_file
     - if [ "$USE_SIMULATION_CAMPAIGN" = true ] ; then
