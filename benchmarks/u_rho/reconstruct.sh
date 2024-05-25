@@ -22,4 +22,5 @@ fi
 
 if [ -f jana.dot ] ; then cp jana.dot ${REC_FILE_BASE}.dot ; fi
 
-rootls -t ${REC_FILE_BASE}.tree.edm4eic.root
+#rootls -t ${REC_FILE_BASE}.tree.edm4eic.root
+rootls -t ${REC_FILE}
