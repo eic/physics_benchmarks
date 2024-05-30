@@ -84,7 +84,7 @@ u_channel_rho:analyze:
     -     cp sim_output/nocampaign/plots_figures/*.pdf results/u_rho/
     - fi
     - echo "Finished, copying over json now"
-    - cp benchmarks/u_rho/benchmark_output/u_rho_eff.json results/u_rho/
+    - cp benchmark_output/u_rho_eff.json results/u_rho/
     - echo "Finished copying!" 
 
 u_channel_rho:results:
