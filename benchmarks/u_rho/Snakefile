@@ -89,7 +89,7 @@ ruleorder: uchannelrho_combine > uchannelrho_analysis
 rule uchannelrho_plots:
     input:
         script="benchmarks/u_rho/macros/plot_rho_physics_benchmark.C",
-        plots="../../sim_output/campaign_23.12.0_combined_{N}files_eicrecon.edm4eic.plots.root",
+        plots="sim_output/campaign_23.12.0_combined_{N}files_eicrecon.edm4eic.plots.root",
     output:
         "../../sim_output/campaign_23.12.0_combined_{N}files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf",
     shell:
