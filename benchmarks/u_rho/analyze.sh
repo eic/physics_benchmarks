@@ -21,4 +21,4 @@ else
     echo "${OUTPUT_PLOTS_DIR}/plots_figures directory already exists."
 fi
 root -l -b -q "benchmarks/u_rho/macros/plot_rho_physics_benchmark.C(\"${OUTPUT_PLOTS_DIR}/plots.root\")"
-cat sim_output/*.json
+cat benchmark_output/*.json
