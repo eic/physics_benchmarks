@@ -7,7 +7,7 @@ source benchmarks/u_rho/setup.config $*
 OUTPUT_PLOTS_DIR=sim_output/nocampaign
 mkdir -p ${OUTPUT_PLOTS_DIR}
 # Analyze
-/usr/bin/time -v \
+command time -v \
 root -l -b -q "benchmarks/u_rho/analysis/uchannelrho.cxx+(\"${REC_FILE}\",\"${OUTPUT_PLOTS_DIR}/plots.root\")"
 if [[ "$?" -ne "0" ]] ; then
   echo "ERROR analysis failed"
