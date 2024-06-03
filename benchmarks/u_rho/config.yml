@@ -87,6 +87,7 @@ u_channel_rho:analyze:
     - echo "Finished, copying over json now"
     - cp benchmark_output/u_rho_eff.json results/u_rho/
     - echo "Finished copying!" 
+    - snakemake --cores 1 uchannelrho_compile_manual
 
 u_channel_rho:results:
   stage: collect
@@ -94,4 +95,3 @@ u_channel_rho:results:
   script:
      - collect_tests.py u_rho
      - echo "Finished collecting!"
-     - snakemake --cores 1 uchannelrho_compile_manual
