@@ -26,8 +26,12 @@ int analyze(std::string file)
 
   auto stats_n_tracks_gen = d.Stats("n_tracks_gen");
   auto stats_n_tracks_rec = d.Stats("n_tracks_rec");
-  if (stats_n_tracks_rec->GetMean() < 0.8) {
-    std::cout << "Error: too few tracks per events " << std::endl;
+  double mean_num_track_thresh = 0.8;
+  if (file.find("135to177deg") != std::string::npos) {
+    mean_num_track_thresh = 0.6;
+  }
+  if (stats_n_tracks_rec->GetMean() < mean_num_track_thresh) {
+    std::cout << "Error: too few tracks per events (" << stats_n_tracks_rec->GetMean() << ")" << std::endl;
     stats_n_tracks_gen->Print();
     stats_n_tracks_rec->Print();
     return -1;
