@@ -114,25 +114,27 @@ common:detector:
       - runner_system_failure
 
 include:
-  - local: 'benchmarks/diffractive_vm/config.yml'
+  #- local: 'benchmarks/diffractive_vm/config.yml'
   - local: 'benchmarks/dis/config.yml'
     #- local: 'benchmarks/dvmp/config.yml'
-  - local: 'benchmarks/dvcs/config.yml'
-  - local: 'benchmarks/tcs/config.yml'
-  - local: 'benchmarks/u_omega/config.yml'
+  #- local: 'benchmarks/dvcs/config.yml'
+  #- local: 'benchmarks/tcs/config.yml'
+  #- local: 'benchmarks/u_omega/config.yml'
+  - local: 'benchmarks/u_rho/config.yml'
   - local: 'benchmarks/single/config.yml'
-  - local: 'benchmarks/backgrounds/config.yml'
+  #- local: 'benchmarks/backgrounds/config.yml'
 
 summary:
   stage: finish
   needs:
-    - "diffractive_vm:results"
+    #- "diffractive_vm:results"
     - "dis:results"
-    - "dvcs:results"
-    - "tcs:results"
-    - "u_omega:results"
+    #- "dvcs:results"
+    #- "tcs:results"
+    #- "u_omega:results"
+    - "u_channel_rho:results"
     - "single:results"
-    - "backgrounds:results"
+    #- "backgrounds:results"
   script:
     - collect_benchmarks.py
     - find results -print | sort | tee summary.txt

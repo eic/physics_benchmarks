@@ -1,0 +1,97 @@
+u_channel_rho:compile:
+  stage: compile
+  extends: .compile_benchmark
+  script:
+    - snakemake --cores 1 uchannelrho_compile
+
+u_channel_rho:generate:
+  extends: .phy_benchmark
+  stage: generate
+  needs:
+    - ["u_channel_rho:compile"]
+  script:
+    - echo "Gathering events here!"
+    - config_file=benchmarks/u_rho/setup.config
+    - source $config_file
+    - if [ "$USE_SIMULATION_CAMPAIGN" = true ] ; then
+    -     echo "Using simulation campaign so skipping this step!"
+    - else
+    -     echo "Not using simulation campaign so grab raw events from S3 in the next step!"
+    - fi
+    - echo "Finished gathering events"
+
+u_channel_rho:simulate:
+  stage: simulate
+  extends: .phy_benchmark
+  needs: ["common:detector", "u_channel_rho:generate"]
+  timeout: 10 hour
+  script:
+    - echo "Simulating detector response here!"
+    - config_file=benchmarks/u_rho/setup.config
+    - source $config_file
+    - if [ "$USE_SIMULATION_CAMPAIGN" = true ] ; then
+    -     echo "Using simulation campaign so skipping this step!"
+    - else
+    -     echo "Grabbing raw events from S3"
+    -     snakemake --cores 2 ../../sim_output/rho_10x100_uChannel_Q2of0to10_hiDiv.hepmc3.tree.root
+    -     echo "Running Geant4"
+    -     bash benchmarks/u_rho/simulate.sh
+    - fi
+    - echo "Finished simulating detector response"
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+
+u_channel_rho:reconstruct:
+  stage: reconstruct
+  extends: .phy_benchmark
+  needs: ["u_channel_rho:simulate"]
+  timeout: 10 hour
+  script:
+    - echo "Performing reconstruction here!"
+    - config_file=benchmarks/u_rho/setup.config
+    - source $config_file
+    - if [ "$USE_SIMULATION_CAMPAIGN" = true ] ; then
+    -     echo "Using simulation campaign so skipping this step!"
+    - else
+    -     echo "Running eicrecon!"
+    -     bash benchmarks/u_rho/reconstruct.sh
+    - fi
+    - echo "Finished reconstruction"
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+
+u_channel_rho:analyze:
+  extends: .phy_benchmark
+  stage: analyze
+  needs:
+    - ["u_channel_rho:reconstruct"]
+  script:
+    - echo "I will be analyzing events here!"
+    - mkdir -p results/u_rho
+    - mkdir -p benchmark_output
+    - config_file=benchmarks/u_rho/setup.config
+    - source $config_file
+    - if [ "$USE_SIMULATION_CAMPAIGN" = true ] ; then
+    -     echo "Using simulation campaign!"
+    -     snakemake --cores 2 ../../sim_output/campaign_24.04.0_combined_60files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf
+    -     cp ../../sim_output/campaign_24.04.0_combined_60files_eicrecon.edm4eic.plots_figures/*.pdf results/u_rho/
+    - else
+    -     echo "Not using simulation campaign!"
+    -     bash benchmarks/u_rho/analyze.sh
+    -     cp sim_output/nocampaign/plots_figures/*.pdf results/u_rho/
+    - fi
+    - echo "Finished, copying over json now"
+    - cp benchmark_output/u_rho_eff.json results/u_rho/
+    - echo "Finished copying!" 
+    - snakemake --cores 1 uchannelrho_compile_manual
+
+u_channel_rho:results:
+  stage: collect
+  needs: ["u_channel_rho:analyze"]
+  script:
+     - collect_tests.py u_rho
+     - echo "Finished collecting!"

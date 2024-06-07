@@ -1,0 +1,55 @@
+%====================================================================%
+%                  BENCH.TEX                                       %
+%           Written by Zachary Sweger                              %
+%====================================================================%
+ %\documentclass[final,3p]{elsarticle}
+\documentclass{bench}
+
+
+
+% A useful Journal macro
+\def\Journal#1#2#3#4{{#1} {\bf #2}, #3 (#4)}
+
+\NewDocumentCommand{\codeword}{v}{%
+\texttt{\textcolor{black}{#1}}%
+}
+
+% Some other macros used in the sample text
+\def\st{\scriptstyle}
+\def\sst{\scriptscriptstyle}
+\def\epp{\epsilon^{\prime}}
+\def\vep{\varepsilon}
+\def\vp{{\bf p}}
+\def\be{\begin{equation}}
+\def\ee{\end{equation}}
+\def\bea{\begin{eqnarray}}
+\def\eea{\end{eqnarray}}
+\def\CPbar{\hbox{{\rm CP}\hskip-1.80em{/}}}
+
+
+\begin{document}
+\title{$u$-channel $\rho^0$ Benchmark Figures}
+
+
+\maketitle
+
+\codeword{benchmark_rho_mass.pdf}:
+This figure shows the reconstruction of the $\rho^0$ mass. The \textbf{black} histogram is the invariant mass of each MC $\pi^+\pi^-$ pair after being processed by the afterburner. The \textbf{\textcolor{blue}{blue}} histogram is the invariant mass of reconstructed $\pi^+\pi^-$ pairs with no cuts on acceptance. PDG codes were used to select pions, although this PID is unrealistic. In the absence of PID, the $\rho^0$ will be reconstructed from each oppositely-charged track. The dominant combinatorial background from this approach comes from pairing protons with the $\pi^-$. This $m_{p\pi^-}$ background is shown by the red histogram. The sum of the signal and background is shown in
+\textbf{\textcolor{magenta}{magenta}}.
+
+
+\codeword{benchmark_rho_mass_cuts.pdf}:
+This figure shows $\rho^0$ mass reconstruction for events in which both MC-level pions should be within the B0 acceptance (9$<\theta<$13 mrad with respect to the hadron beam pipe). The \textbf{black} histogram is the invariant mass of each MC $\pi^+\pi^-$ pair which passes this $\theta$ cut after being processed by the afterburner. The \textbf{\textcolor{magenta}{magenta}} histogram is the invariant mass of reconstructed $\pi^+\pi^-$ pairs for these same events. PDG codes were used to select pions. The \textbf{\textcolor{magenta}{magenta}} and \textbf{black} distributions were integrated over $0.6<m<1$ GeV to calculate the $\rho^0$ reconstruction efficiency.
+
+
+\codeword{benchmark_rho_dNdu.pdf}:
+To make this figure, the Mandelstam $u = (p_{\rho^0}-p_{p beam})^2$ was calculated for each event and events were binned in $-u$. The initial momentum of the proton beam is from the afterburned generator-level MC event information. The momentum of the $\rho^0$ was calculated three ways. The first method shown in \textbf{black} reconstructs the $\rho^0$ from afterburned MC-level pions. The second method shown in \textbf{\textcolor{blue}{blue}} reconstructs the $\rho^0$ from reconstructed tracks which are then confirmed to be pions by their PDG codes. The third method shown in \textbf{\textcolor{magenta}{magenta}} is more realistic and reconstructs the $\rho^0$ from each reconstructed p$\pi^-$ and $\pi^+$$\pi^-$ pair. The \textbf{\textcolor{magenta}{magenta}} curve is higher in amplitude than the \textbf{black} because in many events both the proton and $\pi^+$ were successfully reconstructed so there is some double counting. We are interested in the exponential drop-off of the cross section with increasing $-u$. So the distributions were fit over $0.2<-u<1.2$ GeV$^2$ with a function of the form $\sim\exp[\alpha(-u)]$ to evaluate the slope parameter $\alpha$ reconstruction.
+
+\codeword{benchmark_rho_efficiencies.pdf}:
+This figure is the efficiencies of pion reconstruction binned in $p_T$ vs. $\eta$ and $\eta$ vs $\phi$ (azimuth) where $\eta$ is defined with respect to the hadron beam pipe. The kinematics were calculated from the afterburned MC-level pion kinematics. Then the pions were counted as reconstructed if one of reconstructed tracks matched the PDG ID of that pion.
+
+
+\codeword{benchmark_rho_recoquality.pdf}:
+This shows the momentum and $p_T$ reconstruction quality of charged pions. For each reconstructed charged pion, its PDG code was used to identify it. Then the reconstructed momentum and $p_T$ were compared against the afterburned MC-level kinematic information.
+
+\end{document}

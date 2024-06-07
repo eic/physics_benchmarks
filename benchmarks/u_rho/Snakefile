@@ -1,0 +1,133 @@
+import os
+
+from snakemake.remote.S3 import RemoteProvider as S3RemoteProvider
+from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
+
+
+S3 = S3RemoteProvider(
+    endpoint_url="https://dtn01.sdcc.bnl.gov:9000",
+    access_key_id=os.environ["S3_ACCESS_KEY"],
+    secret_access_key=os.environ["S3_SECRET_KEY"],
+)
+
+
+rule uchannelrho_compile:
+    input:
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/u_rho/analysis/uchannelrho_cxx.so",
+
+
+rule uchannelrho_compile_manual:
+    input:
+        tar=HTTPRemoteProvider().remote("https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.15.0/tectonic-0.15.0-x86_64-unknown-linux-musl.tar.gz"),
+        cls=workflow.source_path("bench.cls"),
+        tex=workflow.source_path("bench.tex"),
+    output:
+        temp("tectonic"),
+        cls_tmp=temp("bench.cls"),
+        pdf="results/bench.pdf",
+    shell: """
+tar zxf {input.tar}
+cp {input.cls} {output.cls_tmp} # copy to local directory
+./tectonic {input.tex} --outdir="$(dirname {output.pdf})"
+"""
+
+
+rule uchannelrho_campaign_reco_get:
+    input:
+        lambda wildcards: S3.remote(f"eictest/EPIC/RECO/24.04.0/epic_craterlake/EXCLUSIVE/UCHANNEL_RHO/10x100/rho_10x100_uChannel_Q2of0to10_hiDiv.{wildcards.INDEX}.eicrecon.tree.edm4eic.root"),
+    output:
+        "../../sim_output/campaign_24.04.0_rho_10x100_uChannel_Q2of0to10_hiDiv_{INDEX}_eicrecon.edm4eic.root",
+    shell:
+        """
+echo "Getting file for INDEX {wildcards.INDEX}"
+ln {input} {output}
+"""
+
+rule uchannelrho_campaign_raw_get:
+    input:
+        S3.remote(f"eictest/EPIC/EVGEN/EXCLUSIVE/UCHANNEL_RHO/10x100/rho_10x100_uChannel_Q2of0to10_hiDiv.hepmc3.tree.root"),
+    output:
+        "../../sim_output/rho_10x100_uChannel_Q2of0to10_hiDiv.hepmc3.tree.root",
+    shell:
+        """
+echo "Getting afterburned event-generator file"
+ln {input} {output}
+ls ../../sim_output/*
+"""
+
+rule uchannelrho_simulate:
+    input:
+        "../../sim_output/rho_10x100_uChannel_Q2of0to10_hiDiv.hepmc3.tree.root",
+    output:
+        "../../sim_output/rho_10x100_uChannel_Q2of0to10_hiDiv.hepmc3.tree.detectorsim.root",
+    params:
+        N_EVENTS=100
+    shell:
+        """
+echo "Simulating detector response!"
+bash benchmarks/u_rho/simulate.sh {input} {output} {params.N_EVENTS}
+"""
+
+
+rule uchannelrho_analysis:
+    input:
+        script="benchmarks/u_rho/analysis/uchannelrho.cxx",
+        #script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/u_rho/analysis/uchannelrho_cxx.so",
+        data="../../sim_output/campaign_24.04.0_rho_10x100_uChannel_Q2of0to10_hiDiv_{INDEX}_eicrecon.edm4eic.root",
+    output:
+        plots="../../sim_output/campaign_24.04.0_{INDEX}_eicrecon.edm4eic/plots.root",
+    shell:
+        """
+mkdir -p $(dirname "{output.plots}")
+root -l -b -q '{input.script}+("{input.data}","{output.plots}")'
+"""
+
+
+rule uchannelrho_combine:
+    input:
+        #lambda wildcards: [f"../../sim_output/campaign_24.04.0_{ix:04d}_eicrecon.edm4eic/plots.root" for ix in range(int(wildcards.NUM_FILES))],
+        lambda wildcards: expand(
+           "../../sim_output/campaign_24.04.0_{INDEX:04d}_eicrecon.edm4eic/plots.root",
+           INDEX=range(int(wildcards.N)),
+        ),	
+    wildcard_constraints:
+        N="\d+",
+    output:
+        "../../sim_output/campaign_24.04.0_combined_{N}files_eicrecon.edm4eic.plots.root",
+    shell:
+        """
+hadd {output} {input}
+"""
+
+
+ruleorder: uchannelrho_combine > uchannelrho_analysis
+
+
+rule uchannelrho_plots:
+    input:
+        script="benchmarks/u_rho/macros/plot_rho_physics_benchmark.C",
+        plots="../../sim_output/campaign_24.04.0_combined_{N}files_eicrecon.edm4eic.plots.root",
+    output:
+        "../../sim_output/campaign_24.04.0_combined_{N}files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf",
+    shell:
+        """
+if [ ! -d "{input.plots}_figures" ]; then
+    mkdir "{input.plots}_figures"
+    echo "{input.plots}_figures directory created successfully."
+else
+    echo "{input.plots}_figures directory already exists."
+fi
+root -l -b -q '{input.script}("{input.plots}")'
+cat benchmark_output/*.json
+#cp {input.plots}_figures/*.pdf figures/
+"""
+
+
+# Couple examples of invocation:
+
+rule uchannelrho_run_over_a_campaign:
+    input:
+        "sim_output/figures/plots_benchmark_rho_dsigmadt.pdf",
+    message:
+        "See output in {input[0]}"
+
