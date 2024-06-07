@@ -77,8 +77,8 @@ u_channel_rho:analyze:
     - source $config_file
     - if [ "$USE_SIMULATION_CAMPAIGN" = true ] ; then
     -     echo "Using simulation campaign!"
-    -     snakemake --cores 2 ../../sim_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf
-    -     cp ../../sim_output/campaign_23.12.0_combined_60files_eicrecon.edm4eic.plots_figures/*.pdf results/u_rho/
+    -     snakemake --cores 2 ../../sim_output/campaign_24.05.0_combined_60files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf
+    -     cp ../../sim_output/campaign_24.05.0_combined_60files_eicrecon.edm4eic.plots_figures/*.pdf results/u_rho/
     - else
     -     echo "Not using simulation campaign!"
     -     bash benchmarks/u_rho/analyze.sh
