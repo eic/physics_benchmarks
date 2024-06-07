@@ -34,9 +34,9 @@ cp {input.cls} {output.cls_tmp} # copy to local directory
 
 rule uchannelrho_campaign_reco_get:
     input:
-        lambda wildcards: S3.remote(f"eictest/EPIC/RECO/23.12.0/epic_craterlake/EXCLUSIVE/UCHANNEL_RHO/10x100/rho_10x100_uChannel_Q2of0to10_hiDiv.{wildcards.INDEX}.eicrecon.tree.edm4eic.root"),
+        lambda wildcards: S3.remote(f"eictest/EPIC/RECO/24.05.0/epic_craterlake/EXCLUSIVE/UCHANNEL_RHO/10x100/rho_10x100_uChannel_Q2of0to10_hiDiv.{wildcards.INDEX}.eicrecon.tree.edm4eic.root"),
     output:
-        "../../sim_output/campaign_23.12.0_rho_10x100_uChannel_Q2of0to10_hiDiv_{INDEX}_eicrecon.edm4eic.root",
+        "../../sim_output/campaign_24.05.0_rho_10x100_uChannel_Q2of0to10_hiDiv_{INDEX}_eicrecon.edm4eic.root",
     shell:
         """
 echo "Getting file for INDEX {wildcards.INDEX}"
@@ -73,9 +73,9 @@ rule uchannelrho_analysis:
     input:
         script="benchmarks/u_rho/analysis/uchannelrho.cxx",
         #script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/u_rho/analysis/uchannelrho_cxx.so",
-        data="../../sim_output/campaign_23.12.0_rho_10x100_uChannel_Q2of0to10_hiDiv_{INDEX}_eicrecon.edm4eic.root",
+        data="../../sim_output/campaign_24.05.0_rho_10x100_uChannel_Q2of0to10_hiDiv_{INDEX}_eicrecon.edm4eic.root",
     output:
-        plots="../../sim_output/campaign_23.12.0_{INDEX}_eicrecon.edm4eic/plots.root",
+        plots="../../sim_output/campaign_24.05.0_{INDEX}_eicrecon.edm4eic/plots.root",
     shell:
         """
 mkdir -p $(dirname "{output.plots}")
@@ -85,15 +85,15 @@ root -l -b -q '{input.script}+("{input.data}","{output.plots}")'
 
 rule uchannelrho_combine:
     input:
-        #lambda wildcards: [f"../../sim_output/campaign_23.12.0_{ix:04d}_eicrecon.edm4eic/plots.root" for ix in range(int(wildcards.NUM_FILES))],
+        #lambda wildcards: [f"../../sim_output/campaign_24.05.0_{ix:04d}_eicrecon.edm4eic/plots.root" for ix in range(int(wildcards.NUM_FILES))],
         lambda wildcards: expand(
-           "../../sim_output/campaign_23.12.0_{INDEX:04d}_eicrecon.edm4eic/plots.root",
+           "../../sim_output/campaign_24.05.0_{INDEX:04d}_eicrecon.edm4eic/plots.root",
            INDEX=range(int(wildcards.N)),
         ),	
     wildcard_constraints:
         N="\d+",
     output:
-        "../../sim_output/campaign_23.12.0_combined_{N}files_eicrecon.edm4eic.plots.root",
+        "../../sim_output/campaign_24.05.0_combined_{N}files_eicrecon.edm4eic.plots.root",
     shell:
         """
 hadd {output} {input}
@@ -106,9 +106,9 @@ ruleorder: uchannelrho_combine > uchannelrho_analysis
 rule uchannelrho_plots:
     input:
         script="benchmarks/u_rho/macros/plot_rho_physics_benchmark.C",
-        plots="../../sim_output/campaign_23.12.0_combined_{N}files_eicrecon.edm4eic.plots.root",
+        plots="../../sim_output/campaign_24.05.0_combined_{N}files_eicrecon.edm4eic.plots.root",
     output:
-        "../../sim_output/campaign_23.12.0_combined_{N}files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf",
+        "../../sim_output/campaign_24.05.0_combined_{N}files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf",
     shell:
         """
 if [ ! -d "{input.plots}_figures" ]; then
