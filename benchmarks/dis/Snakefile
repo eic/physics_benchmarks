@@ -1,0 +1,144 @@
+import os
+import shutil
+
+from snakemake.remote.S3 import RemoteProvider as S3RemoteProvider
+
+
+S3 = S3RemoteProvider(
+    endpoint_url="https://eics3.sdcc.bnl.gov:9000",
+    access_key_id=os.environ["S3_ACCESS_KEY"],
+    secret_access_key=os.environ["S3_SECRET_KEY"],
+)
+
+
+rule dis_compile:
+    input:
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/dis/analysis/dis_electrons_cxx.so",
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/dis/analysis/jets_cxx.so",
+
+
+rule dis_get:
+    input:
+        lambda wildcards: S3.remote(f"eictest/EPIC/EVGEN/DIS/NC/{wildcards.EBEAM}x{wildcards.PBEAM}/minQ2={wildcards.MINQ2}/pythia8NCDIS_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}_beamEffects_xAngle=-0.025_hiDiv_vtxfix_1.hepmc"),
+    output:
+        "input/dis/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_vtxfix_1.hepmc",
+    run:
+        shutil.move(input[0], output[0])
+
+
+rule dis_sim:
+    input:
+        hepmc="input/dis/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_vtxfix_1.hepmc",
+        warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
+    output:
+        "sim/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4hep.root",
+    params:
+        N_EVENTS=100
+    shell:
+        """
+ddsim \
+  --runType batch \
+  --part.minimalKineticEnergy 1000*GeV  \
+  --filter.tracker edep0 \
+  -v WARNING \
+  --numberOfEvents {params.N_EVENTS} \
+  --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
+  --inputFiles {input.hepmc} \
+  --outputFile {output}
+"""
+
+
+rule dis_reco_eicrecon:
+    input:
+        "sim/{DETECTOR_CONFIG}/{file}.edm4hep.root",
+    output:
+        "reco/{DETECTOR_CONFIG}/{file}.edm4eic.root",
+    shell:
+        """
+DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file={output}
+"""
+
+
+rule dis_generate_config:
+    input:
+        data="reco/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4eic.root",
+    output:
+        config="results/{DETECTOR_CONFIG}/dis/{EBEAM}on{PBEAM}/minQ2={MINQ2}/config.json",
+    shell: """
+cat > {output.config} <<EOF
+{{
+  "rec_file": "{input.data}",
+  "detector": "{wildcards.DETECTOR_CONFIG}",
+  "output_prefix": "$(dirname "{output.config}")/dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}",
+  "results_path": "$(dirname "{output.config}")",
+  "ebeam": {wildcards.EBEAM},
+  "pbeam": {wildcards.PBEAM},
+  "minq2": {wildcards.MINQ2},
+  "plot_tag": "dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}",
+  "test_tag": "dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}"
+}}
+EOF
+"""
+
+
+rule dis_analysis_electrons:
+    input:
+        script="benchmarks/dis/analysis/dis_electrons.cxx",
+        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/dis/analysis/dis_electrons_cxx.so",
+        data="reco/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4eic.root",
+        config="results/{DETECTOR_CONFIG}/dis/{EBEAM}on{PBEAM}/minQ2={MINQ2}/config.json",
+    output:
+        expand("results/{{DETECTOR_CONFIG}}/dis/{{EBEAM}}on{{PBEAM}}/minQ2={{MINQ2}}/{FILENAME}", FILENAME=[
+          "dis_{EBEAM}x{PBEAM}_minQ2={MINQ2}_logQ2_panels.png",
+          "dis_{EBEAM}x{PBEAM}_minQ2={MINQ2}_logQ2_overlays.png",
+          "dis_{EBEAM}x{PBEAM}_minQ2={MINQ2}_Q2_res_panels.png",
+          "dis_{EBEAM}x{PBEAM}_minQ2={MINQ2}_Q2_res_overlays.png",
+          "dis_{EBEAM}x{PBEAM}_minQ2={MINQ2}_x_panels.png",
+          "dis_{EBEAM}x{PBEAM}_minQ2={MINQ2}_x_overlays.png",
+          "dis_{EBEAM}x{PBEAM}_minQ2={MINQ2}_x_res_panels.png",
+          "dis_{EBEAM}x{PBEAM}_minQ2={MINQ2}_x_res_overlays.png",
+          "dis_{EBEAM}x{PBEAM}_minQ2={MINQ2}dis_electrons.json"
+        ]),
+    shell: """
+root -l -b -q '{input.script}+("{input.config}")'
+"""
+
+
+rule dis_analysis_jets:
+    input:
+        script="benchmarks/dis/analysis/jets.cxx",
+        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/dis/analysis/jets_cxx.so",
+        data="reco/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4eic.root",
+        config="results/{DETECTOR_CONFIG}/dis/{EBEAM}on{PBEAM}/minQ2={MINQ2}/config.json",
+    output:
+        results_path=directory("results/{DETECTOR_CONFIG}/dis/{EBEAM}on{PBEAM}/minQ2={MINQ2}/jets"),
+    shell: """
+mkdir {output.results_path}
+root -l -b -q '{input.script}+("{input.config}")'
+"""
+
+
+rule dis_analysis_kinematics_correlations:
+    input:
+        data="reco/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4eic.root",
+    output:
+        results_path=directory("results/{DETECTOR_CONFIG}/dis/{EBEAM}on{PBEAM}/minQ2={MINQ2}/kinematics_correlations"),
+    params:
+        N_EVENTS=100
+    shell: """
+mkdir {output.results_path}
+python benchmarks/dis/analysis/kinematics_correlations.py --rec_file "{input.data}" --config dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}_{wildcards.DETECTOR_CONFIG} --results_path {output.results_path} --nevents {params.N_EVENTS}
+"""
+
+
+rule dis_analysis_truth_reconstruction:
+    input:
+        data="reco/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4eic.root",
+    output:
+        results_path=directory("results/{DETECTOR_CONFIG}/dis/{EBEAM}on{PBEAM}/minQ2={MINQ2}/truth_reconstruction"),
+    params:
+        N_EVENTS=100
+    shell: """
+mkdir {output.results_path}
+python benchmarks/dis/analysis/truth_reconstruction.py --rec_file "{input.data}" --config dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}_{wildcards.DETECTOR_CONFIG} --results_path $(dirname {output.results_path}) --nevents {params.N_EVENTS}
+"""
