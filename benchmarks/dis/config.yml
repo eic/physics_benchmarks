@@ -2,7 +2,7 @@ dis:compile:
   stage: compile
   extends: .compile_benchmark
   script:
-    - compile_analyses.py dis
+    - snakemake --cores 1 dis_compile
 
 dis:generate:
   stage: generate
@@ -21,7 +21,7 @@ dis:generate:
         MINQ2: [1, 10, 100, 1000]
   timeout: 1 hours
   script:
-    - bash benchmarks/dis/get.sh --config dis_${EBEAM}x${PBEAM}_minQ2=${MINQ2} --ebeam ${EBEAM} --pbeam ${PBEAM} --minq2 ${MINQ2}
+    - snakemake --cores 1 input/dis/pythia8NCDIS_${EBEAM}x${PBEAM}_minQ2=${MINQ2}_beamEffects_xAngle=-0.025_hiDiv_vtxfix_1.hepmc
 
 dis:simulate:
   stage: simulate
@@ -40,7 +40,7 @@ dis:simulate:
         MINQ2: [1, 10, 100, 1000]
   timeout: 2 hours
   script:
-    - bash benchmarks/dis/dis.sh --config dis_${EBEAM}x${PBEAM}_minQ2=${MINQ2} --ebeam ${EBEAM} --pbeam ${PBEAM} --minq2 ${MINQ2}
+    - snakemake --cores 1 results/epic_craterlake/dis/${EBEAM}on${PBEAM}/minQ2=${MINQ2}/dis_${EBEAM}x${PBEAM}_minQ2=${MINQ2}dis_electrons.json results/epic_craterlake/dis/${EBEAM}on${PBEAM}/minQ2=${MINQ2}/kinematics_correlations results/epic_craterlake/dis/${EBEAM}on${PBEAM}/minQ2=${MINQ2}/truth_reconstruction
   retry:
     max: 2
     when:
