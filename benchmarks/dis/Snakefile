@@ -1,14 +1,4 @@
-import os
 import shutil
-
-from snakemake.remote.S3 import RemoteProvider as S3RemoteProvider
-
-
-S3 = S3RemoteProvider(
-    endpoint_url="https://eics3.sdcc.bnl.gov:9000",
-    access_key_id=os.environ["S3_ACCESS_KEY"],
-    secret_access_key=os.environ["S3_SECRET_KEY"],
-)
 
 
 rule dis_compile:
@@ -17,23 +7,13 @@ rule dis_compile:
         ROOT_BUILD_DIR_PREFIX + "benchmarks/dis/analysis/jets_cxx.so",
 
 
-rule dis_get:
-    input:
-        lambda wildcards: S3.remote(f"eictest/EPIC/EVGEN/DIS/NC/{wildcards.EBEAM}x{wildcards.PBEAM}/minQ2={wildcards.MINQ2}/pythia8NCDIS_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}_beamEffects_xAngle=-0.025_hiDiv_vtxfix_1.hepmc"),
-    output:
-        "input/dis/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_vtxfix_1.hepmc",
-    run:
-        shutil.move(input[0], output[0])
-
-
 rule dis_sim:
     input:
-        hepmc="input/dis/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_vtxfix_1.hepmc",
         warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
     output:
         "sim/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4hep.root",
     params:
-        N_EVENTS=100
+        N_EVENTS=100,
     shell:
         """
 ddsim \
@@ -43,7 +23,7 @@ ddsim \
   -v WARNING \
   --numberOfEvents {params.N_EVENTS} \
   --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
-  --inputFiles {input.hepmc} \
+  --inputFiles root://dtn-eic.jlab.org//work/eic2/EPIC/EVGEN/DIS/NC/{wildcards.EBEAM}x{wildcards.PBEAM}/minQ2={wildcards.MINQ2}/pythia8NCDIS_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}_beamEffects_xAngle=-0.025_hiDiv_vtxfix_1.hepmc3.tree.root \
   --outputFile {output}
 """
 
