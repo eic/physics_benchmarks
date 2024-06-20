@@ -4,29 +4,10 @@ dis:compile:
   script:
     - snakemake --cores 1 dis_compile
 
-dis:generate:
-  stage: generate
-  extends: .phy_benchmark
-  needs: ["common:detector", "dis:compile"]
-  parallel:
-    matrix:
-      - EBEAM: 5
-        PBEAM: 41
-        MINQ2: [1, 10, 100]
-      - EBEAM: 10
-        PBEAM: 100
-        MINQ2: [1, 10, 100, 1000]
-      - EBEAM: 18
-        PBEAM: 275
-        MINQ2: [1, 10, 100, 1000]
-  timeout: 1 hours
-  script:
-    - snakemake --cores 1 input/dis/pythia8NCDIS_${EBEAM}x${PBEAM}_minQ2=${MINQ2}_beamEffects_xAngle=-0.025_hiDiv_vtxfix_1.hepmc
-
 dis:simulate:
   stage: simulate
   extends: .phy_benchmark
-  needs: ["dis:generate"]
+  needs: ["common:detector", "dis:compile"]
   parallel:
     matrix:
       - EBEAM: 5
