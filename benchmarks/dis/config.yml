@@ -2,10 +2,10 @@ dis:compile:
   stage: compile
   extends: .compile_benchmark
   script:
-    - compile_analyses.py dis
+    - snakemake --cores 1 dis_compile
 
-dis:generate:
-  stage: generate
+dis:simulate:
+  stage: simulate
   extends: .phy_benchmark
   needs: ["common:detector", "dis:compile"]
   parallel:
@@ -19,28 +19,9 @@ dis:generate:
       - EBEAM: 18
         PBEAM: 275
         MINQ2: [1, 10, 100, 1000]
-  timeout: 1 hours
+  timeout: 2 hours
   script:
-    - bash benchmarks/dis/get.sh --config dis_${EBEAM}x${PBEAM}_minQ2=${MINQ2} --ebeam ${EBEAM} --pbeam ${PBEAM} --minq2 ${MINQ2}
-
-dis:simulate:
-  stage: simulate
-  extends: .phy_benchmark
-  needs: ["dis:generate"]
-  parallel:
-    matrix:
-      - EBEAM: 5
-        PBEAM: 41
-        MINQ2: [1, 10, 100]
-      - EBEAM: 10
-        PBEAM: 100
-        MINQ2: [1, 10, 100, 1000]
-      - EBEAM: 18
-        PBEAM: 275
-        MINQ2: [1, 10, 100, 1000]
-  timeout: 96 hour
-  script:
-    - bash benchmarks/dis/dis.sh --config dis_${EBEAM}x${PBEAM}_minQ2=${MINQ2} --ebeam ${EBEAM} --pbeam ${PBEAM} --minq2 ${MINQ2}
+    - snakemake --cores 1 results/epic_craterlake/dis/${EBEAM}on${PBEAM}/minQ2=${MINQ2}/dis_${EBEAM}x${PBEAM}_minQ2=${MINQ2}dis_electrons.json results/epic_craterlake/dis/${EBEAM}on${PBEAM}/minQ2=${MINQ2}/kinematics_correlations results/epic_craterlake/dis/${EBEAM}on${PBEAM}/minQ2=${MINQ2}/truth_reconstruction
   retry:
     max: 2
     when:
