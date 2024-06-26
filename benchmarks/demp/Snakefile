@@ -1,0 +1,54 @@
+import os
+import shutil
+
+from snakemake.remote.S3 import RemoteProvider as S3RemoteProvider
+
+
+S3 = S3RemoteProvider(
+    endpoint_url="https://eics3.sdcc.bnl.gov:9000",
+    access_key_id=os.environ["S3_ACCESS_KEY"],
+    secret_access_key=os.environ["S3_SECRET_KEY"],
+)
+
+
+rule demp_get:
+    input:
+        S3.remote("eictest/EPIC/EVGEN/EXCLUSIVE/DEMP/{EBEAM}on{PBEAM}/eic_DEMPGen_{EBEAM}on{PBEAM}_ip6_pi+_1B_{INDEX}.hepmc"),
+    output:
+        "input/demp/eic_DEMPGen_{EBEAM}on{PBEAM}_ip6_pi+_1B_{INDEX}.hepmc",
+    run:
+        shutil.move(input[0], output[0])
+
+
+rule demp_sim:
+    input:
+        hepmc="input/demp/eic_DEMPGen_{EBEAM}on{PBEAM}_ip6_pi+_1B_{INDEX}.hepmc",
+        warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
+    output:
+        "sim/{DETECTOR_CONFIG}/demp_{EBEAM}on{PBEAM}_{INDEX}.edm4hep.root",
+    params:
+        N_EVENTS=100
+    shell:
+        """
+ddsim \
+  --runType batch \
+  --part.minimalKineticEnergy 100*GeV  \
+  --filter.tracker edep0 \
+  -v WARNING \
+  --numberOfEvents {params.N_EVENTS} \
+  --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
+  --inputFiles {input.hepmc} \
+  --outputFile {output}
+"""
+
+
+rule demp_reco:
+    input:
+        "sim/{DETECTOR_CONFIG}/demp_{EBEAM}on{PBEAM}_{INDEX}.edm4hep.root",
+    output:
+        "reco/{DETECTOR_CONFIG}/demp_{EBEAM}on{PBEAM}_{INDEX}.edm4eic.root",
+    shell:
+        """
+DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file={output}
+"""
+
