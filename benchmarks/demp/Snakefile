@@ -11,6 +11,11 @@ S3 = S3RemoteProvider(
 )
 
 
+rule demp_compile:
+    input:
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/demp/analysis/demp_analysis_cxx.so",
+
+
 rule demp_get:
     input:
         S3.remote("eictest/EPIC/EVGEN/EXCLUSIVE/DEMP/{EBEAM}on{PBEAM}/eic_DEMPGen_{EBEAM}on{PBEAM}_ip6_pi+_1B_{INDEX}.hepmc"),
