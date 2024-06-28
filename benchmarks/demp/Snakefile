@@ -57,3 +57,30 @@ rule demp_reco:
 DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file={output}
 """
 
+
+rule demp_analysis:
+    input:
+        script="benchmarks/demp/analysis/demp_analysis.cxx",
+        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/demp/analysis/demp_analysis_cxx.so",
+        data="reco/{DETECTOR_CONFIG}/demp_{EBEAM}on{PBEAM}_{INDEX}.edm4eic.root",
+    output:
+        config="results/{DETECTOR_CONFIG}/demp/demp_{EBEAM}on{PBEAM}_{INDEX}/config.json",
+        hists="results/{DETECTOR_CONFIG}/demp/demp_{EBEAM}on{PBEAM}_{INDEX}/hists.root",
+	plots="results/{DETECTOR_CONFIG}/demp/demp_{EBEAM}on{PBEAM}_{INDEX}/plots.pdf"
+    shell:
+        """
+cat > {output.config} <<EOF
+{{
+  "rec_file": "{input.data}",
+  "detector": "{wildcards.DETECTOR_CONFIG}",
+  "ebeam": {wildcards.EBEAM},
+  "pbeam": {wildcards.PBEAM},
+  "output_prefix_hists": "$(dirname "{output.hists}")/hists",
+  "output_prefix_plots": "$(dirname "{output.plots}")/plots"
+}}
+EOF
+mkdir -p $(dirname "{output.hists}")
+mkdir -p $(dirname "{output.plots}")
+root -l -b -q '{input.script}+("{output.config}")'
+"""
+
