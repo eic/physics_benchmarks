@@ -66,15 +66,15 @@ TTreeReaderArray<double> reco_y_array = {tree_reader, "MCParticles.endpoint.y"};
 TTreeReaderArray<double> reco_z_array = {tree_reader, "MCParticles.endpoint.z"};//= {tree_reader, "B0TrackerHits.position.z"};
 
 // Reconstructed particles pz array for each reconstructed particle
-TTreeReaderArray<float> reco_px_array = {tree_reader, "ReconstructedChargedParticles.momentum.x"};
-TTreeReaderArray<float> reco_py_array = {tree_reader, "ReconstructedChargedParticles.momentum.y"};
-TTreeReaderArray<float> reco_pz_array = {tree_reader, "ReconstructedChargedParticles.momentum.z"};
-TTreeReaderArray<float> reco_charge_array = {tree_reader, "ReconstructedChargedParticles.charge"};
+TTreeReaderArray<float> reco_px_array = {tree_reader, "ReconstructedChargedRealPIDParticles.momentum.x"};
+TTreeReaderArray<float> reco_py_array = {tree_reader, "ReconstructedChargedRealPIDParticles.momentum.y"};
+TTreeReaderArray<float> reco_pz_array = {tree_reader, "ReconstructedChargedRealPIDParticles.momentum.z"};
+TTreeReaderArray<float> reco_charge_array = {tree_reader, "ReconstructedChargedRealPIDParticles.charge"};
 
 TTreeReaderArray<unsigned int> rec_id = {tree_reader, "ReconstructedChargedParticleAssociations.recID"};
 TTreeReaderArray<unsigned int> sim_id = {tree_reader, "ReconstructedChargedParticleAssociations.simID"};
 
-TTreeReaderArray<int> reco_PDG = {tree_reader,"ReconstructedChargedParticles.PDG"};
+TTreeReaderArray<int> reco_PDG = {tree_reader,"ReconstructedChargedRealPIDParticles.PDG"};
 
 TString output_name_dir = outputfile;
 cout << "Output file = " << output_name_dir << endl;
