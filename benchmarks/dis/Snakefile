@@ -30,9 +30,9 @@ ddsim \
 
 rule dis_reco_eicrecon:
     input:
-        "sim/{DETECTOR_CONFIG}/{file}.edm4hep.root",
+        "sim/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4hep.root",
     output:
-        "reco/{DETECTOR_CONFIG}/{file}.edm4eic.root",
+        "reco/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4eic.root",
     shell:
         """
 DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file={output}
