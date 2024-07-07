@@ -1,14 +1,4 @@
 import os
-import shutil
-
-from snakemake.remote.S3 import RemoteProvider as S3RemoteProvider
-
-
-S3 = S3RemoteProvider(
-    endpoint_url="https://eics3.sdcc.bnl.gov:9000",
-    access_key_id=os.environ["S3_ACCESS_KEY"],
-    secret_access_key=os.environ["S3_SECRET_KEY"],
-)
 
 
 rule demp_compile:
@@ -16,18 +6,9 @@ rule demp_compile:
         ROOT_BUILD_DIR_PREFIX + "benchmarks/demp/analysis/demp_analysis_cxx.so",
         ROOT_BUILD_DIR_PREFIX + "benchmarks/demp/analysis/demp_plots_cxx.so",
 
-rule demp_get:
-    input:
-        S3.remote("eictest/EPIC/EVGEN/EXCLUSIVE/DEMP/{EBEAM}on{PBEAM}/eic_DEMPGen_{EBEAM}on{PBEAM}_ip6_pi+_1B_{INDEX}.hepmc"),
-    output:
-        "input/demp/eic_DEMPGen_{EBEAM}on{PBEAM}_ip6_pi+_1B_{INDEX}.hepmc",
-    run:
-        shutil.move(input[0], output[0])
-
 
 rule demp_sim:
     input:
-        hepmc="input/demp/eic_DEMPGen_{EBEAM}on{PBEAM}_ip6_pi+_1B_{INDEX}.hepmc",
         warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
     output:
         "sim/{DETECTOR_CONFIG}/demp_{EBEAM}on{PBEAM}_{INDEX}.edm4hep.root",
@@ -46,7 +27,7 @@ ddsim \
   -v WARNING \
   --numberOfEvents {params.N_EVENTS} \
   --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
-  --inputFiles {input.hepmc} \
+  --inputFiles root://dtn-eic.jlab.org//work/eic2/EPIC/EVGEN/EXCLUSIVE/DEMP/{wildcards.EBEAM}on{wildcards.PBEAM}/eic_DEMPGen_{wildcards.EBEAM}on{wildcards.PBEAM}_ip6_pi+_1B_{wildcards.INDEX}.hepmc3.tree.root \
   --outputFile {output}
 """
 
