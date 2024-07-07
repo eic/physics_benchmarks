@@ -1,14 +1,5 @@
 import os
 
-from snakemake.remote.S3 import RemoteProvider as S3RemoteProvider
-
-
-S3 = S3RemoteProvider(
-    endpoint_url="https://eics3.sdcc.bnl.gov:9000",
-    access_key_id=os.environ["S3_ACCESS_KEY"],
-    secret_access_key=os.environ["S3_SECRET_KEY"],
-)
-
 
 rule diffractive_vm_compile:
     input:
@@ -16,31 +7,19 @@ rule diffractive_vm_compile:
         ROOT_BUILD_DIR_PREFIX + "benchmarks/diffractive_vm/analysis/plot_cxx.so",
 
 
-rule diffractive_vm_get:
-    input:
-        lambda wildcards: S3.remote(f"eictest/EPIC/EVGEN/EXCLUSIVE/DIFFRACTIVE_{wildcards.PARTICLE.upper()}_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_{wildcards.PARTICLE}_ab_eAu_1_{wildcards.INDEX}.hepmc.gz"),
-    output:
-        "input/diffractive_vm/sartre_{PARTICLE}_{INDEX}.hepmc",
-    shell:
-        """
-gunzip -c {input} > {output}
-"""
-
-
 rule diffractive_vm_campaign_reco_get:
     input:
-        lambda wildcards: S3.remote(f"eictest/EPIC/RECO/{wildcards.RELEASE_TAG}/{wildcards.DETECTOR_CONFIG}/EXCLUSIVE/DIFFRACTIVE_{wildcards.PARTICLE.upper()}_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_{wildcards.PARTICLE}_ab_eAu_1.0{wildcards.INDEX}.eicrecon.tree.edm4eic.root")
+        lambda wildcards: f"EPIC/RECO/{wildcards.RELEASE_TAG}/{wildcards.DETECTOR_CONFIG}/EXCLUSIVE/DIFFRACTIVE_{wildcards.PARTICLE.upper()}_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_{wildcards.PARTICLE}_ab_eAu_1.0{wildcards.INDEX}.eicrecon.tree.edm4eic.root",
     output:
-        "reco/{DETECTOR_CONFIG}/campaign_{RELEASE_TAG}_sartre_{PARTICLE}_{INDEX}.edm4eic.root",
+        temp("reco/{DETECTOR_CONFIG}/campaign_{RELEASE_TAG}_sartre_{PARTICLE}_{INDEX}.edm4eic.root"),
     shell:
         """
-ln {input} {output}
+mv {input} {output}
 """
 
 
 rule diffractive_vm_sim:
     input:
-        hepmc="input/diffractive_vm/sartre_{PARTICLE}_{INDEX}.hepmc",
         warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
     output:
         "sim/{DETECTOR_CONFIG}/sartre_{PARTICLE}_{INDEX}.edm4hep.root",
@@ -53,9 +32,10 @@ ddsim \
   --part.minimalKineticEnergy 100*GeV  \
   --filter.tracker edep0 \
   -v WARNING \
+  --skipNEvents $( command expr "{wildcards.INDEX}" "*" "{params.N_EVENTS}" ) \
   --numberOfEvents {params.N_EVENTS} \
   --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
-  --inputFiles {input.hepmc} \
+  --inputFiles root://dtn-eic.jlab.org//work/eic2/EPIC/EVGEN/EXCLUSIVE/DIFFRACTIVE_$( echo -n "{wildcards.PARTICLE}" | tr "[:lower:]" "[:upper:]" )_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_{wildcards.PARTICLE}_ab_eAu_1.hepmc3.tree.root \
   --outputFile {output}
 """
 
