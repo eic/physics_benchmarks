@@ -1,0 +1,3 @@
+NameError in file /w/eic-scshelf2104/users/preet/ePIC_tutorial/physics_benchmarks/benchmarks/demp/Snakefile, line 6:
+name 'ROOT_BUILD_DIR_PREFIX' is not defined
+  File "/w/eic-scshelf2104/users/preet/ePIC_tutorial/physics_benchmarks/benchmarks/demp/Snakefile", line 6, in <module>

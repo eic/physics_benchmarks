@@ -1,0 +1,26 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job                 count    min threads    max threads
+----------------  -------  -------------  -------------
+demp_analysis           5              1              1
+demp_combine            1              1              1
+demp_plots              1              1              1
+demp_reco               5              1              1
+demp_run_locally        1              1              1
+demp_sim                5              1              1
+total                  18              1              1
+
+Select jobs to execute...
+
+[Mon Jul  8 14:48:05 2024]
+rule demp_sim:
+    input: warmup/epic.edm4hep.root
+    output: sim/epic/demp_5on100_1.edm4hep.root
+    jobid: 7
+    reason: Missing output files: sim/epic/demp_5on100_1.edm4hep.root
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=100, INDEX=1
+    resources: tmpdir=/tmp
+

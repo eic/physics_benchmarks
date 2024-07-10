@@ -1,0 +1,269 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 5
+Rules claiming more threads will be scaled down.
+Job stats:
+job                 count    min threads    max threads
+----------------  -------  -------------  -------------
+demp_analysis           5              1              1
+demp_combine            1              1              1
+demp_plots              1              1              1
+demp_reco               5              1              1
+demp_run_locally        1              1              1
+demp_sim                5              1              1
+warmup_run              1              1              1
+total                  19              1              1
+
+Select jobs to execute...
+
+[Mon Jul  8 13:47:38 2024]
+Job 8: Ensuring that calibrations/fieldmaps are available for epic
+Reason: Missing output files: warmup/epic.edm4hep.root
+
+[Mon Jul  8 13:49:28 2024]
+Finished job 8.
+1 of 19 steps (5%) done
+Select jobs to execute...
+
+[Mon Jul  8 13:49:28 2024]
+rule demp_sim:
+    input: warmup/epic.edm4hep.root
+    output: sim/epic/demp_5on41_1.edm4hep.root
+    jobid: 7
+    reason: Missing output files: sim/epic/demp_5on41_1.edm4hep.root; Input files updated by another job: warmup/epic.edm4hep.root
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=1
+    resources: tmpdir=/tmp
+
+
+[Mon Jul  8 13:49:28 2024]
+rule demp_sim:
+    input: warmup/epic.edm4hep.root
+    output: sim/epic/demp_5on41_4.edm4hep.root
+    jobid: 17
+    reason: Missing output files: sim/epic/demp_5on41_4.edm4hep.root; Input files updated by another job: warmup/epic.edm4hep.root
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=4
+    resources: tmpdir=/tmp
+
+
+[Mon Jul  8 13:49:28 2024]
+rule demp_sim:
+    input: warmup/epic.edm4hep.root
+    output: sim/epic/demp_5on41_3.edm4hep.root
+    jobid: 14
+    reason: Missing output files: sim/epic/demp_5on41_3.edm4hep.root; Input files updated by another job: warmup/epic.edm4hep.root
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=3
+    resources: tmpdir=/tmp
+
+
+[Mon Jul  8 13:49:28 2024]
+rule demp_sim:
+    input: warmup/epic.edm4hep.root
+    output: sim/epic/demp_5on41_5.edm4hep.root
+    jobid: 20
+    reason: Missing output files: sim/epic/demp_5on41_5.edm4hep.root; Input files updated by another job: warmup/epic.edm4hep.root
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=5
+    resources: tmpdir=/tmp
+
+
+[Mon Jul  8 13:49:28 2024]
+rule demp_sim:
+    input: warmup/epic.edm4hep.root
+    output: sim/epic/demp_5on41_2.edm4hep.root
+    jobid: 11
+    reason: Missing output files: sim/epic/demp_5on41_2.edm4hep.root; Input files updated by another job: warmup/epic.edm4hep.root
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=2
+    resources: tmpdir=/tmp
+
+[Mon Jul  8 13:54:47 2024]
+Finished job 7.
+2 of 19 steps (11%) done
+Select jobs to execute...
+
+[Mon Jul  8 13:54:47 2024]
+rule demp_reco:
+    input: sim/epic/demp_5on41_1.edm4hep.root
+    output: reco/epic/demp_5on41_1.edm4eic.root
+    jobid: 6
+    reason: Missing output files: reco/epic/demp_5on41_1.edm4eic.root; Input files updated by another job: sim/epic/demp_5on41_1.edm4hep.root
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=1
+    resources: tmpdir=/tmp
+
+[Mon Jul  8 13:54:48 2024]
+Finished job 14.
+3 of 19 steps (16%) done
+Select jobs to execute...
+
+[Mon Jul  8 13:54:48 2024]
+rule demp_reco:
+    input: sim/epic/demp_5on41_3.edm4hep.root
+    output: reco/epic/demp_5on41_3.edm4eic.root
+    jobid: 13
+    reason: Missing output files: reco/epic/demp_5on41_3.edm4eic.root; Input files updated by another job: sim/epic/demp_5on41_3.edm4hep.root
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=3
+    resources: tmpdir=/tmp
+
+[Mon Jul  8 13:54:57 2024]
+Finished job 17.
+4 of 19 steps (21%) done
+Select jobs to execute...
+
+[Mon Jul  8 13:54:57 2024]
+rule demp_reco:
+    input: sim/epic/demp_5on41_4.edm4hep.root
+    output: reco/epic/demp_5on41_4.edm4eic.root
+    jobid: 16
+    reason: Missing output files: reco/epic/demp_5on41_4.edm4eic.root; Input files updated by another job: sim/epic/demp_5on41_4.edm4hep.root
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=4
+    resources: tmpdir=/tmp
+
+[Mon Jul  8 13:54:58 2024]
+Finished job 11.
+5 of 19 steps (26%) done
+Select jobs to execute...
+
+[Mon Jul  8 13:54:58 2024]
+rule demp_reco:
+    input: sim/epic/demp_5on41_2.edm4hep.root
+    output: reco/epic/demp_5on41_2.edm4eic.root
+    jobid: 10
+    reason: Missing output files: reco/epic/demp_5on41_2.edm4eic.root; Input files updated by another job: sim/epic/demp_5on41_2.edm4hep.root
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=2
+    resources: tmpdir=/tmp
+
+[Mon Jul  8 13:55:07 2024]
+Finished job 20.
+6 of 19 steps (32%) done
+Select jobs to execute...
+
+[Mon Jul  8 13:55:07 2024]
+rule demp_reco:
+    input: sim/epic/demp_5on41_5.edm4hep.root
+    output: reco/epic/demp_5on41_5.edm4eic.root
+    jobid: 19
+    reason: Missing output files: reco/epic/demp_5on41_5.edm4eic.root; Input files updated by another job: sim/epic/demp_5on41_5.edm4hep.root
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=5
+    resources: tmpdir=/tmp
+
+[Mon Jul  8 13:57:19 2024]
+Finished job 13.
+7 of 19 steps (37%) done
+Select jobs to execute...
+
+[Mon Jul  8 13:57:19 2024]
+rule demp_analysis:
+    input: benchmarks/demp/analysis/demp_analysis.cxx, benchmarks/demp/analysis/demp_analysis_cxx.so, reco/epic/demp_5on41_3.edm4eic.root
+    output: results/epic/demp/demp_5on41_3/config.json, results/epic/demp/demp_5on41_3/hists.root
+    jobid: 12
+    reason: Missing output files: results/epic/demp/demp_5on41_3/hists.root; Input files updated by another job: reco/epic/demp_5on41_3.edm4eic.root
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=3
+    resources: tmpdir=/tmp
+
+[Mon Jul  8 13:57:22 2024]
+Finished job 12.
+8 of 19 steps (42%) done
+[Mon Jul  8 13:57:23 2024]
+Finished job 10.
+9 of 19 steps (47%) done
+Select jobs to execute...
+
+[Mon Jul  8 13:57:23 2024]
+rule demp_analysis:
+    input: benchmarks/demp/analysis/demp_analysis.cxx, benchmarks/demp/analysis/demp_analysis_cxx.so, reco/epic/demp_5on41_2.edm4eic.root
+    output: results/epic/demp/demp_5on41_2/config.json, results/epic/demp/demp_5on41_2/hists.root
+    jobid: 9
+    reason: Missing output files: results/epic/demp/demp_5on41_2/hists.root; Input files updated by another job: reco/epic/demp_5on41_2.edm4eic.root
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=2
+    resources: tmpdir=/tmp
+
+[Mon Jul  8 13:57:23 2024]
+Finished job 6.
+10 of 19 steps (53%) done
+Select jobs to execute...
+
+[Mon Jul  8 13:57:23 2024]
+rule demp_analysis:
+    input: benchmarks/demp/analysis/demp_analysis.cxx, benchmarks/demp/analysis/demp_analysis_cxx.so, reco/epic/demp_5on41_1.edm4eic.root
+    output: results/epic/demp/demp_5on41_1/config.json, results/epic/demp/demp_5on41_1/hists.root
+    jobid: 4
+    reason: Missing output files: results/epic/demp/demp_5on41_1/hists.root; Input files updated by another job: reco/epic/demp_5on41_1.edm4eic.root
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=1
+    resources: tmpdir=/tmp
+
+[Mon Jul  8 13:57:25 2024]
+Finished job 9.
+11 of 19 steps (58%) done
+[Mon Jul  8 13:57:26 2024]
+Finished job 16.
+12 of 19 steps (63%) done
+Select jobs to execute...
+
+[Mon Jul  8 13:57:26 2024]
+rule demp_analysis:
+    input: benchmarks/demp/analysis/demp_analysis.cxx, benchmarks/demp/analysis/demp_analysis_cxx.so, reco/epic/demp_5on41_4.edm4eic.root
+    output: results/epic/demp/demp_5on41_4/config.json, results/epic/demp/demp_5on41_4/hists.root
+    jobid: 15
+    reason: Missing output files: results/epic/demp/demp_5on41_4/hists.root; Input files updated by another job: reco/epic/demp_5on41_4.edm4eic.root
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=4
+    resources: tmpdir=/tmp
+
+[Mon Jul  8 13:57:26 2024]
+Finished job 4.
+13 of 19 steps (68%) done
+[Mon Jul  8 13:57:28 2024]
+Finished job 15.
+14 of 19 steps (74%) done
+[Mon Jul  8 13:57:34 2024]
+Finished job 19.
+15 of 19 steps (79%) done
+Select jobs to execute...
+
+[Mon Jul  8 13:57:34 2024]
+rule demp_analysis:
+    input: benchmarks/demp/analysis/demp_analysis.cxx, benchmarks/demp/analysis/demp_analysis_cxx.so, reco/epic/demp_5on41_5.edm4eic.root
+    output: results/epic/demp/demp_5on41_5/config.json, results/epic/demp/demp_5on41_5/hists.root
+    jobid: 18
+    reason: Missing output files: results/epic/demp/demp_5on41_5/hists.root; Input files updated by another job: reco/epic/demp_5on41_5.edm4eic.root
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=5
+    resources: tmpdir=/tmp
+
+[Mon Jul  8 13:57:37 2024]
+Finished job 18.
+16 of 19 steps (84%) done
+Select jobs to execute...
+
+[Mon Jul  8 13:57:37 2024]
+rule demp_combine:
+    input: results/epic/demp/demp_5on41_1/hists.root, results/epic/demp/demp_5on41_2/hists.root, results/epic/demp/demp_5on41_3/hists.root, results/epic/demp/demp_5on41_4/hists.root, results/epic/demp/demp_5on41_5/hists.root
+    output: results/epic/demp/demp_5on41_combined_5/config.json, results/epic/demp/demp_5on41_combined_5/hists.root
+    jobid: 3
+    reason: Missing output files: results/epic/demp/demp_5on41_combined_5/config.json; Input files updated by another job: results/epic/demp/demp_5on41_3/hists.root, results/epic/demp/demp_5on41_1/hists.root, results/epic/demp/demp_5on41_5/hists.root, results/epic/demp/demp_5on41_4/hists.root, results/epic/demp/demp_5on41_2/hists.root
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, NUM_FILES=5
+    resources: tmpdir=/tmp
+
+[Mon Jul  8 13:57:38 2024]
+Finished job 3.
+17 of 19 steps (89%) done
+Select jobs to execute...
+
+[Mon Jul  8 13:57:38 2024]
+rule demp_plots:
+    input: benchmarks/demp/analysis/demp_plots.cxx, benchmarks/demp/analysis/demp_plots_cxx.so, results/epic/demp/demp_5on41_combined_5/config.json
+    output: results/epic/demp/demp_5on41_combined_5/plots.pdf
+    jobid: 1
+    reason: Missing output files: results/epic/demp/demp_5on41_combined_5/plots.pdf; Input files updated by another job: results/epic/demp/demp_5on41_combined_5/config.json
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, NUM_FILES=5
+    resources: tmpdir=/tmp
+
+[Mon Jul  8 13:57:41 2024]
+Finished job 1.
+18 of 19 steps (95%) done
+Select jobs to execute...
+
+[Mon Jul  8 13:57:41 2024]
+Job 0: See output in results/epic/demp/demp_5on41_combined_5/plots.pdf
+Reason: Input files updated by another job: results/epic/demp/demp_5on41_combined_5/plots.pdf
+
+[Mon Jul  8 13:57:41 2024]
+Finished job 0.
+19 of 19 steps (100%) done
+Complete log: .snakemake/log/2024-07-08T134735.617949.snakemake.log

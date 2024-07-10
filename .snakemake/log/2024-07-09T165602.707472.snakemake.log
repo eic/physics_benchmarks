@@ -1,0 +1,117 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 5
+Rules claiming more threads will be scaled down.
+Job stats:
+job                 count    min threads    max threads
+----------------  -------  -------------  -------------
+demp_analysis           5              1              1
+demp_combine            1              1              1
+demp_plots              1              1              1
+demp_run_locally        1              1              1
+total                   8              1              1
+
+Select jobs to execute...
+
+[Tue Jul  9 16:56:06 2024]
+rule demp_analysis:
+    input: benchmarks/demp/analysis/demp_analysis.cxx, benchmarks/demp/analysis/demp_analysis_cxx.so, reco/epic/demp_5on41_4.edm4eic.root
+    output: results/epic/demp/demp_5on41_4/config.json, results/epic/demp/demp_5on41_4/hists.root
+    jobid: 15
+    reason: Updated input files: benchmarks/demp/analysis/demp_analysis_cxx.so, benchmarks/demp/analysis/demp_analysis.cxx
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=4
+    resources: tmpdir=/tmp
+
+
+[Tue Jul  9 16:56:06 2024]
+rule demp_analysis:
+    input: benchmarks/demp/analysis/demp_analysis.cxx, benchmarks/demp/analysis/demp_analysis_cxx.so, reco/epic/demp_5on41_2.edm4eic.root
+    output: results/epic/demp/demp_5on41_2/config.json, results/epic/demp/demp_5on41_2/hists.root
+    jobid: 9
+    reason: Updated input files: benchmarks/demp/analysis/demp_analysis_cxx.so, benchmarks/demp/analysis/demp_analysis.cxx
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=2
+    resources: tmpdir=/tmp
+
+
+[Tue Jul  9 16:56:06 2024]
+rule demp_analysis:
+    input: benchmarks/demp/analysis/demp_analysis.cxx, benchmarks/demp/analysis/demp_analysis_cxx.so, reco/epic/demp_5on41_1.edm4eic.root
+    output: results/epic/demp/demp_5on41_1/config.json, results/epic/demp/demp_5on41_1/hists.root
+    jobid: 4
+    reason: Updated input files: benchmarks/demp/analysis/demp_analysis_cxx.so, benchmarks/demp/analysis/demp_analysis.cxx
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=1
+    resources: tmpdir=/tmp
+
+
+[Tue Jul  9 16:56:06 2024]
+rule demp_analysis:
+    input: benchmarks/demp/analysis/demp_analysis.cxx, benchmarks/demp/analysis/demp_analysis_cxx.so, reco/epic/demp_5on41_3.edm4eic.root
+    output: results/epic/demp/demp_5on41_3/config.json, results/epic/demp/demp_5on41_3/hists.root
+    jobid: 12
+    reason: Updated input files: benchmarks/demp/analysis/demp_analysis_cxx.so, benchmarks/demp/analysis/demp_analysis.cxx
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=3
+    resources: tmpdir=/tmp
+
+
+[Tue Jul  9 16:56:06 2024]
+rule demp_analysis:
+    input: benchmarks/demp/analysis/demp_analysis.cxx, benchmarks/demp/analysis/demp_analysis_cxx.so, reco/epic/demp_5on41_5.edm4eic.root
+    output: results/epic/demp/demp_5on41_5/config.json, results/epic/demp/demp_5on41_5/hists.root
+    jobid: 18
+    reason: Updated input files: benchmarks/demp/analysis/demp_analysis_cxx.so, benchmarks/demp/analysis/demp_analysis.cxx
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, INDEX=5
+    resources: tmpdir=/tmp
+
+[Tue Jul  9 16:56:10 2024]
+Finished job 9.
+1 of 8 steps (12%) done
+[Tue Jul  9 16:56:10 2024]
+Finished job 15.
+2 of 8 steps (25%) done
+[Tue Jul  9 16:56:10 2024]
+Finished job 18.
+3 of 8 steps (38%) done
+[Tue Jul  9 16:56:10 2024]
+Finished job 12.
+4 of 8 steps (50%) done
+[Tue Jul  9 16:56:10 2024]
+Finished job 4.
+5 of 8 steps (62%) done
+Select jobs to execute...
+
+[Tue Jul  9 16:56:10 2024]
+rule demp_combine:
+    input: results/epic/demp/demp_5on41_1/hists.root, results/epic/demp/demp_5on41_2/hists.root, results/epic/demp/demp_5on41_3/hists.root, results/epic/demp/demp_5on41_4/hists.root, results/epic/demp/demp_5on41_5/hists.root
+    output: results/epic/demp/demp_5on41_combined_5/config.json, results/epic/demp/demp_5on41_combined_5/hists.root
+    jobid: 3
+    reason: Input files updated by another job: results/epic/demp/demp_5on41_1/hists.root, results/epic/demp/demp_5on41_2/hists.root, results/epic/demp/demp_5on41_3/hists.root, results/epic/demp/demp_5on41_5/hists.root, results/epic/demp/demp_5on41_4/hists.root
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, NUM_FILES=5
+    resources: tmpdir=/tmp
+
+[Tue Jul  9 16:56:11 2024]
+Finished job 3.
+6 of 8 steps (75%) done
+Select jobs to execute...
+
+[Tue Jul  9 16:56:11 2024]
+rule demp_plots:
+    input: benchmarks/demp/analysis/demp_plots.cxx, benchmarks/demp/analysis/demp_plots_cxx.so, results/epic/demp/demp_5on41_combined_5/config.json
+    output: results/epic/demp/demp_5on41_combined_5/plots.pdf
+    jobid: 1
+    reason: Input files updated by another job: results/epic/demp/demp_5on41_combined_5/config.json
+    wildcards: DETECTOR_CONFIG=epic, EBEAM=5, PBEAM=41, NUM_FILES=5
+    resources: tmpdir=/tmp
+
+[Tue Jul  9 16:56:14 2024]
+Finished job 1.
+7 of 8 steps (88%) done
+Select jobs to execute...
+
+[Tue Jul  9 16:56:14 2024]
+Job 0: See output in results/epic/demp/demp_5on41_combined_5/plots.pdf
+Reason: Input files updated by another job: results/epic/demp/demp_5on41_combined_5/plots.pdf
+
+[Tue Jul  9 16:56:14 2024]
+Finished job 0.
+8 of 8 steps (100%) done
+Complete log: .snakemake/log/2024-07-09T165602.707472.snakemake.log

@@ -1,0 +1,38 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job                 count    min threads    max threads
+----------------  -------  -------------  -------------
+compile_analysis        1              1              1
+demp_compile            1              1              1
+total                   2              1              1
+
+Select jobs to execute...
+
+[Tue Jul  9 12:49:55 2024]
+rule compile_analysis:
+    input: benchmarks/demp/analysis/demp_plots.cxx
+    output: benchmarks/demp/analysis/demp_plots_cxx.d, benchmarks/demp/analysis/demp_plots_cxx.so, benchmarks/demp/analysis/demp_plots_cxx_ACLiC_dict_rdict.pcm
+    jobid: 2
+    reason: Updated input files: benchmarks/demp/analysis/demp_plots.cxx
+    wildcards: path=benchmarks/demp/analysis, filename=demp_plots
+    resources: tmpdir=/tmp
+
+[Tue Jul  9 12:50:01 2024]
+Error in rule compile_analysis:
+    jobid: 2
+    input: benchmarks/demp/analysis/demp_plots.cxx
+    output: benchmarks/demp/analysis/demp_plots_cxx.d, benchmarks/demp/analysis/demp_plots_cxx.so, benchmarks/demp/analysis/demp_plots_cxx_ACLiC_dict_rdict.pcm
+    shell:
+        
+root -l -b -q -e '.L benchmarks/demp/analysis/demp_plots.cxx+'
+
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Removing output files of failed job compile_analysis since they might be corrupted:
+benchmarks/demp/analysis/demp_plots_cxx.d
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2024-07-09T124951.649997.snakemake.log
