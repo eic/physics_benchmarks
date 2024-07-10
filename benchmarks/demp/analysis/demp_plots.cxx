@@ -16,11 +16,68 @@
 
 #include "nlohmann/json.hpp"
 
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+//Plotting style for histograms
+void plots_2D(TH2D* hist, const double font = 42, const double tsize = 0.04){
+ 
+  hist->SetStats(1);
+  
+  hist->GetXaxis()->SetTitleFont(font); //x-axis
+  hist->GetXaxis()->SetTitleSize(tsize);
+  hist->GetXaxis()->SetTitleOffset(1.3);
+  hist->GetXaxis()->SetLabelFont(font);
+  hist->GetXaxis()->SetLabelSize(tsize);
+  hist->GetXaxis()->SetLabelOffset(0.01);
+ 
+  hist->GetYaxis()->SetTitleFont(font); //y-axis
+  hist->GetYaxis()->SetTitleSize(tsize);
+  hist->GetYaxis()->SetTitleOffset(1.3);
+  hist->GetYaxis()->SetLabelFont(font);
+  hist->GetYaxis()->SetLabelSize(tsize);
+  hist->GetYaxis()->SetLabelOffset(0.01);
+
+  hist->GetZaxis()->SetTitleFont(font); //z-axis
+  hist->GetZaxis()->SetTitleSize(0.036);
+  hist->GetZaxis()->SetTitleOffset(1.05);
+  hist->GetZaxis()->SetLabelFont(font);
+  hist->GetZaxis()->SetLabelSize(0.03);
+  hist->GetZaxis()->SetLabelOffset(0.01);
+  
+  hist->Draw("colz");
+
+}
+
+void plots_1D(TH1D* hist, const double font = 42, const double tsize = 0.04){
+   
+  hist->SetStats(1);
+
+  hist->GetXaxis()->SetTitleFont(font); //x-axis
+  hist->GetXaxis()->SetTitleSize(tsize);
+  hist->GetXaxis()->SetTitleOffset(1.3);
+  hist->GetXaxis()->SetLabelFont(font);
+  hist->GetXaxis()->SetLabelSize(tsize);
+  hist->GetXaxis()->SetLabelOffset(0.01);
+ 
+  hist->GetYaxis()->SetTitleFont(font); //y-axis
+  hist->GetYaxis()->SetTitleSize(tsize);
+  hist->GetYaxis()->SetTitleOffset(1.3);
+  hist->GetYaxis()->SetLabelFont(font);
+  hist->GetYaxis()->SetLabelSize(tsize);
+  hist->GetYaxis()->SetLabelOffset(0.01);
+
+  hist->Draw("HIST");
+
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
 void demp_plots(const std::string& config_name)
 {
 
-  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  // read our configuration
+  //--------------------------------------------------------------------------------------------------------------------------------------------
+  
+  // Read our configuration
   std::ifstream  config_file{config_name};
   nlohmann::json config;
   config_file >> config;
@@ -39,7 +96,8 @@ void demp_plots(const std::string& config_name)
   fmt::print(" - ebeam: {}\n", ebeam);
   fmt::print(" - pbeam: {}\n", pbeam);
   
-  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------
+
   // Read file with histograms
   TFile* file = new TFile(hists_file.c_str());
 
@@ -57,6 +115,7 @@ void demp_plots(const std::string& config_name)
   TH2D* piRecw_Thetaphi = (TH2D*) file->Get("piRecw_Thetaphi");
   TH2D* nRecw_Thetaphi = (TH2D*) file->Get("nRecw_Thetaphi");
   TH2D* nRecw_rot_Thetaphi = (TH2D*) file->Get("nRecw_rot_Thetaphi");
+  TH2D* nRecw_rot_PosXY = (TH2D*) file->Get("nRecw_rot_PosXY");
   TH2D* nRecw_Thetap_hcal = (TH2D*) file->Get("nRecw_Thetap_hcal");
   TH2D* nRecw_rot_Thetap_hcal = (TH2D*) file->Get("nRecw_rot_Thetap_hcal");
   TH1D* nRec_en = (TH1D*) file->Get("nRec_en");
@@ -109,179 +168,193 @@ void demp_plots(const std::string& config_name)
   TH1D* piTruthw_P_Uncut = (TH1D*) file->Get("piTruthw_P_Uncut");
   TH1D* piRecw_P_Cut = (TH1D*) file->Get("piRecw_P_Cut");
 
-  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------
+
   // Make plots and save to PDF file
   std::cout<<"Making plots..."<<std::endl;
-
-  gStyle->SetPadRightMargin(0.125); // left space on right side
-  gStyle->SetStatX(0.895); // move the stat bax on left or right side
-  gStyle->SetStatY(0.90); // move the stat bax on up or down side
+  
+  gStyle->SetPadRightMargin(0.125);
+  gStyle->SetPadTopMargin(0.1);
+  gStyle->SetOptTitle(1); //setting title
+  gStyle->SetTitleAlign(1);
+  gStyle->SetTitleX(0.35);
+  gStyle->SetTitleY(0.92);
+  gStyle->SetTitleW(0.32); 
+  gStyle->SetTitleH(0.065);
+  gStyle->SetOptStat(1); //setting stat box 
+  gStyle->SetStatX(0.875);
+  gStyle->SetStatY(0.9);
+  gStyle->SetStatW(0.14);
+  gStyle->SetStatH(0.11);
   gStyle->SetPalette(55);
-  gStyle->SetLineStyleString(2,"[12 12]");
   gStyle->SetHistLineWidth(2);
   
   TCanvas *c1 = new TCanvas("c1"); //truth information     
-  c1->SetLogz(); 
-  eTruthw_Thetap->Draw("colz");
+  c1->SetLogz();
+  plots_2D(eTruthw_Thetap);
 
   TCanvas *c2 = new TCanvas("c2");
   c2->SetLogz();
-  piTruthw_Thetap->Draw("colz");
-  
+  plots_2D(piTruthw_Thetap);
+   
   TCanvas *c3 = new TCanvas("c3");
   c3->SetLogz();
-  nTruthw_Thetaphi->Draw("colz");
-  
+  plots_2D(nTruthw_Thetaphi);
+ 
   TCanvas *c3a = new TCanvas("c3a");
   c3a->SetLogz();
-  nTruthw_rot_Thetaphi->Draw("colz");
+  plots_2D(nTruthw_rot_Thetaphi);
   
   TCanvas *c3b = new TCanvas("c3b"); 
   c3b->SetLogz();
-  nTruthw_Thetap->Draw("colz");  
+  plots_2D(nTruthw_Thetap);   
   
   TCanvas *c3c = new TCanvas("c3c"); 
   c3c->SetLogz();
-  nTruthw_rot_Thetap->Draw("colz");  
+  plots_2D(nTruthw_rot_Thetap);  
   
   TCanvas *c4 = new TCanvas("c4"); //reconstructed information
   c4->SetLogz();
-  eRecw_Thetap->Draw("colz");
+  plots_2D(eRecw_Thetap);
   
   TCanvas *c4a = new TCanvas("c4a"); 
   c4a->SetLogz();
-  eRecw_Thetaphi->Draw("colz");
+  plots_2D(eRecw_Thetaphi);
   
   TCanvas *c5 = new TCanvas("c5");
   c5->SetLogz();
-  piRecw_Thetap->Draw("colz");
+  plots_2D(piRecw_Thetap);
   
   TCanvas *c5_a = new TCanvas("c5_a");
   c5_a->SetLogz();
-  piRecw_Thetaphi->Draw("colz");
+  plots_2D(piRecw_Thetap);
   
   TCanvas *c5a = new TCanvas("c5a");
   c5a->SetLogz();
-  nRecw_Thetaphi->Draw("colz");
+  plots_2D(nRecw_Thetaphi);
   
   TCanvas *c5b = new TCanvas("c5b");
   c5b->SetLogz();
-  nRecw_rot_Thetaphi->Draw("colz");
+  plots_2D(nRecw_rot_Thetaphi);
   
   TCanvas *c5c = new TCanvas("c5c");
   c5c->SetLogz();
-  nRecw_Thetap_hcal->Draw("colz");
+  plots_2D(nRecw_Thetap_hcal);
   
   TCanvas *c5d = new TCanvas("c5d");
   c5d->SetLogz();
-  nRecw_rot_Thetap_hcal->Draw("colz");
+  plots_2D(nRecw_rot_Thetap_hcal);
   
   TCanvas *c6a = new TCanvas("c6a");
-  nRec_en->Draw("HIST");
+  plots_1D(nRec_en);
   
   TCanvas *c6b = new TCanvas("c6b");
-  nRec_clus->Draw();
+  plots_1D(nRec_clus);
   
   TCanvas *c7 = new TCanvas("c7");
   c7->SetLogz();
-  nRecw_Thetap->Draw("colz");
+  plots_2D(nRecw_Thetap);
   
   TCanvas *c7a = new TCanvas("c7a");
   c7a->SetLogz();
-  nRecw_rot_Thetap->Draw("colz");
-  
+  plots_2D(nRecw_rot_Thetap);
+ 
+  TCanvas *c7b = new TCanvas("c7b");
+  c7b->SetLogz();
+  plots_2D(nRecw_rot_PosXY);
+
   TCanvas *c8 = new TCanvas("c8"); // -t reconstruction plots
   c8->SetLogz();
-  htw_rec1->Draw("colz");
+  plots_2D(htw_rec1);
   
   TCanvas *c8a = new TCanvas("c8a");
   c8a->SetLogz();
-  htwz_rec1->Draw("colz");
+  plots_2D(htwz_rec1);
   
   TCanvas *c9 = new TCanvas("c9");
   c9->SetLogz();
-  htw_rec2->Draw("colz");
+  plots_2D(htw_rec2);
   
   TCanvas *c9a = new TCanvas("c9a");
   c9a->SetLogz();
-  htwz_rec2->Draw("colz");
+  plots_2D(htwz_rec2);
   
   TCanvas *c10 = new TCanvas("c10");
   c10->SetLogz();
-  htw_rec3->Draw("colz");
+  plots_2D(htw_rec3);
   
   TCanvas *c10a = new TCanvas("c10a");
   c10a->SetLogz();
-  htwz_rec3->Draw("colz");
+  plots_2D(htwz_rec3);
   
   TCanvas *c11 = new TCanvas("c11");
   c11->SetLogz();
-  htw_rec4->Draw("colz");
+  plots_2D(htw_rec4);
  
   TCanvas *c11a = new TCanvas("c11a");
   c11a->SetLogz();
-  htwz_rec4->Draw("colz");
+  plots_2D(htwz_rec4);
   
   TCanvas *c12 = new TCanvas("c12"); // Resolution plots
-  htw_res_e->Draw("HIST");
+  plots_1D(htw_res_e);
   
   TCanvas *c13 = new TCanvas("c13");
-  htw_res_pi->Draw("HIST");
+  plots_1D(htw_res_pi);
   
   TCanvas *c14a = new TCanvas("c14a");
-  htw_res_n1->Draw("HIST");
+  plots_1D(htw_res_n1);
   
   TCanvas *c14b = new TCanvas("c14b");
-  htw_res_n2->Draw("HIST");
+  plots_1D(htw_res_n2);
   
   TCanvas *c14c = new TCanvas("c14c");
-  htw_res_n3->Draw("HIST");
+  plots_1D(htw_res_n3);
   
   TCanvas *c14d = new TCanvas("c14d");
-  htw_res_n4->Draw("HIST");
+  plots_1D(htw_res_n4);
   
   TCanvas *c15a = new TCanvas("c15a"); //t-resoutions
-  htw_res1->Draw("HIST");
+  plots_1D(htw_res1);
   
   TCanvas *c15b = new TCanvas("c15b");
-  htw_res2->Draw("HIST");
+  plots_1D(htw_res2);
   
   TCanvas *c15c = new TCanvas("c15c");
-  htw_res3->Draw("HIST");
+  plots_1D(htw_res3);
   
   TCanvas *c15d = new TCanvas("c15d");
-  htw_res4->Draw("HIST");
+  plots_1D(htw_res4);
   
   TCanvas *c15e = new TCanvas("c15e");
-  htw_res5->Draw("HIST");
+  plots_1D(htw_res5);
   
   TCanvas *c15f = new TCanvas("c15f");
-  htw_res6->Draw("HIST");
+  plots_1D(htw_res6);
 
   TCanvas *c16a = new TCanvas("c16a"); // Neutron theta-phi plots
-  n_ThetaDiff->Draw("HIST");
+  plots_1D(n_ThetaDiff);
   
   TCanvas *c16b = new TCanvas("c16b");
-  n_PhiDiff->Draw("HIST");
+  plots_1D(n_PhiDiff);
   
   TCanvas *c16c = new TCanvas("c16c");
   c16c->SetLogz();
-  n_ThetaPhiDiff->Draw("colz");
+  plots_2D(n_ThetaPhiDiff);
   
   TCanvas *c16d = new TCanvas("c16d");
   c16d->SetLogz();
-  pMissRecw_Thetaphi->Draw("colz");
+  plots_2D(pMissRecw_Thetaphi);
   
   TCanvas *c16e = new TCanvas("c16e");
   c16e->SetLogz();
-  pMissRecw_rot_Thetaphi->Draw("colz");
+  plots_2D(pMissRecw_rot_Thetaphi);
   
   TCanvas *c16f = new TCanvas("c16f");
   c16f->SetLogz();
-  n_TruthRecw_ThetaPhiDiff->Draw("colz");
+  plots_2D(n_TruthRecw_ThetaPhiDiff);
   
   TCanvas *c17 = new TCanvas("c17"); // Absolute difference -t plots
-  htw_t4->Draw("HIST");
+  plots_1D(htw_t4);
   htw_t3->Draw("HIST SAME");
   htw_t2->Draw("HIST SAME");
   htw_t1->Draw("HIST SAME");
@@ -296,51 +369,52 @@ void demp_plots(const std::string& config_name)
   
   TCanvas *c18 = new TCanvas("c18"); // Efficiency plots
   Q2_t_DetEff-> GetZaxis()->SetRangeUser(0.0,1.0);
-  Q2_t_DetEff->Draw("colz");
+  plots_2D(Q2_t_DetEff);
   
   TCanvas *c18a = new TCanvas("c18a"); 
-  Q2_t_DetEff_Cut->Draw("colz");
+  plots_2D(Q2_t_DetEff_Cut);
   
   TCanvas *c18b = new TCanvas("c18b"); 
-  Q2_t_DetEff_Uncut->Draw("colz"); 
+  plots_2D(Q2_t_DetEff_Uncut); 
  
   TCanvas *c19 = new TCanvas("c19"); // elec eta eff.
-  eEff_Eta->Draw("HIST");
+  plots_1D(eEff_Eta);
   
   TCanvas *c19a = new TCanvas("c19a"); 
-  eTruthw_Eta_Uncut->Draw("HIST");
+  plots_1D(eTruthw_Eta_Uncut);
   
   TCanvas *c19b = new TCanvas("c19b"); 
-  eRecw_Eta_Cut->Draw("HIST");
+  plots_1D(eRecw_Eta_Cut);
   
   TCanvas *c20 = new TCanvas("c20");  // elec mom eff.
-  eEff_P->Draw("HIST");
+  plots_1D(eEff_P);
   
   TCanvas *c20a = new TCanvas("c20a"); 
-  eTruthw_P_Uncut->Draw("HIST");
+  plots_1D(eTruthw_P_Uncut);
   
   TCanvas *c20b = new TCanvas("c20b"); 
-  eRecw_P_Cut->Draw("HIST");
+  plots_1D(eRecw_P_Cut);
   
   TCanvas *c21 = new TCanvas("c21"); // pi eta eff.
-  piEff_Eta->Draw("HIST");
+  plots_1D(piEff_Eta);
   
   TCanvas *c21a = new TCanvas("c21a"); 
-  piTruthw_Eta_Uncut->Draw("HIST");
+  plots_1D(piTruthw_Eta_Uncut);
   
   TCanvas *c21b = new TCanvas("c21b"); 
-  piRecw_Eta_Cut->Draw("HIST");
+  plots_1D(piRecw_Eta_Cut);
   
   TCanvas *c22 = new TCanvas("c22"); //pi mom eff.
-  piEff_P->Draw("HIST");
+  plots_1D(piEff_P);
   
   TCanvas *c22a = new TCanvas("c22a"); 
-  piTruthw_P_Uncut->Draw("HIST");
+  plots_1D(piTruthw_P_Uncut);
   
   TCanvas *c22b = new TCanvas("c22b"); 
-  piRecw_P_Cut->Draw("HIST");
+  plots_1D(piRecw_P_Cut);
 
-  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------  
+  //--------------------------------------------------------------------------------------------------------------------------------------------
+
   // Print plots to pdf file
   c1->Print(fmt::format("{}.pdf[", output_prefix).c_str());
   c1->Print(fmt::format("{}.pdf", output_prefix).c_str());
@@ -361,6 +435,7 @@ void demp_plots(const std::string& config_name)
   c6a->Print(fmt::format("{}.pdf", output_prefix).c_str());
   c7->Print(fmt::format("{}.pdf", output_prefix).c_str());
   c7a->Print(fmt::format("{}.pdf", output_prefix).c_str());
+  c7b->Print(fmt::format("{}.pdf", output_prefix).c_str());
   c8->Print(fmt::format("{}.pdf", output_prefix).c_str());
   c8a->Print(fmt::format("{}.pdf", output_prefix).c_str());
   c9->Print(fmt::format("{}.pdf", output_prefix).c_str());
