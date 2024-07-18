@@ -6,10 +6,12 @@
 #include <TCanvas.h>
 #include <TChain.h>
 #include <TFile.h>
+#include <TGraph.h>
 #include <TH1D.h>
 #include <TH2D.h>
 #include <TTreeReader.h>
 #include <TTreeReaderArray.h>
+#include <TLegend.h>
 #include <TVector3.h>
 
 #include "fmt/color.h"
