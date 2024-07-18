@@ -4,22 +4,9 @@ diffractive_vm:compile:
   script:
     - snakemake --cores 1 diffractive_vm_compile
 
-diffractive_vm:generate:
-  stage: generate
-  extends: .phy_benchmark
-  needs: ["common:detector", "diffractive_vm:compile"]
-  parallel:
-    matrix:
-      - VM: phi
-      - VM: jpsi
-  timeout: 1 hours
-  script:
-    - snakemake --cores 1 input/diffractive_vm/sartre_${VM}_{000,001,002,003,004,005,006,007,008,009}.hepmc
-
 diffractive_vm:simulate:
   stage: simulate
   extends: .phy_benchmark
-  needs: ["diffractive_vm:generate"]
   parallel:
     matrix:
       - VM: phi
