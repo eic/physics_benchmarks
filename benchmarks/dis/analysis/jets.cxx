@@ -22,7 +22,7 @@
 // Jet Benchmarks
 // Author: B. Page (bpage@bnl.gov)
 
-// To run: root -b -l -q jet.cxx'("path/to/config")' Second argument prints histograms
+// To run: snakemake -c1 results/epic_craterlake/dis/10on100/minQ2=1/jets
 
 int jets(const std::string& config_name)
 {
