@@ -20,9 +20,10 @@
 
 void demp_analysis(const std::string& config_name)
 {
-
-  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  // read our configuration
+  
+  //--------------------------------------------------------------------------------------------------------------------------------------------
+  
+  // Read our configuration
   std::ifstream  config_file{config_name};
   nlohmann::json config;
   config_file >> config;
@@ -40,19 +41,23 @@ void demp_analysis(const std::string& config_name)
   fmt::print(" - output prefix for histograms: {}\n", output_prefix);
   fmt::print(" - ebeam: {}\n", ebeam);
   fmt::print(" - pbeam: {}\n", pbeam);
-  
-  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   
+  //--------------------------------------------------------------------------------------------------------------------------------------------
+ 
   // Set output file for the histograms
   std::string output_name_hists = fmt::format("{}.root", output_prefix);
   cout << "Output file for histograms = " << output_name_hists << endl;
   TFile* ofile = new TFile(output_name_hists.c_str(), "RECREATE");
 
-  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------
+ 
   // Set up input file chain
   TChain *mychain = new TChain("events");
   mychain->Add(rec_file.c_str());
 
-  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+  //--------------------------------------------------------------------------------------------------------------------------------------------
+  
   // Initialize reader
   TTreeReader tree_reader(mychain);
 
@@ -88,8 +93,9 @@ void demp_analysis(const std::string& config_name)
   TTreeReaderArray<float> neutPosY_hcal(tree_reader, "HcalFarForwardZDCClusters.position.y");
   TTreeReaderArray<float> neutPosZ_hcal(tree_reader, "HcalFarForwardZDCClusters.position.z");
   TTreeReaderArray<float> neutEng_hcal(tree_reader, "HcalFarForwardZDCClusters.energy");
-
-  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  
+  //--------------------------------------------------------------------------------------------------------------------------------------------
+ 
   // Define Histograms
 
   TH2* eTruthw_Thetap  = new TH2D("eTruthw_Thetap","e' truth #theta vs P; #theta (deg); P (GeV/c); Rate/bin (Hz)",100,120,165,100,4,6);
@@ -108,6 +114,7 @@ void demp_analysis(const std::string& config_name)
   TH2* nRecw_Thetap  = new TH2D("nRecw_Thetap","n rec #theta vs P; #theta (Deg); P (GeV/c); Rate/bin (Hz)",100,0.8,2.0,100,0,60); 
   TH2* nRecw_Thetaphi  = new TH2D("nRecw_Thetaphi","n rec #theta vs #phi; #theta (mRad); #phi (deg); Rate/bin (Hz)",100,15.0,35.0,100,-200,200);
   TH2* nRecw_rot_Thetaphi  = new TH2D("nRecw_rot_Thetaphi","n rec #theta* vs #phi* around p axis; #theta* (mRad); #phi* (deg); Rate/bin (Hz)",100,0.0,10.0,100,-200,200);
+  TH2* nRecw_rot_PosXY  = new TH2D("nRecw_rot_PosXY","n X vs Y around proton axis at Z = 35 m ( #theta* < 4.0 mRad, E > 10 GeV ); x (mm); y (mm); Rate/bin (Hz)",100,-200,200,100,-200,200);
   TH2* nRecw_rot_Thetap  = new TH2D("nRecw_rot_Thetap","n rec #theta* vs P around p axis ( #theta* < 4.0 mRad, E > 10 GeV ); #theta* (mRad); P (GeV/c); Rate/bin (Hz)",100,0.0,4.0,100,5,60);
 
   TH1* nRec_en = new TH1D("nRec_en", "n rec E for all clusters ( #theta* < 4.0 mRad ); E (GeV); Rate (Hz)", 100, 0.0, 60);
@@ -120,10 +127,10 @@ void demp_analysis(const std::string& config_name)
   n_ThetaDiff->SetLineWidth(2);
   TH1* n_PhiDiff = new TH1D("n_PhiDiff", " #phi*_{pMiss_rec} - #phi*_{ZDC}; #phi*_{pMiss_rec} - #phi*_{ZDC}(Deg); Rate (Hz)", 100, -50, 50);
   n_PhiDiff->SetLineWidth(2);
-  TH2* n_ThetaPhiDiff = new TH2D("n_ThetaPhiDiff", "#theta*_{pMiss_rec} - #theta*_{ZDC} vs #phi*_{pMiss_rec} - #phi*_{ZDC}; #theta*_{pMiss_rec} - #theta*_{ZDC} (Deg); #phi*_{pMiss_rec} - #phi*_{ZDC} (Deg); Rate/bin (Hz)",100, -0.3, 1.5, 100, -50, 50);
+  TH2* n_ThetaPhiDiff = new TH2D("n_ThetaPhiDiff", "#theta*_{pMiss_rec} - #theta*_{ZDC} vs #phi*_{pMiss_rec} - #phi*_{ZDC}; #theta*_{pMiss_rec} - #theta*_{ZDC} (Deg); #phi*_{pMiss_rec} - #phi*_{ZDC} (Deg); Rate/bin (Hz)",100, -1.0, 1.0, 100, -75, 75);
   TH2* pMissRecw_Thetaphi = new TH2D("pMissRecw_Thetaphi", "pMiss rec #theta vs #phi; #theta (mRad); #phi (deg); Rate/bin (Hz)",100,15.0,35.0,100,-200,200);
   TH2* pMissRecw_rot_Thetaphi = new TH2D("pMissRecw_rot_Thetaphi", "pMiss rec  #theta* vs #phi* around p axis; #theta* (mRad); #phi* (deg); Rate/bin (Hz)",100,0.0,10.0,100,-200,200);
-  TH2* n_TruthRecw_ThetaPhiDiff = new TH2D("n_TruthRecw_ThetaPhiDiff", " #theta*_{n_MC} - #theta*_{n_rec} vs #phi*_{n_MC} - #phi*_{n_rec}; #theta*_{n_MC} - #theta*_{n_rec} (Deg); #phi*_{n_MC} - #phi*_{n_rec} (Deg); Rate/bin (Hz)",100, -0.2, 0.2, 100, -20, 20);
+  TH2* n_TruthRecw_ThetaPhiDiff = new TH2D("n_TruthRecw_ThetaPhiDiff", " #theta*_{n_MC} - #theta*_{n_rec} vs #phi*_{n_MC} - #phi*_{n_rec}; #theta*_{n_MC} - #theta*_{n_rec} (Deg); #phi*_{n_MC} - #phi*_{n_rec} (Deg); Rate/bin (Hz)",100, -0.2, 0.2, 100, -25, 25);
 
   // Absolute difference -t plots
   TH1* htw_t1 = new TH1D("htw_t1", "-t_{rec, alt_rec, rec_pT, rec_corr} - -t_{truth} Distribution; #Delta -t (GeV^{2}); Rate (Hz) ", 100, -0.1,0.1);
@@ -216,8 +223,9 @@ void demp_analysis(const std::string& config_name)
   // Neutrons HCal
   TH2* nRecw_Thetap_hcal  = new TH2D("nRecw_Thetap_hcal","n rec #theta vs P for 1 cluster events; #theta (Deg); P (GeV/c); Rate/bin (Hz)",100,0.8,2.0,100,0,40);
   TH2* nRecw_rot_Thetap_hcal  = new TH2D("nRecw_rot_Thetap_hcal","n rec #theta* vs P around p axis for 1 cluster events; #theta* (mRad); P (GeV/c); Rate/bin (Hz)",100,0,4.0,100,5,40);
-
-  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  
+  //--------------------------------------------------------------------------------------------------------------------------------------------
+ 
   //Defining the four vectors
   ROOT::Math::PxPyPzEVector elec_beam; // initialized the 4 vector for electron beam
   ROOT::Math::PxPyPzEVector prot_beam; // initialized the 4 vector for proton beam
@@ -261,8 +269,10 @@ void demp_analysis(const std::string& config_name)
   double weight, partEng; // weight and energy of the particles
   double Q2_truth, W_truth, y_truth, t_truth, t_alttruth; // Truth kinematic variables
   double Q2_rec, W_rec, y_rec, t_rec, t_altrec, t_recpT, t_reccorr; // Reconstructed kinematic variables
+  double neutPosX, neutPosY; // neutron position
   
-  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------
+ 
   // Defining initial colliding beams
   double eMass = 0.000510998950; //electron beam
   double eEng = ebeam;
@@ -281,7 +291,8 @@ void demp_analysis(const std::string& config_name)
   double p_p3 = p_pmag*cos(c_a);
   prot_beam.SetPxPyPzE(p_p1, p_p2, p_p3, pEng);
 
-  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------
+ 
   bool x,y,z; // x,y, and z are for reconstructed electron, pion, and neutron
  
   while(tree_reader.Next()) { // Loop over events
@@ -292,8 +303,9 @@ void demp_analysis(const std::string& config_name)
     vector<string> weight_value = weight_map[0].second;
     weight = std::stod( *(weight_value.begin()) );
 
-    //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
- 
+    
+    //--------------------------------------------------------------------------------------------------------------------------------------------
+    
     for(unsigned int i=0; i<partGenStat.GetSize(); i++) { // Loop over thrown particles
       partEng = sqrt(pow(partMomX[i],2) + pow(partMomY[i],2) + pow(partMomZ[i],2) + pow(partMass[i],2)); // Energy of all Monte Carlo particles
 		
@@ -323,8 +335,9 @@ void demp_analysis(const std::string& config_name)
  
     } // for over thrown particles
  
-    //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
- 
+    
+    //--------------------------------------------------------------------------------------------------------------------------------------------
+    
     for(unsigned int i=0; i<trackPdg.GetSize(); i++) { // Loop over reconstructed particles 
       // if(trackPdg[i] == 11) { // Look at electron
       if(trackCharge[i] == -1 && trackMomZ[i] < 0) { 
@@ -348,8 +361,8 @@ void demp_analysis(const std::string& config_name)
  
     }// for over reconstructed particles
 
-    //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+    //--------------------------------------------------------------------------------------------------------------------------------------------
+    
     for(unsigned int i=0; i<neutEng.GetSize(); i++) { // Loop over zdc neutrons
  
       neut_rec.SetPxPyPzE(neutMomX[i],neutMomY[i],neutMomZ[i], neutEng[i]);
@@ -366,14 +379,18 @@ void demp_analysis(const std::string& config_name)
    	if(neut_rot_rec.E()>10.0){ // neutron energy cut
 	  z = true;
 	  nRecw_rot_Thetap -> Fill(neut_rot_rec.Theta()*1000., neut_rot_rec.P(), weight);
+
+	  neutPosX = 35000 * sin(neut_rot_rec.Theta()) * cos(neut_rot_rec.Phi()); // neutron position at r = z = 35.0 m
+      	  neutPosY = 35000 * sin(neut_rot_rec.Theta()) * sin(neut_rot_rec.Phi());
+          nRecw_rot_PosXY -> Fill(neutPosX, neutPosY, weight);
 	}
  
       }
  
     }// for over zdc neutrons
  
-    //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+    //--------------------------------------------------------------------------------------------------------------------------------------------
+ 
     for(unsigned int i=0; i<neutEng.GetSize(); i++) { // Loop over zdc neutrons in HCal
  
       hcal_clus_size = neutEng_hcal.GetSize(); //ZDC HCal cluster size -> No. of clusters in ZDC
@@ -399,9 +416,9 @@ void demp_analysis(const std::string& config_name)
  
     }// for over zdc neutrons in HCal
 
-    //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------------------------------------------------------------
+    
     // Truth kinematic variables
-
     virtphoton_truth = (elec_beam - elec_mc);
     Q2_truth = -1*(virtphoton_truth.mag2());
     W_truth = ((virtphoton_truth + prot_beam).mag());
@@ -421,9 +438,9 @@ void demp_analysis(const std::string& config_name)
       }
     }
     
-    //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------------------------------------------------------------
+   
     // Reconstructed kinematic variables
-
     if (x == true && y == true && z == true ){ // if e', pi, and neutron are in coincidence
  
       virtphoton_rec = (elec_beam - elec_rec);
@@ -509,7 +526,8 @@ void demp_analysis(const std::string& config_name)
  
   cout<<"truth_neutron =  "<<count2<<endl;
 
-  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------
+
   ofile->Write(); // Write histograms to file
   ofile->Close(); // Close output file
     
