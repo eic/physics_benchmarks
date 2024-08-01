@@ -1,0 +1,26 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job                       count    min threads    max threads
+----------------------  -------  -------------  -------------
+semi_coherent_analysis        1              1              1
+total                         1              1              1
+
+Select jobs to execute...
+
+[Tue Jul 23 15:21:50 2024]
+rule semi_coherent_analysis:
+    input: data/epic_semi_coherent.eicrecon.tree.edm4eic.root, analysis.py
+    output: results/epic/zdc_lyso/plots.pdf
+    jobid: 0
+    reason: Missing output files: results/epic/zdc_lyso/plots.pdf
+    wildcards: DETECTOR_CONFIG=epic
+    resources: tmpdir=/tmp
+
+RuleException in rule semi_coherent_analysis in file /home/jiajun/physics_benchmarks/benchmarks/zdc_lyso/Snakefile, line 31:
+AttributeError: 'InputFiles' object has no attribute 'scripts', when formatting the following:
+
+python {input.scripts}
+

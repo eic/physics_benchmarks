@@ -1,0 +1,36 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job                       count    min threads    max threads
+----------------------  -------  -------------  -------------
+run_all_locally               1              1              1
+semi_coherent_analysis        1              1              1
+total                         2              1              1
+
+Select jobs to execute...
+
+[Tue Jul 30 17:02:05 2024]
+rule semi_coherent_analysis:
+    input: data/epic_semi_coherent.eicrecon.tree.edm4eic.root, analysis.py
+    output: results/epic/zdc_lyso/plots.pdf
+    jobid: 1
+    reason: Missing output files: results/epic/zdc_lyso/plots.pdf
+    wildcards: DETECTOR_CONFIG=epic
+    resources: tmpdir=/tmp
+
+[Tue Jul 30 17:02:10 2024]
+Error in rule semi_coherent_analysis:
+    jobid: 1
+    input: data/epic_semi_coherent.eicrecon.tree.edm4eic.root, analysis.py
+    output: results/epic/zdc_lyso/plots.pdf
+    shell:
+        
+python analysis.py
+
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2024-07-30T170204.424879.snakemake.log

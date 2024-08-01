@@ -1,0 +1,16 @@
+zdc_lyso:simulate:
+  stage: simulate
+  extends: .phy_benchmark
+  timeout: 2 hours
+  script:
+    - snakemake --cores 1 run_all_locally
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+
+zdc_lyso:results:
+  stage: collect
+  needs: ["zdc_lyso:simulate"]
+  script:
+    - ls -lrth

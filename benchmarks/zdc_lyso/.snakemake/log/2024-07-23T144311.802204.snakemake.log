@@ -1,0 +1,4 @@
+Building DAG of jobs...
+WildcardError in rule semi_coherent_analysis in file /home/jiajun/physics_benchmarks/benchmarks/zdc_lyso/Snakefile, line 31:
+Wildcards in input files cannot be determined from output files:
+'DETECTOR_CONFIG'

@@ -1,0 +1,37 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job                   count    min threads    max threads
+------------------  -------  -------------  -------------
+semi_coherent_reco        1              1              1
+semi_coherent_sim         1              1              1
+total                     2              1              1
+
+Select jobs to execute...
+
+[Tue Jul 23 14:50:40 2024]
+rule semi_coherent_sim:
+    input: input.hepmc
+    output: data/epic_semi_coherent.edm4hep.root
+    log: log/epic_semi_coherent.edm4hep.root.log
+    jobid: 1
+    reason: Missing output files: data/epic_semi_coherent.edm4hep.root
+    wildcards: DETECTOR_CONFIG=epic
+    resources: tmpdir=/tmp
+
+Terminating processes on user request, this might take some time.
+[Tue Jul 23 14:50:52 2024]
+Error in rule semi_coherent_sim:
+    jobid: 1
+    input: input.hepmc
+    output: data/epic_semi_coherent.edm4hep.root
+    log: log/epic_semi_coherent.edm4hep.root.log (check log file(s) for error details)
+    shell:
+        
+npsim --compactFile $DETECTOR_PATH/epic.xml --numberOfEvents 1000 --inputFiles input.hepmc --outputFile data/epic_semi_coherent.edm4hep.root || exit
+
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Complete log: .snakemake/log/2024-07-23T145039.367442.snakemake.log
