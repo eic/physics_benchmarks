@@ -1,5 +1,0 @@
-Building DAG of jobs...
-MissingInputException in rule run_all_locally in file /home/jiajun/physics_benchmarks/benchmarks/zdc_lyso/Snakefile, line 42:
-Missing input files for rule run_all_locally:
-    affected files:
-        results/plots.pdf

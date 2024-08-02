@@ -1,3 +1,0 @@
-WildcardError in file /home/jiajun/physics_benchmarks/benchmarks/zdc_lyso/Snakefile, line 33:
-No values given for wildcard 'DETECTOR_CONFIG'.
-  File "/home/jiajun/physics_benchmarks/benchmarks/zdc_lyso/Snakefile", line 33, in <module>
