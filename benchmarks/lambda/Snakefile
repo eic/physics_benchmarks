@@ -1,0 +1,61 @@
+rule test:
+        input:
+        output:
+                "{output}.txt"
+        shell:
+                """
+echo Hi > {output}
+"""
+
+rule lambda_generate:
+	input:
+	params:
+		NEVENTS_GEN=100000,
+	output:
+		GEN_FILE="lambda_decay_{E}GeV.hepmc"
+	shell:
+		"""
+root -l -b -q 'analysis/gen_lambda_decay.cxx({params.NEVENTS_GEN},0,"{output.GEN_FILE}",{wildcards.E},{wildcards.E})'
+"""
+
+rule lambda_simulate:
+	input:
+		GEN_FILE="lambda_decay_{E}GeV.hepmc"
+	params:
+		NEVENTS_SIM=3000,
+		PHYSICS_LIST="FTFP_BERT"
+	output:
+		SIM_FILE="{DETECTOR_CONFIG}_sim_lambda_dec_{E}GeV.edm4hep.root"
+	shell:
+		"""
+# Running simulation
+npsim \
+   --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
+   --numberOfEvents {params.NEVENTS_SIM} \
+   --physicsList {params.PHYSICS_LIST} \
+   --inputFiles {input.GEN_FILE} \
+   --outputFile {output.SIM_FILE}
+"""
+
+rule lambda_recon:
+        input:
+                SIM_FILE="{DETECTOR_CONFIG}_sim_lambda_dec_{E}GeV.edm4hep.root"
+        params:
+                NEVENTS_REC=100,
+        output:
+                REC_FILE="{DETECTOR_CONFIG}_rec_lambda_dec_{E}GeV.edm4hep.root"
+        shell:
+                """
+eicrecon -Pplugins=ZDC {input.SIM_FILE} -Ppodio:output_file={output.REC_FILE} -Pdd4hep:xml_files=$DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml -Ppodio:output_include_collections=MCParticles,HcalFarForwardZDCClusters,HcalFarForwardZDCRecHits,HcalFarForwardZDCSubcellHits  -Pjana:nevents={params.NEVENTS_REC}
+"""
+
+rule lambda_analysis:
+	input:
+                REC_FILE="{DETECTOR_CONFIG}_rec_lambda_dec_{E}GeV.edm4hep.root",
+	output:
+		results_dir=directory("results_{DETECTOR_CONFIG}_lambda_dec_{E}GeV/"),
+	shell:
+		"""
+mkdir {output.results_dir}
+python analysis/lambda_plots.py {input.REC_FILE} $(dirname {output.results_dir})
+"""
