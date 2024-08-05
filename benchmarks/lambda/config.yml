@@ -21,8 +21,8 @@ lambda:simulate:
     when:
       - runner_system_failure
 
-dis:results:
+lambda:results:
   stage: collect
-  needs: ["dis:simulate"]
+  needs: ["lambda:simulate"]
   script:
     - snakemake --cores 1 results_epic_zdc_sipm_on_tile_only_lambda_dec
