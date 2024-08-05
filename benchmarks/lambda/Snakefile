@@ -1,31 +1,22 @@
-rule test:
-        input:
-        output:
-                "{output}.txt"
-        shell:
-                """
-echo Hi > {output}
-"""
-
 rule lambda_generate:
 	input:
 	params:
 		NEVENTS_GEN=100000,
 	output:
-		GEN_FILE="lambda_decay_{E}GeV.hepmc"
+		GEN_FILE="lambda_decay_{P}GeV.hepmc"
 	shell:
 		"""
-root -l -b -q 'analysis/gen_lambda_decay.cxx({params.NEVENTS_GEN},0,"{output.GEN_FILE}",{wildcards.E},{wildcards.E})'
+root -l -b -q 'analysis/gen_lambda_decay.cxx({params.NEVENTS_GEN},0,"{output.GEN_FILE}",{wildcards.P},{wildcards.P})'
 """
 
 rule lambda_simulate:
 	input:
-		GEN_FILE="lambda_decay_{E}GeV.hepmc"
+		GEN_FILE="lambda_decay_{P}GeV.hepmc"
 	params:
 		NEVENTS_SIM=3000,
 		PHYSICS_LIST="FTFP_BERT"
 	output:
-		SIM_FILE="{DETECTOR_CONFIG}_sim_lambda_dec_{E}GeV.edm4hep.root"
+		SIM_FILE="{DETECTOR_CONFIG}_sim_lambda_dec_{P}GeV.edm4hep.root"
 	shell:
 		"""
 # Running simulation
@@ -39,11 +30,11 @@ npsim \
 
 rule lambda_recon:
         input:
-                SIM_FILE="{DETECTOR_CONFIG}_sim_lambda_dec_{E}GeV.edm4hep.root"
+                SIM_FILE="{DETECTOR_CONFIG}_sim_lambda_dec_{P}GeV.edm4hep.root"
         params:
-                NEVENTS_REC=100,
+                NEVENTS_REC=3000,
         output:
-                REC_FILE="{DETECTOR_CONFIG}_rec_lambda_dec_{E}GeV.edm4hep.root"
+                REC_FILE="{DETECTOR_CONFIG}_rec_lambda_dec_{P}GeV.edm4hep.root"
         shell:
                 """
 eicrecon -Pplugins=ZDC {input.SIM_FILE} -Ppodio:output_file={output.REC_FILE} -Pdd4hep:xml_files=$DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml -Ppodio:output_include_collections=MCParticles,HcalFarForwardZDCClusters,HcalFarForwardZDCRecHits,HcalFarForwardZDCSubcellHits  -Pjana:nevents={params.NEVENTS_REC}
@@ -51,11 +42,13 @@ eicrecon -Pplugins=ZDC {input.SIM_FILE} -Ppodio:output_file={output.REC_FILE} -P
 
 rule lambda_analysis:
 	input:
-                REC_FILE="{DETECTOR_CONFIG}_rec_lambda_dec_{E}GeV.edm4hep.root",
+                expand("{DETECTOR_CONFIG}_rec_lambda_dec_{P}GeV.edm4hep.root",
+		    P=[100, 125, 150,175, 200, 225, 250, 275],
+		    DETECTOR_CONFIG=["{DETECTOR_CONFIG}"])
 	output:
-		results_dir=directory("results_{DETECTOR_CONFIG}_lambda_dec_{E}GeV/"),
+		results_dir=directory("results_{DETECTOR_CONFIG}_lambda_dec"),
 	shell:
 		"""
 mkdir {output.results_dir}
-python analysis/lambda_plots.py {input.REC_FILE} $(dirname {output.results_dir})
+python analysis/lambda_plots.py {output.results_dir}
 """

@@ -32,3 +32,4 @@ ddsim \
 
 include: "benchmarks/diffractive_vm/Snakefile"
 include: "benchmarks/dis/Snakefile"
+include: "benchmarks/lambda/Snakefile"
