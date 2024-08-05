@@ -130,6 +130,7 @@ summary:
     - "diffractive_vm:results"
     - "dis:results"
     - "dvcs:results"
+    - "lambda:results"
     - "tcs:results"
     - "u_omega:results"
     - "single:results"
