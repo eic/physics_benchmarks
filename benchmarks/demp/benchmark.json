@@ -1,0 +1,6 @@
+{
+  "name": "DEMP",
+  "title": "DEMP Benchmark",
+  "description": "Benchmark for Deep Exclusive Meson Production physics",
+  "target": "0.8"
+}

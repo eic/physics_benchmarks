@@ -1,0 +1,145 @@
+import os
+
+#Compile the analysis and plotting scripts
+rule demp_compile:
+    input:
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/demp/analysis/demp_analysis_cxx.so",
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/demp/analysis/demp_plots_cxx.so",
+
+#Process the simulated files based on the user-defined campaign
+rule demp_campaign_reco_get:
+    input:
+        lambda wildcards: f"EPIC/RECO/{wildcards.RELEASE_TAG}/{wildcards.DETECTOR_CONFIG}/EXCLUSIVE/DEMP/DEMPgen-1.1.0/{wildcards.EBEAM}x{wildcards.PBEAM}/pi+/DEMPgen-1.1.0_{wildcards.EBEAM}x{wildcards.PBEAM}_pi+_1.000{wildcards.INDEX}.eicrecon.tree.edm4eic.root",
+    output:
+        temp("reco/{DETECTOR_CONFIG}/campaign_{RELEASE_TAG}_demp_{EBEAM}on{PBEAM}_{INDEX}.edm4eic.root"),
+    shell:
+        """
+mv {input} {output}
+"""
+
+#Process the afterburned files through the simulations
+rule demp_sim:
+    input:
+        warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
+    output:
+        "sim/{DETECTOR_CONFIG}/demp_{EBEAM}on{PBEAM}_{INDEX}.edm4hep.root",
+    params:
+        N_EVENTS=100
+    wildcard_constraints:
+        EBEAM="\d+",
+        PBEAM="\d+",
+        INDEX="\d+",
+    shell:
+        """
+ddsim \
+  --runType batch \
+  --part.minimalKineticEnergy 100*GeV  \
+  --filter.tracker edep0 \
+  -v WARNING \
+  --numberOfEvents {params.N_EVENTS} \
+  --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
+  --inputFiles root://dtn-eic.jlab.org//work/eic2/EPIC/EVGEN/EXCLUSIVE/DEMP/DEMPgen-1.1.0/{wildcards.EBEAM}x{wildcards.PBEAM}/pi+/DEMPgen-1.1.0_{wildcards.EBEAM}x{wildcards.PBEAM}_pi+_{wildcards.INDEX}.hepmc3.tree.root \
+  --outputFile {output}
+"""
+
+#Process the files produced in the previous step through eicrecon
+rule demp_reco:
+    input:
+        "sim/{DETECTOR_CONFIG}/demp_{EBEAM}on{PBEAM}_{INDEX}.edm4hep.root",
+    output:
+        "reco/{DETECTOR_CONFIG}/demp_{EBEAM}on{PBEAM}_{INDEX}.edm4eic.root",
+    wildcard_constraints:
+        EBEAM="\d+",
+        PBEAM="\d+",
+        INDEX="\d+",
+    shell:
+        """
+DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file={output}
+"""
+
+#Process the files (either from the campaign or eicrecon) through the analysis script
+rule demp_analysis:
+    input:
+        script="benchmarks/demp/analysis/demp_analysis.cxx",
+        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/demp/analysis/demp_analysis_cxx.so",
+        data="reco/{DETECTOR_CONFIG}/{PREFIX}demp_{EBEAM}on{PBEAM}_{INDEX}.edm4eic.root",
+    output:
+        config="results/{DETECTOR_CONFIG}/demp/{PREFIX}demp_{EBEAM}on{PBEAM}_{INDEX}/config.json",
+        hists="results/{DETECTOR_CONFIG}/demp/{PREFIX}demp_{EBEAM}on{PBEAM}_{INDEX}/hists.root",
+    wildcard_constraints:
+        PREFIX= ".*",
+        EBEAM="\d+",
+        PBEAM="\d+",
+        INDEX="\d+",
+    shell:
+        """
+cat > {output.config} <<EOF
+{{
+  "rec_file": "{input.data}",
+  "detector": "{wildcards.DETECTOR_CONFIG}",
+  "ebeam": {wildcards.EBEAM},
+  "pbeam": {wildcards.PBEAM},
+  "output_prefix": "$(dirname "{output.hists}")/hists"
+}}
+EOF
+root -l -b -q '{input.script}+("{output.config}")'
+"""
+
+#Merge all the files produced in the previous step
+rule demp_combine:
+    input:
+        lambda wildcards: [f"results/{wildcards.DETECTOR_CONFIG}/demp/{wildcards.PREFIX}demp_{wildcards.EBEAM}on{wildcards.PBEAM}_{ix}/hists.root" for ix in range(1,int(wildcards.NUM_FILES)+1)],
+    output:
+        config="results/{DETECTOR_CONFIG}/demp/{PREFIX}demp_{EBEAM}on{PBEAM}_combined_{NUM_FILES}/config.json",
+        hists="results/{DETECTOR_CONFIG}/demp/{PREFIX}demp_{EBEAM}on{PBEAM}_combined_{NUM_FILES}/hists.root",
+    wildcard_constraints:
+        PREFIX= ".*",
+        EBEAM="\d+",
+        PBEAM="\d+",
+        NUM_FILES="\d+",
+    shell:
+        """
+cat > {output.config} <<EOF
+{{
+  "hists_file": "{output.hists}",
+  "detector": "{wildcards.DETECTOR_CONFIG}",
+  "ebeam": {wildcards.EBEAM},
+  "pbeam": {wildcards.PBEAM},
+  "nfiles": {wildcards.NUM_FILES},
+  "output_prefix": "$(dirname "{output.hists}")/plots"
+}}
+EOF
+hadd {output.hists} {input}
+"""
+
+#Process the merged file through the plotting script
+rule demp_plots:
+    input:
+        script="benchmarks/demp/analysis/demp_plots.cxx",
+        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/demp/analysis/demp_plots_cxx.so",
+        config="results/{DETECTOR_CONFIG}/demp/{PREFIX}demp_{EBEAM}on{PBEAM}_combined_{NUM_FILES}/config.json",
+    output:
+        "results/{DETECTOR_CONFIG}/demp/{PREFIX}demp_{EBEAM}on{PBEAM}_combined_{NUM_FILES}/plots.pdf"
+    wildcard_constraints:
+        PREFIX= ".*",
+        EBEAM="\d+",
+        PBEAM="\d+",
+        NUM_FILES="\d+",
+    shell:
+        """
+root -l -b -q '{input.script}+("{input.config}")'
+"""
+
+#Example of invocation
+rule demp_run_locally:
+    input:
+        "results/" + os.environ["DETECTOR_CONFIG"] + "/demp/demp_5on41_combined_5/plots.pdf",
+    message:
+        "See output in {input[0]}"
+
+rule demp_run_campaign:
+    input:
+        "results/epic_craterlake/demp/campaign_24.06.0_demp_5on41_combined_5/plots.pdf",
+    message:
+        "See output in {input[0]}"
+
