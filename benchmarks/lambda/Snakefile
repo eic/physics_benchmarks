@@ -1,12 +1,13 @@
 rule lambda_generate:
 	input:
+                script="benchmarks/lambda/analysis/gen_lambda_decay.cxx",
 	params:
 		NEVENTS_GEN=100000,
 	output:
 		GEN_FILE="lambda_decay_{P}GeV.hepmc"
 	shell:
 		"""
-root -l -b -q 'analysis/gen_lambda_decay.cxx({params.NEVENTS_GEN},0,"{output.GEN_FILE}",{wildcards.P},{wildcards.P})'
+root -l -b -q '{input.script}({params.NEVENTS_GEN},0,"{output.GEN_FILE}",{wildcards.P},{wildcards.P})'
 """
 
 rule lambda_simulate:
