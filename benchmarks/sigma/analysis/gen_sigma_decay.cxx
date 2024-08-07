@@ -285,7 +285,7 @@ void gen_sigma_decay(int n_events = 100000, UInt_t seed = 0, char* out_fname = "
       std::cout << "First event: " << std::endl;
       Print::listing(evt);
     }
-    double zdc_z=35000;
+    double zdc_z=35800;
     TVector3 extrap_gamma=sigma_decay_position+gamma_lab.Vect()*((zdc_z-pbeam_dir.Dot(sigma_decay_position))/(pbeam_dir.Dot(gamma_lab.Vect())));
     TVector3 extrap_neutron=lambda_decay_position+neutron_lab.Vect()*((zdc_z-pbeam_dir.Dot(lambda_decay_position))/(pbeam_dir.Dot(neutron_lab.Vect())));
     TVector3 extrap_gamma1=lambda_decay_position+gamma1_lab.Vect()*((zdc_z-pbeam_dir.Dot(lambda_decay_position))/(pbeam_dir.Dot(gamma1_lab.Vect())));
