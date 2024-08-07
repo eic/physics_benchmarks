@@ -38,7 +38,7 @@ rule lambda_recon:
                 REC_FILE="{DETECTOR_CONFIG}_rec_lambda_dec_{P}GeV.edm4hep.root"
         shell:
                 """
-eicrecon -Pplugins=ZDC {input.SIM_FILE} -Ppodio:output_file={output.REC_FILE} -Pdd4hep:xml_files=$DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml -Ppodio:output_include_collections=MCParticles,HcalFarForwardZDCClusters,HcalFarForwardZDCRecHits,HcalFarForwardZDCSubcellHits  -Pjana:nevents={params.NEVENTS_REC}
+eicrecon {input.SIM_FILE} -Ppodio:output_file={output.REC_FILE} -Pdd4hep:xml_files=$DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml -Ppodio:output_include_collections=MCParticles,HcalFarForwardZDCClusters,HcalFarForwardZDCRecHits,HcalFarForwardZDCSubcellHits  -Pjana:nevents={params.NEVENTS_REC}
 """
 
 rule lambda_analysis:
