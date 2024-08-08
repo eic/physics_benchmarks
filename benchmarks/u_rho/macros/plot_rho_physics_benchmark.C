@@ -360,13 +360,13 @@ void plot_rho_physics_benchmark(TString filename="./sim_output/plot_combined.roo
         h_effEtaPtPip ->GetXaxis()->SetLabelSize(h_effEtaPtPip ->GetXaxis()->GetLabelSize()*1.8);
         h_effEtaPtPim ->GetXaxis()->SetLabelSize(h_effEtaPtPim ->GetXaxis()->GetLabelSize()*1.8);
         h_effEtaPtPi  ->GetYaxis()->SetLabelSize(h_effEtaPtPi  ->GetYaxis()->GetLabelSize()*1.8);
-        h_effEtaPtPim ->GetZaxis()->SetLabelSize(h_effEtaPtPim ->GetZaxis()->GetLabelSize()*1.8);
+        h_effEtaPtPim ->GetZaxis()->SetLabelSize(h_effEtaPtPim ->GetZaxis()->GetLabelSize()*0.8);
         h_effEtaPtPim ->GetZaxis()->SetTitleSize(h_effEtaPtPim ->GetZaxis()->GetTitleSize()*1.8);
         h_effPhiEtaPi ->GetXaxis()->SetLabelSize(h_effPhiEtaPi ->GetXaxis()->GetLabelSize()*1.8);
         h_effPhiEtaPip->GetXaxis()->SetLabelSize(h_effPhiEtaPip->GetXaxis()->GetLabelSize()*1.8);
         h_effPhiEtaPim->GetXaxis()->SetLabelSize(h_effPhiEtaPim->GetXaxis()->GetLabelSize()*1.8);
         h_effPhiEtaPi ->GetYaxis()->SetLabelSize(h_effPhiEtaPi ->GetYaxis()->GetLabelSize()*1.8);
-        h_effPhiEtaPim->GetZaxis()->SetLabelSize(h_effPhiEtaPim->GetZaxis()->GetLabelSize()*1.8);
+        h_effPhiEtaPim->GetZaxis()->SetLabelSize(h_effPhiEtaPim->GetZaxis()->GetLabelSize()*0.8);
         h_effPhiEtaPim->GetZaxis()->SetTitleSize(h_effPhiEtaPim->GetZaxis()->GetTitleSize()*1.8);
 
 	fixedFontHist1D(h_effEtaPtPi,1.,1.2);
@@ -553,13 +553,13 @@ void plot_rho_physics_benchmark(TString filename="./sim_output/plot_combined.roo
         h_RecoMomPip ->GetXaxis()->SetLabelSize(h_RecoMomPip ->GetXaxis()->GetLabelSize()*1.8);
         h_RecoMomPim ->GetXaxis()->SetLabelSize(h_RecoMomPim ->GetXaxis()->GetLabelSize()*1.8);
         h_RecoMomPi  ->GetYaxis()->SetLabelSize(h_RecoMomPi  ->GetYaxis()->GetLabelSize()*1.8);
-        h_RecoMomPim ->GetZaxis()->SetLabelSize(h_RecoMomPim ->GetZaxis()->GetLabelSize()*1.8);
+        h_RecoMomPim ->GetZaxis()->SetLabelSize(h_RecoMomPim ->GetZaxis()->GetLabelSize()*0.8);
         h_RecoMomPim ->GetZaxis()->SetTitleSize(h_RecoMomPim ->GetZaxis()->GetTitleSize()*1.8);
         h_RecoTransMomPi ->GetXaxis()->SetLabelSize(h_RecoTransMomPi ->GetXaxis()->GetLabelSize()*1.8);
         h_RecoTransMomPip->GetXaxis()->SetLabelSize(h_RecoTransMomPip->GetXaxis()->GetLabelSize()*1.8);
         h_RecoTransMomPim->GetXaxis()->SetLabelSize(h_RecoTransMomPim->GetXaxis()->GetLabelSize()*1.8);
         h_RecoTransMomPi ->GetYaxis()->SetLabelSize(h_RecoTransMomPi ->GetYaxis()->GetLabelSize()*1.8);
-        h_RecoTransMomPim->GetZaxis()->SetLabelSize(h_RecoTransMomPim->GetZaxis()->GetLabelSize()*1.8);
+        h_RecoTransMomPim->GetZaxis()->SetLabelSize(h_RecoTransMomPim->GetZaxis()->GetLabelSize()*0.8);
         h_RecoTransMomPim->GetZaxis()->SetTitleSize(h_RecoTransMomPim->GetZaxis()->GetTitleSize()*1.8);
 
 	fixedFontHist1D(h_RecoMomPi,1.,1.2);
