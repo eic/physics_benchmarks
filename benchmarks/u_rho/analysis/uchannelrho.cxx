@@ -70,9 +70,11 @@ TTreeReaderArray<float> reco_px_array = {tree_reader, "ReconstructedChargedParti
 TTreeReaderArray<float> reco_py_array = {tree_reader, "ReconstructedChargedParticles.momentum.y"};
 TTreeReaderArray<float> reco_pz_array = {tree_reader, "ReconstructedChargedParticles.momentum.z"};
 TTreeReaderArray<float> reco_charge_array = {tree_reader, "ReconstructedChargedParticles.charge"};
-	
+
 TTreeReaderArray<unsigned int> rec_id = {tree_reader, "ReconstructedChargedParticleAssociations.recID"};
 TTreeReaderArray<unsigned int> sim_id = {tree_reader, "ReconstructedChargedParticleAssociations.simID"};
+
+TTreeReaderArray<int> reco_type = {tree_reader,"ReconstructedChargedParticles.type"};
 
 TTreeReaderArray<int> reco_PDG = {tree_reader,"ReconstructedChargedParticles.PDG"};
 
@@ -189,9 +191,6 @@ while (tree_reader.Next()) {
 	//MC level
 	TLorentzVector scatMC(0,0,0,0);
 	unsigned int mc_elect_index=-1;
-	unsigned int mc_pim_index=-1;
-	unsigned int mc_pip_index=-1;
-	unsigned int mc_pro_index=-1;
 	double maxPt=-99.;
 	for(unsigned int imc=0;imc<mc_px_array.GetSize();imc++){
 		TVector3 mctrk(mc_px_array[imc],mc_py_array[imc],mc_pz_array[imc]);	
@@ -208,7 +207,6 @@ while (tree_reader.Next()) {
 			scatMC.SetVectM(mctrk,mc_mass_array[imc]);
 		}
 		if(mc_pdg_array[imc]==211 && mc_genStatus_array[imc]==1){ 
-		  mc_pip_index=imc;
 		  piplusMC.SetVectM(mctrk,MASS_PION);  
 		  h_VM_endpointXY_MC->Fill(mc_endx_array[imc],mc_endy_array[imc]);  
 		  h_VM_endpointZ_MC->Fill(mc_endz_array[imc]);
@@ -216,15 +214,11 @@ while (tree_reader.Next()) {
                   h_Acceptance_angular_MC->Fill(phi,1000.0*mctrk.Theta());
 		}
                 if(mc_pdg_array[imc]==-211 && mc_genStatus_array[imc]==1){ 
-		  mc_pim_index=imc;
 		  piminusMC.SetVectM(mctrk,MASS_PION); 
 		  h_VM_endpointXY_MC->Fill(mc_endx_array[imc],mc_endy_array[imc]);  
 		  h_VM_endpointZ_MC->Fill(mc_endz_array[imc]);
                   double phi = mctrk.Phi()>0 ? mctrk.Phi() : mctrk.Phi()+6.2831853;
                   h_Acceptance_angular_MC->Fill(phi,1000.0*mctrk.Theta());
-		}
-		if(mc_pdg_array[imc]==2212 && mc_genStatus_array[imc]==1){ 
-		  mc_pro_index=imc;
 		}
 	}
 	vmMC=piplusMC+piminusMC;
@@ -324,15 +318,6 @@ while (tree_reader.Next()) {
 			rec_elect_index = rec_id[i];
 		}
 	}
-	//association of rec level pions and proton
-	int rec_pim_index=-1;
-	int rec_pip_index=-1;
-	int rec_pro_index=-1;
-	for(unsigned int i=0;i<sim_id.GetSize();i++){
-		if(sim_id[i]==mc_pim_index){rec_pim_index = rec_id[i];}
-		if(sim_id[i]==mc_pip_index){rec_pip_index = rec_id[i];}
-		if(sim_id[i]==mc_pro_index){rec_pro_index = rec_id[i];}
-	}
     
     TLorentzVector scatMCmatchREC(0,0,0,0);
     TLorentzVector scatREC(0,0,0,0);
@@ -373,14 +358,17 @@ while (tree_reader.Next()) {
 	}
 	//loop over track again;
 	int numpositivetracks = 0;
+	int failed = 0;
+
 	for(unsigned int itrk=0;itrk<reco_pz_array.GetSize();itrk++){
-		int truthPID = -1;
-		if(rec_pim_index!=-1 && itrk==rec_pim_index){truthPID==-211;}
-		if(rec_pip_index!=-1 && itrk==rec_pip_index){truthPID==211;}
-		if(rec_pro_index!=-1 && itrk==rec_pro_index){truthPID==2212;}
 		TVector3 trk(reco_px_array[itrk],reco_py_array[itrk],reco_pz_array[itrk]);
 		trk.RotateY(0.025);	
 		particle.SetVectM(trk,MASS_PION);//assume pions;
+		if(reco_type[itrk] == -1) { 
+			failed++;
+			continue;
+		}
+
 		if(itrk!=rec_elect_index) {
     		hfs += particle; //hfs 4vector sum.
     		//selecting rho->pi+pi- daughters;
@@ -388,25 +376,26 @@ while (tree_reader.Next()) {
     		//if(fabs(trk.Eta())<3.0){
     			if(reco_charge_array[itrk]>0){ 
 			  numpositivetracks++; 
-			  if(truthPID==211){
+			  if ((sim_id[itrk - failed]==4 || sim_id[itrk - failed]==5) && reco_charge_array[itrk - failed]==1){
+			  // if(reco_PDG[itrk]==211){
 			    piplusREC.SetVectM(trk,MASS_PION); 
 			    isPiPlusFound=true;
 			  }
-                          if(truthPID==2212){
+                          if(sim_id[itrk - failed]==3){
                             protonREC.SetVectM(trk,MASS_PROTON); 
                             protonRECasifpion.SetVectM(trk,MASS_PION);
                             isProtonFound=true; 
                           }
 			}
-    			if(reco_charge_array[itrk]<0){ piminusREC.SetVectM(trk,MASS_PION); if(truthPID==-211)isPiMinusFound=true;}
+    			if(reco_charge_array[itrk]<0){ piminusREC.SetVectM(trk,MASS_PION); if((sim_id[itrk - failed]==4 || sim_id[itrk - failed]==5) && reco_charge_array[itrk - failed]==-1)isPiMinusFound=true;}
     		//}
 		double pt = sqrt(reco_px_array[itrk]*reco_px_array[itrk] + reco_py_array[itrk]*reco_py_array[itrk]);
 		h_Acceptance_REC->Fill(fabs(trk.Eta()),pt);
 	        double phi = trk.Phi()>0 ? trk.Phi() : trk.Phi()+6.2831853;
 		h_Acceptance_angular_REC->Fill(phi,1000.0*trk.Theta());
-		if(truthPID==211 || truthPID==-211) h_Acceptance_angular_RECPI->Fill(phi,1000.0*trk.Theta());
-                if(truthPID==211) h_Acceptance_angular_RECPIP->Fill(phi,1000.0*trk.Theta());
-                if(truthPID==-211) h_Acceptance_angular_RECPIM->Fill(phi,1000.0*trk.Theta());
+		if(sim_id[itrk - failed]==4 || sim_id[itrk - failed]==5) h_Acceptance_angular_RECPI->Fill(phi,1000.0*trk.Theta());
+                if((sim_id[itrk - failed]==4 || sim_id[itrk - failed]==5) && reco_charge_array[itrk - failed]==1) h_Acceptance_angular_RECPIP->Fill(phi,1000.0*trk.Theta());
+                if((sim_id[itrk - failed]==4 || sim_id[itrk - failed]==5) && reco_charge_array[itrk - failed]==-1) h_Acceptance_angular_RECPIM->Fill(phi,1000.0*trk.Theta());
 		}
 	}
 	h_numPositiveTracks->Fill(numpositivetracks);
@@ -575,3 +564,4 @@ output->Close();
 
 return 0;
 }
+
