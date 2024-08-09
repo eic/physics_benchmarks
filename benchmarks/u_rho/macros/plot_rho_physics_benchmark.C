@@ -448,7 +448,7 @@ void plot_rho_physics_benchmark(TString filename="./sim_output/plot_combined.roo
         pimlabel->SetTextFont(43);
         pimlabel->SetTextColor(kBlack);
         pimlabel->Draw("same");
-        TLatex* r43fig5 = new TLatex(0.68,0.93, "EPIC");
+        TLatex* r43fig5 = new TLatex(0.66,0.93, "#bf{EPIC}");
         //r43fig5->SetNDC();
         //r43fig5->SetTextSize(0.07);
 	r43fig5->SetNDC();
