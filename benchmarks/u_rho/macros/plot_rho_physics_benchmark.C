@@ -112,9 +112,10 @@ void plot_rho_physics_benchmark(TString filename="./sim_output/plot_combined.roo
 	r42->SetTextColor(kBlack);
 	r42->Draw("same");
 
-	TLatex* r43 = new TLatex(0.9,0.91, "EPIC");
+	TLatex* r43 = new TLatex(0.9,0.91, "#bf{EPIC}");
 	r43->SetNDC();
-	r43->SetTextSize(0.04);
+	//r43->SetTextSize(0.04);
+	r43->SetTextSize(22);
 	r43->Draw("same");
 
 	TLatex* r44 = new TLatex(0.53, 0.78, "10^{-3}<Q^{2}<10 GeV^{2}, W>2 GeV");
@@ -124,7 +125,7 @@ void plot_rho_physics_benchmark(TString filename="./sim_output/plot_combined.roo
 	r44->SetTextColor(kBlack);
 	r44->Draw("same");
 
-	TLatex* r44_2 = new TLatex(0.5, 0.83, ""+vm_label+" #rightarrow "+daug_label+" eSTARlight");
+	TLatex* r44_2 = new TLatex(0.5, 0.83, ""+vm_label+" #rightarrow "+daug_label+" eSTARlightfjdklaf");
 	r44_2->SetNDC();
 	r44_2->SetTextSize(30);
 	r44_2->SetTextFont(43);
@@ -141,13 +142,14 @@ void plot_rho_physics_benchmark(TString filename="./sim_output/plot_combined.roo
 	w7->Draw("same");
 
 	//c1->Print("./sim_output/figures/benchmark_rho_dsigmadt.pdf");
-	TString figure1name = figure_directory+"/benchmark_rho_dsigmadt.pdf";
+	//TString figure1name = figure_directory+"/benchmark_rho_dsigmadt.pdf";
         //c1->Print(figure1name);
 
 	TCanvas* c2 = new TCanvas("c2","c2",1,1,600,600);
         gPad->SetTicks();
         gPad->SetLeftMargin(0.18);
         gPad->SetBottomMargin(0.18);
+	gPad->SetTopMargin(0.15);
         gPad->SetRightMargin(0.01);
         TH1D* base2 = makeHist("base2", "", "#pi^{#plus}#pi^{#minus} inv. mass (GeV)", "counts", 100,0.05,2.05,kBlack);
         base2->GetYaxis()->SetRangeUser(0.5, 1.2*(h_VM_mass_MC->GetMaximum()));
@@ -213,6 +215,7 @@ void plot_rho_physics_benchmark(TString filename="./sim_output/plot_combined.roo
 	gPad->SetLogy(1);
         gPad->SetLeftMargin(0.18);
         gPad->SetBottomMargin(0.18);
+	gPad->SetTopMargin(0.15);
         gPad->SetRightMargin(0.01);
         TH1D* base3 = makeHist("base3", "", "-#it{u} (GeV^{2})", "dN/d#it{u} (GeV^{-2} scaled)", 100,-0.25,3.05,kBlack);
         base3->GetYaxis()->SetRangeUser(0.5, 100*(h_dNdu_MC->GetMaximum()));
@@ -283,6 +286,7 @@ void plot_rho_physics_benchmark(TString filename="./sim_output/plot_combined.roo
         gPad->SetTicks();
         gPad->SetLeftMargin(0.18);
         gPad->SetBottomMargin(0.18);
+	gPad->SetTopMargin(0.15);
         gPad->SetRightMargin(0.01);
         TH1D* base4 = makeHist("base4", "", "#pi^{#plus}#pi^{#minus} inv. mass (GeV)", "counts", 100,0.05,2.05,kBlack);
         base4->GetYaxis()->SetRangeUser(0.5, 1.2*(h_VM_mass_MC_etacut->GetMaximum()));
