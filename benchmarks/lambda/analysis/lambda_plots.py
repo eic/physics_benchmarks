@@ -72,8 +72,9 @@ for p in momenta:
         index_of_max=-1
         max_val=0
         eigs=[]
-        for j in range(len(pars)//10):
-            largest_eigenvalue=max(pars[10*j+4:10*j+7])
+        shape_params_per_cluster=7
+        for j in range(len(pars)//shape_params_per_cluster):
+            largest_eigenvalue=max(pars[shape_params_per_cluster*j+4:shape_params_per_cluster*j+7])
             eigs.append(largest_eigenvalue)
             if(largest_eigenvalue>max_val):
                 max_val=largest_eigenvalue
