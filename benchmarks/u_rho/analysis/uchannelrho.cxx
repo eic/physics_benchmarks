@@ -381,7 +381,7 @@ while (tree_reader.Next()) {
 			    piplusREC.SetVectM(trk,MASS_PION); 
 			    isPiPlusFound=true;
 			  }
-                          if(sim_id[itrk - failed]==3){
+                          if(sim_id[itrk - failed]==6){
                             protonREC.SetVectM(trk,MASS_PROTON); 
                             protonRECasifpion.SetVectM(trk,MASS_PION);
                             isProtonFound=true; 
