@@ -735,7 +735,7 @@ void plot_rho_physics_benchmark(TString filename="./sim_output/plot_combined.roo
         TString figure6name = figure_directory+"/benchmark_rho_recoquality.pdf";
         c6->Print(figure6name);
 
-	double rhorecoeff = thiseff/500.0;
+	double rhorecoeff = thiseff/100.0;
 	setbenchstatus(rhorecoeff);
 
 }
