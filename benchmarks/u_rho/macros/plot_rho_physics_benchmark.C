@@ -125,7 +125,7 @@ void plot_rho_physics_benchmark(TString filename="./sim_output/plot_combined.roo
 	r44->SetTextColor(kBlack);
 	r44->Draw("same");
 
-	TLatex* r44_2 = new TLatex(0.5, 0.83, ""+vm_label+" #rightarrow "+daug_label+" eSTARlightfjdklaf");
+	TLatex* r44_2 = new TLatex(0.5, 0.83, ""+vm_label+" #rightarrow "+daug_label+" eSTARlight");
 	r44_2->SetNDC();
 	r44_2->SetTextSize(30);
 	r44_2->SetTextFont(43);
@@ -149,7 +149,7 @@ void plot_rho_physics_benchmark(TString filename="./sim_output/plot_combined.roo
         gPad->SetTicks();
         gPad->SetLeftMargin(0.18);
         gPad->SetBottomMargin(0.18);
-	gPad->SetTopMargin(0.15);
+	gPad->SetTopMargin(0.05);
         gPad->SetRightMargin(0.01);
         TH1D* base2 = makeHist("base2", "", "#pi^{#plus}#pi^{#minus} inv. mass (GeV)", "counts", 100,0.05,2.05,kBlack);
         base2->GetYaxis()->SetRangeUser(0.5, 1.2*(h_VM_mass_MC->GetMaximum()));
@@ -215,7 +215,7 @@ void plot_rho_physics_benchmark(TString filename="./sim_output/plot_combined.roo
 	gPad->SetLogy(1);
         gPad->SetLeftMargin(0.18);
         gPad->SetBottomMargin(0.18);
-	gPad->SetTopMargin(0.15);
+	gPad->SetTopMargin(0.10);
         gPad->SetRightMargin(0.01);
         TH1D* base3 = makeHist("base3", "", "-#it{u} (GeV^{2})", "dN/d#it{u} (GeV^{-2} scaled)", 100,-0.25,3.05,kBlack);
         base3->GetYaxis()->SetRangeUser(0.5, 100*(h_dNdu_MC->GetMaximum()));
@@ -286,7 +286,7 @@ void plot_rho_physics_benchmark(TString filename="./sim_output/plot_combined.roo
         gPad->SetTicks();
         gPad->SetLeftMargin(0.18);
         gPad->SetBottomMargin(0.18);
-	gPad->SetTopMargin(0.15);
+	gPad->SetTopMargin(0.07);
         gPad->SetRightMargin(0.01);
         TH1D* base4 = makeHist("base4", "", "#pi^{#plus}#pi^{#minus} inv. mass (GeV)", "counts", 100,0.05,2.05,kBlack);
         base4->GetYaxis()->SetRangeUser(0.5, 1.2*(h_VM_mass_MC_etacut->GetMaximum()));
