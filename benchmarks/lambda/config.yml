@@ -25,4 +25,4 @@ lambda:results:
   stage: collect
   needs: ["lambda:simulate"]
   script:
-    - snakemake --cores 1 results_epic_zdc_sipm_on_tile_only_lambda_dec
+    - python benchmarks/lambda/analysis/lambda_plots.py results_epic_zdc_sipm_on_tile_only_lambda_dec
