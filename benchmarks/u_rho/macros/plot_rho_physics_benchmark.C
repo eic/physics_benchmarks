@@ -141,8 +141,8 @@ void plot_rho_physics_benchmark(TString filename="./sim_output/plot_combined.roo
 	w7->Draw("same");
 
 	//c1->Print("./sim_output/figures/benchmark_rho_dsigmadt.pdf");
-	TString figure1name = figure_directory+"/benchmark_rho_dsigmadt.pdf";
-        c1->Print(figure1name);
+	/*TString figure1name = figure_directory+"/benchmark_rho_dsigmadt.pdf";
+        c1->Print(figure1name);*/
 
 	TCanvas* c2 = new TCanvas("c2","c2",1,1,600,600);
         gPad->SetTicks();
