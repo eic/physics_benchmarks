@@ -20,9 +20,9 @@ rule lambda_simulate:
 	shell:
 		"""
 if [[ {wildcards.P} -gt 225 ]]; then
-   NEVENTS_SIM=1500
+   NEVENTS_SIM=1000
 else
-   NEVENTS_SIM=3000
+   NEVENTS_SIM=1000
 fi
 # Running simulation
 npsim \
@@ -41,9 +41,9 @@ rule lambda_recon:
         shell:
                 """
 if [[ {wildcards.P} -gt 225 ]]; then
-   NEVENTS_REC=1500
+   NEVENTS_REC=1000
 else
-   NEVENTS_REC=3000
+   NEVENTS_REC=1000
 fi
 eicrecon {input.SIM_FILE} -Ppodio:output_file={output.REC_FILE} -Pdd4hep:xml_files=$DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml -Ppodio:output_include_collections=MCParticles,HcalFarForwardZDCClusters,HcalFarForwardZDCRecHits,HcalFarForwardZDCSubcellHits  -Pjana:nevents=$NEVENTS_REC
 """
