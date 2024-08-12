@@ -59,6 +59,6 @@ rule lambda_analysis:
 		results_dir=directory("results/lambda/results_{DETECTOR_CONFIG}_lambda_dec"),
 	shell:
 		"""
-mkdir {output.results_dir}
+mkdir -p {output.results_dir}
 python {input.script} {output.results_dir}
 """
