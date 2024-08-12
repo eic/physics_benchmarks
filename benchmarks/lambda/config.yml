@@ -15,7 +15,7 @@ lambda:simulate:
       - P: 275
   timeout: 6 hours
   script:
-    - snakemake --cores 1 epic_zdc_sipm_on_tile_only_rec_lambda_dec_${P}GeV.edm4hep.root 
+    - snakemake --cores 1 results/lambda/epic_zdc_sipm_on_tile_only_rec_lambda_dec_${P}GeV.edm4hep.root 
     - ls *.root
   retry:
     max: 2
@@ -27,4 +27,4 @@ lambda:results:
   needs: ["lambda:simulate"]
   script:
     - ls *.root
-    - python benchmarks/lambda/analysis/lambda_plots.py results_epic_zdc_sipm_on_tile_only_lambda_dec
+    - python benchmarks/lambda/analysis/lambda_plots.py results/lambda/results_epic_zdc_sipm_on_tile_only_lambda_dec
