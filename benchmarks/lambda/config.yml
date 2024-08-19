@@ -1,4 +1,3 @@
-
 lambda:simulate:
   stage: simulate
   extends: .phy_benchmark
@@ -15,14 +14,21 @@ lambda:simulate:
       - P: 275
   timeout: 6 hours
   script:
-    - snakemake --cores 1 results/lambda/epic_zdc_sipm_on_tile_only_rec_lambda_dec_${P}GeV.edm4hep.root 
+    - snakemake --cores 1 sim_output/lambda/epic_zdc_sipm_on_tile_only_rec_lambda_dec_${P}GeV.edm4hep.root 
   retry:
     max: 2
     when:
       - runner_system_failure
 
-lambda:results:
-  stage: collect
+lambda:analyze:
+  stage: analyze
+  extends: .phy_benchmark
   needs: ["lambda:simulate"]
   script:
-    - python benchmarks/lambda/analysis/lambda_plots.py results/lambda/results_epic_zdc_sipm_on_tile_only_lambda_dec
+    - snakemake --cores 1 results/epic_zdc_sipm_on_tile_only/lambda 
+
+lambda:results:
+  stage: collect
+  needs: ["lambda:analyze"]
+  script:
+    - ls -al
