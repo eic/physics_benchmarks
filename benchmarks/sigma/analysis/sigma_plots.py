@@ -18,7 +18,7 @@ import uproot as ur
 arrays_sim={}
 momenta=100, 125, 150, 175,200,225,250,275
 for p in momenta:
-    filename=f'results/sigma/epic_zdc_sipm_on_tile_only_rec_sigma_dec_{p}GeV.edm4hep.root'
+    filename=f'sim_output/sigma/epic_zdc_sipm_on_tile_only_rec_sigma_dec_{p}GeV.edm4hep.root'
     print("opening file", filename)
     events = ur.open(filename+':events')
     arrays_sim[p] = events.arrays()[:-1] #remove last event, which for some reason is blank
