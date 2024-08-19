@@ -355,7 +355,7 @@ fig,axs=plt.subplots(1,2, figsize=(16, 8))
 plt.sca(axs[0])
 lambda_mass=1.115683
 vals=[]
-for p in momenta[2:]:
+for p in momenta:
     accept=(nclusters[p]==4)&(abs(mass_pi0_recon_corr[p]-pi0_mass)<.01)
     vals+=list(mass_lambda_recon_corr[p][accept])
 
