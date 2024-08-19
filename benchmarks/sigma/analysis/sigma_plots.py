@@ -18,7 +18,7 @@ import uproot as ur
 arrays_sim={}
 momenta=100, 125, 150, 175,200,225,250,275
 for p in momenta:
-    filename=f'epic_zdc_sipm_on_tile_only_rec_sigma_dec_{p}GeV.edm4hep.root'
+    filename=f'results/sigma/epic_zdc_sipm_on_tile_only_rec_sigma_dec_{p}GeV.edm4hep.root'
     print("opening file", filename)
     events = ur.open(filename+':events')
     arrays_sim[p] = events.arrays()[:-1] #remove last event, which for some reason is blank
@@ -60,7 +60,6 @@ for p in momenta:
     pt_truth[p]=np.hypot(px*np.cos(tilt)-pz*np.sin(tilt), py)
     theta_truth[p]=np.arctan2(pt_truth[p],pz*np.cos(tilt)+px*np.sin(tilt))
 
-
 #create an array with the same shape as the cluster-level arrays
 is_neutron_cand={}
 for p in momenta:
@@ -72,8 +71,8 @@ for p in momenta:
         index_of_max=-1
         max_val=0
         eigs=[]
-        for j in range(len(pars)//10):
-            largest_eigenvalue=max(pars[10*j+4:10*j+7])
+        for j in range(len(pars)//7):
+            largest_eigenvalue=max(pars[7*j+4:7*j+7])
             eigs.append(largest_eigenvalue)
             if(largest_eigenvalue>max_val):
                 max_val=largest_eigenvalue
@@ -84,98 +83,142 @@ for p in momenta:
         
     is_neutron_cand[p]=ak.Array(is_neutron_cand[p])
 
+import ROOT
 
-#with the position of the vertex determined by assuming the mass of the pi0
-#corrected pt* and theta* recon
+lambda_mass=1.115683
+pi0_mass=0.1349768
 pt_recon_corr={}
 theta_recon_corr={}
 mass_recon_corr={}
+mass_lambda_recon_corr={}
 mass_pi0_recon_corr={}
 pi0_converged={}
 zvtx_recon={}
 
+#run this event-by-event:
 maxZ=35800
 for p in momenta:
-    xvtx=0
-    yvtx=0
-    zvtx=0
-    
-    for iteration in range(20):
-    
-        #compute the value of theta* using the clusters in the ZDC
-        xc=arrays_sim[p][f"HcalFarForwardZDCClusters.position.x"]
-        yc=arrays_sim[p][f"HcalFarForwardZDCClusters.position.y"]
-        zc=arrays_sim[p][f"HcalFarForwardZDCClusters.position.z"]
-        E=arrays_sim[p][f"HcalFarForwardZDCClusters.energy"]
+    pt_recon_corr[p]=[]
+    theta_recon_corr[p]=[]
+    mass_recon_corr[p]=[]
+    mass_lambda_recon_corr[p]=[]
+    mass_pi0_recon_corr[p]=[]
+    zvtx_recon[p]=[]
+    for evt in range(len(arrays_sim[p])):
+        if nclusters[p][evt]!=4:
+            nan=-1
+            pt_recon_corr[p].append(nan)
+            theta_recon_corr[p].append(nan)
+            mass_recon_corr[p].append(nan)
+            mass_lambda_recon_corr[p].append(nan)
+            mass_pi0_recon_corr[p].append(nan)
+            zvtx_recon[p].append(nan)
+            continue
+        xc=arrays_sim[p][f"HcalFarForwardZDCClusters.position.x"][evt]
+        yc=arrays_sim[p][f"HcalFarForwardZDCClusters.position.y"][evt]
+        zc=arrays_sim[p][f"HcalFarForwardZDCClusters.position.z"][evt]
+        E=arrays_sim[p][f"HcalFarForwardZDCClusters.energy"][evt]
+        
         #apply correction to the neutron candidates only
         A,B,C=-0.0756, -1.91,  2.30
-        neutron_corr=(1-is_neutron_cand[p])+is_neutron_cand[p]/(1+A+B/np.sqrt(E)+C/E)
+        neutron_corr=(1-is_neutron_cand[p][evt])+is_neutron_cand[p][evt]/(1+A+B/np.sqrt(E)+C/E)
         E=E*neutron_corr
 
-        E_recon=np.sum(E, axis=-1)
-        pabs=np.sqrt(E**2-is_neutron_cand[p]*.9406**2)
+        pabs=np.sqrt(E**2-is_neutron_cand[p][evt]*.9406**2)
         tilt=-0.025
         xcp=xc*np.cos(tilt)-zc*np.sin(tilt)
         ycp=yc
         zcp=zc*np.cos(tilt)+xc*np.sin(tilt)
-        rcp=np.sqrt(xcp**2+ycp**2+zcp**2)
         
-        ux=(xcp-xvtx)
-        uy=(ycp-yvtx)
-        uz=(zcp-zvtx)
-        
-        norm=np.sqrt(ux**2+uy**2+uz**2)
-        ux=ux/norm
-        uy=uy/norm
-        uz=uz/norm
-        
-        px_recon,py_recon,pz_recon=np.sum(pabs*ux, axis=-1),np.sum(pabs*uy, axis=-1),np.sum(pabs*uz, axis=-1)
+        #search for the combination of photons that would give the best lambda mass
+        pt_best=-999
+        theta_best=-999
+        mass_lambda_best=-999
+        mass_sigma_best=-999
+        mass_pi0_best=-999
+        zvtx_best=-999
+        for hypothesis in range(4):
+            if is_neutron_cand[p][evt][hypothesis]:
+                continue
+            
+            xvtx=0
+            yvtx=0
+            zvtx=0
+            #find the vertex position that reconstructs the pi0 mass
+            for iteration in range(20):
+                tot=ROOT.TLorentzVector(0,0,0,0)
+                Lambda=ROOT.TLorentzVector(0,0,0,0)
+                pi0=ROOT.TLorentzVector(0,0,0,0)
 
-        pt_recon_corr[p]=np.hypot(px_recon,py_recon)
-        theta_recon_corr[p]=np.arctan2(pt_recon_corr[p], pz_recon)
+                for i in range(4):
+
+                    if i!=hypothesis:
+                        ux=xcp[i]-xvtx
+                        uy=ycp[i]-yvtx
+                        uz=zcp[i]-zvtx
+                    else:
+                        ux=xcp[i]
+                        uy=ycp[i]
+                        uz=zcp[i]
+                    u=np.sqrt(ux**2+uy**2+uz**2)
+                    ux/=u
+                    uy/=u
+                    uz/=u
+
+                    P=ROOT.TLorentzVector(pabs[i]*ux, pabs[i]*uy, pabs[i]*uz, E[i])
+                    tot+=P
+                    if not is_neutron_cand[p][evt][i] and i!=hypothesis:
+                        pi0+=P
+                    if i!=hypothesis:
+                        Lambda+=P
+                alpha=1
+                if iteration==0:
+                    zeta=1/2
+                    zvtx=maxZ*np.power(zeta,alpha)
+                    xvtx=Lambda.X()/Lambda.Z()*zvtx
+                    yvtx=Lambda.Y()/Lambda.Z()*zvtx
+                else :
+                    s=2*(pi0.M()<pi0_mass)-1
+                    zeta=np.power(zvtx/maxZ, 1/alpha)
+                    zeta=zeta+s*1/2**(1+iteration)
+                    zvtx=maxZ*np.power(zeta,alpha)
+                    xvtx=Lambda.X()/Lambda.Z()*zvtx
+                    yvtx=Lambda.Y()/Lambda.Z()*zvtx
+
+            if abs(Lambda.M()-lambda_mass)< abs(mass_lambda_best-lambda_mass):
+                pt_best=tot.Pt()
+                theta_best=tot.Theta()
+                mass_lambda_best=Lambda.M()
+                mass_sigma_best=tot.M()
+                mass_pi0_best=pi0.M()
+                zvtx_best=zvtx
+                
+        pt_recon_corr[p].append(pt_best)
+        theta_recon_corr[p].append(theta_best)
+        mass_recon_corr[p].append(mass_sigma_best)
+        mass_lambda_recon_corr[p].append(mass_lambda_best)
+        mass_pi0_recon_corr[p].append(mass_pi0_best)
+        zvtx_recon[p].append(zvtx_best)
+    pt_recon_corr[p]=ak.Array(pt_recon_corr[p])
+    theta_recon_corr[p]=ak.Array(theta_recon_corr[p])
+    mass_recon_corr[p]=ak.Array(mass_recon_corr[p])
+    mass_lambda_recon_corr[p]=ak.Array(mass_lambda_recon_corr[p])
+    mass_pi0_recon_corr[p]=ak.Array(mass_pi0_recon_corr[p])
+    zvtx_recon[p]=ak.Array(zvtx_recon[p])
         
-        mass_recon_corr[p]=np.sqrt((E_recon)**2\
-                                -(px_recon)**2\
-                                -(py_recon)**2\
-                                -(pz_recon)**2)
-        mass_pi0_recon_corr[p]=np.sqrt(np.sum(pabs*(1-is_neutron_cand[p]), axis=-1)**2\
-                                    -np.sum(pabs*ux*(1-is_neutron_cand[p]), axis=-1)**2\
-                                    -np.sum(pabs*uy*(1-is_neutron_cand[p]), axis=-1)**2\
-                                    -np.sum(pabs*uz*(1-is_neutron_cand[p]), axis=-1)**2)
-        alpha=1
-        if iteration==0:
-            u=np.sqrt(px_recon**2+py_recon**2+pz_recon**2)
-            ux=px_recon/u
-            uy=py_recon/u
-            uz=pz_recon/u
-            zeta=1/2
-            zvtx=maxZ*np.power(zeta,alpha)
-            xvtx=ux/uz*zvtx
-            yvtx=uy/uz*zvtx
-        else :
-            u=np.sqrt(px_recon**2+py_recon**2+pz_recon**2)
-            ux=px_recon/u
-            uy=py_recon/u
-            uz=pz_recon/u
-            s=2*(mass_pi0_recon_corr[p]<0.135)-1
-            zeta=np.power(zvtx/maxZ, 1/alpha)
-            zeta=zeta+s*1/2**(1+iteration)
-            zvtx=maxZ*np.power(zeta,alpha)
-            xvtx=ux/uz*zvtx
-            yvtx=uy/uz*zvtx
-        #print(zvtx)
-    pi0_converged[p]=np.abs(mass_pi0_recon_corr[p]-0.135)<0.01
-    zvtx_recon[p]=zvtx
-        
+#now make plots
+
+#reconstructed vertex position plot
 fig,axs=plt.subplots(1,3, figsize=(24, 8))
 plt.sca(axs[0])
 plt.title(f"$E_{{\\Sigma}}=100-275$ GeV")
 x=[]
 y=[]
 for p in momenta:
-    accept=(nclusters[p]==3) &(pi0_converged[p])
+    accept=(nclusters[p]==4)# &(pi0_converged[p])
     x+=list(theta_truth[p][accept]*1000)
     y+=list(theta_recon_corr[p][accept]*1000)
+#print(x)
 plt.scatter(x,y)
 plt.xlabel("$\\theta^{*\\rm truth}_{\\Sigma}$ [mrad]")
 plt.ylabel("$\\theta^{*\\rm recon}_{\\Sigma}$ [mrad]")
@@ -188,9 +231,9 @@ y,x,_=plt.hist(y-np.array(x), bins=50, range=(-1,1))
 bc=(x[1:]+x[:-1])/2
 
 from scipy.optimize import curve_fit
-slc=abs(bc)<0.3
+slc=abs(bc)<0.6
 fnc=gauss
-p0=[100, 0, 0.05]
+p0=[100, 0, 0.5]
 coeff, var_matrix = curve_fit(fnc, bc[slc], y[slc], p0=p0,
                                  sigma=np.sqrt(y[slc])+(y[slc]==0))
 x=np.linspace(-1, 1)
@@ -201,26 +244,31 @@ plt.ylabel("events")
 plt.sca(axs[2])
 sigmas=[]
 dsigmas=[]
+xvals=[]
 for p in momenta:
     
-    accept=(nclusters[p]==3) &(pi0_converged[p])
-    y,x=np.histogram((theta_recon_corr[p]-theta_truth[p])[accept]*1000, bins=100, range=(-1,1))
+    accept=(nclusters[p]==4)
+    y,x=np.histogram((theta_recon_corr[p]-theta_truth[p])[accept]*1000, bins=100, range=(-0.5,0.5))
     bc=(x[1:]+x[:-1])/2
 
     from scipy.optimize import curve_fit
     slc=abs(bc)<0.3
     fnc=gauss
-    p0=(100, 0, 0.06)
+    p0=(100, 0, 0.15)
     #print(bc[slc],y[slc])
     sigma=np.sqrt(y[slc])+(y[slc]==0)
-    coeff, var_matrix = curve_fit(fnc, list(bc[slc]), list(y[slc]), p0=p0,sigma=list(sigma))
-                                     
-    x=np.linspace(-1, 1)
-    sigmas.append(coeff[2])
-    dsigmas.append(np.sqrt(var_matrix[2][2]))
+    try:
+        coeff, var_matrix = curve_fit(fnc, list(bc[slc]), list(y[slc]), p0=p0,sigma=list(sigma))
+        sigmas.append(np.abs(coeff[2]))
+        dsigmas.append(np.sqrt(var_matrix[2][2]))
+        xvals.append(p)
+    except:
+        print(f"fit failed for p={p}")
+print(xvals)
+print(sigmas)
 plt.ylim(0, 0.3)
 
-plt.errorbar(momenta, sigmas, dsigmas, ls='', marker='o', color='k')
+plt.errorbar(xvals, sigmas, dsigmas, ls='', marker='o', color='k')
 x=np.linspace(100, 275, 100)
 plt.plot(x, 3/np.sqrt(x), color='tab:orange')
 plt.text(170, .23, "YR requirement:\n   3 mrad/$\\sqrt{E}$")
@@ -228,17 +276,18 @@ plt.xlabel("$E_{\\Sigma}$ [GeV]")
 plt.ylabel("$\\sigma[\\theta^*_{\\Sigma}]$ [mrad]")
 plt.tight_layout()
 plt.savefig(outdir+"thetastar_recon.pdf")
-#plt.show()
 
-
+#reconstructed vertex position plot
 fig,axs=plt.subplots(1,3, figsize=(24, 8))
 plt.sca(axs[0])
 plt.title(f"$E_{{\\Sigma}}=100-275$ GeV")
 x=[]
 y=[]
 for p in momenta:
-    accept=(nclusters[p]==3) &(pi0_converged[p])
-    x+=list(arrays_sim[p]['MCParticles.vertex.z'][:,3][accept]/1000)
+    accept=(nclusters[p]==4)&(abs(mass_pi0_recon_corr[p]-pi0_mass)<.01)
+    tilt=-0.025
+    x+=list(arrays_sim[p]['MCParticles.vertex.z'][:,5][accept]*np.cos(tilt)/1000
+            +np.sin(tilt)*arrays_sim[p]['MCParticles.vertex.z'][:,5][accept]/1000)
     y+=list(zvtx_recon[p][accept]/1000)
 plt.scatter(x,y)
 #print(x,y)
@@ -260,7 +309,6 @@ coeff, var_matrix = curve_fit(fnc, bc[slc], y[slc], p0=p0,
                                  sigma=np.sqrt(y[slc])+(y[slc]==0))
 x=np.linspace(-5, 5)
 plt.plot(x, gauss(x, *coeff), color='tab:orange')
-print(coeff[2], np.sqrt(var_matrix[2][2]))
 plt.xlabel("$z^{*\\rm recon}_{\\rm vtx}-z^{*\\rm truth}_{\\rm vtx}$ [m]")
 plt.ylabel("events")
 
@@ -270,8 +318,8 @@ dsigmas=[]
 xvals=[]
 for p in momenta:
     
-    accept=(nclusters[p]==3) &(pi0_converged[p])
-    a=list((zvtx_recon[p]-arrays_sim[p]['MCParticles.vertex.z'][:,3])[accept]/1000)
+    accept=(nclusters[p]==4)&(abs(mass_pi0_recon_corr[p]-pi0_mass)<.01)
+    a=list((zvtx_recon[p]-arrays_sim[p]['MCParticles.vertex.z'][:,5])[accept]/1000)
     y,x=np.histogram(a, bins=100, range=(-10,10))
     bc=(x[1:]+x[:-1])/2
 
@@ -283,12 +331,12 @@ for p in momenta:
     sigma=np.sqrt(y[slc])+(y[slc]==0)
     try:
         coeff, var_matrix = curve_fit(fnc, list(bc[slc]), list(y[slc]), p0=p0,sigma=list(sigma))
-        sigmas.append(coeff[2])
+        sigmas.append(abs(coeff[2]))
         dsigmas.append(np.sqrt(var_matrix[2][2]))
         xvals.append(p)
     except:
-        print("fit failed")
-plt.ylim(0, 2)
+        print(f"fit failed for p={p}")
+plt.ylim(0, 3)
 
 plt.errorbar(xvals, sigmas, dsigmas, ls='', marker='o', color='k')
 x=np.linspace(100, 275, 100)
@@ -301,35 +349,34 @@ plt.xlabel("$E_{\\Sigma}$ [GeV]")
 plt.ylabel("$\\sigma[z_{\\rm vtx}]$ [m]")
 plt.tight_layout()
 plt.savefig(outdir+"zvtx_recon.pdf")
-#plt.show()
-
-p=100
+        
+#lambda mass reconstruction
 fig,axs=plt.subplots(1,2, figsize=(16, 8))
 plt.sca(axs[0])
 lambda_mass=1.115683
 vals=[]
-for p in momenta:
-    accept=(nclusters[p]==3) &(pi0_converged[p])
-    vals+=list(mass_recon_corr[p][accept])
+for p in momenta[2:]:
+    accept=(nclusters[p]==4)&(abs(mass_pi0_recon_corr[p]-pi0_mass)<.01)
+    vals+=list(mass_lambda_recon_corr[p][accept])
 
-y,x,_= plt.hist(vals, bins=100, range=(1.0, 1.25))
+y,x,_= plt.hist(vals, bins=100, range=(0.9, 1.3))
 bc=(x[1:]+x[:-1])/2
 plt.axvline(lambda_mass, ls='--', color='tab:green', lw=3)
 plt.text(lambda_mass+.01, np.max(y)*1.05, "PDG mass", color='tab:green')
-plt.xlabel("$m_{\\Sigma}^{\\rm recon}$ [GeV]")
+plt.xlabel("$m_{\\Lambda}^{\\rm recon}$ [GeV]")
 plt.ylim(0, np.max(y)*1.2)
-plt.xlim(1.0, 1.25)
+plt.xlim(0.9, 1.3)
 
 from scipy.optimize import curve_fit
-slc=abs(bc-lambda_mass)<0.07
+slc=abs(bc-lambda_mass)<0.05
 fnc=gauss
-p0=[100, lambda_mass, 0.04]
+p0=[100, lambda_mass, 0.03]
 coeff, var_matrix = curve_fit(fnc, bc[slc], y[slc], p0=p0,
                                  sigma=np.sqrt(y[slc])+(y[slc]==0))
 x=np.linspace(0.8, 1.3, 200)
 plt.plot(x, gauss(x, *coeff), color='tab:orange')
 print(coeff[2], np.sqrt(var_matrix[2][2]))
-plt.xlabel("$m^{\\rm recon}_{\\Sigma}$ [GeV]")
+plt.xlabel("$m^{\\rm recon}_{\\Lambda}$ [GeV]")
 plt.ylabel("events")
 plt.title(f"$E_{{\\Sigma}}=100-275$ GeV")
 
@@ -338,14 +385,14 @@ xvals=[]
 sigmas=[]
 dsigmas=[]
 for p in momenta:
-    accept=(nclusters[p]==3) &(pi0_converged[p])
-    y,x= np.histogram(mass_recon_corr[p][accept], bins=100, range=(0.6,1.4))
+    accept=(nclusters[p]==4)&(abs(mass_pi0_recon_corr[p]-pi0_mass)<.01)
+    y,x= np.histogram(mass_lambda_recon_corr[p][accept], bins=100, range=(0.6,1.4))
     bc=(x[1:]+x[:-1])/2
 
     from scipy.optimize import curve_fit
-    slc=abs(bc-lambda_mass)<0.07
+    slc=abs(bc-lambda_mass)<0.05
     fnc=gauss
-    p0=[100, lambda_mass, 0.05]
+    p0=[100, lambda_mass, 0.03]
     try:
         coeff, var_matrix = curve_fit(fnc, list(bc[slc]), list(y[slc]), p0=p0,
                                        sigma=list(np.sqrt(y[slc])+(y[slc]==0)))
@@ -361,7 +408,70 @@ avg=np.sum(sigmas/np.array(dsigmas)**2)/np.sum(1/np.array(dsigmas)**2)
 plt.axhline(avg, color='tab:orange')
 plt.text(150, 0.01,f"$\\sigma\\approx${avg*1000:.0f} MeV")
 plt.xlabel("$E_{\\Sigma}$ [GeV]")
-plt.ylabel("$\\sigma[m_{\\Sigma}]$ [GeV]")
+plt.ylabel("$\\sigma[m_{\\Lambda}]$ [GeV]")
 plt.ylim(0, 0.02)
 plt.tight_layout()
-plt.savefig(outdir+"lambda_mass_rec.pdf")
+plt.savefig(outdir+"lambda_mass_rec_from_sigma_decay.pdf")
+
+#sigma mass reconstruction
+p=100
+fig,axs=plt.subplots(1,2, figsize=(16, 8))
+plt.sca(axs[0])
+sigma_mass=1.192
+vals=[]
+for p in momenta:
+    accept=(nclusters[p]==4)&(abs(mass_pi0_recon_corr[p]-pi0_mass)<.01)
+    vals+=list(mass_recon_corr[p][accept])
+
+y,x,_= plt.hist(vals, bins=100, range=(1.0, 1.4))
+bc=(x[1:]+x[:-1])/2
+plt.axvline(sigma_mass, ls='--', color='tab:green', lw=3)
+plt.text(sigma_mass+.01, np.max(y)*1.05, "PDG mass", color='tab:green')
+plt.xlabel("$m_{\\Sigma}^{\\rm recon}$ [GeV]")
+plt.ylim(0, np.max(y)*1.2)
+plt.xlim(1.0, 1.45)
+
+from scipy.optimize import curve_fit
+slc=abs(bc-sigma_mass)<0.02
+fnc=gauss
+p0=[100, sigma_mass, 0.03]
+coeff, var_matrix = curve_fit(fnc, bc[slc], y[slc], p0=p0,
+                                 sigma=np.sqrt(y[slc])+(y[slc]==0))
+x=np.linspace(0.8, 1.3, 200)
+plt.plot(x, gauss(x, *coeff), color='tab:orange')
+print(coeff[2], np.sqrt(var_matrix[2][2]))
+plt.xlabel("$m^{\\rm recon}_{\\Sigma}$ [GeV]")
+plt.ylabel("events")
+plt.title(f"$E_{{\\Sigma}}=100-275$ GeV")
+
+plt.sca(axs[1])
+xvals=[]
+sigmas=[]
+dsigmas=[]
+for p in momenta:
+    accept=(nclusters[p]==4)&(abs(mass_pi0_recon_corr[p]-pi0_mass)<.01)
+    y,x= np.histogram(mass_recon_corr[p][accept], bins=100, range=(1.0,1.4))
+    bc=(x[1:]+x[:-1])/2
+
+    from scipy.optimize import curve_fit
+    slc=abs(bc-sigma_mass)<0.02
+    fnc=gauss
+    p0=[100, sigma_mass, 0.03]
+    try:
+        coeff, var_matrix = curve_fit(fnc, list(bc[slc]), list(y[slc]), p0=p0,
+                                       sigma=list(np.sqrt(y[slc])+(y[slc]==0)))
+        sigmas.append(abs(coeff[2]))
+        dsigmas.append(np.sqrt(var_matrix[2][2]))
+        xvals.append(p)
+    except:
+        print("fit failed")
+    
+plt.errorbar(xvals, sigmas, dsigmas, ls='', marker='o', color='k')
+avg=np.sum(sigmas/np.array(dsigmas)**2)/np.sum(1/np.array(dsigmas)**2)
+plt.axhline(avg, color='tab:orange')
+plt.text(150, 0.01,f"$\\sigma\\approx${avg*1000:.0f} MeV")
+plt.xlabel("$E_{\\Sigma}$ [GeV]")
+plt.ylabel("$\\sigma[m_{\\Sigma}]$ [GeV]")
+plt.ylim(0, 0.1)
+plt.tight_layout()
+plt.savefig(outdir+"sigma_mass_rec.pdf")
