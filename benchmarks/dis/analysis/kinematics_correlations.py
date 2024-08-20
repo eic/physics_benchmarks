@@ -217,7 +217,7 @@ ax1.set_title('Truth')
 ax2.set_title('Sigma')
 ax3.set_title('Double Angle')
 ax4.set_title('Electron')
-ax5.set_title('ESigma')
+ax5.set_title('eSigma')
 ax6.set_title('Jacquet Blondel')
 
 fig.suptitle('Kinematic Coverage  {}x{}   $minQ^2=${}$GeV^2$\n  {} events  DETECTOR_CONFIG: {} '.format(k,p,minq2,Nevents,Dconfig))
