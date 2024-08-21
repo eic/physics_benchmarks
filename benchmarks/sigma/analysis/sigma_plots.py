@@ -71,8 +71,11 @@ for p in momenta:
         index_of_max=-1
         max_val=0
         eigs=[]
-        for j in range(len(pars)//7):
-            largest_eigenvalue=max(pars[7*j+4:7*j+7])
+        #Must make sure this doesn't get messed up if someone changes the number of shape parameters in EICrecon.
+        nClust=nclusters[p][i]
+        nShapePars=len(pars)//nClust
+        for j in range(nClust):
+            largest_eigenvalue=max(pars[nShapePars*j+4:nShapePars*j+7])
             eigs.append(largest_eigenvalue)
             if(largest_eigenvalue>max_val):
                 max_val=largest_eigenvalue
