@@ -133,6 +133,7 @@ summary:
     - "dis:results"
     - "dvcs:results"
     - "lambda:results"
+    - "sigma:results"
     - "tcs:results"
     - "u_omega:results"
     - "single:results"
