@@ -56,7 +56,7 @@ rule sigma_analysis:
 		    DETECTOR_CONFIG=["{DETECTOR_CONFIG}"]),
                 script="benchmarks/sigma/analysis/sigma_plots.py",
 	output:
-		results_dir=directory("results/{DETECTOR_CONFIG}/sigma/"),
+		results_dir=directory("results/{DETECTOR_CONFIG}/sigma"),
 	shell:
 		"""
 mkdir -p {output.results_dir}
