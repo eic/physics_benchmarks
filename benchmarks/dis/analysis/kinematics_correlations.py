@@ -161,21 +161,21 @@ keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsJB')
 JacquetBlondel =  [keys['InclusiveKinematicsJB.Q2'], keys['InclusiveKinematicsJB.x']]
 keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsSigma')
 Sigma =  [keys['InclusiveKinematicsSigma.Q2'], keys['InclusiveKinematicsSigma.x']]
-keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicseSigma')
-eSigma =  [keys['InclusiveKinematicseSigma.Q2'], keys['InclusiveKinematicseSigma.x']]
+keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsESigma')
+ESigma =  [keys['InclusiveKinematicsESigma.Q2'], keys['InclusiveKinematicsESigma.x']]
 
 Q2values_T = Truth[0]
 Q2values_E = Electron[0]
 Q2values_DA = DoubleAngle[0]
 Q2values_JB = JacquetBlondel[0]
 Q2values_S = Sigma[0]
-Q2values_eS = eSigma[0]
+Q2values_eS = ESigma[0]
 Xvalues_T = Truth[1]
 Xvalues_E = Electron[1]
 Xvalues_DA = DoubleAngle[1]
 Xvalues_JB = JacquetBlondel[1]
 Xvalues_S = Sigma[1]
-Xvalues_eS = eSigma[1]
+Xvalues_eS = ESigma[1]
 
 method_dict = {'e':'Electron','DA':'Double-Angle','JB':'Jacquet-Blondel','S':'Sigma','eS':'eSigma'}
 method_Q2values_dict = {'e':Q2values_E,'DA':Q2values_DA,'JB':Q2values_JB,'S':Q2values_S,'eS':Q2values_eS}
