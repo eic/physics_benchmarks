@@ -25,7 +25,7 @@ sigma:analyze:
   extends: .phy_benchmark
   needs: ["sigma:simulate"]
   script:
-    - snakemake --cores 1 results/epic_zdc_sipm_on_tile_only/sigma
+    - snakemake --cores 1 results/epic_zdc_sipm_on_tile_only/sigma 
 
 sigma:results:
   stage: collect
