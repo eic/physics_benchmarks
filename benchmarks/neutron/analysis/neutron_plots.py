@@ -7,7 +7,7 @@ plt.rcParams['savefig.facecolor']='white'
 plt.rcParams['savefig.bbox']='tight'
 
 plt.rcParams["figure.figsize"] = (7, 7)
-
+config=sys.argv[1].split("/")[1]  #results/{config}/neutron
 outdir=sys.argv[1]+"/"
 try:
     import os
@@ -18,7 +18,7 @@ except:
 #read files
 arrays_sim={}
 for p in 20,30,40,50,60,70,80:
-    arrays_sim[p] = ur.open(f'sim_output/neutron/epic_craterlake_rec_neutron_{p}GeV.edm4hep.root:events')\
+    arrays_sim[p] = ur.open(f'sim_output/neutron/{config}_rec_neutron_{p}GeV.edm4hep.root:events')\
                     .arrays()
 
 #get reconstructed theta, eta, and E
