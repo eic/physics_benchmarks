@@ -24,7 +24,7 @@ neutron:analyze:
   extends: .phy_benchmark
   needs: ["neutron:simulate"]
   script:
-    - snakemake --cores 1 results/epic_craterlake/neutron 
+    - snakemake --cores 1 --touch results/epic_craterlake/neutron 
 
 neutron:results:
   stage: collect
