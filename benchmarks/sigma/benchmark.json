@@ -1,0 +1,6 @@
+{
+  "name": "Sigma0 in ZDC",
+  "title": "Sigma0 Benchmark",
+    "description": "Benchmark for measuring sigma0 reconstruction using its decay products in the ZDC",
+  "target": "0.8"
+}
