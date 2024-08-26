@@ -120,6 +120,8 @@ include:
     #- local: 'benchmarks/dvmp/config.yml'
   - local: 'benchmarks/dvcs/config.yml'
   - local: 'benchmarks/lambda/config.yml'
+  - local: 'benchmarks/neutron/config.yml'
+  - local: 'benchmarks/sigma/config.yml'
   - local: 'benchmarks/tcs/config.yml'
   - local: 'benchmarks/u_omega/config.yml'
   - local: 'benchmarks/single/config.yml'
@@ -133,6 +135,8 @@ summary:
     - "dis:results"
     - "dvcs:results"
     - "lambda:results"
+    - "neutron:results"
+    - "sigma:results"
     - "tcs:results"
     - "u_omega:results"
     - "single:results"

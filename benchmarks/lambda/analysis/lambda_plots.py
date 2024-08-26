@@ -202,6 +202,7 @@ plt.ylabel("events")
 plt.sca(axs[2])
 sigmas=[]
 dsigmas=[]
+xvals=[]
 for p in momenta:
     
     accept=(nclusters[p]==3) &(pi0_converged[p])
@@ -214,14 +215,16 @@ for p in momenta:
     p0=(100, 0, 0.06)
     #print(bc[slc],y[slc])
     sigma=np.sqrt(y[slc])+(y[slc]==0)
-    coeff, var_matrix = curve_fit(fnc, list(bc[slc]), list(y[slc]), p0=p0,sigma=list(sigma))
-                                     
-    x=np.linspace(-1, 1)
-    sigmas.append(coeff[2])
-    dsigmas.append(np.sqrt(var_matrix[2][2]))
+    try:
+        coeff, var_matrix = curve_fit(fnc, list(bc[slc]), list(y[slc]), p0=p0,sigma=list(sigma))
+        sigmas.append(coeff[2])
+        dsigmas.append(np.sqrt(var_matrix[2][2]))
+        xvals.append(p)
+    except:
+        print("fit failed")
 plt.ylim(0, 0.3)
 
-plt.errorbar(momenta, sigmas, dsigmas, ls='', marker='o', color='k')
+plt.errorbar(xvals, sigmas, dsigmas, ls='', marker='o', color='k')
 x=np.linspace(100, 275, 100)
 plt.plot(x, 3/np.sqrt(x), color='tab:orange')
 plt.text(170, .23, "YR requirement:\n   3 mrad/$\\sqrt{E}$")
