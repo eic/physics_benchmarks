@@ -1,4 +1,4 @@
-import numpy as np, pandas as pd, matplotlib.pyplot as plt, matplotlib as mpl, awkward as ak, sys
+import numpy as np, pandas as pd, matplotlib.pyplot as plt, matplotlib as mpl, awkward as ak, sys, uproot as ur
 import mplhep as hep
 hep.style.use("CMS")
 
@@ -57,7 +57,7 @@ for array in arrays_sim.values():
     w=E
     
     array['theta_recon']=np.sum(np.arccos(zp/r)*w, axis=-1)/np.sum(w, axis=-1)
-    array['eta_recon']=-np.log(np.tan(['theta_recon']/2))
+    array['eta_recon']=-np.log(np.tan(array['theta_recon']/2))
     
     
     array['E_Hcal']=np.sum(array['HcalEndcapPInsertClusters.energy'], axis=-1)#*20/12.5
