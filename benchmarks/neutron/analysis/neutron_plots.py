@@ -62,11 +62,11 @@ for array in arrays_sim.values():
     
     array['E_Hcal']=np.sum(array['HcalEndcapPInsertClusters.energy'], axis=-1)#*20/12.5
     array['E_Ecal']=np.sum(array['EcalEndcapPInsertClusters.energy'], axis=-1)#*27/20
-    
-    array['E_recon']=array['E_Hcal']/(0.70-.30/np.sqrt(array['E_Hcal']))\
-                        +array['E_Ecal']/(0.82-0.35/np.sqrt(array['E_Ecal']))
+    coeffs=[1.0540361, 1.12617385, 2.87336987, 1.9086172 ]
+    array['E_recon']=coeffs[0]*array['E_Hcal']+coeffs[1]*array['E_Ecal']+coeffs[2]*array['E_Hcal']/np.sqrt(array['E_Hcal']+array['E_Ecal'])+coeffs[3]*array['E_Ecal']/np.sqrt(array['E_Hcal']+array['E_Ecal'])
 
 #plot theta residuals:
+print("making theta recon plot")
 from scipy.optimize import curve_fit
 
 fig, axs=plt.subplots(1,2, figsize=(16,8))
@@ -115,6 +115,8 @@ for eta_min, eta_max in zip(r[:-1],r[1:]):
             pass
     plt.sca(axs[1])
     plt.errorbar(xvals, sigmas, dsigmas, ls='', marker='o', label=f"${eta_min}<\\eta<{eta_max}$")
+xx=np.linspace(15,85, 100)
+plt.plot(xx, 3/np.sqrt(xx), ls='--', label='YR req.: (3 mrad)/$\\sqrt{E}$')
 plt.xlabel("$p_{n}$ [GeV]")
 plt.ylabel("$\\sigma[\\theta]$ [mrad]")
 plt.ylim(0)
@@ -122,7 +124,9 @@ plt.legend()
 plt.tight_layout()
 plt.savefig(outdir+"neutron_theta_recon.pdf")
 
-fig, axs=plt.subplots(1,2, figsize=(16,8))
+#now make the energy plot
+print("making energy recon plot")
+fig, axs=plt.subplots(1,3, figsize=(24,8))
 plt.sca(axs[0])
 p=50
 eta_min=3.4; eta_max=3.6
@@ -130,11 +134,12 @@ y,x,_=plt.hist(((arrays_sim[p]['E_recon']-arrays_sim[p]['E_truth'])/arrays_sim[p
                [(arrays_sim[p]['eta_truth']>eta_min)&(arrays_sim[p]['eta_truth']<eta_max)&(arrays_sim[p]['E_Hcal']>0)], bins=50,
                     range=(-.5,.5), histtype='step')
 bc=(x[1:]+x[:-1])/2
-slc=abs(bc)<0.4
+slc=abs(bc)<.2
 # try:
-p0=(100, 0, 0.3)
+p0=(100, 0, 0.15)
 fnc=gauss
 sigma=np.sqrt(y[slc])+(y[slc]==0)
+
 coeff, var_matrix = curve_fit(fnc, list(bc[slc]), list(y[slc]), p0=p0,sigma=list(sigma))
 xx=np.linspace(-.5,.5,100)
 plt.plot(xx,fnc(xx,*coeff))
@@ -149,27 +154,42 @@ for eta_min, eta_max in zip(r[:-1],r[1:]):
     xvals=[]
     sigmas=[]
     dsigmas=[]
+    mus=[]
+    dmus=[]
     for p in 20,30,40, 50, 60, 70, 80:
         y,x=np.histogram(((arrays_sim[p]['E_recon']-arrays_sim[p]['E_truth'])/arrays_sim[p]['E_truth'])\
                        [(arrays_sim[p]['eta_truth']>eta_min)&(arrays_sim[p]['eta_truth']<eta_max)], bins=50,  range=(-.5,.5))
         bc=(x[1:]+x[:-1])/2
-        slc=abs(bc)<0.5
+        slc=abs(bc)<0.2
         fnc=gauss
-        p0=(100, 0, 0.3)
+        p0=(100, 0, 0.15)
         #print(bc[slc],y[slc])
         sigma=np.sqrt(y[slc])+(y[slc]==0)
         try:
             coeff, var_matrix = curve_fit(fnc, list(bc[slc]), list(y[slc]), p0=p0,sigma=list(sigma))
             sigmas.append(np.abs(coeff[2]))
             dsigmas.append(np.sqrt(var_matrix[2][2]))
+            mus.append(coeff[1])
+            dmus.append(np.sqrt(var_matrix[2][2]))
             xvals.append(p)
         except:
             pass
     plt.sca(axs[1])
     plt.errorbar(xvals, sigmas, dsigmas, ls='', marker='o', label=f"${eta_min}<\\eta<{eta_max}$")
+    plt.sca(axs[2])
+    plt.errorbar(xvals, mus, dmus, ls='', marker='o', label=f"${eta_min}<\\eta<{eta_max}$")
+plt.sca(axs[1])
 plt.xlabel("$p_{n}$ [GeV]")
 plt.ylabel("$\\sigma[E]/E$")
-plt.ylim(0)
+plt.ylim(0,0.3)
+xx=np.linspace(15,85, 100)
+plt.errorbar(xx, 0.5/np.sqrt(xx), ls='--', marker='', label='YR req.: (50%)/$\\sqrt{E}$')
 plt.legend()
+plt.sca(axs[2])
+plt.xlabel("$p_{n}$ [GeV]")
+plt.ylabel("$\\mu[E]/E$")
+plt.axhline(0, color='0.5', alpha=0.7, ls='--')
+plt.legend()
+plt.ylim(-0.2, 0.1)
 plt.tight_layout()
 plt.savefig(outdir+"neutron_energy_recon.pdf")
