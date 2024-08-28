@@ -138,9 +138,8 @@ root -l -b -q '{input.script}+("{input.config}")'
 
 rule diffractive_vm_run_over_campaigns:
     input:
-        "results/epic_arches/diffractive_vm/campaign_22.11.3_sartre_phi_combined_9/plots_benchmark-phi-dsigmadt.pdf",
-        "results/epic_craterlake/diffractive_vm/campaign_23.12.0_sartre_phi_combined_9/plots_benchmark-phi-dsigmadt.pdf",
         "results/epic_craterlake/diffractive_vm/campaign_24.03.1_sartre_phi_combined_9/plots_benchmark-phi-dsigmadt.pdf",
+        "results/epic_craterlake/diffractive_vm/campaign_24.08.1_sartre_phi_combined_9/plots_benchmark-phi-dsigmadt.pdf",
     message:
         "See output in {input[0]}"
 
