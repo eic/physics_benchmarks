@@ -248,43 +248,10 @@ int diffractive_vm(const std::string& config_name)
         ypos      = em_y_array[iclus];
       }
     }
-    // leading hit energy
-    double maxHitEnergy = 0.01; // threshold 10 MeV
-    double xhitpos      = -999.;
-    double yhitpos      = -999.;
-    int    hit_index    = -1;
-    for (int ihit = 0; ihit < emhits_energy_array.GetSize(); ihit++) {
-      if (emhits_energy_array[ihit] > maxHitEnergy) {
-        maxHitEnergy = emhits_energy_array[ihit];
-        xhitpos      = emhits_x_array[ihit];
-        yhitpos      = emhits_y_array[ihit];
-        hit_index    = ihit;
-      }
-    }
-    // sum over all 3x3 towers around the leading tower
-    double xClus = xhitpos * maxHitEnergy;
-    double yClus = yhitpos * maxHitEnergy;
-    for (int ihit = 0; ihit < emhits_energy_array.GetSize(); ihit++) {
-      double hitenergy = emhits_energy_array[ihit];
-      double x         = emhits_x_array[ihit];
-      double y         = emhits_y_array[ihit];
-      double d         = sqrt((x - xhitpos) * (x - xhitpos) + (y - yhitpos) * (y - yhitpos));
-      if (d < 70. && ihit != hit_index && hitenergy > 0.01) {
-        maxHitEnergy += hitenergy; // clustering around leading tower 3 crystal = 60mm.
-        xClus += x * hitenergy;
-        yClus += y * hitenergy;
-      }
-    }
 
-    h_ClusOverHit_REC->Fill(maxEnergy / maxHitEnergy);
-    // weighted average cluster position.
-    xClus         = xClus / maxHitEnergy;
-    yClus         = yClus / maxHitEnergy;
-    double radius = sqrt(xClus * xClus + yClus * yClus);
-    if (radius > 550.)
-      continue; // geometric acceptance cut
-    // 4.4% energy calibration.
-    double clusEnergy = 1.044 * maxHitEnergy;
+    double clusEnergy = maxEnergy;
+    double xClus = xpos;
+    double yClus = ypos;
 
     h_energy_REC->Fill(clusEnergy);
     // ratio of reco / truth Energy
