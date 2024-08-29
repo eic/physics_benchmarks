@@ -161,8 +161,13 @@ keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsJB')
 JacquetBlondel =  [keys['InclusiveKinematicsJB.Q2'], keys['InclusiveKinematicsJB.x']]
 keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsSigma')
 Sigma =  [keys['InclusiveKinematicsSigma.Q2'], keys['InclusiveKinematicsSigma.x']]
-keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsESigma')
-ESigma =  [keys['InclusiveKinematicsESigma.Q2'], keys['InclusiveKinematicsESigma.x']]
+try:
+    keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsESigma')
+    ESigma =  [keys['InclusiveKinematicsESigma.Q2'], keys['InclusiveKinematicsESigma.x']]
+except ur.KeyInFileError:
+    # Legacy compatibility
+    keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicseSigma')
+    ESigma =  [keys['InclusiveKinematicseSigma.Q2'], keys['InclusiveKinematicseSigma.x']]
 
 Q2values_T = Truth[0]
 Q2values_E = Electron[0]
