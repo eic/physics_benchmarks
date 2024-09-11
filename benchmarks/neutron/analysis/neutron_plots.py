@@ -203,6 +203,7 @@ plt.savefig(outdir+"neutron_energy_params.pdf")
 print("making energy recon plot")
 fig, axs=plt.subplots(1,3, figsize=(24,8))
 partitions=[3.2,3.4, 3.6, 3.8, 4.0]
+
 for eta_min, eta_max in zip(partitions[:-1],partitions[1:]):
     pvals=[]
     resvals=[]
@@ -212,7 +213,6 @@ for eta_min, eta_max in zip(partitions[:-1],partitions[1:]):
     for p in 20, 30,40,50,60,70, 80:
         best_res=1000
         res_err=1000
-
 
         wrange=np.linspace(30, 70, 30)*0.0257
         
@@ -268,14 +268,21 @@ for eta_min, eta_max in zip(partitions[:-1],partitions[1:]):
     
     
     plt.ylabel("$\\mu[E]/E$")
-
-
+    if eta_min==3.4:
+        fnc=lambda E, a, b: np.hypot(a,b/np.sqrt(E))
+        p0=[.1,.5]
+        coeff, var_matrix = curve_fit(fnc, pvals, resvals, p0=p0,sigma=reserrs)
+        xx=np.linspace(15, 85, 100)
+        axs[1].plot(xx, fnc(xx,*coeff), color='tab:purple',ls='--',
+            label=f'fit ${eta_min:.1f}<\\eta<{eta_max:.1f}$:\n'+\
+                f'{coeff[0]*100:.1f}%$\\oplus\\frac{{{coeff[1]*100:.0f}\\%}}{{\\sqrt{{E}}}}$')
+        
 axs[2].set_xlabel("$p_n$ [GeV]")
 axs[2].axhline(1, ls='--', color='0.5', alpha=0.7)
 axs[0].set_ylim(0)
 axs[1].set_ylim(0, 0.35)
 axs[2].set_ylim(0)
-axs[1].legend()
-axs[2].legend()
+axs[1].legend(fontsize=20)
+axs[2].legend(fontsize=20)
 plt.tight_layout()
 plt.savefig(outdir+"neutron_energy_recon.pdf")
