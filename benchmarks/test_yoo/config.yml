@@ -1,19 +1,19 @@
-sim:ecal_backwards_electron:
-  extends: .phy_benchmark 
-  stage: simulate
+test_yoo:generate:
+  extends: .phy_benchmark
+  stage: generate
   script:
     - echo "I will be simulating some electron events here!"
     - echo "0.511 MeV" >> $LOCAL_DATA_PATH/electron_mass
 
-sim:ecal_backwards_photon:
-  extends: .phy_benchmark 
+test_yoo:simulate:
+  extends: .phy_benchmark
   stage: simulate
   script:
     - echo "I will be simulating some photon events here!"
 
-bench:ecal_backwards_resolution:
+test_yoo:analyze:
   extends: .phy_benchmark
-  stage: benchmarks
+  stage: analyze
   needs:
     - ["sim:ecal_backwards_electron", "sim:ecal_backwards_photon"]
   script:
