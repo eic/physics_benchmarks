@@ -284,7 +284,6 @@ for eta_min, eta_max in zip(partitions[:-1],partitions[1:]):
         axs[1].plot(xx, fnc(xx,*coeff), color='tab:purple',ls='--',
             label=f'fit ${eta_min:.1f}<\\eta<{eta_max:.1f}$: '+\
                 f'$\\frac{{{coeff[0]*100:.0f}\\%}}{{\\sqrt{{E}}}}$')
-        
 axs[2].set_xlabel("$p_n$ [GeV]")
 axs[2].axhline(1, ls='--', color='0.5', alpha=0.7)
 axs[0].set_ylim(0)
