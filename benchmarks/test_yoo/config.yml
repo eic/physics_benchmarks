@@ -15,7 +15,7 @@ test_yoo:analyze:
   extends: .phy_benchmark
   stage: analyze
   needs:
-    - ["sim:ecal_backwards_electron", "sim:ecal_backwards_photon"]
+    - ["test_yoo:generate", "test_yoo:simulate"]
   script:
     - echo "I will be analyzing events here!"
     - echo "Our intelligence reports that the electron mass is $(cat $LOCAL_DATA_PATH/electron_mass)"
