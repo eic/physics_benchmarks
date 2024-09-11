@@ -120,7 +120,7 @@ for eta_min, eta_max in zip(r[:-1],r[1:]):
                 f'({coeff[0]:.2f}$\\oplus\\frac{{{coeff[1]:.1f}}}{{\\sqrt{{E}}}}$) mrad')
 plt.xlabel("$p_{n}$ [GeV]")
 plt.ylabel("$\\sigma[\\theta]$ [mrad]")
-plt.ylim(0, 10)
+plt.ylim(0, 5)
 plt.legend()
 plt.tight_layout()
 plt.savefig(outdir+"neutron_theta_recon.pdf")
@@ -140,7 +140,7 @@ for p in 20, 30,40,50,60,70, 80:
     best_res=1000
     res_err=1000
     best_s=1000
-    wrange=np.linspace(30, 70, 41)*0.0257
+    wrange=np.linspace(0.8, 1.2, 41)
     coeff_best=None
     
     wbest=0
@@ -149,7 +149,7 @@ for p in 20, 30,40,50,60,70, 80:
     e=np.sum(a[f'EcalEndcapPInsertClusters.energy'], axis=-1)
     for w in wrange:
         
-        r=(e/w+h)[(h>0)&(a['eta_truth']>eta_min)&(a['eta_truth']<eta_max)]
+        r=(e+h*w)[(h>0)&(a['eta_truth']>eta_min)&(a['eta_truth']<eta_max)]
         y,x=np.histogram(r,bins=50)
         bcs=(x[1:]+x[:-1])/2
         fnc=gauss
@@ -171,12 +171,12 @@ for p in 20, 30,40,50,60,70, 80:
             print("fit failed")
     
     if p==50:
-        r=(e/wbest+h)[(h>0)&(a['eta_truth']>3.4)&(a['eta_truth']<3.6)]
+        r=(e+h*wbest)[(h>0)&(a['eta_truth']>3.4)&(a['eta_truth']<3.6)]
         plt.sca(axs[0])
         y, x, _= plt.hist(r, histtype='step', bins=50)
         xx=np.linspace(20, 55, 100)
         plt.plot(xx,fnc(xx, *coeff_best), ls='-')
-        plt.xlabel("$E_{uncorr}=E_{Hcal}+E_{Ecal}/w$ [GeV]")
+        plt.xlabel("$E_{uncorr}=w\\times E_{Hcal}+E_{Ecal}$ [GeV]")
         plt.title(f"p=50 GeV, ${eta_min}<\\eta<{eta_max}$, w={wbest:.2f}")
         plt.axvline(np.sqrt(50**2+.9406**2), color='g', ls=':')
         plt.text(40, max(y)*0.9, "generated\nenergy", color='g', fontsize=20)
@@ -200,8 +200,8 @@ m=(np.sum(svals*Euncorr)*len(Euncorr)-np.sum(Euncorr)*np.sum(svals))/(np.sum(Eun
 b=np.mean(svals)-np.mean(Euncorr)*m
 plt.plot(Euncorr,Euncorr*m+b, label=f"s fit: ${m:.4f}E_{{uncorr}}+{b:.2f}$", ls=':')
 
-plt.xlabel("$E_{uncorr}=E_{Hcal}+E_{Ecal}/w$ [GeV]")
-plt.title("$E_{n,recon}=s\\times(E_{Hcal}+E_{Ecal}/w)$")
+plt.xlabel("$E_{uncorr}=w\\times E_{Hcal}+E_{Ecal}$ [GeV]")
+plt.title("$E_{n,recon}=s\\times(w\\times E_{Hcal}+E_{Ecal})$")
 plt.ylabel('parameter values')
 plt.legend()
 plt.ylim(0)
@@ -229,8 +229,8 @@ for eta_min, eta_max in zip(partitions[:-1],partitions[1:]):
         h=np.sum(a[f'HcalEndcapPInsertClusters.energy'], axis=-1)
         e=np.sum(a[f'EcalEndcapPInsertClusters.energy'], axis=-1)
         #phi=a['phi_truth']
-        uncorr=(e/w+h)
-        s=-0.0064*uncorr+1.80
+        uncorr=(e+h*w)
+        s=-0.0047*uncorr+1.64
         r=uncorr*s #reconstructed energy with correction
         r=r[(h>0)&(a['eta_truth']>eta_min)&(a['eta_truth']<eta_max)]#&(abs(phi)>np.pi/2)]
         y,x=np.histogram(r,bins=50)
@@ -277,14 +277,13 @@ for eta_min, eta_max in zip(partitions[:-1],partitions[1:]):
     
     plt.ylabel("$\\mu[E]/E$")
     if eta_min==3.4:
-        fnc=lambda E, a, b: np.hypot(a,b/np.sqrt(E))
-        p0=[.1,.5]
-        coeff, var_matrix = curve_fit(fnc, pvals, resvals, p0=p0,sigma=reserrs)
+        fnc=lambda E, b: b/np.sqrt(E)
+        p0=[.5]
+        coeff, var_matrix = curve_fit(fnc, pvals, resvals, p0=p0,sigma=np.array(reserrs))
         xx=np.linspace(15, 85, 100)
         axs[1].plot(xx, fnc(xx,*coeff), color='tab:purple',ls='--',
-            label=f'fit ${eta_min:.1f}<\\eta<{eta_max:.1f}$:\n'+\
-                f'{coeff[0]*100:.1f}%$\\oplus\\frac{{{coeff[1]*100:.0f}\\%}}{{\\sqrt{{E}}}}$')
-        
+            label=f'fit ${eta_min:.1f}<\\eta<{eta_max:.1f}$: '+\
+                f'$\\frac{{{coeff[0]*100:.0f}\\%}}{{\\sqrt{{E}}}}$')
 axs[2].set_xlabel("$p_n$ [GeV]")
 axs[2].axhline(1, ls='--', color='0.5', alpha=0.7)
 axs[0].set_ylim(0)
