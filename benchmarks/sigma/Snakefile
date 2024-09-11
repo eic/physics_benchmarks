@@ -7,7 +7,6 @@ rule sigma_generate:
 		GEN_FILE="sim_output/sigma/sigma_decay_{P}GeV.hepmc"
 	shell:
 		"""
-mkdir -p sim_output/sigma
 root -l -b -q '{input.script}({params.NEVENTS_GEN},0,"{output.GEN_FILE}",{wildcards.P},{wildcards.P})'
 """
 
