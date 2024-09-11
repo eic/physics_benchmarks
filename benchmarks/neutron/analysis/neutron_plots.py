@@ -110,9 +110,17 @@ for eta_min, eta_max in zip(r[:-1],r[1:]):
             pass
     plt.sca(axs[1])
     plt.errorbar(xvals, sigmas, dsigmas, ls='', marker='o', label=f"${eta_min}<\\eta<{eta_max}$")
+    if eta_min==3.4:
+        fnc=lambda E, a, b: np.hypot(a,b/np.sqrt(E))
+        p0=[.002,.05]
+        coeff, var_matrix = curve_fit(fnc, xvals, sigmas, p0=p0,sigma=dsigmas)
+        xx=np.linspace(15, 85, 100)
+        axs[1].plot(xx, fnc(xx,*coeff), color='tab:purple',ls='--',
+            label=f'fit ${eta_min:.1f}<\\eta<{eta_max:.1f}$:\n'+\
+                f'({coeff[0]:.2f}$\\oplus\\frac{{{coeff[1]:.1f}}}{{\\sqrt{{E}}}}$) mrad')
 plt.xlabel("$p_{n}$ [GeV]")
 plt.ylabel("$\\sigma[\\theta]$ [mrad]")
-plt.ylim(0)
+plt.ylim(0, 10)
 plt.legend()
 plt.tight_layout()
 plt.savefig(outdir+"neutron_theta_recon.pdf")
