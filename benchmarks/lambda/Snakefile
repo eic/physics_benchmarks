@@ -7,7 +7,6 @@ rule lambda_generate:
 		GEN_FILE="sim_output/lambda/lambda_decay_{P}GeV.hepmc"
 	shell:
 		"""
-mkdir -p sim_output/lambda
 root -l -b -q '{input.script}({params.NEVENTS_GEN},0,"{output.GEN_FILE}",{wildcards.P},{wildcards.P})'
 """
 
