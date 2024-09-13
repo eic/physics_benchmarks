@@ -1,0 +1,21 @@
+test_yoo:generate:
+  extends: .phy_benchmark
+  stage: generate
+  script:
+    - echo "I will be simulating some electron events here!"
+    - echo "0.511 MeV" >> $LOCAL_DATA_PATH/electron_mass
+
+test_yoo:simulate:
+  extends: .phy_benchmark
+  stage: simulate
+  script:
+    - echo "I will be simulating some photon events here!"
+
+test_yoo:analyze:
+  extends: .phy_benchmark
+  stage: analyze
+  needs:
+    - ["test_yoo:generate", "test_yoo:simulate"]
+  script:
+    - echo "I will be analyzing events here!"
+    - echo "Our intelligence reports that the electron mass is $(cat $LOCAL_DATA_PATH/electron_mass)"

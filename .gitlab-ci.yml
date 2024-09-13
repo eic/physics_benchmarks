@@ -127,6 +127,7 @@ include:
   - local: 'benchmarks/u_omega/config.yml'
   - local: 'benchmarks/single/config.yml'
   - local: 'benchmarks/backgrounds/config.yml'
+  - local: 'benchmarks/test_yoo/config.yml'
 
 summary:
   stage: finish
