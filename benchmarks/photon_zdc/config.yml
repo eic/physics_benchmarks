@@ -1,0 +1,35 @@
+photon_zdc:simulate:
+  stage: simulate
+  extends: .phy_benchmark
+  needs: ["common:detector"]
+  parallel:
+    matrix:
+      - P: 20
+      - P: 30
+      - P: 50
+      - P: 70
+      - P: 100
+      - P: 150
+      - P: 200
+      - P: 275
+  timeout: 1 hours
+  script:
+    - snakemake --cores 1 sim_output/photon_zdc/epic_zdc_sipm_on_tile_only_rec_photon_zdc_${P}GeV.edm4hep.root 
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+
+photon_zdc:analyze:
+  stage: analyze
+  extends: .phy_benchmark
+  needs: ["photon_zdc:simulate"]
+  script:
+    - mkdir -p results/epic_zdc_sipm_on_tile_only
+    - python benchmarks/photon_zdc/analysis/photon_zdc_plots.py results/epic_zdc_sipm_on_tile_only/photon_zdc
+
+photon_zdc:results:
+  stage: collect
+  needs: ["photon_zdc:analyze"]
+  script:
+    - ls -al

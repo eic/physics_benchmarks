@@ -1,0 +1,58 @@
+rule photon_zdc_generate:
+	input:
+                script="benchmarks/photon_zdc/analysis/gen_particles.cxx",
+	params:
+		NEVENTS_GEN=1000,
+		th_max=0.23,
+		th_min=0
+	output:
+		GEN_FILE="sim_output/photon_zdc/photon_zdc_{P}GeV.hepmc"
+	shell:
+		"""
+mkdir -p sim_output/photon_zdc
+root -l -b -q '{input.script}({params.NEVENTS_GEN},"{output.GEN_FILE}", "gamma", {params.th_min}, {params.th_max}, 0., 360., {wildcards.P})'
+"""
+
+rule photon_zdc_simulate:
+	input:
+		GEN_FILE="sim_output/photon_zdc/photon_zdc_{P}GeV.hepmc"
+	params:
+		PHYSICS_LIST="FTFP_BERT"
+	output:
+		SIM_FILE="sim_output/photon_zdc/{DETECTOR_CONFIG}_sim_photon_zdc_{P}GeV.edm4hep.root"
+	shell:
+		"""
+NEVENTS_SIM=1000
+# Running simulation
+npsim \
+   --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
+   --numberOfEvents $NEVENTS_SIM \
+   --physicsList {params.PHYSICS_LIST} \
+   --inputFiles {input.GEN_FILE} \
+   --outputFile {output.SIM_FILE}
+"""
+
+rule photon_zdc_recon:
+        input:
+                SIM_FILE="sim_output/photon_zdc/{DETECTOR_CONFIG}_sim_photon_zdc_{P}GeV.edm4hep.root"
+        output:
+                REC_FILE="sim_output/photon_zdc/{DETECTOR_CONFIG}_rec_photon_zdc_{P}GeV.edm4hep.root"
+        shell:
+                """
+NEVENTS_REC=1000
+eicrecon {input.SIM_FILE} -Ppodio:output_file={output.REC_FILE} -Pdd4hep:xml_files=$DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml -Ppodio:output_collections=MCParticles,HcalFarForwardZDCRecHits,HcalFarForwardZDCClusters,HcalFarForwardZDCSubcellHits  -Pjana:nevents=$NEVENTS_REC
+"""
+
+rule photon_zdc_analysis:
+	input:
+                expand("sim_output/photon_zdc/{DETECTOR_CONFIG}_rec_photon_zdc_{P}GeV.edm4hep.root",
+		    P=[20, 30, 50, 70, 100, 150, 200, 275],
+		    DETECTOR_CONFIG=["{DETECTOR_CONFIG}"]),
+                script="benchmarks/photon_zdc/analysis/photon_zdc_plots.py",
+	output:
+		results_dir=directory("results/{DETECTOR_CONFIG}/photon_zdc"),
+	shell:
+		"""
+mkdir -p {output.results_dir}
+python {input.script} {output.results_dir}
+"""
