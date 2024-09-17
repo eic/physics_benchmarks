@@ -20,7 +20,7 @@ def gauss(x, A,mu, sigma):
 #load the files
 import uproot as ur
 arrays_sim={}
-momenta=10, 15, 20, 30, 50, 70, 100, 150, 200, 275
+momenta=20, 30, 50, 70, 100, 150, 200, 275
 for p in momenta:
     filename=f'/Users/spaul/EIC/physics_benchmarks/sim_output/photon_zdc/epic_zdc_sipm_on_tile_only_rec_photon_zdc_{p}GeV.edm4hep.root'
     print("opening file", filename)
@@ -68,11 +68,11 @@ for p in momenta:
     dresvals.append(np.sqrt(var_matrix[2][2])/coeff[1])
     scalevals.append(np.abs(coeff[1])/p)
     dscalevals.append(np.sqrt(var_matrix[2][2])/p)
-    print(p, coeff[2])
+    
 plt.sca(axs[1])
 plt.errorbar(pvals, resvals, dresvals, ls='', marker='o')
 plt.ylim(0)
-plt.ylabel("$\\sigma[E_{\\gamma}]/\\mu[E_{\\gamma}]$ [GeV]")
+plt.ylabel("$\\sigma[E_{\\gamma}]/\\mu[E_{\\gamma}]$")
 plt.xlabel("$p_{\\gamma}$ [GeV]")
 
 xx=np.linspace(15, 275, 100)
@@ -84,12 +84,11 @@ coeff, var_matrix = curve_fit(fnc, pvals, resvals, p0=(1,),
 
 xx=np.linspace(15, 275, 100)
 plt.plot(xx, fnc(xx, *coeff), label=f'fit:  $\\frac{{{coeff[0]*100:.0f}\\%}}{{\\sqrt{{E}}}}$')
-plt.plot(xx, np.hypot(.25/np.sqrt(xx), .02), label='YR req.:  $\\frac{25\\%}{\\sqrt{E}}\\oplus 2\\%$')
 plt.legend()
 plt.sca(axs[2])
 plt.errorbar(pvals, scalevals, dscalevals, ls='', marker='o')
 plt.ylim(0.8, 1.2)
-plt.ylabel("$\\mu[E_{\\gamma}]/E_{\\gamma}$ [GeV]")
+plt.ylabel("$\\mu[E_{\\gamma}]/E_{\\gamma}$")
 plt.xlabel("$p_{\\gamma}$ [GeV]")
 plt.axhline(1, ls='--', alpha=0.7, color='0.5')
 plt.tight_layout()
@@ -139,7 +138,6 @@ for p in momenta:
     pvals.append(p)
     resvals.append(np.abs(coeff[2]))
     dresvals.append(np.sqrt(var_matrix[2][2]))
-    print(p, coeff[2])
 plt.sca(axs[1])
 plt.errorbar(pvals, resvals, dresvals, ls='', marker='o')
 #print(dresvals)
@@ -156,8 +154,7 @@ plt.plot(xx, fnc(xx, *coeff), label=f'fit:  $\\frac{{{coeff[0]:.2f}}}{{\\sqrt{{E
 plt.ylabel("$\\sigma[\\theta_{\\gamma}]$ [mrad]")
 plt.xlabel("$p_{\\gamma}$ [GeV]")
 
-plt.plot(xx, 3/np.sqrt(xx), label='YR req: $\\frac{3\\,mrad}{\\sqrt{E}}$')
-plt.ylim(0, 0.3)
+plt.ylim(0, 0.1)
 plt.legend()
 plt.tight_layout()
 plt.savefig(outdir+"photon_theta_res.pdf")
