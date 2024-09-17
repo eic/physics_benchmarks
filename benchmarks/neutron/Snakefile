@@ -9,7 +9,6 @@ rule neutron_generate:
 		GEN_FILE="sim_output/neutron/neutron_{P}GeV.hepmc"
 	shell:
 		"""
-mkdir -p sim_output/neutron
 root -l -b -q '{input.script}({params.NEVENTS_GEN},"{output.GEN_FILE}", "neutron", {params.th_min}, {params.th_max}, 0., 360., {wildcards.P})'
 """
 
