@@ -14,7 +14,7 @@ else
    NEVENTS_GEN=1000
 fi
 mkdir -p sim_output/photon_zdc
-root -l -b -q '{input.script}($NEVENTS_GEN,"{output.GEN_FILE}", "gamma", {params.th_min}, {params.th_max}, 0., 360., {wildcards.P})'
+root -l -b -q '{input.script}('$NEVENTS_GEN',"{output.GEN_FILE}", "gamma", {params.th_min}, {params.th_max}, 0., 360., {wildcards.P})'
 """
 
 rule photon_zdc_simulate:
