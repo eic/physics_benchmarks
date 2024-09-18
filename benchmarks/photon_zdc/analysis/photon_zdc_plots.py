@@ -8,6 +8,7 @@ plt.rcParams['savefig.bbox']='tight'
 
 
 outdir=sys.argv[1]+"/"
+config=outdir.split("/")[1]
 try:
     import os
     os.mkdir(outdir[:-1])
@@ -22,7 +23,7 @@ import uproot as ur
 arrays_sim={}
 momenta=20, 30, 50, 70, 100, 150, 200, 275
 for p in momenta:
-    filename=f'/Users/spaul/EIC/physics_benchmarks/sim_output/photon_zdc/epic_zdc_sipm_on_tile_only_rec_photon_zdc_{p}GeV.edm4hep.root'
+    filename=f'sim_output/photon_zdc/{config}_rec_photon_zdc_{p}GeV.edm4hep.root'
     print("opening file", filename)
     events = ur.open(filename+':events')
     arrays_sim[p] = events.arrays()#[:-1] #remove last event, which for some reason is blank
