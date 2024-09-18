@@ -7,6 +7,7 @@ plt.rcParams['savefig.facecolor']='white'
 plt.rcParams['savefig.bbox']='tight'
 
 outdir=sys.argv[1]+"/"
+config=outdir.split("/")[1]
 try:
     import os
     os.mkdir(outdir[:-1])
@@ -20,7 +21,7 @@ import uproot as ur
 arrays_sim={}
 momenta=60, 80, 100, 130, 160,
 for p in momenta:
-    filename=f'/Users/spaul/EIC/physics_benchmarks/sim_output/pi0_zdc/epic_zdc_sipm_on_tile_only_rec_pi0_zdc_{p}GeV.edm4hep.root'
+    filename=f'sim_output/pi0_zdc/{config}_rec_pi0_zdc_{p}GeV.edm4hep.root'
     print("opening file", filename)
     events = ur.open(filename+':events')
     arrays_sim[p] = events.arrays()#[:-1] #remove last event, which for some reason is blank
