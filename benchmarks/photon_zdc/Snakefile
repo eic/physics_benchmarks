@@ -27,9 +27,15 @@ rule photon_zdc_simulate:
 	shell:
 		"""
 # Running simulation
+if [[ {wildcards.P} -gt 140 ]]; then
+   NEVENTS_SIM=300
+else
+   NEVENTS_SIM=1000
+fi
 npsim \
    --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
    --physicsList {params.PHYSICS_LIST} \
+   --numberOfEvents $NEVENTS_SIM \
    --inputFiles {input.GEN_FILE} \
    --outputFile {output.SIM_FILE}
 """
@@ -41,7 +47,12 @@ rule photon_zdc_recon:
                 REC_FILE="sim_output/photon_zdc/{DETECTOR_CONFIG}_rec_photon_zdc_{P}GeV.edm4hep.root"
         shell:
                 """
-eicrecon {input.SIM_FILE} -Ppodio:output_file={output.REC_FILE} -Pdd4hep:xml_files=$DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml -Ppodio:output_collections=MCParticles,HcalFarForwardZDCRecHits,HcalFarForwardZDCClusters,HcalFarForwardZDCSubcellHits
+if [[ {wildcards.P} -gt 140 ]]; then
+   NEVENTS_REC=300
+else
+   NEVENTS_REC=1000
+fi
+eicrecon {input.SIM_FILE} -Ppodio:output_file={output.REC_FILE} -Pdd4hep:xml_files=$DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml -Ppodio:output_collections=MCParticles,HcalFarForwardZDCRecHits,HcalFarForwardZDCClusters,HcalFarForwardZDCSubcellHits -Pjana:nevents=$NEVENTS_REC
 """
 
 rule photon_zdc_analysis:
