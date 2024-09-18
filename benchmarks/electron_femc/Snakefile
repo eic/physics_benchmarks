@@ -1,0 +1,59 @@
+rule generate:
+	input:
+                script="src/gen_particles.cxx",
+	params:
+		NEVENTS_GEN=1000,
+		th_max=5.7,
+		th_min=2.0
+	output:
+		GEN_FILE="sim_output/{particle}/{particle}_{P}GeV.hepmc"
+	shell:
+		"""
+mkdir -p sim_output/{wildcards.particle}
+root -l -b -q '{input.script}({params.NEVENTS_GEN},"{output.GEN_FILE}", "{wildcards.particle}", {params.th_min}, {params.th_max}, 0., 360., {wildcards.P})'
+"""
+
+rule simulate:
+	input:
+		GEN_FILE="sim_output/{particle}/{particle}_{P}GeV.hepmc"
+	params:
+		PHYSICS_LIST="FTFP_BERT"
+	output:
+		SIM_FILE="sim_output/{particle}/{DETECTOR_CONFIG}_sim_{particle}_{P}GeV.edm4hep.root"
+	shell:
+		"""
+NEVENTS_SIM=1000
+# Running simulation
+npsim \
+   --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
+   --numberOfEvents $NEVENTS_SIM \
+   --physicsList {params.PHYSICS_LIST} \
+   --inputFiles {input.GEN_FILE} \
+   --outputFile {output.SIM_FILE}
+"""
+
+rule recon:
+        input:
+                SIM_FILE="sim_output/{particle}/{DETECTOR_CONFIG}_sim_{particle}_{P}GeV.edm4hep.root"
+        output:
+                REC_FILE="sim_output/{particle}/{DETECTOR_CONFIG}_rec_{particle}_{P}GeV.edm4hep.root"
+        shell:
+                """
+NEVENTS_REC=1000
+eicrecon {input.SIM_FILE} -Ppodio:output_file={output.REC_FILE} -Pdd4hep:xml_files=$DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml -Ppodio:output_collections=MCParticles,HcalEndcapPInsertRecHits,HcalEndcapPInsertClusters,HcalEndcapPInsertSubcellHits,EcalEndcapPInsertRecHits,EcalEndcapPInsertClusters  -Pjana:nevents=$NEVENTS_REC
+"""
+
+rule analysis:
+	input:
+                expand("sim_output/{particle}/{DETECTOR_CONFIG}_rec_{particle}_{P}GeV.edm4hep.root",
+		    P=[20, 30, 40, 50, 60, 70, 80],
+		    DETECTOR_CONFIG=["{DETECTOR_CONFIG}"],
+		    particle=["{particle}"]),
+                script="analysis/singles_plots.py",
+	output:
+		results_dir=directory("results/{DETECTOR_CONFIG}/{particle}"),
+	shell:
+		"""
+mkdir -p {output.results_dir}
+python {input.script} {output.results_dir}
+"""
