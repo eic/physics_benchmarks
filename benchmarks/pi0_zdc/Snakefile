@@ -2,7 +2,7 @@ rule pi0_zdc_generate:
 	input:
                 script="benchmarks/pi0_zdc/analysis/gen_pi0_decay.cxx",
 	params:
-		NEVENTS_GEN=10000,
+		NEVENTS_GEN=1000,
 	output:
 		GEN_FILE="sim_output/pi0_zdc/pi0_zdc_{P}GeV.hepmc"
 	shell:
@@ -44,7 +44,7 @@ eicrecon {input.SIM_FILE} -Ppodio:output_file={output.REC_FILE} -Pdd4hep:xml_fil
 rule pi0_zdc_analysis:
 	input:
                 expand("sim_output/pi0_zdc/{DETECTOR_CONFIG}_rec_pi0_zdc_{P}GeV.edm4hep.root",
-		    P=[60, 80, 100, 130, 160, 200, 240, 275],
+		    P=[60, 80, 100, 130, 160],
 		    DETECTOR_CONFIG=["{DETECTOR_CONFIG}"]),
                 script="benchmarks/pi0_zdc/analysis/pi0_zdc_plots.py",
 	output:
