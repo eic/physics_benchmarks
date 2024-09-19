@@ -1,0 +1,43 @@
+your_benchmark:compile:
+  extends: .phy_benchmark 
+  stage: compile
+  script:
+    - echo "You can compile your code here!"
+
+your_benchmark:generate:
+  extends: .phy_benchmark 
+  stage: generate
+  script:
+    - echo "I will generate events here!"
+    - echo "Add event-generator code to do this"
+
+your_benchmark:simulate:
+  extends: .phy_benchmark
+  stage: simulate
+  script:
+    - echo "I will simulate detector response here!"
+
+your_benchmark:reconstruct:
+  extends: .phy_benchmark
+  stage: reconstruct
+  script:
+    - echo "Event reconstruction here!"
+
+your_benchmark:analyze:
+  extends: .phy_benchmark
+  stage: analyze
+  needs:
+    - ["your_benchmark:reconstruct"]
+  script:
+    - echo "I will analyze events here!"
+    - echo "This step requires that the reconstruct step be completed"
+
+your_benchmark:collect
+  extends: .phy_benchmark
+  stage: collect
+  needs:
+    - ["your_benchmark:analyze"]
+  script:
+    - echo "I will collect results here!"
+    - echo "This step requires that the analyze step be completed"
+
