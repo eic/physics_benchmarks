@@ -32,7 +32,7 @@ your_benchmark:analyze:
     - echo "I will analyze events here!"
     - echo "This step requires that the reconstruct step be completed"
 
-your_benchmark:collect:
+your_benchmark:results:
   extends: .phy_benchmark
   stage: collect
   needs:
