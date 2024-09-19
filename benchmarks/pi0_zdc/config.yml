@@ -22,7 +22,7 @@ pi0_zdc:analyze:
   extends: .phy_benchmark
   needs: ["pi0_zdc:simulate"]
   script:
-    - mkdir -p results/epic_craterlake
+    - mkdir -p results/epic_zdc_sipm_on_tile_only
     - python benchmarks/pi0_zdc/analysis/pi0_zdc_plots.py results/epic_zdc_sipm_on_tile_only/pi0_zdc
 
 pi0_zdc:results:
