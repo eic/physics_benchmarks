@@ -14,14 +14,44 @@ your_benchmark:generate:
 your_benchmark:simulate:
   extends: .phy_benchmark
   stage: simulate
+  needs: ["common:detector", "your_benchmark:generate"]
+  timeout: 10 hour
   script:
     - echo "I will simulate detector response here!"
+    - config_file=benchmarks/your_benchmark/setup.config
+    - source $config_file
+    - if [ "$USE_SIMULATION_CAMPAIGN" = true ] ; then
+    -     echo "Using simulation campaign so skipping this step!"
+    - else
+    -     echo "Grabbing raw events from S3 and running Geant4"
+    -     bash benchmarks/your_benchmark/simulate.sh
+    - fi
+    - echo "Finished simulating detector response"
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
 
 your_benchmark:reconstruct:
   extends: .phy_benchmark
   stage: reconstruct
+  needs: ["your_benchmark:simulate"]
+  timeout: 10 hour
   script:
     - echo "Event reconstruction here!"
+    - config_file=benchmarks/your_benchmark/setup.config
+    - source $config_file
+    - if [ "$USE_SIMULATION_CAMPAIGN" = true ] ; then
+    -     echo "Using simulation campaign so skipping this step!"
+    - else
+    -     echo "Running eicrecon!"
+    -     bash benchmarks/your_benchmark/reconstruct.sh
+    - fi
+    - echo "Finished reconstruction"
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
 
 your_benchmark:analyze:
   extends: .phy_benchmark
@@ -31,8 +61,22 @@ your_benchmark:analyze:
   script:
     - echo "I will analyze events here!"
     - echo "This step requires that the reconstruct step be completed"
+    - mkdir -p results/your_benchmark
+    - mkdir -p benchmark_output
+    - config_file=benchmarks/your_benchmark/setup.config
+    - source $config_file
+    - if [ "$USE_SIMULATION_CAMPAIGN" = true ] ; then
+    -     echo "Using simulation campaign!"
+    -     snakemake --cores 2 ../../sim_output/campaign_24.07.0_combined_45files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf
+    -     cp ../../sim_output/campaign_24.07.0_combined_45files_eicrecon.edm4eic.plots_figures/*.pdf results/your_benchmark/
+    - else
+    -     echo "Not using simulation campaign!"
+    -     bash benchmarks/your_benchmark/analyze.sh
+    -     cp sim_output/nocampaign/plots_figures/*.pdf results/your_benchmark/
+    - fi
 
 your_benchmark:results:
+
   extends: .phy_benchmark
   stage: collect
   needs:
