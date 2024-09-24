@@ -65,6 +65,7 @@ your_benchmark:analyze:
     - mkdir -p benchmark_output
     - config_file=benchmarks/your_benchmark/setup.config
     - source $config_file
+    - echo $ENV_MODE
     - if [ "$USE_SIMULATION_CAMPAIGN" = true ] ; then
     -     echo "Using simulation campaign!"
     -     snakemake --cores 2 ../../sim_output/campaign_24.07.0_combined_45files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf
