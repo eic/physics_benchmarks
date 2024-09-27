@@ -9,7 +9,7 @@ demp:simulate:
   extends: .phy_benchmark
   timeout: 2 hours
   script:
-    - snakemake --cores 5 demp_run_locally
+    - snakemake --cache --cores 5 demp_run_locally
   retry:
     max: 2
     when:
