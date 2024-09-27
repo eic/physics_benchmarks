@@ -38,8 +38,6 @@ stages:
   - compile
   - generate
   - simulate
-  - reconstruct
-  - analyze
   - collect
   - finish
   - status-report
@@ -122,7 +120,6 @@ include:
   - local: 'benchmarks/dvcs/config.yml'
   - local: 'benchmarks/tcs/config.yml'
   - local: 'benchmarks/u_omega/config.yml'
-  - local: 'benchmarks/single/config.yml'
   - local: 'benchmarks/backgrounds/config.yml'
 
 summary:
@@ -134,7 +131,6 @@ summary:
     - "dvcs:results"
     - "tcs:results"
     - "u_omega:results"
-    - "single:results"
     - "backgrounds:results"
   script:
     - collect_benchmarks.py
