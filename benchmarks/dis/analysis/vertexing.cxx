@@ -251,7 +251,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   recoVsMCTracksHist->GetYaxis()->SetTitle("N_{RC}");
 
 
-  if(PRINT) c1->Print((results_path+"/numberAssoPart.png").c_str()); // MC versus RC Tracks
+  if(PRINT) c1->Print((results_path+"/vertexing/numberAssoPart.png").c_str()); // MC versus RC Tracks
   delete c1;
  
  // MC vx versus vy Vertex
@@ -265,7 +265,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   genVtxYvsXHist->GetXaxis()->SetTitle("x-coordinate (in mm)");
   genVtxYvsXHist->GetYaxis()->SetTitle("y-coordinate (in mm)");
   
-  if(PRINT) c2->Print((results_path+"/MCvertexYvsX.png").c_str()); // MC Vertex vx versus vy
+  if(PRINT) c2->Print((results_path+"/vertexing/MCvertexYvsX.png").c_str()); // MC Vertex vx versus vy
   delete c2;
   
   // MC vr versus vz Vertex
@@ -280,7 +280,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   genVtxRvsZHist->GetYaxis()->SetTitle("#sqrt{x^{2} + y^{2}} (in mm)");
 
 
-  if(PRINT) c3->Print((results_path+"/MCvertexRvsZ.png").c_str()); // MC Vertex vr versus vz
+  if(PRINT) c3->Print((results_path+"/vertexing/MCvertexRvsZ.png").c_str()); // MC Vertex vr versus vz
   delete c3;
   
   ////////////////////////  Reconstructed Plots  ////////////////////////
@@ -301,7 +301,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   recoVtxEffHist->GetXaxis()->SetTitle("# of Vertex");
   recoVtxEffHist->GetYaxis()->SetTitle("nEvents/total_events %");
 
-  if(PRINT) c4->Print((results_path+"/vtxEfficiency.png").c_str()); // Vertexing Efficiency
+  if(PRINT) c4->Print((results_path+"/vertexing/vtxEfficiency.png").c_str()); // Vertexing Efficiency
   delete c4;
   
   //Vertexing Efficiency vs MC Tracks
@@ -331,7 +331,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   vtxEffVsGenTrkHist->GetYaxis()->SetTitle("Vertexing Efficiency");
   vtxEffVsGenTrkHist->GetYaxis()->SetRangeUser(0, 1.2);
 
-  if(PRINT) c5->Print((results_path+"/vtxEffVsMCTrks.png").c_str()); // Vertexing Efficiency versus MC Tracks
+  if(PRINT) c5->Print((results_path+"/vertexing/vtxEffVsMCTrks.png").c_str()); // Vertexing Efficiency versus MC Tracks
   delete c5;
   
  // Reconstructed Vertex vx versus vy
@@ -345,7 +345,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   recoVtxYvsXHist->GetXaxis()->SetTitle("x-coordinate (in mm)");
   recoVtxYvsXHist->GetYaxis()->SetTitle("y-coordinate (in mm)");
   
-  if(PRINT) c6->Print((results_path+"/recoVertexYvsX.png").c_str()); // RC Vertex vx versus vy
+  if(PRINT) c6->Print((results_path+"/vertexing/recoVertexYvsX.png").c_str()); // RC Vertex vx versus vy
   delete c6;
   
   // Reconstructed Vertex vr versus vz
@@ -360,7 +360,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   recoVtxRvsZHist->GetYaxis()->SetTitle("#sqrt{x^{2} + y^{2}} (in mm)");
 
 
-  if(PRINT) c7->Print((results_path+"/recoVertexRvsZ.png").c_str()); // RC Vertex vr versus vz
+  if(PRINT) c7->Print((results_path+"/vertexing/recoVertexRvsZ.png").c_str()); // RC Vertex vr versus vz
   delete c7;
   
   ////////////////////////  Resolution Plots  ////////////////////////
@@ -397,11 +397,11 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   vtxResZvsGenTrkHist->GetYaxis()->SetTitle("recVtx_z - mcVtx_z (in mm)");
   
   
-  if(PRINT) c8->Print((results_path+"/vtxResXvsMCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
+  if(PRINT) c8->Print((results_path+"/vertexing/vtxResXvsMCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
   delete c8;
-  if(PRINT) c9->Print((results_path+"/vtxResYvsMCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
+  if(PRINT) c9->Print((results_path+"/vertexing/vtxResYvsMCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
   delete c9;
-  if(PRINT) c10->Print((results_path+"/vtxResZvsMCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
+  if(PRINT) c10->Print((results_path+"/vertexing/vtxResZvsMCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
   delete c10;
   
   //Resolution versus Reconstructed Particles
@@ -436,11 +436,11 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   vtxResZvsRecoTrkHist->GetYaxis()->SetTitle("recVtx_z - mcVtx_z (in mm)");
   
   
-  if(PRINT) c11->Print((results_path+"/vtxResXvsRCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
+  if(PRINT) c11->Print((results_path+"/vertexing/vtxResXvsRCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
   delete c11;
-  if(PRINT) c12->Print((results_path+"/vtxResYvsRCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
+  if(PRINT) c12->Print((results_path+"/vertexing/vtxResYvsRCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
   delete c12;
-  if(PRINT) c13->Print((results_path+"/vtxResZvsRCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
+  if(PRINT) c13->Print((results_path+"/vertexing/vtxResZvsRCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
   delete c13;
   
   // Fitted plots v/s MC tracks
@@ -496,7 +496,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   legend14->AddEntry(resZsigma, "v_{z}", "lep");
   legend14->Draw();
   
-  if(PRINT) c14->Print((results_path+"/vtxResSigmaVsMCTrks.png").c_str()); // Vertex Resolution Sigma versus MC Tracks
+  if(PRINT) c14->Print((results_path+"/vertexing/vtxResSigmaVsMCTrks.png").c_str()); // Vertex Resolution Sigma versus MC Tracks
   delete c14;
  
   TCanvas *c15 = new TCanvas("c15","Vertex Resolution Mean vs MC Tracks",800,600);
@@ -540,7 +540,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   legend15->AddEntry(resZmean, "v_{z}", "lep");
   legend15->Draw();
   
-  if(PRINT) c15->Print((results_path+"/vtxResMeanVsMCTrks.png").c_str()); // Vertex Resolution Mean versus MC Tracks
+  if(PRINT) c15->Print((results_path+"/vertexing/vtxResMeanVsMCTrks.png").c_str()); // Vertex Resolution Mean versus MC Tracks
   delete c15;
   
   //Fitted Plots v/s RC tracks
@@ -594,7 +594,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   legend16->AddEntry(resZsigma2, "v_{z}", "lep");
   legend16->Draw();
   
-  if(PRINT) c16->Print((results_path+"/vtxResSigmaVsRCTrks.png").c_str()); // Vertex Resolution Sigma versus RC Tracks
+  if(PRINT) c16->Print((results_path+"/vertexing/vtxResSigmaVsRCTrks.png").c_str()); // Vertex Resolution Sigma versus RC Tracks
   delete c16;
  
   TCanvas *c17 = new TCanvas("c17","Vertex Resolution Mean vs RC Tracks",800,600);
@@ -638,7 +638,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   legend17->AddEntry(resZmean, "v_{z}", "lep");
   legend17->Draw();
   
-  if(PRINT) c17->Print((results_path+"/vtxResMeanVsRCTrks.png").c_str()); // Vertex Resolution Mean versus RC Tracks
+  if(PRINT) c17->Print((results_path+"/vertexing/vtxResMeanVsRCTrks.png").c_str()); // Vertex Resolution Mean versus RC Tracks
   delete c17;
   delete tree;
   return 0;
