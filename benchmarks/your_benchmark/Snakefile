@@ -8,6 +8,17 @@ S3 = S3RemoteProvider(
     secret_access_key=os.environ["S3_SECRET_KEY"],
 )
 
+rule your_benchmark_test:
+    input:
+        script="benchmarks/your_benchmark/analysis/uchannelrho.cxx",
+    output:
+        "test.root",
+    shell:
+        """
+echo "Making test.root"
+touch test.root
+"""
+
 rule your_benchmark_campaign_reco_get:
     input:
         lambda wildcards: S3.remote(f"eictest/EPIC/RECO/24.07.0/epic_craterlake/EXCLUSIVE/UCHANNEL_RHO/10x100/rho_10x100_uChannel_Q2of0to10_hiDiv.{wildcards.INDEX}.eicrecon.tree.edm4eic.root"),
