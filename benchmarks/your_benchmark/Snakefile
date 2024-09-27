@@ -8,13 +8,6 @@ S3 = S3RemoteProvider(
     secret_access_key=os.environ["S3_SECRET_KEY"],
 )
 
-# Set environment mode (local or eicweb)
-ENV_MODE = os.getenv("ENV_MODE", "local")  # Defaults to "local" if not set
-# Output directory based on environment
-OUTPUT_DIR = "../../sim_output/" if ENV_MODE == "eicweb" else "sim_output/"
-# Benchmark directory based on environment
-BENCH_DIR = "benchmarks/your_benchmark/" if ENV_MODE == "eicweb" else "./"
-
 rule your_benchmark_campaign_reco_get:
     input:
         lambda wildcards: S3.remote(f"eictest/EPIC/RECO/24.07.0/epic_craterlake/EXCLUSIVE/UCHANNEL_RHO/10x100/rho_10x100_uChannel_Q2of0to10_hiDiv.{wildcards.INDEX}.eicrecon.tree.edm4eic.root"),
