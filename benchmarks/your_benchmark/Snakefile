@@ -59,7 +59,7 @@ rule your_benchmark_plots:
         plots=f"{OUTPUT_DIR}campaign_24.07.0_combined_{{N}}files_eicrecon.edm4eic.plots.root",
     output:
         #f"{OUTPUT_DIR}campaign_24.07.0_combined_{{N}}files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf",
-        f"../../sim_output/campaign_24.07.0_combined_{{N}}files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf",
+        "../../sim_output/campaign_24.07.0_combined_{{N}}files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf",
     shell:
         """
 if [ ! -d "{input.plots}_figures" ]; then
