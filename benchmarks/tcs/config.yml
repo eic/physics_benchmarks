@@ -9,7 +9,7 @@ tcs:simulate:
   extends: .phy_benchmark
   tags:
     - phy
-  needs: ["common:detector", "tcs:compile"]
+  needs: ["tcs:compile"]
   parallel:
     matrix:
       - EBEAM: 5

@@ -7,7 +7,7 @@ dis:compile:
 dis:simulate:
   stage: simulate
   extends: .phy_benchmark
-  needs: ["common:detector", "dis:compile"]
+  needs: ["dis:compile"]
   parallel:
     matrix:
       - EBEAM: 5

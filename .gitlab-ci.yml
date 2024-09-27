@@ -4,7 +4,6 @@ variables:
   RECO: "eicrecon"
   DETECTOR: epic
   DETECTOR_CONFIG: epic_craterlake
-  DETECTOR_REPOSITORYURL: 'https://github.com/eic/epic.git'
 
 workflow:
   name: '$PIPELINE_NAME'
@@ -34,7 +33,6 @@ default:
 stages:
   - status-pending
   - config
-  - initialize
   - compile
   - generate
   - simulate
@@ -80,12 +78,6 @@ common:setup:
   script:
     - git clone -b "${COMMON_BENCH_VERSION}" https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git setup 
     - source setup/bin/env.sh && ./setup/bin/install_common.sh
-
-common:detector:
-  stage: initialize
-  needs: ["common:setup"]
-  script:
-    - source .local/bin/env.sh && build_detector.sh
     - mkdir_local_data_link sim_output
     - mkdir_local_data_link datasets
     - mkdir -p results
@@ -100,9 +92,10 @@ common:detector:
 
 .phy_benchmark:
   needs:
-    - ["common:detector"]
+    - ["common:setup"]
   before_script:
     - source .local/bin/env.sh
+    - source /opt/detector/epic-main/setup.sh
     - ls -lrtha 
     - ln -s "${LOCAL_DATA_PATH}/sim_output" sim_output
     - ln -s "${LOCAL_DATA_PATH}/datasets/data" data
