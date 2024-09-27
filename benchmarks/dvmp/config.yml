@@ -5,7 +5,7 @@ dvmp:compile:
     - compile_analyses.py dvmp
 
 dvmp:generate:
-  needs: ["common:detector", "dvmp:compile"]
+  needs: ["dvmp:compile"]
   image: eicweb.phy.anl.gov:4567/monte_carlo/lager/lager:unstable
   extends: .phy_benchmark
   stage: generate
