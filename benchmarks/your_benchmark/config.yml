@@ -69,7 +69,7 @@ your_benchmark:analyze:
     - if [ "$USE_SIMULATION_CAMPAIGN" = true ] ; then
     -     echo "Using simulation campaign!"
     -     snakemake --cores 2 ../../sim_output/campaign_24.07.0_rho_10x100_uChannel_Q2of0to10_hiDiv_0001_eicrecon.edm4eic.root
-    -     #snakemake --cores 2 ../../sim_output/campaign_24.07.0_combined_45files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf
+    -     echo "#snakemake --cores 2 ../../sim_output/campaign_24.07.0_combined_45files_eicrecon.edm4eic.plots_figures/benchmark_rho_mass.pdf"
     -     cp ../../sim_output/campaign_24.07.0_combined_45files_eicrecon.edm4eic.plots_figures/*.pdf results/your_benchmark/
     - else
     -     echo "Not using simulation campaign!"
