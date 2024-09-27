@@ -22,6 +22,7 @@ root -l -b -q -e '.L {input}+'
 rule fetch_epic:
     output:
         filepath="EPIC/{PATH}"
+    cache: True
     shell: """
 xrdcp root://dtn-eic.jlab.org//work/eic2/{output.filepath} {output.filepath}
 """
