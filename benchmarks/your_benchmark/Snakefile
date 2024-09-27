@@ -19,7 +19,7 @@ rule your_benchmark_campaign_reco_get:
     input:
         lambda wildcards: S3.remote(f"eictest/EPIC/RECO/24.07.0/epic_craterlake/EXCLUSIVE/UCHANNEL_RHO/10x100/rho_10x100_uChannel_Q2of0to10_hiDiv.{wildcards.INDEX}.eicrecon.tree.edm4eic.root"),
     output:
-        f"{OUTPUT_DIR}campaign_24.07.0_rho_10x100_uChannel_Q2of0to10_hiDiv_{{INDEX}}_eicrecon.edm4eic.root",
+        "../../sim_output/campaign_24.07.0_rho_10x100_uChannel_Q2of0to10_hiDiv_{INDEX}_eicrecon.edm4eic.root",
     shell:
         """
 echo "Getting file for INDEX {wildcards.INDEX}"
@@ -28,10 +28,10 @@ ln {input} {output}
 
 rule your_benchmark_analysis:
     input:
-        script=f"{BENCH_DIR}analysis/uchannelrho.cxx",
-        data=f"{OUTPUT_DIR}campaign_24.07.0_rho_10x100_uChannel_Q2of0to10_hiDiv_{{INDEX}}_eicrecon.edm4eic.root",
+        script="benchmarks/your_benchmark/analysis/uchannelrho.cxx",
+        data="../../sim_output/campaign_24.07.0_rho_10x100_uChannel_Q2of0to10_hiDiv_{INDEX}_eicrecon.edm4eic.root",
     output:
-        plots=f"{OUTPUT_DIR}campaign_24.07.0_{{INDEX}}_eicrecon.edm4eic/plots.root",
+        plots="../../sim_output/campaign_24.07.0_{INDEX}_eicrecon.edm4eic/plots.root",
     shell:
         """
 mkdir -p $(dirname "{output.plots}")
@@ -41,13 +41,13 @@ root -l -b -q '{input.script}+("{input.data}","{output.plots}")'
 rule your_benchmark_combine:
     input:
         lambda wildcards: expand(
-           f"{OUTPUT_DIR}campaign_24.07.0_{{INDEX:04d}}_eicrecon.edm4eic/plots.root",
+           "../../sim_output/campaign_24.07.0_{INDEX:04d}_eicrecon.edm4eic/plots.root",
            INDEX=range(int(wildcards.N)),
         ),	
     wildcard_constraints:
         N="\d+",
     output:
-        f"{OUTPUT_DIR}campaign_24.07.0_combined_{{N}}files_eicrecon.edm4eic.plots.root",
+        "../../sim_output/campaign_24.07.0_combined_{N}files_eicrecon.edm4eic.plots.root",
     shell:
         """
 hadd {output} {input}
