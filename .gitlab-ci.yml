@@ -4,7 +4,6 @@ variables:
   RECO: "eicrecon"
   DETECTOR: epic
   DETECTOR_CONFIG: epic_craterlake
-  DETECTOR_REPOSITORYURL: 'https://github.com/eic/epic.git'
 
 workflow:
   name: '$PIPELINE_NAME'
@@ -23,6 +22,7 @@ default:
       - .local/include
       - .local/share
       - .local/root_build
+      - .snakemake/log
       - results
       - config
       - .env
@@ -33,12 +33,9 @@ default:
 stages:
   - status-pending
   - config
-  - initialize
   - compile
   - generate
   - simulate
-  - reconstruct
-  - analyze
   - collect
   - finish
   - status-report
@@ -81,12 +78,6 @@ common:setup:
   script:
     - git clone -b "${COMMON_BENCH_VERSION}" https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git setup 
     - source setup/bin/env.sh && ./setup/bin/install_common.sh
-
-common:detector:
-  stage: initialize
-  needs: ["common:setup"]
-  script:
-    - source .local/bin/env.sh && build_detector.sh
     - mkdir_local_data_link sim_output
     - mkdir_local_data_link datasets
     - mkdir -p results
@@ -101,12 +92,14 @@ common:detector:
 
 .phy_benchmark:
   needs:
-    - ["common:detector"]
+    - ["common:setup"]
   before_script:
     - source .local/bin/env.sh
+    - source /opt/detector/epic-main/setup.sh
     - ls -lrtha 
     - ln -s "${LOCAL_DATA_PATH}/sim_output" sim_output
     - ln -s "${LOCAL_DATA_PATH}/datasets/data" data
+    - mkdir -p "$SNAKEMAKE_OUTPUT_CACHE"
     - ls -lrtha
   retry:
     max: 2
@@ -119,10 +112,8 @@ include:
   - local: 'benchmarks/dis/config.yml'
     #- local: 'benchmarks/dvmp/config.yml'
   - local: 'benchmarks/dvcs/config.yml'
-  - local: 'benchmarks/lambda/config.yml'
   - local: 'benchmarks/tcs/config.yml'
   - local: 'benchmarks/u_omega/config.yml'
-  - local: 'benchmarks/single/config.yml'
   - local: 'benchmarks/backgrounds/config.yml'
 
 summary:
@@ -132,10 +123,8 @@ summary:
     - "demp:results"
     - "dis:results"
     - "dvcs:results"
-    - "lambda:results"
     - "tcs:results"
     - "u_omega:results"
-    - "single:results"
     - "backgrounds:results"
   script:
     - collect_benchmarks.py
@@ -154,6 +143,9 @@ benchmarks:physics:success:
   variables:
     STATE: "success"
     DESCRIPTION: "Succeeded!"
+  after_script:
+    # Cleanup scratch space
+    - rm -rfv $LOCAL_DATA_PATH
   when: on_success
 
 benchmarks:physics:failure:
