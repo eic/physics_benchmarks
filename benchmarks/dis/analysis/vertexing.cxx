@@ -486,9 +486,9 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   resXsigma->GetYaxis()->SetTitle("#sigma (mm)");
   resYsigma->GetYaxis()->SetTitle("#sigma (mm)");
   resZsigma->GetYaxis()->SetTitle("#sigma (mm)");
-  resXsigma->GetYaxis()->SetRangeUser(0, 4);
-  resYsigma->GetYaxis()->SetRangeUser(0, 4);
-  resZsigma->GetYaxis()->SetRangeUser(0, 4);
+  resXsigma->GetYaxis()->SetRangeUser(0, 1);
+  resYsigma->GetYaxis()->SetRangeUser(0, 1);
+  resZsigma->GetYaxis()->SetRangeUser(0, 1);
 
   TLegend *legend14 = new TLegend(0.7, 0.7, 0.9, 0.9); // Adjust the coordinates as needed
   legend14->AddEntry(resXsigma, "v_{x}", "lep");
