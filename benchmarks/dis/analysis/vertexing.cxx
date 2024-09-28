@@ -102,12 +102,12 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   // Reco
   TH2D *recoVsMCTracksHist = new TH2D("recoVsMCTracks","",31,-0.5,30.5,31,-0.5,30.5);
   TH1D *recoVtxEffHist = new TH1D("recoVtxEff","",4,-0.5,3.5);
-  TH2D *recoVtxYvsXHist = new TH2D("recoVtxYvsX","",200,-1.,1.,150,-0.3,0.3);
+  TH2D *recoVtxYvsXHist = new TH2D("recoVtxYvsX","",200,-1.,1.,200,-1,1);
   TH2D *recoVtxRvsZHist = new TH2D("recoVtxRvsZ","",200,-100.,100.,100,0.,0.8);
 
   // Gen
   TH1D *numGenTracksHist = new TH1D("numGenTracks","",31,-0.5,30.5);
-  TH2D *genVtxYvsXHist = new TH2D("genVtxYvsXHist","",200,-1.,1.,100,-0.2,0.2);
+  TH2D *genVtxYvsXHist = new TH2D("genVtxYvsXHist","",200,-1.,1.,200,-1,1);
   TH2D *genVtxRvsZHist = new TH2D("genVtxRvsZHist","",200,-100.,100.,100,0,0.5);
  
   // Resolution
