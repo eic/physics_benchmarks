@@ -95,11 +95,15 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   TTreeReaderArray<unsigned int> mcParentEnd = {tree_reader, "MCParticles.parents_end"};
   TTreeReaderArray<int> mcParentIndex = {tree_reader, "_MCParticles_parents.index"};
 
+  // Reco
+  TTreeReaderArray<int> recoType = {tree_reader, "ReconstructedChargedParticles.type"};
+
+	
   // Define Histograms
   TH1D *counter = new TH1D("counter","",10,0.,10.);
-
   
   // Reco
+  TH1D *numRecoTracksHist = new TH1D("numRecoTracks","",31,-0.5,30.5);
   TH2D *recoVsMCTracksHist = new TH2D("recoVsMCTracks","",31,-0.5,30.5,31,-0.5,30.5);
   TH1D *recoVtxEffHist = new TH1D("recoVtxEff","",4,-0.5,3.5);
   TH2D *recoVtxYvsXHist = new TH2D("recoVtxYvsX","",200,-1.,1.,200,-1,1);
@@ -120,6 +124,8 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   
   TH1D *numGenTrkswithVtxHist = new TH1D("numGenTrkswithVtx","",31,-0.5,30.5);
   TH1D *vtxEffVsGenTrkHist = new TH1D("vtxEffVsGenTrk","",31,-0.5,30.5);
+  TH1D *numRecoTrkswithVtxHist = new TH1D("numRecoTrkswithVtx","",31,-0.5,30.5);
+  TH1D *vtxEffVsRecoTrkHist = new TH1D("vtxEffVsRecoTrk","",31,-0.5,30.5);
 
   // Loop Through Events
   int NEVENTS = 0;
@@ -227,8 +233,12 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
     vtxResYvsRecoTrkHist->Fill(nAssoPart, recoEvtVtx.y() - mcEvtVtx.y());
     vtxResZvsRecoTrkHist->Fill(nAssoPart, recoEvtVtx.z() - mcEvtVtx.z());
     
-    if(nVtx !=0) {numGenTrkswithVtxHist->Fill(numMCTracks);     recoVsMCTracksHist->Fill(numMCTracks, nAssoPart);}
-   
+    if(nVtx !=0) {
+    numGenTrkswithVtxHist->Fill(numMCTracks);
+    numRecoTrkswithVtxHist->Fill(recoType.GetSize());
+    
+    recoVsMCTracksHist->Fill(numMCTracks, nAssoPart);} 
+	  
     NEVENTS++;
   }
   
@@ -312,13 +322,13 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   c5->cd(1);
   for(int i=0; i<=numGenTracksHist->GetNbinsX(); i++)
 	{
-		float nevents = numGenTracksHist->GetBinContent(i);
-		float nvtxevts = numGenTrkswithVtxHist->GetBinContent(i);
+		float neventsMC = numGenTracksHist->GetBinContent(i);
+		float nvtxevtsMC = numGenTrkswithVtxHist->GetBinContent(i);
 		
-		if(nevents != 0)
+		if(neventsMC != 0)
 		{
-			vtxEffVsGenTrkHist->SetBinContent(i, nvtxevts/nevents);
-			vtxEffVsGenTrkHist->SetBinError(i, sqrt((nvtxevts+1)/(nevents+2)*((nvtxevts+2)/(nevents+3)-(nvtxevts+1)/(nevents+2))));
+			vtxEffVsGenTrkHist->SetBinContent(i, nvtxevtsMC/neventsMC);
+			vtxEffVsGenTrkHist->SetBinError(i, sqrt((nvtxevtsMC+1)/(neventsMC+2)*((nvtxevtsMC+2)/(neventsMC+3)-(nvtxevtsMC+1)/(neventsMC+2))));
 		}
 	}
 
@@ -333,122 +343,152 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 
   if(PRINT) c5->Print((results_path+"/vertexing/vtxEffVsMCTrks.png").c_str()); // Vertexing Efficiency versus MC Tracks
   delete c5;
-  
- // Reconstructed Vertex vx versus vy
-  TCanvas *c6 = new TCanvas("c6","Reconstructed Vertices",800,600);
+
+  //Vertexing Efficiency vs RC Tracks
+  TCanvas *c6 = new TCanvas("c6","Vertexing Efficiency vs RC Tracks",800,600);
   c6->Clear();
   c6->Divide(1,1);
 
   c6->cd(1);
+  for(int i=0; i<=numRecoTracksHist->GetNbinsX(); i++)
+	{
+		float neventsRC = numRecoTracksHist->GetBinContent(i);
+		float nvtxevtsRC = numRecoTrkswithVtxHist->GetBinContent(i);
+		
+		if(neventsRC != 0)
+		{
+			vtxEffVsRecoTrkHist->SetBinContent(i, nvtxevtsRC/neventsRC);
+			vtxEffVsRecoTrkHist->SetBinError(i, sqrt((nvtxevtsRC+1)/(neventsRC+2)*((nvtxevtsRC+2)/(neventsRC+3)-(nvtxevtsRC+1)/(neventsRC+2))));
+		}
+	}
+
+  vtxEffVsRecoTrkHist->Draw("P");
+  vtxEffVsRecoTrkHist->SetMarkerColor(seabornRed);
+  vtxEffVsRecoTrkHist->SetMarkerStyle(8);
+  vtxEffVsRecoTrkHist->SetMarkerSize(1.2);
+  vtxEffVsRecoTrkHist->SetTitle("Vertexing Efficiency vs RC Tracks");
+  vtxEffVsRecoTrkHist->GetXaxis()->SetTitle("# of RC Tracks");
+  vtxEffVsRecoTrkHist->GetYaxis()->SetTitle("Vertexing Efficiency");
+  vtxEffVsRecoTrkHist->GetYaxis()->SetRangeUser(0, 1.2);
+
+  if(PRINT) c6->Print((results_path+"/vtxEffVsRCTrks.png").c_str()); // Vertexing Efficiency versus RC Tracks
+  delete c6;
+	
+ // Reconstructed Vertex vx versus vy
+  TCanvas *c7 = new TCanvas("c7","Reconstructed Vertices",800,600);
+  c7->Clear();
+  c7->Divide(1,1);
+
+  c7->cd(1);
   recoVtxYvsXHist->Draw("COLZ");
   recoVtxYvsXHist->SetTitle("Reconstructed Vertex: v_{x} versus v_{y}");
   recoVtxYvsXHist->GetXaxis()->SetTitle("x-coordinate (in mm)");
   recoVtxYvsXHist->GetYaxis()->SetTitle("y-coordinate (in mm)");
   
-  if(PRINT) c6->Print((results_path+"/vertexing/recoVertexYvsX.png").c_str()); // RC Vertex vx versus vy
-  delete c6;
+  if(PRINT) c7->Print((results_path+"/vertexing/recoVertexYvsX.png").c_str()); // RC Vertex vx versus vy
+  delete c7;
   
   // Reconstructed Vertex vr versus vz
-  TCanvas *c7 = new TCanvas("c7","Reconstructed Vertices",800,600);
-  c7->Clear();
-  c7->Divide(1,1);
+  TCanvas *c8 = new TCanvas("c8","Reconstructed Vertices",800,600);
+  c8->Clear();
+  c8->Divide(1,1);
   
-  c7->cd(1);
+  c8->cd(1);
   recoVtxRvsZHist->Draw("COLZ");
   recoVtxRvsZHist->SetTitle("Reconstrcuted Vertex: v_{r} versus v_{z}");
   recoVtxRvsZHist->GetXaxis()->SetTitle("z-coordinate (in mm)");
   recoVtxRvsZHist->GetYaxis()->SetTitle("#sqrt{x^{2} + y^{2}} (in mm)");
 
 
-  if(PRINT) c7->Print((results_path+"/vertexing/recoVertexRvsZ.png").c_str()); // RC Vertex vr versus vz
-  delete c7;
+  if(PRINT) c8->Print((results_path+"/vertexing/recoVertexRvsZ.png").c_str()); // RC Vertex vr versus vz
+  delete c8;
   
   ////////////////////////  Resolution Plots  ////////////////////////
   
   //Vertex Resolution vs MC Tracks
-  TCanvas *c8 = new TCanvas("c8","VtxResX vs MCTrks",800,600);
-  c8->Clear();
-  c8->Divide(1,1);
+  TCanvas *c9 = new TCanvas("c9","VtxResX vs MCTrks",800,600);
+  c9->Clear();
+  c9->Divide(1,1);
 
-  c8->cd(1);
+  c9->cd(1);
   vtxResXvsGenTrkHist->Draw("COLZ");
   vtxResXvsGenTrkHist->SetTitle("Vertex Resolution X vs MC Tracks");
   vtxResXvsGenTrkHist->GetXaxis()->SetTitle("# of MC Tracks");
   vtxResXvsGenTrkHist->GetYaxis()->SetTitle("recVtx_x - mcVtx_x (in mm)");
 
-  TCanvas *c9 = new TCanvas("c9","VtxResY vs MCTrks",800,600);
-  c9->Clear();
-  c9->Divide(1,1);
+  TCanvas *c10 = new TCanvas("c10","VtxResY vs MCTrks",800,600);
+  c10->Clear();
+  c10->Divide(1,1);
 
-  c9->cd(1);
+  c10->cd(1);
   vtxResYvsGenTrkHist->Draw("COLZ");
   vtxResYvsGenTrkHist->SetTitle("Vertex Resolution Y vs MC Tracks");
   vtxResYvsGenTrkHist->GetXaxis()->SetTitle("# of MC Tracks");
   vtxResYvsGenTrkHist->GetYaxis()->SetTitle("recVtx_y - mcVtx_y (in mm)");
   
-  TCanvas *c10 = new TCanvas("c10","VtxResZ vs MCTrks",800,600);
-  c10->Clear();
-  c10->Divide(1,1);
+  TCanvas *c11 = new TCanvas("c11","VtxResZ vs MCTrks",800,600);
+  c11->Clear();
+  c11->Divide(1,1);
 
-  c10->cd(1);
+  c11->cd(1);
   vtxResZvsGenTrkHist->Draw("COLZ");
   vtxResZvsGenTrkHist->SetTitle("Vertex Resolution Z vs MC Tracks");
   vtxResZvsGenTrkHist->GetXaxis()->SetTitle("# of MC Tracks");
   vtxResZvsGenTrkHist->GetYaxis()->SetTitle("recVtx_z - mcVtx_z (in mm)");
   
   
-  if(PRINT) c8->Print((results_path+"/vertexing/vtxResXvsMCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
-  delete c8;
-  if(PRINT) c9->Print((results_path+"/vertexing/vtxResYvsMCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
+  if(PRINT) c9->Print((results_path+"/vertexing/vtxResXvsMCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
   delete c9;
-  if(PRINT) c10->Print((results_path+"/vertexing/vtxResZvsMCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
+  if(PRINT) c10->Print((results_path+"/vertexing/vtxResYvsMCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
   delete c10;
+  if(PRINT) c11->Print((results_path+"/vertexing/vtxResZvsMCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
+  delete c11;
   
   //Resolution versus Reconstructed Particles
-  TCanvas *c11 = new TCanvas("c11","VtxResX vs recoTrks",800,600);
-  c11->Clear();
-  c11->Divide(1,1);
+  TCanvas *c12 = new TCanvas("c12","VtxResX vs recoTrks",800,600);
+  c12->Clear();
+  c12->Divide(1,1);
 
-  c11->cd(1);
+  c12->cd(1);
   vtxResXvsRecoTrkHist->Draw("COLZ");
   vtxResXvsRecoTrkHist->SetTitle("Vertex Resolution X vs Reconstructed Tracks");
   vtxResXvsRecoTrkHist->GetXaxis()->SetTitle("# of RC Tracks");
   vtxResXvsRecoTrkHist->GetYaxis()->SetTitle("recVtx_x - mcVtx_x (in mm)");
 
-  TCanvas *c12 = new TCanvas("c12","VtxResY vs recoTrks",800,600);
-  c12->Clear();
-  c12->Divide(1,1);
+  TCanvas *c13 = new TCanvas("c13","VtxResY vs recoTrks",800,600);
+  c13->Clear();
+  c13->Divide(1,1);
 
-  c12->cd(1);
+  c13->cd(1);
   vtxResYvsRecoTrkHist->Draw("COLZ");
   vtxResYvsRecoTrkHist->SetTitle("Vertex Resolution Y vs Reconstructed Tracks");
   vtxResYvsRecoTrkHist->GetXaxis()->SetTitle("# of RC Tracks");
   vtxResYvsRecoTrkHist->GetYaxis()->SetTitle("recVtx_y - mcVtx_y (in mm)");
   
-  TCanvas *c13 = new TCanvas("c13","VtxResZ vs recoTrks",800,600);
-  c13->Clear();
-  c13->Divide(1,1);
+  TCanvas *c14 = new TCanvas("c14","VtxResZ vs recoTrks",800,600);
+  c14->Clear();
+  c14->Divide(1,1);
 
-  c13->cd(1);
+  c14->cd(1);
   vtxResZvsRecoTrkHist->Draw("COLZ");
   vtxResZvsRecoTrkHist->SetTitle("Vertex Resolution Z vs Reconstructed Tracks");
   vtxResZvsRecoTrkHist->GetXaxis()->SetTitle("# of RC Tracks");
   vtxResZvsRecoTrkHist->GetYaxis()->SetTitle("recVtx_z - mcVtx_z (in mm)");
   
   
-  if(PRINT) c11->Print((results_path+"/vertexing/vtxResXvsRCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
-  delete c11;
-  if(PRINT) c12->Print((results_path+"/vertexing/vtxResYvsRCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
+  if(PRINT) c12->Print((results_path+"/vertexing/vtxResXvsRCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
   delete c12;
-  if(PRINT) c13->Print((results_path+"/vertexing/vtxResZvsRCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
+  if(PRINT) c13->Print((results_path+"/vertexing/vtxResYvsRCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
   delete c13;
+  if(PRINT) c14->Print((results_path+"/vertexing/vtxResZvsRCTrks.png").c_str()); // Vertexing Resolution versus MC Tracks
+  delete c14;
   
   // Fitted plots v/s MC tracks
-  TCanvas *c14 = new TCanvas("c14","Vertex Resolution vs MC Tracks",800,600);
-  c14->Clear();
-  c14->Divide(1,1);
+  TCanvas *c15 = new TCanvas("c15","Vertex Resolution vs MC Tracks",800,600);
+  c15->Clear();
+  c15->Divide(1,1);
 
-  c14->cd(1);
+  c15->cd(1);
   
   TF1 *myfunction = new TF1("fit", StudentT, -2, 2, 4);
  
@@ -490,20 +530,20 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   resYsigma->GetYaxis()->SetRangeUser(0, 1);
   resZsigma->GetYaxis()->SetRangeUser(0, 1);
 
-  TLegend *legend14 = new TLegend(0.7, 0.7, 0.9, 0.9); // Adjust the coordinates as needed
-  legend14->AddEntry(resXsigma, "v_{x}", "lep");
-  legend14->AddEntry(resYsigma, "v_{y}", "lep");
-  legend14->AddEntry(resZsigma, "v_{z}", "lep");
-  legend14->Draw();
+  TLegend *legend15 = new TLegend(0.7, 0.7, 0.9, 0.9); // Adjust the coordinates as needed
+  legend15->AddEntry(resXsigma, "v_{x}", "lep");
+  legend15->AddEntry(resYsigma, "v_{y}", "lep");
+  legend15->AddEntry(resZsigma, "v_{z}", "lep");
+  legend15->Draw();
   
-  if(PRINT) c14->Print((results_path+"/vertexing/vtxResSigmaVsMCTrks.png").c_str()); // Vertex Resolution Sigma versus MC Tracks
-  delete c14;
+  if(PRINT) c15->Print((results_path+"/vertexing/vtxResSigmaVsMCTrks.png").c_str()); // Vertex Resolution Sigma versus MC Tracks
+  delete c15;
  
-  TCanvas *c15 = new TCanvas("c15","Vertex Resolution Mean vs MC Tracks",800,600);
-  c15->Clear();
-  c15->Divide(1,1);
+  TCanvas *c16 = new TCanvas("c16","Vertex Resolution Mean vs MC Tracks",800,600);
+  c16->Clear();
+  c16->Divide(1,1);
 
-  c15->cd(1);
+  c16->cd(1);
   
   TH1D *resXmean = (TH1D*)gDirectory->Get("vtxResXvsGenTrk_1");
   TH1D *resYmean = (TH1D*)gDirectory->Get("vtxResYvsGenTrk_1");
@@ -534,21 +574,21 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   resYmean->GetYaxis()->SetRangeUser(-1, 1);
   resZmean->GetYaxis()->SetRangeUser(-1, 1);
 
-  TLegend *legend15 = new TLegend(0.7, 0.7, 0.9, 0.9); // Adjust the coordinates as needed
-  legend15->AddEntry(resXmean, "v_{x}", "lep");
-  legend15->AddEntry(resYmean, "v_{y}", "lep");
-  legend15->AddEntry(resZmean, "v_{z}", "lep");
-  legend15->Draw();
+  TLegend *legend16 = new TLegend(0.7, 0.7, 0.9, 0.9); // Adjust the coordinates as needed
+  legend16->AddEntry(resXmean, "v_{x}", "lep");
+  legend16->AddEntry(resYmean, "v_{y}", "lep");
+  legend16->AddEntry(resZmean, "v_{z}", "lep");
+  legend16->Draw();
   
-  if(PRINT) c15->Print((results_path+"/vertexing/vtxResMeanVsMCTrks.png").c_str()); // Vertex Resolution Mean versus MC Tracks
-  delete c15;
+  if(PRINT) c16->Print((results_path+"/vertexing/vtxResMeanVsMCTrks.png").c_str()); // Vertex Resolution Mean versus MC Tracks
+  delete c16;
   
   //Fitted Plots v/s RC tracks
-  TCanvas *c16 = new TCanvas("c16","Vertex Resolution vs RC Tracks",800,600);
-  c16->Clear();
-  c16->Divide(1,1);
+  TCanvas *c17 = new TCanvas("c17","Vertex Resolution vs RC Tracks",800,600);
+  c17->Clear();
+  c17->Divide(1,1);
 
-  c16->cd(1);
+  c17->cd(1);
   
   myfunction->SetParameters(vtxResXvsRecoTrkHist->GetMaximum(), 0, 0.05, 1);
   vtxResXvsRecoTrkHist->FitSlicesY(myfunction, 0, -1, 10);
@@ -588,20 +628,20 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   resYsigma2->GetYaxis()->SetRangeUser(0, 1);
   resZsigma2->GetYaxis()->SetRangeUser(0, 1);
 
-  TLegend *legend16 = new TLegend(0.7, 0.7, 0.9, 0.9); // Adjust the coordinates as needed
-  legend16->AddEntry(resXsigma2, "v_{x}", "lep");
-  legend16->AddEntry(resYsigma2, "v_{y}", "lep");
-  legend16->AddEntry(resZsigma2, "v_{z}", "lep");
-  legend16->Draw();
+  TLegend *legend17 = new TLegend(0.7, 0.7, 0.9, 0.9); // Adjust the coordinates as needed
+  legend17->AddEntry(resXsigma2, "v_{x}", "lep");
+  legend17->AddEntry(resYsigma2, "v_{y}", "lep");
+  legend17->AddEntry(resZsigma2, "v_{z}", "lep");
+  legend17->Draw();
   
-  if(PRINT) c16->Print((results_path+"/vertexing/vtxResSigmaVsRCTrks.png").c_str()); // Vertex Resolution Sigma versus RC Tracks
-  delete c16;
+  if(PRINT) c17->Print((results_path+"/vertexing/vtxResSigmaVsRCTrks.png").c_str()); // Vertex Resolution Sigma versus RC Tracks
+  delete c17;
  
-  TCanvas *c17 = new TCanvas("c17","Vertex Resolution Mean vs RC Tracks",800,600);
-  c17->Clear();
-  c17->Divide(1,1);
+  TCanvas *c18 = new TCanvas("c18","Vertex Resolution Mean vs RC Tracks",800,600);
+  c18->Clear();
+  c18->Divide(1,1);
 
-  c17->cd(1);
+  c18->cd(1);
   
   TH1D *resXmean2 = (TH1D*)gDirectory->Get("vtxResXvsRecoTrk_1");
   TH1D *resYmean2 = (TH1D*)gDirectory->Get("vtxResYvsRecoTrk_1");
@@ -632,14 +672,14 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   resYmean2->GetYaxis()->SetRangeUser(-0.4, 0.4);
   resZmean2->GetYaxis()->SetRangeUser(-0.4, 0.4);
 
-  TLegend *legend17 = new TLegend(0.7, 0.7, 0.9, 0.9); // Adjust the coordinates as needed
-  legend17->AddEntry(resXmean, "v_{x}", "lep");
-  legend17->AddEntry(resYmean, "v_{y}", "lep");
-  legend17->AddEntry(resZmean, "v_{z}", "lep");
-  legend17->Draw();
+  TLegend *legend18 = new TLegend(0.7, 0.7, 0.9, 0.9); // Adjust the coordinates as needed
+  legend18->AddEntry(resXmean, "v_{x}", "lep");
+  legend18->AddEntry(resYmean, "v_{y}", "lep");
+  legend18->AddEntry(resZmean, "v_{z}", "lep");
+  legend18->Draw();
   
-  if(PRINT) c17->Print((results_path+"/vertexing/vtxResMeanVsRCTrks.png").c_str()); // Vertex Resolution Mean versus RC Tracks
-  delete c17;
+  if(PRINT) c18->Print((results_path+"/vertexing/vtxResMeanVsRCTrks.png").c_str()); // Vertex Resolution Mean versus RC Tracks
+  delete c18;
   delete tree;
   return 0;
 }
