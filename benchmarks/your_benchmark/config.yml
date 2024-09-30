@@ -8,7 +8,7 @@ your_benchmark:generate:
   extends: .phy_benchmark 
   stage: generate
   script:
-    - echo "Generate events here!"
+    - echo "I will generate events here!"
     - echo "Add event-generator code to do this"
 
 your_benchmark:simulate:
