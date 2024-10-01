@@ -17,21 +17,6 @@ your_benchmark:simulate:
   script:
     - echo "I will simulate detector response here!"
 
-your_benchmark:reconstruct:
-  extends: .phy_benchmark
-  stage: reconstruct
-  script:
-    - echo "Event reconstruction here!"
-
-your_benchmark:analyze:
-  extends: .phy_benchmark
-  stage: analyze
-  needs:
-    - ["your_benchmark:reconstruct"]
-  script:
-    - echo "I will analyze events here!"
-    - echo "This step requires that the reconstruct step be completed"
-
 your_benchmark:results:
   extends: .phy_benchmark
   stage: collect
