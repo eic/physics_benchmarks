@@ -9,7 +9,7 @@ u_omega:simulate:
   extends: .phy_benchmark
   tags:
     - phy
-  needs: ["common:detector", "u_omega:compile"]
+  needs: ["u_omega:compile"]
   script:
     #- bash benchmarks/u_omega/u_omega.sh --all
     - bash benchmarks/u_omega/u_omega.sh --data-init --sim --rec

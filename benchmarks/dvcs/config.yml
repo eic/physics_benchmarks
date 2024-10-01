@@ -9,7 +9,7 @@ dvcs:simulate:
   extends: .phy_benchmark
   tags:
     - phy
-  needs: ["common:detector", "dvcs:compile"]
+  needs: ["dvcs:compile"]
   script:
     #- bash benchmarks/dvcs/dvcs.sh --all
     - bash benchmarks/dvcs/dvcs.sh --data-init --sim --rec

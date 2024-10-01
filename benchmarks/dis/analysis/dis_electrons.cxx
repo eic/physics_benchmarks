@@ -61,6 +61,20 @@ int dis_electrons(const std::string& config_name)
   ROOT::EnableImplicitMT(kNumThreads);
   ROOT::RDataFrame d("events", rec_file);
 
+  std::string esigma_Q2_col_name, esigma_x_col_name;
+  if (d.HasColumn("InclusiveKinematicsESigma.Q2")) {
+    // new style
+    esigma_Q2_col_name = "InclusiveKinematicsESigma.Q2";
+    esigma_x_col_name = "InclusiveKinematicsESigma.Q2";
+  } else if (d.HasColumn("InclusiveKinematicseSigma.x")) {
+    // new style
+    esigma_Q2_col_name = "InclusiveKinematicseSigma.Q2";
+    esigma_x_col_name = "InclusiveKinematicseSigma.x";
+  } else {
+    std::cerr << "Can't find InclusiveKinematicsESigma.Q2 column" << std::endl;
+    std::exit(EXIT_FAILURE);
+  }
+
   auto combinatorial_diff_ratio = [] (
       const ROOT::VecOps::RVec<float>& v1,
       const ROOT::VecOps::RVec<float>& v2
@@ -81,7 +95,7 @@ int dis_electrons(const std::string& config_name)
              .Define("Q2_jb", "InclusiveKinematicsJB.Q2")
              .Define("Q2_da", "InclusiveKinematicsDA.Q2")
              .Define("Q2_sigma", "InclusiveKinematicsSigma.Q2")
-             .Define("Q2_esigma", "InclusiveKinematicseSigma.Q2")
+             .Define("Q2_esigma", esigma_Q2_col_name) // InclusiveKinematicsESigma.Q2
              .Define("logQ2_sim", "log10(Q2_sim)")
              .Define("logQ2_el", "log10(Q2_el)")
              .Define("logQ2_jb", "log10(Q2_jb)")
@@ -98,7 +112,7 @@ int dis_electrons(const std::string& config_name)
              .Define("x_jb", "InclusiveKinematicsJB.x")
              .Define("x_da", "InclusiveKinematicsDA.x")
              .Define("x_sigma", "InclusiveKinematicsSigma.x")
-             .Define("x_esigma", "InclusiveKinematicseSigma.x")
+             .Define("x_esigma", esigma_x_col_name) // InclusiveKinematicsESigma.x
              .Define("x_el_res", combinatorial_diff_ratio, {"x_sim", "x_el"})
              .Define("x_jb_res", combinatorial_diff_ratio, {"x_sim", "x_jb"})
              .Define("x_da_res", combinatorial_diff_ratio, {"x_sim", "x_da"})

@@ -9,7 +9,7 @@ backgrounds:synchrotron:simulate:
   extends: .phy_benchmark
   tags:
     - s3
-  needs: ["common:detector", "backgrounds:compile"]
+  needs: ["backgrounds:compile"]
   script:
     - bash benchmarks/backgrounds/synchrotron.sh --all
 
