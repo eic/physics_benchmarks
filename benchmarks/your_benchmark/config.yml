@@ -20,8 +20,5 @@ your_benchmark:simulate:
 your_benchmark:results:
   extends: .phy_benchmark
   stage: collect
-  needs:
-    - ["your_benchmark:analyze"]
   script:
     - echo "I will collect results here!"
-    - echo "This step requires that the analyze step be completed"
