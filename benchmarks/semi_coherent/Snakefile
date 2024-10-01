@@ -1,8 +1,46 @@
 import os
+import shutil
 
+from snakemake.remote.S3 import RemoteProvider as S3RemoteProvider
+
+
+S3 = S3RemoteProvider(
+    endpoint_url="https://eics3.sdcc.bnl.gov:9000",
+    access_key_id=os.environ["S3_ACCESS_KEY"],
+    secret_access_key=os.environ["S3_SECRET_KEY"],
+)
+
+rule semi_coherent_get:
+	input:
+		S3.remote("eictest/EPIC/EVGEN/CI/ePb_beagle.hepmc"),
+	output:
+		"benchmarks/semi_coherent/ePb_beagle.hepmc",
+	run:
+		shutil.move(input[0], output[0])
+
+rule semi_coherent_filter:
+	input:
+		"benchmarks/semi_coherent/ePb_beagle.hepmc",
+	output:
+		"benchmarks/semi_coherent/filtered.hepmc",
+	shell:
+		"""
+python3 benchmarks/semi_coherent/filter.py {input} {output}
+"""
+
+rule semi_coherent_afterburner:
+	input:
+		"benchmarks/semi_coherent/filtered.hepmc",
+	output:
+		"benchmarks/semi_coherent/ab_output.hepmc.hepmc",
+	shell:
+		"""
+abconv {input} -p 2
+"""
+	
 rule semi_coherent_sim:
 	input:
-		hepmcfile="benchmarks/semi_coherent/input.hepmc",
+		hepmcfile="benchmarks/semi_coherent/ab_output.hepmc.hepmc",
 		warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
 	output:
 		"sim_output/semi_coherent/{DETECTOR_CONFIG}_semi_coherent.edm4hep.root",
