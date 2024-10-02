@@ -371,7 +371,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   vtxEffVsRecoTrkHist->GetYaxis()->SetTitle("Vertexing Efficiency");
   vtxEffVsRecoTrkHist->GetYaxis()->SetRangeUser(0, 1.2);
 
-  if(PRINT) c6->Print((results_path+"/vtxEffVsRCTrks.png").c_str()); // Vertexing Efficiency versus RC Tracks
+  if(PRINT) c6->Print((results_path+"/vertexing/vtxEffVsRCTrks.png").c_str()); // Vertexing Efficiency versus RC Tracks
   delete c6;
 	
  // Reconstructed Vertex vx versus vy
