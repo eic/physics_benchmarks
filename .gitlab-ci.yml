@@ -122,7 +122,7 @@ summary:
   needs:
  #   - "diffractive_vm:results"
  #   - "demp:results"
-    - "dis:results"
+     - "dis:results"
  #   - "dvcs:results"
  #   - "tcs:results"
  #   - "u_omega:results"
