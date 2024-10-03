@@ -1,0 +1,16 @@
+semi_coherent:simulate:
+  stage: simulate
+  extends: .phy_benchmark
+  timeout: 2 hours
+  script:
+    - snakemake --cores 1 run_all_locally
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+
+semi_coherent:results:
+  stage: collect
+  needs: ["semi_coherent:simulate"]
+  script:
+    - ls -lrth

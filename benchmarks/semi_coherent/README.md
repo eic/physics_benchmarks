@@ -1,0 +1,2 @@
+### Purpose of this benchmark
+The purpose of this benchmark is to check the ability of ZDC ECal LYSO in tag and reconstruct low energy photon in semi-coherent events. The initial simulation of eU collision is from BeAGLE and further transformed to .hepmc file after applying the beam effects using afterburner for DD4HEP simulation. In filtering for semi-coherent events where the final fragment has the same Z and A as the beam, the status of the final fragment was changed to be a virtual particle to prevent interaction with the detector. 
