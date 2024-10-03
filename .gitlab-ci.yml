@@ -115,7 +115,7 @@ include:
   #- local: 'benchmarks/tcs/config.yml'
   #- local: 'benchmarks/u_omega/config.yml'
   #- local: 'benchmarks/backgrounds/config.yml'
-   - local: 'benchmarks/test_srmyoo/config.yml'
+  - local: 'benchmarks/test_srmyoo/config.yml'
 
 summary:
   stage: finish
