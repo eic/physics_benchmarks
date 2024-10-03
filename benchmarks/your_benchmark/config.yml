@@ -8,7 +8,7 @@ your_benchmark:simulate:
   extends: .phy_benchmark
   stage: simulate
   needs: ["common:setup"]
-  timout: 10 hour
+  timeout: 10 hour
   script:
     - echo "I will simulate detector response here!"
     - config_file=benchmarks/your_benchmark/setup.config
