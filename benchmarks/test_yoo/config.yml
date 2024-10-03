@@ -1,16 +1,16 @@
-your_benchmark:compile:
+test_yoo:compile:
   extends: .phy_benchmark 
   stage: compile
   script:
     - echo "You can compile your code here!"
 
-your_benchmark:simulate:
+test_yoo:simulate:
   extends: .phy_benchmark
   stage: simulate
   script:
     - echo "I will simulate detector response here!"
 
-your_benchmark:results:
+test_yoo:results:
   extends: .phy_benchmark
   stage: collect
   script:
