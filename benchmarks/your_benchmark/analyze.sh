@@ -1,4 +1,8 @@
 #!/bin/bash
+
+PROJECT_ROOT="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"/../..
+pushd ${PROJECT_ROOT}
+
 source strict-mode.sh
 source benchmarks/your_benchmark/setup.config $*
 
