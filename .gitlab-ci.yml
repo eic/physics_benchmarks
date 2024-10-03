@@ -112,6 +112,7 @@ include:
   - local: 'benchmarks/dis/config.yml'
     #- local: 'benchmarks/dvmp/config.yml'
   - local: 'benchmarks/dvcs/config.yml'
+  - local: 'benchmarks/semi_coherent/config.yml'
   - local: 'benchmarks/tcs/config.yml'
   - local: 'benchmarks/u_omega/config.yml'
   - local: 'benchmarks/backgrounds/config.yml'
