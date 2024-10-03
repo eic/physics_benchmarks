@@ -52,3 +52,6 @@ your_benchmark:results:
     - echo "Finished copying!"
     - collect_tests.py your_benchmark
     - echo "Finished collecting!"
+    - echo "Compiling the latex doc."
+    - snakemake --cores 1 yourbench_compile_manual
+    - echo "Finished compiling!"
