@@ -14,4 +14,4 @@ your_benchmark:results:
   extends: .phy_benchmark
   stage: collect
   script:
-    - echo "I will collect results here!"
+    - echo "I will collect results here!!"

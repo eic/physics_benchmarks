@@ -119,7 +119,7 @@ include:
   #- local: 'benchmarks/demp/config.yml'
   - local: 'benchmarks/dis/config.yml'
     #- local: 'benchmarks/dvmp/config.yml'
-    #- local: 'benchmarks/dvcs/config.yml'
+  - local: 'benchmarks/dvcs/config.yml'
     #- local: 'benchmarks/lambda/config.yml'
     #- local: 'benchmarks/neutron/config.yml'
     #- local: 'benchmarks/sigma/config.yml'
@@ -135,7 +135,7 @@ summary:
     #- "diffractive_vm:results"
     #- "demp:results"
     - "dis:results"
-    #- "dvcs:results"
+    - "dvcs:results"
     #- "lambda:results"
     #- "neutron:results"
     #- "sigma:results"
