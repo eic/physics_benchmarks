@@ -108,27 +108,24 @@ common:setup:
 
 include:
   #- local: 'benchmarks/diffractive_vm/config.yml'
-  #- local: 'benchmarks/demp/config.yml'
   - local: 'benchmarks/dis/config.yml'
-    #- local: 'benchmarks/dvmp/config.yml'
-    #- local: 'benchmarks/dvcs/config.yml'
-    #- local: 'benchmarks/tcs/config.yml'
-    #- local: 'benchmarks/u_omega/config.yml'
-    #- local: 'benchmarks/backgrounds/config.yml'
+  #- local: 'benchmarks/dvmp/config.yml'
+  #- local: 'benchmarks/dvcs/config.yml'
+  #- local: 'benchmarks/tcs/config.yml'
+  #- local: 'benchmarks/u_omega/config.yml'
+  #- local: 'benchmarks/backgrounds/config.yml'
   - local: 'benchmarks/your_benchmark/config.yml'
-
 
 summary:
   stage: finish
   needs:
-    #- "diffractive_vm:results"
-    #- "demp:results"
+   #- "diffractive_vm:results"
     - "dis:results"
-      #- "dvcs:results"
-      #- "tcs:results"
-      #- "u_omega:results"
-      #- "backgrounds:results"
-      - "your_benchmark:results"
+    #- "dvcs:results"
+    #- "tcs:results"
+    #- "u_omega:results"
+    #- "backgrounds:results"
+    - "your_benchmark:results"  
   script:
     - collect_benchmarks.py
     - find results -print | sort | tee summary.txt
