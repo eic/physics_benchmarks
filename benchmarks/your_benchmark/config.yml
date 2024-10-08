@@ -49,4 +49,10 @@ your_benchmark:results:
     -     cp sim_output/nocampaign/plots_figures/*.pdf results/your_benchmark/
     - fi
     - echo "Finished copying!"
+    - echo "Finished, copying over json now"
+    - cp benchmark_output/u_rho_eff.json results/your_benchmark/
+    - echo "Finished copying!" 
+     - collect_tests.py your_benchmark
+     - echo "Finished collecting!"
+
 
