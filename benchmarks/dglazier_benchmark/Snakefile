@@ -1,0 +1,60 @@
+import os
+from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
+
+# Set environment mode (local or eicweb)
+ENV_MODE = os.getenv("ENV_MODE", "local")  # Defaults to "local" if not set
+# Output directory based on environment
+OUTPUT_DIR = "../../sim_output/" if ENV_MODE == "eicweb" else "sim_output/"
+# Benchmark directory based on environment
+BENCH_DIR = "benchmarks/your_benchmark/" if ENV_MODE == "eicweb" else "./"
+
+rule your_benchmark_campaign_reco_get:
+    output:
+        f"{OUTPUT_DIR}rho_10x100_uChannel_Q2of0to10_hiDiv.{{INDEX}}.eicrecon.tree.edm4eic.root",
+    shell: """
+xrdcp root://dtn-eic.jlab.org//work/eic2/EPIC/RECO/24.07.0/epic_craterlake/EXCLUSIVE/UCHANNEL_RHO/10x100/rho_10x100_uChannel_Q2of0to10_hiDiv.{wildcards.INDEX}.eicrecon.tree.edm4eic.root {output}
+"""
+
+rule your_benchmark_analysis:
+    input:
+        script=f"{BENCH_DIR}analysis/uchannelrho.cxx",
+        data=f"{OUTPUT_DIR}rho_10x100_uChannel_Q2of0to10_hiDiv.{{INDEX}}.eicrecon.tree.edm4eic.root",
+    output:
+        plots=f"{OUTPUT_DIR}campaign_24.07.0_{{INDEX}}.eicrecon.tree.edm4eic/plots.root",
+    shell:
+        """
+mkdir -p $(dirname "{output.plots}")
+root -l -b -q '{input.script}+("{input.data}","{output.plots}")'
+"""
+
+rule your_benchmark_combine:
+    input:
+        lambda wildcards: expand(
+           f"{OUTPUT_DIR}campaign_24.07.0_{{INDEX:04d}}.eicrecon.tree.edm4eic/plots.root",
+           INDEX=range(int(wildcards.N)),
+        ),	
+    wildcard_constraints:
+        N="\d+",
+    output:
+        f"{OUTPUT_DIR}campaign_24.07.0_combined_{{N}}files.eicrecon.tree.edm4eic.plots.root",
+    shell:
+        """
+hadd {output} {input}
+"""
+
+rule your_benchmark_plots:
+    input:
+        script=f"{BENCH_DIR}macros/plot_rho_physics_benchmark.C",
+        plots=f"{OUTPUT_DIR}campaign_24.07.0_combined_{{N}}files.eicrecon.tree.edm4eic.plots.root",
+    output:
+        f"{OUTPUT_DIR}campaign_24.07.0_combined_{{N}}files.eicrecon.tree.edm4eic.plots_figures/benchmark_rho_mass.pdf",
+    shell:
+        """
+if [ ! -d "{input.plots}_figures" ]; then
+    mkdir "{input.plots}_figures"
+    echo "{input.plots}_figures directory created successfully."
+else
+    echo "{input.plots}_figures directory already exists."
+fi
+root -l -b -q '{input.script}("{input.plots}")'
+"""
