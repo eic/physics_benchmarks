@@ -1,5 +1,5 @@
 #include "RiceStyle.h"
-
+#include "common_bench/benchmark.h"
 using namespace std;
 
 void plot_rho_physics_benchmark(TString filename="./sim_output/plot_combined.root"){
@@ -146,7 +146,9 @@ void plot_rho_physics_benchmark(TString filename="./sim_output/plot_combined.roo
   double minbineff = h_VM_mass_MC_etacut->FindBin(0.6);
   double maxbineff = h_VM_mass_MC_etacut->FindBin(1.0);
   double thiseff = 100.0*(1.0*h_VM_mass_REC_etacut->Integral(minbineff,maxbineff))/(1.0*h_VM_mass_MC_etacut->Integral(minbineff,maxbineff));
-
+double reconstuctionEfficiency = (1.0*h_VM_mass_REC_etacut->Integral(minbineff,maxbineff))/(1.0*h_VM_mass_MC_etacut->Integral(minbineff,maxbineff));
+//set the benchmark status:
+setbenchstatus(reconstuctionEfficiency);
   r42->Draw("same");
   r43->Draw("same");
   r44->Draw("same");
@@ -378,4 +380,31 @@ void plot_rho_physics_benchmark(TString filename="./sim_output/plot_combined.roo
 
   TString figure3name = figure_directory+"/benchmark_rho_efficiencies.pdf";
   c5->Print(figure3name);
+}
+///////////// Set benchmark status!
+int setbenchstatus(double eff){
+        // create our test definition
+        common_bench::Test rho_reco_eff_test{
+          {
+            {"name", "rho_reconstruction_efficiency"},
+            {"title", "rho Reconstruction Efficiency for rho -> pi+pi- in the B0"},
+            {"description", "u-channel rho->pi+pi- reconstruction efficiency "},
+            {"quantity", "efficiency"},
+            {"target", "0.9"}
+          }
+        };
+        //this need to be consistent with the target above
+        double eff_target = 0.9;
+
+        if(eff<0 || eff>1){
+          rho_reco_eff_test.error(-1);
+        }else if(eff > eff_target){
+          rho_reco_eff_test.pass(eff);
+        }else{
+          rho_reco_eff_test.fail(eff);
+        }
+
+        // write out our test data
+        common_bench::write_test(rho_reco_eff_test, "./benchmark_output/u_rho_eff.json");
+	return 0;
 }
