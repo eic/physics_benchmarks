@@ -146,9 +146,10 @@ void plot_rho_physics_benchmark(TString filename="./sim_output/plot_combined.roo
   double minbineff = h_VM_mass_MC_etacut->FindBin(0.6);
   double maxbineff = h_VM_mass_MC_etacut->FindBin(1.0);
   double thiseff = 100.0*(1.0*h_VM_mass_REC_etacut->Integral(minbineff,maxbineff))/(1.0*h_VM_mass_MC_etacut->Integral(minbineff,maxbineff));
-double reconstuctionEfficiency = (1.0*h_VM_mass_REC_etacut->Integral(minbineff,maxbineff))/(1.0*h_VM_mass_MC_etacut->Integral(minbineff,maxbineff));
-//set the benchmark status:
-setbenchstatus(reconstuctionEfficiency);
+  double reconstuctionEfficiency = (1.0*h_VM_mass_REC_etacut->Integral(minbineff,maxbineff))/(1.0*h_VM_mass_MC_etacut->Integral(minbineff,maxbineff));
+  //set the benchmark status:
+  setbenchstatus(reconstuctionEfficiency);
+  
   r42->Draw("same");
   r43->Draw("same");
   r44->Draw("same");
