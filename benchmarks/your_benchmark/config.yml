@@ -31,7 +31,7 @@ your_benchmark:simulate:
 
 your_benchmark:results:
   extends: .phy_benchmark
-  stage: 
+  stage: collect
      - collect_tests.py your_benchmark
      - echo "Finished collecting!"
   script:
