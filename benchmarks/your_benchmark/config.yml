@@ -29,9 +29,7 @@ your_benchmark:simulate:
 
 your_benchmark:results:
   extends: .phy_benchmark
-  stage: 
-    - collect_tests.py your_benchmark
-     - echo "Finished collecting!"
+  stage: collect
   script:
     - echo "I will collect results here!"
   needs:
@@ -54,5 +52,8 @@ your_benchmark:results:
 - echo "Finished, copying over json now"
     - cp benchmark_output/u_rho_eff.json results/your_benchmark/
     - echo "Finished copying!" 
+      stage: 
+    - collect_tests.py your_benchmark
+    - echo "Finished collecting!"
 
 
