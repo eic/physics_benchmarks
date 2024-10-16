@@ -98,6 +98,20 @@ root -l -b -q '{input.script}+("{input.config}")'
 """
 
 
+rule dis_analysis_vertexing:
+    input:
+        script="benchmarks/dis/analysis/vertexing.cxx",
+        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/dis/analysis/vertexing_cxx.so",
+        data="reco/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4eic.root",
+        config="results/{DETECTOR_CONFIG}/dis/{EBEAM}on{PBEAM}/minQ2={MINQ2}/config.json",
+    output:
+        results_path=directory("results/{DETECTOR_CONFIG}/dis/{EBEAM}on{PBEAM}/minQ2={MINQ2}/vertexing"),
+    shell: """
+mkdir {output.results_path}
+root -l -b -q '{input.script}+("{input.config}")'
+"""
+
+
 rule dis_analysis_kinematics_correlations:
     input:
         data="reco/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4eic.root",
