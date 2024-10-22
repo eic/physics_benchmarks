@@ -36,4 +36,4 @@ dis:results:
   stage: collect
   needs: ["dis:simulate"]
   script:
-    - collect_tests.py dis
+    - collect_tests.py Inclusive/dis

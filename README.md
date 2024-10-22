@@ -13,7 +13,7 @@ Physics Benchmarks for the EIC
 
 ## Adding new benchmarks
 
-See the [`benchmarks/diffractive_vm`](https://github.com/eic/physics_benchmarks/tree/master/benchmarks/diffractive_vm)
+See the [`benchmarks/Exclusive-Diffraction-Tagging/diffractive_vm`](https://github.com/eic/physics_benchmarks/tree/master/benchmarks/Exclusive-Diffraction-Tagging/diffractive_vm)
 directory for a basic example. Note currently the reconstruction is far from perfect.
 
 ### Pass/Fail tests
