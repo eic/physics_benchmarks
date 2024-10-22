@@ -1,0 +1,43 @@
+rule jets_compile:
+    input:
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/Inclusive/dis/analysis/jets_cxx.so",
+
+
+rule jets_generate_config:
+    input:
+        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4eic.root",
+    output:
+        config="results/{DETECTOR_CONFIG}/jets/{EBEAM}on{PBEAM}/minQ2={MINQ2}_config.json",
+    shell: """
+cat > {output.config} <<EOF
+{{
+  "rec_file": "{input.data}",
+  "detector": "{wildcards.DETECTOR_CONFIG}",
+  "output_prefix": "$(dirname "{output.config}")/dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}",
+  "results_path": "$(dirname "{output.config}")",
+  "ebeam": {wildcards.EBEAM},
+  "pbeam": {wildcards.PBEAM},
+  "minq2": {wildcards.MINQ2},
+  "plot_tag": "dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}",
+  "test_tag": "dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}"
+}}
+EOF
+"""
+
+
+rule jets_analysis_jets:
+    input:
+        script="benchmarks/Jets-HF/jets/analysis/jets.cxx",
+        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Jets-HF/jets/analysis/jets_cxx.so",
+        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4eic.root",
+        config="results/{DETECTOR_CONFIG}/jets/{EBEAM}on{PBEAM}/minQ2={MINQ2}_config.json",
+    output:
+        results_path=directory("results/{DETECTOR_CONFIG}/jets/{EBEAM}on{PBEAM}/minQ2={MINQ2}"),
+    wildcard_constraints:
+        EBEAM="\d+",
+        PBEAM="\d+",
+        MINQ2="\d+",
+    shell: """
+mkdir {output.results_path}
+root -l -b -q '{input.script}+("{input.config}")'
+"""

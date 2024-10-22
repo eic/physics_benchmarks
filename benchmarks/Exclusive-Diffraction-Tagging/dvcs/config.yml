@@ -2,7 +2,7 @@ dvcs:compile:
   stage: compile
   extends: .compile_benchmark
   script:
-    - compile_analyses.py dvcs
+    - compile_analyses.py Exclusive-Diffraction-Tagging/dvcs
 
 dvcs:simulate:
   stage: simulate
@@ -11,8 +11,8 @@ dvcs:simulate:
     - phy
   needs: ["dvcs:compile"]
   script:
-    #- bash benchmarks/dvcs/dvcs.sh --all
-    - bash benchmarks/dvcs/dvcs.sh --data-init --sim --rec
+    #- bash benchmarks/Exclusive-Diffraction-Tagging/dvcs/dvcs.sh --all
+    - bash benchmarks/Exclusive-Diffraction-Tagging/dvcs/dvcs.sh --data-init --sim --rec
 
 dvcs:results:
   stage: collect
@@ -20,4 +20,4 @@ dvcs:results:
   script:
     - ls -lrth
       #pip install junitparser
-      #- python dvcs/scripts/merge_results.py
+      #- python dvcs/Exclusive-Diffraction-Tagging/scripts/merge_results.py

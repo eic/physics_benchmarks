@@ -2,7 +2,7 @@ u_omega:compile:
   stage: compile
   extends: .compile_benchmark
   script:
-    - compile_analyses.py u_omega
+    - compile_analyses.py Exclusive-Diffraction-Tagging/u_omega
 
 u_omega:simulate:
   stage: simulate
@@ -11,8 +11,8 @@ u_omega:simulate:
     - phy
   needs: ["u_omega:compile"]
   script:
-    #- bash benchmarks/u_omega/u_omega.sh --all
-    - bash benchmarks/u_omega/u_omega.sh --data-init --sim --rec
+    #- bash benchmarks/Exclusive-Diffraction-Tagging/u_omega/u_omega.sh --all
+    - bash benchmarks/Exclusive-Diffraction-Tagging/u_omega/u_omega.sh --data-init --sim --rec
 
 u_omega:results:
   stage: collect

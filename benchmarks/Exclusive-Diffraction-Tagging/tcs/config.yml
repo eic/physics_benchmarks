@@ -2,7 +2,7 @@ tcs:compile:
   stage: compile
   extends: .compile_benchmark
   script:
-    - compile_analyses.py tcs
+    - compile_analyses.py Exclusive-Diffraction-Tagging/tcs
 
 tcs:simulate:
   stage: simulate
@@ -22,8 +22,8 @@ tcs:simulate:
         PBEAM: 275
         TAG: s800
   script:
-    #- bash benchmarks/tcs/tcs.sh --all --ebeam ${EBEAM} --pbeam ${PBEAM} --tag ${TAG}
-    - bash benchmarks/tcs/tcs.sh --data-init --sim --rec --ebeam ${EBEAM} --pbeam ${PBEAM} --tag ${TAG}
+    #- bash benchmarks/Exclusive-Diffraction-Tagging/tcs/tcs.sh --all --ebeam ${EBEAM} --pbeam ${PBEAM} --tag ${TAG}
+    - bash benchmarks/Exclusive-Diffraction-Tagging/tcs/tcs.sh --data-init --sim --rec --ebeam ${EBEAM} --pbeam ${PBEAM} --tag ${TAG}
 
 tcs:results:
   stage: collect
