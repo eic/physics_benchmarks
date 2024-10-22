@@ -170,7 +170,7 @@ if [[ -n "${DO_ANALYSIS}" || -n "${DO_ALL}" ]] ; then
   mkdir -p results/tcs
 
   # here you can add as many scripts as you want.
-  root -b -q "benchmarks/tcs/analysis/tcs_tests.cxx+(\"${JUGGLER_REC_FILE}\")"
+  root -b -q "benchmarks/Exclusive-Diffraction-Tagging/tcs/analysis/tcs_tests.cxx+(\"${JUGGLER_REC_FILE}\")"
   if [[ "$?" -ne "0" ]] ; then
     echo "ERROR running root script"
     exit 1
