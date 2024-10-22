@@ -3,8 +3,8 @@ import shutil
 
 rule dis_compile:
     input:
-        ROOT_BUILD_DIR_PREFIX + "benchmarks/dis/analysis/dis_electrons_cxx.so",
-        ROOT_BUILD_DIR_PREFIX + "benchmarks/dis/analysis/jets_cxx.so",
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/Inclusive/dis/analysis/dis_electrons_cxx.so",
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/Inclusive/dis/analysis/jets_cxx.so",
 
 
 rule dis_sim:
@@ -63,8 +63,8 @@ EOF
 
 rule dis_analysis_electrons:
     input:
-        script="benchmarks/dis/analysis/dis_electrons.cxx",
-        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/dis/analysis/dis_electrons_cxx.so",
+        script="benchmarks/Inclusive/dis/analysis/dis_electrons.cxx",
+        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Inclusive/dis/analysis/dis_electrons_cxx.so",
         data="reco/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4eic.root",
         config="results/{DETECTOR_CONFIG}/dis/{EBEAM}on{PBEAM}/minQ2={MINQ2}/config.json",
     output:
@@ -86,8 +86,8 @@ root -l -b -q '{input.script}+("{input.config}")'
 
 rule dis_analysis_jets:
     input:
-        script="benchmarks/dis/analysis/jets.cxx",
-        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/dis/analysis/jets_cxx.so",
+        script="benchmarks/Inclusive/dis/analysis/jets.cxx",
+        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Inclusive/dis/analysis/jets_cxx.so",
         data="reco/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4eic.root",
         config="results/{DETECTOR_CONFIG}/dis/{EBEAM}on{PBEAM}/minQ2={MINQ2}/config.json",
     output:
@@ -107,7 +107,7 @@ rule dis_analysis_kinematics_correlations:
         N_EVENTS=100
     shell: """
 mkdir {output.results_path}
-python benchmarks/dis/analysis/kinematics_correlations.py --rec_file "{input.data}" --config dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}_{wildcards.DETECTOR_CONFIG} --results_path {output.results_path} --nevents {params.N_EVENTS}
+python benchmarks/Inclusive/dis/analysis/kinematics_correlations.py --rec_file "{input.data}" --config dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}_{wildcards.DETECTOR_CONFIG} --results_path {output.results_path} --nevents {params.N_EVENTS}
 """
 
 
@@ -120,5 +120,5 @@ rule dis_analysis_truth_reconstruction:
         N_EVENTS=100
     shell: """
 mkdir {output.results_path}
-python benchmarks/dis/analysis/truth_reconstruction.py --rec_file "{input.data}" --config dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}_{wildcards.DETECTOR_CONFIG} --results_path $(dirname {output.results_path}) --nevents {params.N_EVENTS}
+python benchmarks/Inclusive/dis/analysis/truth_reconstruction.py --rec_file "{input.data}" --config dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}_{wildcards.DETECTOR_CONFIG} --results_path $(dirname {output.results_path}) --nevents {params.N_EVENTS}
 """
