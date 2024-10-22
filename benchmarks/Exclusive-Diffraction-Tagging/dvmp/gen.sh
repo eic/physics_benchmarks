@@ -44,7 +44,7 @@ source parse_cmd.sh $@
 ## - TMP_PATH:      Path for temporary data (not exported as artifacts)
 ##
 ## You can read dvmp/env.sh for more in-depth explanations of the variables.
-source benchmarks/dvmp/env.sh
+source benchmarks/Exclusive-Diffraction-Tagging/dvmp/env.sh
 
 ## Get a unique file name prefix based on the configuration options
 GEN_TAG=gen-${CONFIG}_${DECAY}_${JUGGLER_N_EVENTS} ## Generic file prefix
