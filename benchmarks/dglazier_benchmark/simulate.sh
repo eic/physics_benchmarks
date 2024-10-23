@@ -1,6 +1,6 @@
 #!/bin/bash
 source strict-mode.sh
-source benchmarks/your_benchmark/setup.config $*
+source benchmarks/dglazier_benchmark/setup.config $*
 
 if [ -f ${INPUT_FILE} ]; then
   echo "ERROR: Input simulation file does ${INPUT_FILE} not exist."

@@ -1,6 +1,6 @@
 #!/bin/bash
 source strict-mode.sh
-source benchmarks/your_benchmark/setup.config $*
+source benchmarks/dglazier_benchmark/setup.config $*
 
 # Reconstruct
 if [ ${RECO} == "eicrecon" ] ; then

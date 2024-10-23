@@ -1,12 +1,12 @@
 #!/bin/bash
 source strict-mode.sh
-source benchmarks/your_benchmark/setup.config $*
+source benchmarks/dglazier_benchmark/setup.config $*
 
 OUTPUT_PLOTS_DIR=sim_output/nocampaign
 mkdir -p ${OUTPUT_PLOTS_DIR}
 # Analyze
 command time -v \
-root -l -b -q "benchmarks/your_benchmark/analysis/uchannelrho.cxx(\"${REC_FILE}\",\"${OUTPUT_PLOTS_DIR}/plots.root\")"
+root -l -b -q "benchmarks/dglazier_benchmark/analysis/uchannelrho.cxx(\"${REC_FILE}\",\"${OUTPUT_PLOTS_DIR}/plots.root\")"
 if [[ "$?" -ne "0" ]] ; then
   echo "ERROR analysis failed"
   exit 1
@@ -18,5 +18,5 @@ if [ ! -d "${OUTPUT_PLOTS_DIR}/plots_figures" ]; then
 else
     echo "${OUTPUT_PLOTS_DIR}/plots_figures directory already exists."
 fi
-root -l -b -q "benchmarks/your_benchmark/macros/plot_rho_physics_benchmark.C(\"${OUTPUT_PLOTS_DIR}/plots.root\")"
+root -l -b -q "benchmarks/dglazier_benchmark/macros/plot_rho_physics_benchmark.C(\"${OUTPUT_PLOTS_DIR}/plots.root\")"
 cat benchmark_output/*.json
