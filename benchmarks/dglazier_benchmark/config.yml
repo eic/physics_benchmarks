@@ -43,7 +43,7 @@ dglazier_benchmark:results:
     -     echo "Using simulation campaign!"
     -     snakemake --cores 2 ../../sim_output/campaign_24.07.0_combined_45files.eicrecon.tree.edm4eic.plots_figures/benchmark_rho_mass.pdf
     -     cp ../../sim_output/campaign_24.07.0_combined_45files.eicrecon.tree.edm4eic.plots_figures/*.pdf results/dglazier_benchmark/
-     - else
+    - else
     -     echo "Not using simulation campaign!"
     -     bash benchmarks/dglazier_benchmark/analyze.sh
     -     cp sim_output/nocampaign/plots_figures/*.pdf results/dglazier_benchmark/
