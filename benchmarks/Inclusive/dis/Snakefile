@@ -48,8 +48,8 @@ cat > {output.config} <<EOF
 {{
   "rec_file": "{input.data}",
   "detector": "{wildcards.DETECTOR_CONFIG}",
-  "output_prefix": "$(dirname "{output.config}")/dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}",
-  "results_path": "$(dirname "{output.config}")",
+  "output_prefix": "results/{wildcards.DETECTOR_CONFIG}/dis/{wildcards.EBEAM}on{wildcards.PBEAM}/minQ2={wildcards.MINQ2}/dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}",
+  "results_path": "results/{wildcards.DETECTOR_CONFIG}/dis/{wildcards.EBEAM}on{wildcards.PBEAM}/minQ2={wildcards.MINQ2}",
   "ebeam": {wildcards.EBEAM},
   "pbeam": {wildcards.PBEAM},
   "minq2": {wildcards.MINQ2},
