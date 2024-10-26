@@ -19,4 +19,4 @@ demp:results:
   stage: collect
   needs: ["demp:simulate"]
   script:
-    - collect_tests.py demp
+    - collect_tests.py Exclusive-Diffraction-Tagging/demp

@@ -3,8 +3,8 @@ import os
 
 rule diffractive_vm_compile:
     input:
-        ROOT_BUILD_DIR_PREFIX + "benchmarks/diffractive_vm/analysis/diffractive_vm_cxx.so",
-        ROOT_BUILD_DIR_PREFIX + "benchmarks/diffractive_vm/analysis/plot_cxx.so",
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/diffractive_vm/analysis/diffractive_vm_cxx.so",
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/diffractive_vm/analysis/plot_cxx.so",
 
 
 rule diffractive_vm_campaign_reco_get:
@@ -53,8 +53,8 @@ DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file
 
 rule diffractive_vm_analysis:
     input:
-        script="benchmarks/diffractive_vm/analysis/diffractive_vm.cxx",
-        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/diffractive_vm/analysis/diffractive_vm_cxx.so",
+        script="benchmarks/Exclusive-Diffraction-Tagging/diffractive_vm/analysis/diffractive_vm.cxx",
+        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/diffractive_vm/analysis/diffractive_vm_cxx.so",
         data="reco/{DETECTOR_CONFIG}/{SIM}sartre_{PARTICLE}{SUFFIX}.edm4eic.root",
     params:
         EBEAM=18,
@@ -121,8 +121,8 @@ ruleorder: diffractive_vm_combine_sartre > diffractive_vm_analysis
 
 rule diffractive_vm_plots:
     input:
-        script="benchmarks/diffractive_vm/analysis/plot.cxx",
-        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/diffractive_vm/analysis/plot_cxx.so",
+        script="benchmarks/Exclusive-Diffraction-Tagging/diffractive_vm/analysis/plot.cxx",
+        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/diffractive_vm/analysis/plot_cxx.so",
         config="{RESULT_PREFIX}/config.json",
     output:
         "{RESULT_PREFIX}/plots_benchmark-phi-dsigmadt.pdf",

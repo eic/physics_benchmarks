@@ -2,7 +2,7 @@ dvmp:compile:
   stage: compile
   extends: .compile_benchmark
   script:
-    - compile_analyses.py dvmp
+    - compile_analyses.py Exclusive-Diffraction-Tagging/dvmp
 
 dvmp:generate:
   needs: ["dvmp:compile"]
@@ -11,7 +11,7 @@ dvmp:generate:
   stage: generate
   timeout: 1 hours
   script:
-    - run_many.py ./benchmarks/dvmp/gen.sh 
+    - run_many.py ./benchmarks/Exclusive-Diffraction-Tagging/dvmp/gen.sh
           -c jpsi_barrel 
           -e 10x100 
           --decay muon --decay electron
@@ -24,7 +24,7 @@ dvmp:simulate:
   timeout: 2 hour
   script:
     - ls -lrth
-    - run_many.py ./benchmarks/dvmp/dvmp.sh 
+    - run_many.py ./benchmarks/Exclusive-Diffraction-Tagging/dvmp/dvmp.sh
           -c jpsi_barrel 
           -e 10x100 
           --decay muon --decay electron

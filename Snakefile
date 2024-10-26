@@ -41,6 +41,7 @@ ddsim \
   --enableGun
 """
 
-include: "benchmarks/diffractive_vm/Snakefile"
-include: "benchmarks/dis/Snakefile"
-include: "benchmarks/demp/Snakefile"
+include: "benchmarks/Exclusive-Diffraction-Tagging/demp/Snakefile"
+include: "benchmarks/Exclusive-Diffraction-Tagging/diffractive_vm/Snakefile"
+include: "benchmarks/Jets-HF/jets/Snakefile"
+include: "benchmarks/Inclusive/dis/Snakefile"

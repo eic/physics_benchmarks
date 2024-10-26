@@ -1,0 +1,38 @@
+jets:compile:
+  stage: compile
+  extends: .compile_benchmark
+  script:
+    - snakemake --cores 1 jets_compile
+
+jets:simulate:
+  stage: simulate
+  extends: .phy_benchmark
+  needs:
+    - "jets:compile"
+    - "dis:simulate"
+  parallel:
+    matrix:
+      - EBEAM: 5
+        PBEAM: 41
+        MINQ2: [1, 10, 100]
+      - EBEAM: 10
+        PBEAM: 100
+        MINQ2: [1, 10, 100, 1000]
+      - EBEAM: 18
+        PBEAM: 275
+        MINQ2: [1, 10, 100, 1000]
+  timeout: 2 hours
+  script:
+    - |
+      snakemake --cache --cores 1 \
+        results/epic_craterlake/jets/${EBEAM}on${PBEAM}/minQ2=${MINQ2}/
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+
+jets:results:
+  stage: collect
+  needs: ["jets:simulate"]
+  script:
+    - collect_tests.py Jets-HF/jets
