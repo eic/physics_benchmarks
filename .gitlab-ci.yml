@@ -107,7 +107,6 @@ common:setup:
       - runner_system_failure
 
 include:
-  - local: 'benchmarks/backgrounds/config.yml'
   - local: 'benchmarks/Exclusive-Diffraction-Tagging/diffractive_vm/config.yml'
   - local: 'benchmarks/Exclusive-Diffraction-Tagging/demp/config.yml'
     #- local: 'benchmarks/Exclusive-Diffraction-Tagging/dvmp/config.yml'
@@ -125,7 +124,6 @@ summary:
     - "dvcs:results"
     - "tcs:results"
     - "u_omega:results"
-    - "backgrounds:results"
   script:
     - collect_benchmarks.py
     - find results -print | sort | tee summary.txt
