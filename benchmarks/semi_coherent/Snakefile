@@ -1,18 +1,17 @@
 import os
 import shutil
 
-
 rule semi_coherent_get:
-	input:
-		"EPIC/EVGEN/CI/ePb_beagle.hepmc",
 	output:
-		"benchmarks/semi_coherent/ePb_beagle.hepmc",
-	run:
-		shutil.move(input[0], output[0])
+		"benchmarks/semi_coherent/data.hepmc"
+	shell:
+		"""
+xrdcp root://dtn-eic.jlab.org//work/eic2/EPIC/EVGEN/CI/SEMI_COHERENT/eU_0.hepmc {output}
+"""
 
 rule semi_coherent_filter:
 	input:
-		"benchmarks/semi_coherent/ePb_beagle.hepmc",
+		"benchmarks/semi_coherent/data.hepmc",
 	output:
 		"benchmarks/semi_coherent/filtered.hepmc",
 	shell:
@@ -24,15 +23,15 @@ rule semi_coherent_afterburner:
 	input:
 		"benchmarks/semi_coherent/filtered.hepmc",
 	output:
-		"benchmarks/semi_coherent/ab_output.hepmc.hepmc",
+		"benchmarks/semi_coherent/filtered_ab.hepmc.hepmc",
 	shell:
 		"""
-abconv {input} -p 2
+abconv {input} -p 2 --output benchmarks/semi_coherent/filtered_ab.hepmc
 """
 	
 rule semi_coherent_sim:
 	input:
-		hepmcfile="benchmarks/semi_coherent/ab_output.hepmc.hepmc",
+		hepmcfile="benchmarks/semi_coherent/filtered_ab.hepmc.hepmc",
 		warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
 	output:
 		"sim_output/semi_coherent/{DETECTOR_CONFIG}_semi_coherent.edm4hep.root",

@@ -1,6 +1,6 @@
 import sys
 
-def filter_events(input_file,output_file, particle_id=80000, status=-3):
+def filter_events(input_file,output_file, particle_id=1000922380, status=-3):
     with open(input_file, 'r') as f:
         lines = f.readlines()
 
