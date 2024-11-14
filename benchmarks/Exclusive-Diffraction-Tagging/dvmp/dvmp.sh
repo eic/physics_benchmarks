@@ -40,7 +40,7 @@ source parse_cmd.sh $@
 ## - RESULTS_PATH:  Path for benchmark output figures and files
 ##
 ## You can read dvmp/env.sh for more in-depth explanations of the variables.
-source benchmarks/dvmp/env.sh
+source benchmarks/Exclusive-Diffraction-Tagging/dvmp/env.sh
 
 ## Get a unique file names based on the configuration options
 GEN_FILE=${INPUT_PATH}/gen-${CONFIG}_${DECAY}_${JUGGLER_N_EVENTS}.hepmc
@@ -119,12 +119,12 @@ EOF
 #cat ${CONFIG}
 
 ## run the analysis script with this configuration
-root -b -q "benchmarks/dvmp/analysis/vm_mass.cxx+(\"${CONFIG}\")"
+root -b -q "benchmarks/Exclusive-Diffraction-Tagging/dvmp/analysis/vm_mass.cxx+(\"${CONFIG}\")"
 if [ "$?" -ne "0" ] ; then
   echo "ERROR running vm_mass script"
   exit 1
 fi
-root -b -q "benchmarks/dvmp/analysis/vm_invar.cxx+(\"${CONFIG}\")"
+root -b -q "benchmarks/Exclusive-Diffraction-Tagging/dvmp/analysis/vm_invar.cxx+(\"${CONFIG}\")"
 if [ "$?" -ne "0" ] ; then
   echo "ERROR running vm_invar script"
   exit 1

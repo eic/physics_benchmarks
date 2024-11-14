@@ -3,8 +3,8 @@ import os
 #Compile the analysis and plotting scripts
 rule demp_compile:
     input:
-        ROOT_BUILD_DIR_PREFIX + "benchmarks/demp/analysis/demp_analysis_cxx.so",
-        ROOT_BUILD_DIR_PREFIX + "benchmarks/demp/analysis/demp_plots_cxx.so",
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/demp/analysis/demp_analysis_cxx.so",
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/demp/analysis/demp_plots_cxx.so",
 
 #Process the simulated files based on the user-defined campaign
 rule demp_campaign_reco_get:
@@ -60,8 +60,8 @@ DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file
 #Process the files (either from the campaign or eicrecon) through the analysis script
 rule demp_analysis:
     input:
-        script="benchmarks/demp/analysis/demp_analysis.cxx",
-        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/demp/analysis/demp_analysis_cxx.so",
+        script="benchmarks/Exclusive-Diffraction-Tagging/demp/analysis/demp_analysis.cxx",
+        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/demp/analysis/demp_analysis_cxx.so",
         data="reco/{DETECTOR_CONFIG}/{PREFIX}demp_{EBEAM}on{PBEAM}_{INDEX}.edm4eic.root",
     output:
         config="results/{DETECTOR_CONFIG}/demp/{PREFIX}demp_{EBEAM}on{PBEAM}_{INDEX}/config.json",
@@ -115,8 +115,8 @@ hadd {output.hists} {input}
 #Process the merged file through the plotting script
 rule demp_plots:
     input:
-        script="benchmarks/demp/analysis/demp_plots.cxx",
-        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/demp/analysis/demp_plots_cxx.so",
+        script="benchmarks/Exclusive-Diffraction-Tagging/demp/analysis/demp_plots.cxx",
+        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/demp/analysis/demp_plots_cxx.so",
         config="results/{DETECTOR_CONFIG}/demp/{PREFIX}demp_{EBEAM}on{PBEAM}_combined_{NUM_FILES}/config.json",
     output:
         "results/{DETECTOR_CONFIG}/demp/{PREFIX}demp_{EBEAM}on{PBEAM}_combined_{NUM_FILES}/plots.pdf"

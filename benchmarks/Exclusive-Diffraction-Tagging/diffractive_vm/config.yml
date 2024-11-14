@@ -23,4 +23,4 @@ diffractive_vm:results:
   stage: collect
   needs: ["diffractive_vm:simulate"]
   script:
-    - collect_tests.py diffractive_vm
+    - collect_tests.py Exclusive-Diffraction-Tagging/diffractive_vm

@@ -107,6 +107,7 @@ common:setup:
       - runner_system_failure
 
 include:
+<<<<<<< HEAD
   - local: 'benchmarks/diffractive_vm/config.yml'
   - local: 'benchmarks/demp/config.yml'
   - local: 'benchmarks/dis/config.yml'
@@ -116,6 +117,15 @@ include:
   - local: 'benchmarks/tcs/config.yml'
   - local: 'benchmarks/u_omega/config.yml'
   - local: 'benchmarks/backgrounds/config.yml'
+=======
+  - local: 'benchmarks/Exclusive-Diffraction-Tagging/diffractive_vm/config.yml'
+  - local: 'benchmarks/Exclusive-Diffraction-Tagging/demp/config.yml'
+    #- local: 'benchmarks/Exclusive-Diffraction-Tagging/dvmp/config.yml'
+  - local: 'benchmarks/Exclusive-Diffraction-Tagging/dvcs/config.yml'
+  - local: 'benchmarks/Exclusive-Diffraction-Tagging/tcs/config.yml'
+  - local: 'benchmarks/Exclusive-Diffraction-Tagging/u_omega/config.yml'
+  - local: 'benchmarks/Inclusive/dis/config.yml'
+>>>>>>> master
 
 summary:
   stage: finish
@@ -126,7 +136,6 @@ summary:
     - "dvcs:results"
     - "tcs:results"
     - "u_omega:results"
-    - "backgrounds:results"
   script:
     - collect_benchmarks.py
     - find results -print | sort | tee summary.txt

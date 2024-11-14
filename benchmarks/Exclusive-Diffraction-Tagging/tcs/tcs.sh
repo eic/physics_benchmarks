@@ -2,13 +2,13 @@
 source strict-mode.sh
 
 function print_the_help {
-  echo "USAGE: ${0} [--rec] [--sim] [--ana] [--all] "
-  echo "    The default options are to run all steps (sim,rec,ana) "
+  echo "USAGE: ${0} [--rec] [--sim] [--analysis] [--all] "
+  echo "    The default options are to run all steps (sim,rec,analysis) "
   echo "OPTIONS: "
   echo "  --data-init     download the input event data"
   echo "  --sim,-s        Runs the Geant4 simulation"
   echo "  --rec,-r        Run the juggler reconstruction"
-  echo "  --ana,-a        Run the analysis scripts"
+  echo "  --analysis,-a   Run the analysis scripts"
   echo "  --all           (default) Do all steps. Argument is included so usage can convey intent."
   exit 
 }
@@ -17,7 +17,10 @@ DO_ALL=1
 DATA_INIT=
 DO_SIM=
 DO_REC=
-DO_ANA=
+DO_ANALYSIS=
+EBEAM=
+PBEAM=
+TAG=
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]
@@ -31,11 +34,26 @@ do
       ;;
     --all)
       DO_ALL=2
-      if [[ ! "${DO_REC}${DO_SIM}${DO_ANA}" -eq "" ]] ; then
+      if [[ ! "${DO_REC}${DO_SIM}${DO_ANALYSIS}" -eq "" ]] ; then
         echo "Error: cannot use --all with other arguments." 1>&2
         print_the_help
         exit 1
       fi
+      shift # past value
+      ;;
+    --tag)
+      shift # past argument
+      TAG=$1
+      shift # past value
+      ;;
+    --pbeam)
+      shift # past argument
+      PBEAM=$1
+      shift # past value
+      ;;
+    --ebeam)
+      shift # past argument
+      EBEAM=$1
       shift # past value
       ;;
     -s|--sim)
@@ -54,7 +72,7 @@ do
       shift # past value
       ;;
     -a|--analysis)
-      DO_ANA=1
+      DO_ANALYSIS=1
       DO_ALL=
       shift # past value
       ;;
@@ -71,8 +89,8 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 # assuming something like .local/bin/env.sh has already been sourced.
 print_env.sh
 
-FILE_NAME_TAG="synchrotron"
-DATA_URL="S3/eictest/ATHENA/EVGEN/SR/SR.10GeV_5kVthreshold_hepmc/25098.hepmc"
+FILE_NAME_TAG="tcs"
+DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/TCS_ABCONV/${EBEAM}x${PBEAM}/hel_minus/TCS_gen_ab_hiAcc_${EBEAM}x${PBEAM}m_${TAG}_novtx.hepmc.gz"
 
 export JUGGLER_MC_FILE="${LOCAL_DATA_PATH}/mc_${FILE_NAME_TAG}.hepmc"
 export JUGGLER_SIM_FILE="${LOCAL_DATA_PATH}/sim_${FILE_NAME_TAG}.edm4hep.root"
@@ -91,9 +109,9 @@ echo "DETECTOR    = ${DETECTOR}"
 if [[ -n "${DATA_INIT}" || -n "${DO_ALL}" ]] ; then
   mc -C . config host add S3 https://eics3.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
   set +o pipefail
-  mc -C . head -n $((2+5*${JUGGLER_N_EVENTS})) --insecure ${DATA_URL} | sanitize_hepmc3 > ${JUGGLER_MC_FILE}
+  mc -C . cat --insecure ${DATA_URL} | gunzip -c | head -n $((20+10*JUGGLER_N_EVENTS)) |  sanitize_hepmc3 > "${JUGGLER_MC_FILE}"
   if [[ "$?" -ne "0" ]] ; then
-    echo "Failed to download hepmc files"
+    echo "Failed to download hepmc file"
     exit 1
   fi
 fi
@@ -107,15 +125,16 @@ if [[ -n "${DO_SIM}" || -n "${DO_ALL}" ]] ; then
     -v ERROR \
     --numberOfEvents ${JUGGLER_N_EVENTS} \
     --compactFile ${DETECTOR_PATH}/${DETECTOR_CONFIG}.xml \
-    --inputFiles ${JUGGLER_MC_FILE} \
-    --outputFile ${JUGGLER_SIM_FILE}
-  if [[ "$?" -ne "0" ]] ; then
+    --inputFiles "${JUGGLER_MC_FILE}" \
+    --outputFile  ${JUGGLER_SIM_FILE}
+  if [ "$?" -ne "0" ] ; then
     echo "ERROR running ddsim"
     exit 1
   fi
 fi
 
 ### Step 3. Run the reconstruction (eicrecon)
+export PBEAM
 if [[ -n "${DO_REC}" || -n "${DO_ALL}" ]] ; then
   if [ ${RECO} == "eicrecon" ] ; then
     eicrecon ${JUGGLER_SIM_FILE} -Ppodio:output_file=${JUGGLER_REC_FILE}
@@ -143,21 +162,15 @@ if [[ -n "${DO_REC}" || -n "${DO_ALL}" ]] ; then
 fi
 
 ### Step 4. Run the analysis code
-if [[ -n "${DO_ANA}" || -n "${DO_ALL}" ]] ; then
+if [[ -n "${DO_ANALYSIS}" || -n "${DO_ALL}" ]] ; then
   echo "Running analysis scripts"
   rootls -t  ${JUGGLER_REC_FILE}
 
   # Store all plots here (preferribly png and pdf files)
-  mkdir -p results/synchrotron
+  mkdir -p results/tcs
 
   # here you can add as many scripts as you want.
-  root -b -q "benchmarks/backgrounds/analysis/synchrotron_sim.cxx+(\"${JUGGLER_SIM_FILE}\")"
-  if [[ "$?" -ne "0" ]] ; then
-    echo "ERROR running root script"
-    exit 1
-  fi
-
-  root -b -q "benchmarks/backgrounds/analysis/synchrotron_raw.cxx+(\"${JUGGLER_REC_FILE/.root/.raw.root}\")"
+  root -b -q "benchmarks/Exclusive-Diffraction-Tagging/tcs/analysis/tcs_tests.cxx+(\"${JUGGLER_REC_FILE}\")"
   if [[ "$?" -ne "0" ]] ; then
     echo "ERROR running root script"
     exit 1
