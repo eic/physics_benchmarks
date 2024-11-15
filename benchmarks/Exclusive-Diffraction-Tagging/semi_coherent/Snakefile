@@ -1,17 +1,9 @@
 import os
 import shutil
 
-rule semi_coherent_get:
-	output:
-		"benchmarks/semi_coherent/data.hepmc"
-	shell:
-		"""
-xrdcp root://dtn-eic.jlab.org//work/eic2/EPIC/EVGEN/CI/SEMI_COHERENT/eU_0.hepmc {output}
-"""
-
 rule semi_coherent_filter:
 	input:
-		"benchmarks/semi_coherent/data.hepmc",
+                "EPIC/EVGEN/CI/SEMI_COHERENT/eU_0.hepmc"
 	output:
 		"benchmarks/semi_coherent/filtered.hepmc",
 	shell:
