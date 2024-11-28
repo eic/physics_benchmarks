@@ -90,9 +90,10 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 print_env.sh
 
 FILE_NAME_TAG="tcs"
-DATA_URL="S3/eictest/ATHENA/EVGEN/EXCLUSIVE/TCS_ABCONV/${EBEAM}x${PBEAM}/hel_minus/TCS_gen_ab_hiAcc_${EBEAM}x${PBEAM}m_${TAG}_novtx.hepmc.gz"
+XROOTD_BASEURL="root://dtn-eic.jlab.org//work/eic2/EPIC"
+INPUT_FILE="EVGEN/EXCLUSIVE/TCS_ABCONV/${EBEAM}x${PBEAM}/hel_minus/TCS_gen_ab_hiAcc_${EBEAM}x${PBEAM}m_${TAG}.hepmc3.tree.root"
 
-export JUGGLER_MC_FILE="${LOCAL_DATA_PATH}/mc_${FILE_NAME_TAG}.hepmc"
+export JUGGLER_MC_FILE="${XROOTD_BASEURL}/${INPUT_FILE}"
 export JUGGLER_SIM_FILE="${LOCAL_DATA_PATH}/sim_${FILE_NAME_TAG}.edm4hep.root"
 export JUGGLER_REC_FILE="${LOCAL_DATA_PATH}/rec_${FILE_NAME_TAG}.root"
 
@@ -105,18 +106,7 @@ echo "DETECTOR    = ${DETECTOR}"
 ## - DETECTOR:       the detector package we want to use for this benchmark
 ## - DETECTOR_PATH:          full path to the detector definitions
 
-## Step 1. Get the data
-if [[ -n "${DATA_INIT}" || -n "${DO_ALL}" ]] ; then
-  mc -C . config host add S3 https://eics3.sdcc.bnl.gov:9000 $S3_ACCESS_KEY $S3_SECRET_KEY
-  set +o pipefail
-  mc -C . cat --insecure ${DATA_URL} | gunzip -c | head -n $((20+10*JUGGLER_N_EVENTS)) |  sanitize_hepmc3 > "${JUGGLER_MC_FILE}"
-  if [[ "$?" -ne "0" ]] ; then
-    echo "Failed to download hepmc file"
-    exit 1
-  fi
-fi
-
-### Step 2. Run the simulation (geant4)
+### Step 1. Run the simulation (geant4)
 if [[ -n "${DO_SIM}" || -n "${DO_ALL}" ]] ; then
   ## run geant4 simulations
   ddsim --runType batch \
@@ -133,7 +123,7 @@ if [[ -n "${DO_SIM}" || -n "${DO_ALL}" ]] ; then
   fi
 fi
 
-### Step 3. Run the reconstruction (eicrecon)
+### Step 2. Run the reconstruction (eicrecon)
 export PBEAM
 if [[ -n "${DO_REC}" || -n "${DO_ALL}" ]] ; then
   if [ ${RECO} == "eicrecon" ] ; then
@@ -161,7 +151,7 @@ if [[ -n "${DO_REC}" || -n "${DO_ALL}" ]] ; then
   fi
 fi
 
-### Step 4. Run the analysis code
+### Step 3. Run the analysis code
 if [[ -n "${DO_ANALYSIS}" || -n "${DO_ALL}" ]] ; then
   echo "Running analysis scripts"
   rootls -t  ${JUGGLER_REC_FILE}
