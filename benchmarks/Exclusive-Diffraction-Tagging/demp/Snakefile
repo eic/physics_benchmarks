@@ -38,7 +38,7 @@ ddsim \
   -v WARNING \
   --numberOfEvents {params.N_EVENTS} \
   --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
-  --inputFiles root://dtn-eic.jlab.org//work/eic2/EPIC/EVGEN/EXCLUSIVE/DEMP/DEMPgen-1.2.0/{wildcards.EBEAM}x{wildcards.PBEAM}/pi+/DEMPgen-1.1.0_{wildcards.EBEAM}x{wildcards.PBEAM}_pi+_{wildcards.INDEX}.hepmc3.tree.root \
+  --inputFiles root://dtn-eic.jlab.org//work/eic2/EPIC/EVGEN/EXCLUSIVE/DEMP/DEMPgen-1.2.0/{wildcards.EBEAM}x{wildcards.PBEAM}/pi+/DEMPgen-1.2.0_{wildcards.EBEAM}x{wildcards.PBEAM}_pi+_{wildcards.INDEX}.hepmc3.tree.root \
   --outputFile {output}
 """
 
