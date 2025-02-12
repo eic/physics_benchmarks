@@ -29,8 +29,7 @@ default:
       - summary.txt
     reports:
       dotenv: .env
-    artifacts:
-      when: always
+    when: always
 
 stages:
   - status-pending
