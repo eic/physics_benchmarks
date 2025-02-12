@@ -29,6 +29,7 @@ default:
       - summary.txt
     reports:
       dotenv: .env
+    when: always
 
 stages:
   - status-pending
