@@ -72,7 +72,7 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 print_env.sh
 
 FILE_NAME_TAG="u_omega"
-XROOTD_BASEURL="root://dtn-eic.jlab.org//work/eic2/EPIC"
+XROOTD_BASEURL="root://dtn-eic.jlab.org//volatile/eic/EPIC"
 INPUT_FILE="EVGEN/EXCLUSIVE/omega/u_omegaNeutralDecay_5x41GeV_5k_Q2_1_5.hepmc3.tree.root"
 
 export JUGGLER_MC_FILE="${XROOTD_BASEURL}/${INPUT_FILE}"

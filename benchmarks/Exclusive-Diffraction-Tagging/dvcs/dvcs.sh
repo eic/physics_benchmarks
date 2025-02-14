@@ -72,7 +72,7 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 print_env.sh
 
 FILE_NAME_TAG="dvcs"
-XROOTD_BASEURL="root://dtn-eic.jlab.org//work/eic2/EPIC"
+XROOTD_BASEURL="root://dtn-eic.jlab.org//volatile/eic/EPIC"
 INPUT_FILE="EVGEN/EXCLUSIVE/DVCS_ABCONV/10x100/DVCS.1.ab.hiDiv.10x100.hepmc3.tree.root"
 
 export JUGGLER_MC_FILE="${XROOTD_BASEURL}/${INPUT_FILE}"
