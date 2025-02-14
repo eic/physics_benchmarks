@@ -24,7 +24,7 @@ rule fetch_epic:
         filepath="EPIC/{PATH}"
     cache: True
     shell: """
-xrdcp root://dtn-eic.jlab.org//work/eic2/{output.filepath} {output.filepath}
+xrdcp root://dtn-eic.jlab.org//volatile/eic/{output.filepath} {output.filepath}
 """
 
 
