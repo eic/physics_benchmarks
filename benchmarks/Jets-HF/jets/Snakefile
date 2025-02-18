@@ -34,9 +34,9 @@ rule jets_analysis_jets:
     output:
         results_path=directory("results/{DETECTOR_CONFIG}/jets/{EBEAM}on{PBEAM}/minQ2={MINQ2}"),
     wildcard_constraints:
-        EBEAM="\d+",
-        PBEAM="\d+",
-        MINQ2="\d+",
+        EBEAM=r"\d+",
+        PBEAM=r"\d+",
+        MINQ2=r"\d+",
     shell: """
 mkdir {output.results_path}
 root -l -b -q '{input.script}+("{input.config}")'

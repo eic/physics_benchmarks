@@ -95,7 +95,7 @@ rule diffractive_vm_combine_sartre:
     wildcard_constraints:
         PREFIX=".*", # can be empty
         PARTICLE="[^_]*",
-        NUM_FILES="\d+",
+        NUM_FILES=r"\d+",
         SUFFIX=".*", # can be empty
     output:
         config="results/{DETECTOR_CONFIG}/diffractive_vm/{PREFIX}sartre_{PARTICLE}_combined_{NUM_FILES}{SUFFIX}/config.json",

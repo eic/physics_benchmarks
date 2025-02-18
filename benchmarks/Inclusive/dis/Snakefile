@@ -91,9 +91,9 @@ rule dis_analysis_kinematics_correlations:
     params:
         N_EVENTS=100
     wildcard_constraints:
-        EBEAM="\d+",
-        PBEAM="\d+",
-        MINQ2="\d+",
+        EBEAM=r"\d+",
+        PBEAM=r"\d+",
+        MINQ2=r"\d+",
     shell: """
 mkdir {output.results_path}
 python benchmarks/Inclusive/dis/analysis/kinematics_correlations.py --rec_file "{input.data}" --config dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}_{wildcards.DETECTOR_CONFIG} --results_path {output.results_path} --nevents {params.N_EVENTS}
@@ -108,9 +108,9 @@ rule dis_analysis_truth_reconstruction:
     params:
         N_EVENTS=100
     wildcard_constraints:
-        EBEAM="\d+",
-        PBEAM="\d+",
-        MINQ2="\d+",
+        EBEAM=r"\d+",
+        PBEAM=r"\d+",
+        MINQ2=r"\d+",
     shell: """
 mkdir {output.results_path}
 python benchmarks/Inclusive/dis/analysis/truth_reconstruction.py --rec_file "{input.data}" --config dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}_{wildcards.DETECTOR_CONFIG} --results_path $(dirname {output.results_path}) --nevents {params.N_EVENTS}
