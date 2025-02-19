@@ -26,9 +26,9 @@ rule demp_sim:
     params:
         N_EVENTS=100
     wildcard_constraints:
-        EBEAM="\d+",
-        PBEAM="\d+",
-        INDEX="\d+",
+        EBEAM=r"\d+",
+        PBEAM=r"\d+",
+        INDEX=r"\d+",
     shell:
         """
 ddsim \
@@ -49,9 +49,9 @@ rule demp_reco:
     output:
         "reco/{DETECTOR_CONFIG}/demp_{EBEAM}x{PBEAM}_{INDEX}.edm4eic.root",
     wildcard_constraints:
-        EBEAM="\d+",
-        PBEAM="\d+",
-        INDEX="\d+",
+        EBEAM=r"\d+",
+        PBEAM=r"\d+",
+        INDEX=r"\d+",
     shell:
         """
 DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file={output}
@@ -68,9 +68,9 @@ rule demp_analysis:
         hists="results/{DETECTOR_CONFIG}/demp/{PREFIX}demp_{EBEAM}x{PBEAM}_{INDEX}/hists.root",
     wildcard_constraints:
         PREFIX= ".*",
-        EBEAM="\d+",
-        PBEAM="\d+",
-        INDEX="\d+",
+        EBEAM=r"\d+",
+        PBEAM=r"\d+",
+        INDEX=r"\d+",
     shell:
         """
 cat > {output.config} <<EOF
@@ -94,9 +94,9 @@ rule demp_combine:
         hists="results/{DETECTOR_CONFIG}/demp/{PREFIX}demp_{EBEAM}x{PBEAM}_combined_{NUM_FILES}/hists.root",
     wildcard_constraints:
         PREFIX= ".*",
-        EBEAM="\d+",
-        PBEAM="\d+",
-        NUM_FILES="\d+",
+        EBEAM=r"\d+",
+        PBEAM=r"\d+",
+        NUM_FILES=r"\d+",
     shell:
         """
 cat > {output.config} <<EOF
@@ -122,9 +122,9 @@ rule demp_plots:
         "results/{DETECTOR_CONFIG}/demp/{PREFIX}demp_{EBEAM}x{PBEAM}_combined_{NUM_FILES}/plots.pdf"
     wildcard_constraints:
         PREFIX= ".*",
-        EBEAM="\d+",
-        PBEAM="\d+",
-        NUM_FILES="\d+",
+        EBEAM=r"\d+",
+        PBEAM=r"\d+",
+        NUM_FILES=r"\d+",
     shell:
         """
 root -l -b -q '{input.script}+("{input.config}")'
