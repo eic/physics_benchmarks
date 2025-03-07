@@ -404,7 +404,7 @@ def particle_plots(boolean_particle):
         if not np.isnan(Y_error[1][1][each_bin]):
             ax4.text(x=-Y_error[1][0][each_bin],y=y_limits[1],
                     s= '\u03BC = %.3f\n\u03C3 = %.3f' % (Y_error[1][1][each_bin],Y_error[1][3][each_bin]),size=text_size,horizontalalignment='center',verticalalignment='top')
-    if not np.isnan(Y_error[0][4]):
+    if not np.isnan(Y_error[1][4]):
         ax1.set_ylim(0-(Y_error[1][4]*10),0+(Y_error[1][4]*10))
         ax2.set_ylim(0-(Y_error[1][4]*10),0+(Y_error[1][4]*10))
     fig.set_figwidth(20)
