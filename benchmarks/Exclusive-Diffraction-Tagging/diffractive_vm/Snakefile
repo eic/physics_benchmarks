@@ -35,7 +35,7 @@ ddsim \
   --skipNEvents $( command expr "{wildcards.INDEX}" "*" "{params.N_EVENTS}" ) \
   --numberOfEvents {params.N_EVENTS} \
   --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
-  --inputFiles root://dtn-eic.jlab.org//work/eic2/EPIC/EVGEN/EXCLUSIVE/DIFFRACTIVE_$( echo -n "{wildcards.PARTICLE}" | tr "[:lower:]" "[:upper:]" )_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_{wildcards.PARTICLE}_ab_eAu_1.hepmc3.tree.root \
+  --inputFiles root://dtn-eic.jlab.org//volatile/eic/EPIC/EVGEN/EXCLUSIVE/DIFFRACTIVE_$( echo -n "{wildcards.PARTICLE}" | tr "[:lower:]" "[:upper:]" )_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_{wildcards.PARTICLE}_ab_eAu_1.hepmc3.tree.root \
   --outputFile {output}
 """
 
