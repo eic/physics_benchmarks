@@ -222,10 +222,12 @@ for i in range(len(MC_list)): #Repeat the following steps for each variable (mom
             ax6.errorbar(Y_error[5][0], Y_error[5][1], yerr=Y_error[5][3], xerr=Y_error[5][2] ,fmt='None', ecolor = 'orange', elinewidth = 1)
 
             if i == 0:  # for momentum
-                ax1.set_ylim(1-(Y_error[0][4]*10),1+(Y_error[0][4]*10))
+                if not np.isnan(Y_error[0][4]):
+                    ax1.set_ylim(1-(Y_error[0][4]*10),1+(Y_error[0][4]*10))
                 center = 1
             else:       # for angles
-                ax1.set_ylim(0-(Y_error[0][4]*10),0+(Y_error[0][4]*10))
+                if not np.isnan(Y_error[0][4]):
+                    ax1.set_ylim(0-(Y_error[0][4]*10),0+(Y_error[0][4]*10))
                 center = 0
             for each_bin in range(len(Y_error[0][0])):
                 ax1.text(x=Y_error[0][0][each_bin],y=center + Y_error[0][4]*7, s= '\u03BC = %.3f\n\u03C3 = %.3f' % (Y_error[0][1][each_bin],Y_error[0][3][each_bin]),size=text_size,horizontalalignment='center',verticalalignment='top')
