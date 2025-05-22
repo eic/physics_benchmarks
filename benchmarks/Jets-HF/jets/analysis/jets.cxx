@@ -93,6 +93,10 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   TTreeReaderArray<int> recoPartPDG = {tree_reader, "ReconstructedChargedParticles.PDG"};
   TTreeReaderArray<float> recoPartNRG = {tree_reader, "ReconstructedChargedParticles.energy"};
 
+  TTreeReaderArray<unsigned int> recoPartAssocRec = {tree_reader, "ReconstructedChargedParticleAssociations.recID"}; // Reco <-> MCParticle
+  TTreeReaderArray<unsigned int> recoPartAssocSim = {tree_reader, "ReconstructedChargedParticleAssociations.simID"};
+  TTreeReaderArray<float> recoPartAssocWeight = {tree_reader, "ReconstructedChargedParticleAssociations.weight"};
+
   // Generated Jets
   TTreeReaderArray<int> genType = {tree_reader, "GeneratedChargedJets.type"};
   TTreeReaderArray<float> genNRG = {tree_reader, "GeneratedChargedJets.energy"};
@@ -114,6 +118,13 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   TTreeReaderArray<float> mcMomZ = {tree_reader, "GeneratedParticles.momentum.z"};
   TTreeReaderArray<float> mcM = {tree_reader, "GeneratedParticles.mass"};
   TTreeReaderArray<int> pdg = {tree_reader, "GeneratedParticles.PDG"};
+
+  TTreeReaderArray<int> mcGenStat = {tree_reader, "MCParticles.generatorStatus"};
+  TTreeReaderArray<double> mcMomXPart = {tree_reader, "MCParticles.momentum.x"};
+  TTreeReaderArray<double> mcMomYPart = {tree_reader, "MCParticles.momentum.y"};
+  TTreeReaderArray<double> mcMomZPart = {tree_reader, "MCParticles.momentum.z"};
+  TTreeReaderArray<double> mcMPart = {tree_reader, "MCParticles.mass"};
+  TTreeReaderArray<int> pdgMCPart = {tree_reader, "MCParticles.PDG"};
 
   // Define Histograms
   TH1D *counter = new TH1D("counter","",10,0.,10.);
@@ -229,9 +240,24 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	if(ECut)
 	  {
 	    // Find Jets with Electrons
-	    for(unsigned int m=partsBegin[i]; m<partsEnd[i]; m++)
+	    for(unsigned int m=partsBegin[i]; m<partsEnd[i]; m++) // Loop over jet constituents
 	      {
-		if(recoPartM[recoPartIndex[m]] > 0.00050 && recoPartM[recoPartIndex[m]] < 0.00052)
+		int elecIndex = -1;
+		double elecIndexWeight = -1.0;
+		int chargePartIndex = recoPartIndex[m]; // ReconstructedChargedParticle Index for m'th Jet Component
+		for(unsigned int n=0; n<recoPartAssocRec.GetSize(); n++) // Loop Over All ReconstructedChargedParticleAssociations
+		  {
+		    if(recoPartAssocRec[n] == chargePartIndex) // Select Entry Matching the ReconstructedChargedParticle Index
+		      {
+			if(recoPartAssocWeight[n] > elecIndexWeight) // Find Particle with Greatest Weight = Contributed Most Hits to Track
+			  {
+			    elecIndex = recoPartAssocSim[n]; // Get Index of MCParticle Associated with ReconstructedChargedParticle
+			    elecIndexWeight = recoPartAssocWeight[n];
+			  }
+		      }
+		  }
+		
+		if(pdgMCPart[elecIndex] == 11) // Test if Matched Particle is an Electron
 		  noElectron = false;
 	      }
 
