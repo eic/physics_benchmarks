@@ -236,31 +236,31 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	recoChargedJetEvsEtaHist->Fill(jetMom.PseudoRapidity(),recoNRG[i]);
 	if(ECut) recoChargedJetPhiVsEtaECutHist->Fill(jetMom.PseudoRapidity(),jetMom.Phi());
 
+	// Find Jets with Electrons
 	bool noElectron = true;
-	if(ECut)
+	for(unsigned int m=partsBegin[i]; m<partsEnd[i]; m++) // Loop over jet constituents
 	  {
-	    // Find Jets with Electrons
-	    for(unsigned int m=partsBegin[i]; m<partsEnd[i]; m++) // Loop over jet constituents
+	    int elecIndex = -1;
+	    double elecIndexWeight = -1.0;
+	    int chargePartIndex = recoPartIndex[m]; // ReconstructedChargedParticle Index for m'th Jet Component
+	    for(unsigned int n=0; n<recoPartAssocRec.GetSize(); n++) // Loop Over All ReconstructedChargedParticleAssociations
 	      {
-		int elecIndex = -1;
-		double elecIndexWeight = -1.0;
-		int chargePartIndex = recoPartIndex[m]; // ReconstructedChargedParticle Index for m'th Jet Component
-		for(unsigned int n=0; n<recoPartAssocRec.GetSize(); n++) // Loop Over All ReconstructedChargedParticleAssociations
+		if(recoPartAssocRec[n] == chargePartIndex) // Select Entry Matching the ReconstructedChargedParticle Index
 		  {
-		    if(recoPartAssocRec[n] == chargePartIndex) // Select Entry Matching the ReconstructedChargedParticle Index
+		    if(recoPartAssocWeight[n] > elecIndexWeight) // Find Particle with Greatest Weight = Contributed Most Hits to Track
 		      {
-			if(recoPartAssocWeight[n] > elecIndexWeight) // Find Particle with Greatest Weight = Contributed Most Hits to Track
-			  {
-			    elecIndex = recoPartAssocSim[n]; // Get Index of MCParticle Associated with ReconstructedChargedParticle
-			    elecIndexWeight = recoPartAssocWeight[n];
-			  }
+			elecIndex = recoPartAssocSim[n]; // Get Index of MCParticle Associated with ReconstructedChargedParticle
+			elecIndexWeight = recoPartAssocWeight[n];
 		      }
 		  }
-		
-		if(pdgMCPart[elecIndex] == 11) // Test if Matched Particle is an Electron
-		  noElectron = false;
 	      }
-
+	    
+	    if(pdgMCPart[elecIndex] == 11) // Test if Matched Particle is an Electron
+	      noElectron = false;
+	  }
+	
+	if(ECut)
+	  {
 	    for(unsigned int j=partsBegin[i]; j<partsEnd[i]; j++)
 	      {
 		// partsbegin and partsEnd specify the entries from _ReconstructedChargedJets_particles.index that make up the jet
@@ -347,16 +347,16 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	genChargedJetEvsEtaHist->Fill(jetMom.PseudoRapidity(),genNRG[i]);
 	if(ECut) genChargedJetPhiVsEtaECutHist->Fill(jetMom.PseudoRapidity(),jetMom.Phi());
 
+	// Find Jets with Electrons
 	bool noElectron = true;
+	for(unsigned int m=genPartsBegin[i]; m<genPartsEnd[i]; m++)
+	  {
+	    if(pdg[genPartIndex[m]] == 11)
+	      noElectron = false;
+	  }
+
 	if(ECut)
 	  {
-	    // Find Jets with Electrons
-	    for(unsigned int m=genPartsBegin[i]; m<genPartsEnd[i]; m++)
-	      {
-		if(mcM[genPartIndex[m]] > 0.00050 && mcM[genPartIndex[m]] < 0.00052)
-		  noElectron = false;
-	      }
-
 	    for(unsigned int j=genPartsBegin[i]; j<genPartsEnd[i]; j++)
 	      {
 		// partsbegin and partsEnd specify the entries from _ReconstructedChargedJets_particles.index that make up the jet
@@ -438,7 +438,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	// Find Jets with Electrons
 	for(unsigned int m=genPartsBegin[i]; m<genPartsEnd[i]; m++)
 	  {
-	    if(mcM[genPartIndex[m]] > 0.00050 && mcM[genPartIndex[m]] < 0.00052)
+	    if(pdg[genPartIndex[m]] == 11)
 	      hasElectron = true;
 	  }
 	//if(hasElectron) continue;
