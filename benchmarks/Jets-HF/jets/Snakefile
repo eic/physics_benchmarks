@@ -1,6 +1,6 @@
 rule jets_compile:
     input:
-        ROOT_BUILD_DIR_PREFIX + "benchmarks/Inclusive/dis/analysis/jets_cxx.so",
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/Jets-HF/jets/analysis/jets_cxx.so",
 
 
 rule jets_generate_config:
