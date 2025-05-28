@@ -144,15 +144,15 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   TH2D *recoChargedJetPhiVsEtaECutNoElecHist = new TH2D("recoChargedJetPhiVsEtaECutNoElec","",60,-3.,3.,100,-TMath::Pi(),TMath::Pi());
 
   TH1D *numRecoChargedJetPartsHist = new TH1D("numRecoChargedJetParts","",20,0.,20.);
-  TH1D *recoChargedJetPartEHist = new TH1D("recoChargedJetPartE","",500,0.,100.);
+  TH1D *recoChargedJetPartPHist = new TH1D("recoChargedJetPartP","",500,0.,100.);
   TH1D *recoChargedJetPartEtaHist = new TH1D("recoChargedJetPartEta","",80,-4.,4.);
-  TH2D *recoChargedJetPartEvsEtaHist = new TH2D("recoChargedJetPartEvsEta","",80,-4.,4.,500,0.,100.);
+  TH2D *recoChargedJetPartPvsEtaHist = new TH2D("recoChargedJetPartPvsEta","",80,-4.,4.,500,0.,100.);
   TH2D *recoChargedJetPartPhiVsEtaHist = new TH2D("recoChargedJetPartPhiVsEta","",80,-4.,4.,100,-TMath::Pi(),TMath::Pi());
 
   TH1D *numRecoChargedJetPartsNoElecHist = new TH1D("numRecoChargedJetPartsNoElec","",20,0.,20.);
-  TH1D *recoChargedJetPartENoElecHist = new TH1D("recoChargedJetPartENoElec","",500,0.,100.);
+  TH1D *recoChargedJetPartPNoElecHist = new TH1D("recoChargedJetPartPNoElec","",500,0.,100.);
   TH1D *recoChargedJetPartEtaNoElecHist = new TH1D("recoChargedJetPartEtaNoElec","",80,-4.,4.);
-  TH2D *recoChargedJetPartEvsEtaNoElecHist = new TH2D("recoChargedJetPartEvsEtaNoElec","",80,-4.,4.,500,0.,100.);
+  TH2D *recoChargedJetPartPvsEtaNoElecHist = new TH2D("recoChargedJetPartPvsEtaNoElec","",80,-4.,4.,500,0.,100.);
   TH2D *recoChargedJetPartPhiVsEtaNoElecHist = new TH2D("recoChargedJetPartPhiVsEtaNoElec","",80,-4.,4.,100,-TMath::Pi(),TMath::Pi());
 
   TH1D *recoChargedJetPartPairwiseDeltaRHist = new TH1D("recoChargedJetPartPairwiseDeltaRHist","",5000,0.,5.);
@@ -171,15 +171,15 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   TH2D *genChargedJetPhiVsEtaECutNoElecHist = new TH2D("genChargedJetPhiVsEtaECutNoElec","",60,-3.,3.,100,-TMath::Pi(),TMath::Pi());
 
   TH1D *numGenChargedJetPartsHist = new TH1D("numGenChargedJetParts","",20,0.,20.);
-  TH1D *genChargedJetPartEHist = new TH1D("genChargedJetPartE","",500,0.,100.);
+  TH1D *genChargedJetPartPHist = new TH1D("genChargedJetPartP","",500,0.,100.);
   TH1D *genChargedJetPartEtaHist = new TH1D("genChargedJetPartEta","",80,-4.,4.);
-  TH2D *genChargedJetPartEvsEtaHist = new TH2D("genChargedJetPartEvsEta","",80,-4.,4.,500,0.,100.);
+  TH2D *genChargedJetPartPvsEtaHist = new TH2D("genChargedJetPartPvsEta","",80,-4.,4.,500,0.,100.);
   TH2D *genChargedJetPartPhiVsEtaHist = new TH2D("genChargedJetPartPhiVsEta","",80,-4.,4.,100,-TMath::Pi(),TMath::Pi());
 
   TH1D *numGenChargedJetPartsNoElecHist = new TH1D("numGenChargedJetPartsNoElec","",20,0.,20.);
-  TH1D *genChargedJetPartENoElecHist = new TH1D("genChargedJetPartENoElec","",500,0.,100.);
+  TH1D *genChargedJetPartPNoElecHist = new TH1D("genChargedJetPartPNoElec","",500,0.,100.);
   TH1D *genChargedJetPartEtaNoElecHist = new TH1D("genChargedJetPartEtaNoElec","",80,-4.,4.);
-  TH2D *genChargedJetPartEvsEtaNoElecHist = new TH2D("genChargedJetPartEvsEtaNoElec","",80,-4.,4.,500,0.,100.);
+  TH2D *genChargedJetPartPvsEtaNoElecHist = new TH2D("genChargedJetPartPvsEtaNoElec","",80,-4.,4.,500,0.,100.);
   TH2D *genChargedJetPartPhiVsEtaNoElecHist = new TH2D("genChargedJetPartPhiVsEtaNoElec","",80,-4.,4.,100,-TMath::Pi(),TMath::Pi());
 
   TH1D *genChargedJetPartPairwiseDeltaRHist = new TH1D("genChargedJetPartPairwiseDeltaRHist","",5000,0.,5.);
@@ -269,20 +269,20 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 		double mY = recoPartMomY[recoPartIndex[j]];
 		double mZ = recoPartMomZ[recoPartIndex[j]];
 		double mM = recoPartM[recoPartIndex[j]];
-		double tmpE = TMath::Sqrt(mX*mX + mY*mY + mZ*mZ + mM*mM);
+		//double tmpE = TMath::Sqrt(mX*mX + mY*mY + mZ*mZ + mM*mM);
 		
 		TVector3 partMom(mX,mY,mZ);
 		
-		recoChargedJetPartEHist->Fill(tmpE);
+		recoChargedJetPartPHist->Fill(partMom.Mag());
 		recoChargedJetPartEtaHist->Fill(partMom.PseudoRapidity());
-		recoChargedJetPartEvsEtaHist->Fill(partMom.PseudoRapidity(),tmpE);
+		recoChargedJetPartPvsEtaHist->Fill(partMom.PseudoRapidity(),partMom.Mag());
 		recoChargedJetPartPhiVsEtaHist->Fill(partMom.PseudoRapidity(),partMom.Phi());
 
 		if(noElectron)
 		  {
-		    recoChargedJetPartENoElecHist->Fill(tmpE);
+		    recoChargedJetPartPNoElecHist->Fill(partMom.Mag());
 		    recoChargedJetPartEtaNoElecHist->Fill(partMom.PseudoRapidity());
-		    recoChargedJetPartEvsEtaNoElecHist->Fill(partMom.PseudoRapidity(),tmpE);
+		    recoChargedJetPartPvsEtaNoElecHist->Fill(partMom.PseudoRapidity(),partMom.Mag());
 		    recoChargedJetPartPhiVsEtaNoElecHist->Fill(partMom.PseudoRapidity(),partMom.Phi());
 		  }
 
@@ -365,20 +365,20 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 		double mY = mcMomY[genPartIndex[j]];
 		double mZ = mcMomZ[genPartIndex[j]];
 		double mM = mcM[genPartIndex[j]];
-		double tmpE = TMath::Sqrt(mX*mX + mY*mY + mZ*mZ + mM*mM);
+		//double tmpE = TMath::Sqrt(mX*mX + mY*mY + mZ*mZ + mM*mM);
 		
 		TVector3 partMom(mX,mY,mZ);
 		
-		genChargedJetPartEHist->Fill(tmpE);
+		genChargedJetPartPHist->Fill(partMom.Mag());
 		genChargedJetPartEtaHist->Fill(partMom.PseudoRapidity());
-		genChargedJetPartEvsEtaHist->Fill(partMom.PseudoRapidity(),tmpE);
+		genChargedJetPartPvsEtaHist->Fill(partMom.PseudoRapidity(),partMom.Mag());
 		genChargedJetPartPhiVsEtaHist->Fill(partMom.PseudoRapidity(),partMom.Phi());
 
 		if(noElectron)
 		  {
-		    genChargedJetPartENoElecHist->Fill(tmpE);
+		    genChargedJetPartPNoElecHist->Fill(partMom.Mag());
 		    genChargedJetPartEtaNoElecHist->Fill(partMom.PseudoRapidity());
-		    genChargedJetPartEvsEtaNoElecHist->Fill(partMom.PseudoRapidity(),tmpE);
+		    genChargedJetPartPvsEtaNoElecHist->Fill(partMom.PseudoRapidity(),partMom.Mag());
 		    genChargedJetPartPhiVsEtaNoElecHist->Fill(partMom.PseudoRapidity(),partMom.Phi());
 		  }
 
@@ -677,26 +677,26 @@ legend6->Draw();
   if(PRINT) c6->Print((results_path+"/numConstituentsPerRecoJet.png").c_str()); // Number of constituents in reconstructed jets
 
   // Reco Part Energy
-  TCanvas *c7 = new TCanvas("c7","Reco Jet Constituent Energy",800,600);
+  TCanvas *c7 = new TCanvas("c7","Reco Jet Constituent Momentum",800,600);
   c7->Clear();
   c7->Divide(1,1);
 
   c7->cd(1);
-  recoChargedJetPartEHist->Draw("HIST");
-  recoChargedJetPartENoElecHist->SetLineColor(seabornRed);
-  recoChargedJetPartENoElecHist->Draw("HISTSAME");
+  recoChargedJetPartPHist->Draw("HIST");
+  recoChargedJetPartPNoElecHist->SetLineColor(seabornRed);
+  recoChargedJetPartPNoElecHist->Draw("HISTSAME");
 
-  recoChargedJetPartEHist->SetLineWidth(2);
-  recoChargedJetPartENoElecHist->SetLineWidth(2);
-  recoChargedJetPartEHist->SetTitle("Reconstructed Jet Constituent Energy;Energy [GeV]");
+  recoChargedJetPartPHist->SetLineWidth(2);
+  recoChargedJetPartPNoElecHist->SetLineWidth(2);
+  recoChargedJetPartPHist->SetTitle("Reconstructed Jet Constituent Momentum;Momentum [GeV/c]");
 
   TLegend *legend7 = new TLegend(0.7, 0.7, 0.9, 0.9); // Adjust the coordinates as needed
-  legend7->AddEntry(recoChargedJetPartEHist, "With Electrons", "l");
-  legend7->AddEntry(recoChargedJetPartENoElecHist, "No Electrons", "l");
+  legend7->AddEntry(recoChargedJetPartPHist, "With Electrons", "l");
+  legend7->AddEntry(recoChargedJetPartPNoElecHist, "No Electrons", "l");
   legend7->Draw();
 
   gPad->SetLogy();
-  if(PRINT) c7->Print((results_path+"/recoJetConstituentEnergy.png").c_str()); // Energy of reconstructed jet constituents
+  if(PRINT) c7->Print((results_path+"/recoJetConstituentMomentum.png").c_str()); // Momentum of reconstructed jet constituents
 
   // Reco Part Eta
   TCanvas *c8 = new TCanvas("c8","Reco Jet Constituent Eta",800,600);
@@ -721,16 +721,16 @@ legend6->Draw();
   gPad->SetLogy();
   if(PRINT) c8->Print((results_path+"/recoJetConstituentEta.png").c_str()); // Eta of reconstructed jet constituents
 
-  // Reco Part E Vs Eta
-  TCanvas *c9 = new TCanvas("c9","Reco Jet Constituent E Vs Eta",800,600);
+  // Reco Part P Vs Eta
+  TCanvas *c9 = new TCanvas("c9","Reco Jet Constituent Momentum Vs Eta",800,600);
   c9->Clear();
   c9->Divide(1,1);
 
   c9->cd(1);
-  recoChargedJetPartEvsEtaHist->Draw("COLZ");
-  recoChargedJetPartEvsEtaHist->SetTitle("Reconstructed Jet Constituent Energy Vs Eta;Eta;Energy [GeV]");
+  recoChargedJetPartPvsEtaHist->Draw("COLZ");
+  recoChargedJetPartPvsEtaHist->SetTitle("Reconstructed Jet Constituent Momentum Vs Eta;Eta;Momentum [GeV/c]");
   gPad->SetLogz();
-  if(PRINT) c9->Print((results_path+"/recoJetConstituentEnergyVsEta.png").c_str()); // Energy vs eta of reconstructed jet constituents
+  if(PRINT) c9->Print((results_path+"/recoJetConstituentMomentumVsEta.png").c_str()); // Momentum vs eta of reconstructed jet constituents
 
   // Reco Part Phi Vs Eta
   TCanvas *c10 = new TCanvas("c10","Reco Jet Constituent Phi Vs Eta",800,600);
@@ -777,16 +777,16 @@ legend6->Draw();
   gPad->SetLogz();
   if(PRINT) c13->Print((results_path+"/recoJetPhiVsEtaNoElectron.png").c_str()); // Reconstructed Jet phi vs eta - no jets containing electrons included
 
-  // Reco Part E Vs Eta No Electron Jets
-  TCanvas *c14 = new TCanvas("c14","Reco Jet Constituent E Vs Eta (No Electrons)",800,600);
+  // Reco Part P Vs Eta No Electron Jets
+  TCanvas *c14 = new TCanvas("c14","Reco Jet Constituent Momentum Vs Eta (No Electrons)",800,600);
   c14->Clear();
   c14->Divide(1,1);
 
   c14->cd(1);
-  recoChargedJetPartEvsEtaNoElecHist->Draw("COLZ");
-  recoChargedJetPartEvsEtaNoElecHist->SetTitle("Reconstructed Jet Constituent Energy Vs Eta (No Electrons);Eta;Energy [GeV]");
+  recoChargedJetPartPvsEtaNoElecHist->Draw("COLZ");
+  recoChargedJetPartPvsEtaNoElecHist->SetTitle("Reconstructed Jet Constituent Momentum Vs Eta (No Electrons);Eta;Momentum [GeV/c]");
   gPad->SetLogz();
-  if(PRINT) c14->Print((results_path+"/recoJetConstituentEnergyVsEtaNoElectron.png").c_str()); // Reconstructed jet constituent energy vs eta - no jets containing electrons included
+  if(PRINT) c14->Print((results_path+"/recoJetConstituentMomentumVsEtaNoElectron.png").c_str()); // Reconstructed jet constituent momentum vs eta - no jets containing electrons included
 
   // Reco Part Phi Vs Eta No Electron Jets
   TCanvas *c15 = new TCanvas("c15","Reco Jet Constituent Phi Vs Eta (No Electrons)",800,600);
@@ -913,28 +913,28 @@ legend6->Draw();
   gPad->SetLogy();
   if(PRINT) c21->Print((results_path+"/numConstituentsPerGenJet.png").c_str()); // Number of constituents in generator jets
 
-  // Gen Part Energy
-  TCanvas *c22 = new TCanvas("c22","Gen Jet Constituent Energy",800,600);
+  // Gen Part Momentum
+  TCanvas *c22 = new TCanvas("c22","Gen Jet Constituent Momentum",800,600);
   c22->Clear();
   c22->Divide(1,1);
 
   c22->cd(1);
-  genChargedJetPartEHist->Draw("HIST");
-  genChargedJetPartENoElecHist->SetLineColor(seabornRed);
-  genChargedJetPartENoElecHist->Draw("HISTSAME");
+  genChargedJetPartPHist->Draw("HIST");
+  genChargedJetPartPNoElecHist->SetLineColor(seabornRed);
+  genChargedJetPartPNoElecHist->Draw("HISTSAME");
 
-  genChargedJetPartEHist->SetLineWidth(2);
-  genChargedJetPartENoElecHist->SetLineWidth(2);
+  genChargedJetPartPHist->SetLineWidth(2);
+  genChargedJetPartPNoElecHist->SetLineWidth(2);
 
-  genChargedJetPartEHist->SetTitle("Generator Jet Constituent Energy;Energy [GeV]");
+  genChargedJetPartPHist->SetTitle("Generator Jet Constituent Momentum;Energy [GeV/c]");
 
   TLegend *legend22 = new TLegend(0.7, 0.7, 0.9, 0.9); // Adjust the coordinates as needed
-  legend22->AddEntry(genChargedJetPartEHist, "With Electrons", "l");
-  legend22->AddEntry(genChargedJetPartENoElecHist, "No Electrons", "l");
+  legend22->AddEntry(genChargedJetPartPHist, "With Electrons", "l");
+  legend22->AddEntry(genChargedJetPartPNoElecHist, "No Electrons", "l");
   legend22->Draw();
 
   gPad->SetLogy();
-  if(PRINT) c22->Print((results_path+"/genJetConstituentEnergy.png").c_str()); // Energy of generator jet constituents
+  if(PRINT) c22->Print((results_path+"/genJetConstituentMomentum.png").c_str()); // Momentum of generator jet constituents
 
   // Gen Part Eta
   TCanvas *c23 = new TCanvas("c23","Gen Jet Constituent Eta",800,600);
@@ -959,16 +959,16 @@ legend6->Draw();
   gPad->SetLogy();
   if(PRINT) c23->Print((results_path+"/genJetConstituentEta.png").c_str()); // Eta of generator jet constituents
 
-  // Gen Part E Vs Eta
-  TCanvas *c24 = new TCanvas("c24","Gen Jet Constituent E Vs Eta",800,600);
+  // Gen Part P Vs Eta
+  TCanvas *c24 = new TCanvas("c24","Gen Jet Constituent Momentum Vs Eta",800,600);
   c24->Clear();
   c24->Divide(1,1);
 
   c24->cd(1);
-  genChargedJetPartEvsEtaHist->Draw("COLZ");
-  genChargedJetPartEvsEtaHist->SetTitle("Generator Jet Constituent Energy Vs Eta;Eta;Energy [GeV]");
+  genChargedJetPartPvsEtaHist->Draw("COLZ");
+  genChargedJetPartPvsEtaHist->SetTitle("Generator Jet Constituent Momentum Vs Eta;Eta;Momentum [GeV/c]");
   gPad->SetLogz();
-  if(PRINT) c24->Print((results_path+"/genJetConstituentEnergyVsEta.png").c_str()); // Energy vs eta of generator jet constituents
+  if(PRINT) c24->Print((results_path+"/genJetConstituentMomentumVsEta.png").c_str()); // Momentum vs eta of generator jet constituents
 
   // Gen Part Phi Vs Eta
   TCanvas *c25 = new TCanvas("c25","Gen Jet Constituent Phi Vs Eta",800,600);
@@ -1015,16 +1015,16 @@ legend6->Draw();
   gPad->SetLogz();
   if(PRINT) c28->Print((results_path+"/genJetPhiVsEtaNoElectron.png").c_str()); // Generator Jet phi vs eta - no jets containing electrons included
 
-  // Gen Part E Vs Eta No Electron Jets
-  TCanvas *c29 = new TCanvas("c29","Gen Jet Constituent E Vs Eta (No Electrons)",800,600);
+  // Gen Part P Vs Eta No Electron Jets
+  TCanvas *c29 = new TCanvas("c29","Gen Jet Constituent Momentum Vs Eta (No Electrons)",800,600);
   c29->Clear();
   c29->Divide(1,1);
 
   c29->cd(1);
-  genChargedJetPartEvsEtaNoElecHist->Draw("COLZ");
-  genChargedJetPartEvsEtaNoElecHist->SetTitle("Generator Jet Constituent Energy Vs Eta (No Electrons);Eta;Energy [GeV]");
+  genChargedJetPartPvsEtaNoElecHist->Draw("COLZ");
+  genChargedJetPartPvsEtaNoElecHist->SetTitle("Generator Jet Constituent Momentum Vs Eta (No Electrons);Eta;Momentum [GeV/c]");
   gPad->SetLogz();
-  if(PRINT) c29->Print((results_path+"/genJetConstituentEnergyVsEtaNoElectron.png").c_str()); // Generator jet constituent energy vs eta - no jets containing electrons included
+  if(PRINT) c29->Print((results_path+"/genJetConstituentMomentumVsEtaNoElectron.png").c_str()); // Generator jet constituent momentum vs eta - no jets containing electrons included
 
   // Gen Part Phi Vs Eta No Electron Jets
   TCanvas *c30 = new TCanvas("c30","Gen Jet Constituent Phi Vs Eta (No Electrons)",800,600);
