@@ -1,3 +1,33 @@
+import functools
+import os
+from snakemake.logging import logger
+
+
+@functools.cache
+def get_spack_package_hash(package_name):
+    import json
+    try:
+        ver_info = json.loads(subprocess.check_output(["spack", "find", "--json", package_name]))
+        return ver_info[0]["package_hash"]
+    except FileNotFoundError as e:
+        logger.warning("Spack is not installed")
+        return ""
+    except subprocess.CalledProcessError as e:
+        print(e)
+        return ""
+
+
+@functools.cache
+def find_epic_libraries():
+    import ctypes.util
+    # if library is not found (not avaliable) we return an empty list to let DAG still evaluate
+    libs = []
+    lib = ctypes.util.find_library("epic")
+    if lib is not None:
+        libs.append(os.environ["DETECTOR_PATH"] + "/../../lib/" + lib)
+    return libs
+
+
 ROOT_BUILD_DIR = os.getenv("ROOT_BUILD_DIR", None)
 
 if ROOT_BUILD_DIR is not None:
