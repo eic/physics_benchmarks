@@ -10,9 +10,20 @@ rule dis_sim:
     input:
         warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
     output:
-        "sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4hep.root",
+        "sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.{INDEX}.edm4hep.root",
+    wildcard_constraints:
+        INDEX=r"\d{4}",
     params:
         N_EVENTS=100,
+        SEED=lambda wildcards: "1" + wildcards.INDEX,
+        EBEAM=lambda wildcards: wildcards.EBEAM
+        PBEAM=lambda wildcards: wildcards.PBEAM
+        MINQ2=lambda wildcards: wildcards.MINQ2
+        DETECTOR_PATH=os.environ["DETECTOR_PATH"],
+        DETECTOR_CONFIG=lambda wildcards: wildcards.DETECTOR_CONFIG,
+        DD4HEP_HASH=get_spack_package_hash("dd4hep"),
+        NPSIM_HASH=get_spack_package_hash("npsim"),
+    cache: True
     shell:
         """
 ddsim \
@@ -21,26 +32,31 @@ ddsim \
   --filter.tracker edep0 \
   -v WARNING \
   --numberOfEvents {params.N_EVENTS} \
-  --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
-  --inputFiles root://dtn-eic.jlab.org//volatile/eic/EPIC/EVGEN/DIS/NC/{wildcards.EBEAM}x{wildcards.PBEAM}/minQ2={wildcards.MINQ2}/pythia8NCDIS_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}_beamEffects_xAngle=-0.025_hiDiv_vtxfix_1.hepmc3.tree.root \
+  --compactFile $DETECTOR_PATH/{params.DETECTOR_CONFIG}.xml \
+  --random.seed {params.SEED} \
+  --inputFiles root://dtn-eic.jlab.org//volatile/eic/EPIC/EVGEN/DIS/NC/{params.EBEAM}x{params.PBEAM}/minQ2={params.MINQ2}/pythia8NCDIS_{params.EBEAM}x{params.PBEAM}_minQ2={params.MINQ2}_beamEffects_xAngle=-0.025_hiDiv_vtxfix_1.hepmc3.tree.root \
   --outputFile {output}
 """
 
 
 rule dis_reco_eicrecon:
     input:
-        "sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4hep.root",
+        "sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.{INDEX}.edm4hep.root",
     output:
-        "sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4eic.root",
+        "sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.{INDEX}.eicrecon.edm4eic.root",
+    params:
+        DETECTOR_CONFIG=lambda wildcards: wildcards.DETECTOR_CONFIG,
+        EICRECON_HASH=get_spack_package_hash("eicrecon"),
+    cache: True
     shell:
         """
-DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file={output}
+DETECTOR_CONFIG={params.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file={output}
 """
 
 
 rule dis_generate_config:
     input:
-        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4eic.root",
+        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.0000.eicrecon.edm4eic.root",
     output:
         config="results/{DETECTOR_CONFIG}/dis/{EBEAM}on{PBEAM}/minQ2={MINQ2}_config.json",
     shell: """
