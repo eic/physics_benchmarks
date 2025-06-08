@@ -80,7 +80,7 @@ rule dis_analysis_electrons:
     input:
         script="benchmarks/Inclusive/dis/analysis/dis_electrons.cxx",
         script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Inclusive/dis/analysis/dis_electrons_cxx.so",
-        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4eic.root",
+        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.0000.edm4eic.root",
         config="results/{DETECTOR_CONFIG}/dis/{EBEAM}on{PBEAM}/minQ2={MINQ2}_config.json",
     output:
         expand("results/{{DETECTOR_CONFIG}}/dis/{{EBEAM}}on{{PBEAM}}/minQ2={{MINQ2}}/{FILENAME}", FILENAME=[
@@ -101,7 +101,7 @@ root -l -b -q '{input.script}+("{input.config}")'
 
 rule dis_analysis_kinematics_correlations:
     input:
-        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4eic.root",
+        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.0000.edm4eic.root",
     output:
         results_path=directory("results/{DETECTOR_CONFIG}/dis/{EBEAM}on{PBEAM}/minQ2={MINQ2}/kinematics_correlations"),
     params:
@@ -118,7 +118,7 @@ python benchmarks/Inclusive/dis/analysis/kinematics_correlations.py --rec_file "
 
 rule dis_analysis_truth_reconstruction:
     input:
-        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.edm4eic.root",
+        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.0000.edm4eic.root",
     output:
         results_path=directory("results/{DETECTOR_CONFIG}/dis/{EBEAM}on{PBEAM}/minQ2={MINQ2}/truth_reconstruction"),
     params:
