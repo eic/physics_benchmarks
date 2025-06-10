@@ -1,0 +1,18 @@
+lowQ2:simulate:
+  stage: simulate
+  extends: .phy_benchmark
+  timeout: 3 hours
+  script:
+    - echo "I will simulate detector response here!"
+    #- snakemake --cache --cores 5 lowQ2_rho_analysis_test
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+
+lowQ2:results:
+  stage: collect
+  needs: ["lowQ2:simulate"]
+  script:
+    - echo "I will collect results here!"
+    #- collect_tests.py Exclusive-Diffraction-Tagging/lowQ2
