@@ -2,66 +2,67 @@ import os
 import shutil
 
 rule semi_coherent_filter:
-	input:
+    input:
                 "EPIC/EVGEN/CI/SEMI_COHERENT/eU_0.hepmc"
-	output:
-		"benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered.hepmc",
-	shell:
-		"""
+    output:
+        "benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered.hepmc",
+    shell:
+        """
 python3 benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filter.py {input} {output}
 """
 
 rule semi_coherent_afterburner:
-	input:
-		"benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered.hepmc",
-	output:
-		"benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered_ab.hepmc.hepmc",
-	shell:
-		"""
+    input:
+        "benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered.hepmc",
+    output:
+        "benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered_ab.hepmc.hepmc",
+    shell:
+        """
 abconv {input} -p 2 --output benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered_ab.hepmc
 """
-	
+    
 rule semi_coherent_sim:
-	input:
-		hepmcfile="benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered_ab.hepmc.hepmc",
-		warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
-	output:
-		"sim_output/semi_coherent/{DETECTOR_CONFIG}_semi_coherent.edm4hep.root",
-	log:
-		"sim_output/semi_coherent/{DETECTOR_CONFIG}_semi_coherent.edm4hep.root.log",
-	params:
-		num_events=1000,
-	shell:
-		"""
+    input:
+        hepmcfile="benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered_ab.hepmc.hepmc",
+        warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
+    output:
+        "sim_output/semi_coherent/{DETECTOR_CONFIG}_semi_coherent.edm4hep.root",
+    log:
+        "sim_output/semi_coherent/{DETECTOR_CONFIG}_semi_coherent.edm4hep.root.log",
+    params:
+        num_events=1000,
+    shell:
+        """
 npsim --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml --numberOfEvents {params.num_events} --inputFiles {input.hepmcfile} --outputFile {output}
 """
 
 rule semi_coherent_reco:
-	input:
-		"sim_output/semi_coherent/{DETECTOR_CONFIG}_semi_coherent.edm4hep.root",
-	output:
-		"sim_output/semi_coherent/{DETECTOR_CONFIG}_semi_coherent.eicrecon.tree.edm4eic.root",
-	log:
-		"sim_output/semi_coherent/{DETECTOR_CONFIG}_semi_coherent.eicrecon.tree.edm4eic.root.log",
-	shell:
-		"""
+    input:
+        "sim_output/semi_coherent/{DETECTOR_CONFIG}_semi_coherent.edm4hep.root",
+    output:
+        "sim_output/semi_coherent/{DETECTOR_CONFIG}_semi_coherent.eicrecon.tree.edm4eic.root",
+    log:
+        "sim_output/semi_coherent/{DETECTOR_CONFIG}_semi_coherent.eicrecon.tree.edm4eic.root.log",
+    shell:
+        """
 DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon  -Ppodio:output_collections=HcalFarForwardZDCRawHits,HcalFarForwardZDCRecHits,HcalFarForwardZDCClusters,EcalFarForwardZDCRawHits,EcalFarForwardZDCRecHits,EcalFarForwardZDCClusters,MCParticles {input}
 mv podio_output.root {output}
 """
 
 rule semi_coherent_analysis:
-	input:
-		expand("sim_output/semi_coherent/{{DETECTOR_CONFIG}}_semi_coherent.eicrecon.tree.edm4eic.root"),
-		scripts="benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/analysis/analysis.py",
-	output:
-		"results/{DETECTOR_CONFIG}/semi_coherent/plots.pdf",
-	shell:
-		"""
+    input:
+        expand("sim_output/semi_coherent/{{DETECTOR_CONFIG}}_semi_coherent.eicrecon.tree.edm4eic.root"),
+        scripts="benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/analysis/analysis.py",
+    output:
+        "results/{DETECTOR_CONFIG}/semi_coherent/plots.pdf",
+    shell:
+        """
+DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} \
 python {input.scripts}
 """
 
 rule run_all_locally:
-	input:
-		"results/" + os.environ["DETECTOR_CONFIG"] + "/semi_coherent/plots.pdf",
-	message:
-		"See output in {input[0]}"
+    input:
+        "results/" + os.environ["DETECTOR_CONFIG"] + "/semi_coherent/plots.pdf",
+    message:
+        "See output in {input[0]}"
