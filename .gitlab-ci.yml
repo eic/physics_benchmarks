@@ -4,6 +4,7 @@ variables:
   RECO: "eicrecon"
   DETECTOR: epic
   DETECTOR_CONFIG: epic_craterlake
+  SNAKEMAKE_FLAGS: '--cache'
 
 workflow:
   name: '$PIPELINE_NAME'

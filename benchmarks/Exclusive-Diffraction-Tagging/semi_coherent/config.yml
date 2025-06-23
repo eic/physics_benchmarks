@@ -3,7 +3,7 @@ semi_coherent:simulate:
   extends: .phy_benchmark
   timeout: 2 hours
   script:
-    - snakemake --cores 1 run_all_locally
+    - snakemake $SNAKEMAKE_FLAGS --cores 1 run_all_locally
   retry:
     max: 2
     when:
