@@ -62,7 +62,8 @@ void demp_analysis(const std::string& config_name)
   TTreeReader tree_reader(mychain);
 
   // Get weight information
-  TTreeReaderArray<pair<string,vector<string>>> weight_map(tree_reader,"_stringMap"); 
+  TTreeReaderArray<std::string> weight_keys(tree_reader,"GPStringKeys");
+  TTreeReaderArray<std::vector<std::string>> weight_values(tree_reader,"GPStringValues");
 
   // Get Particle Information
   TTreeReaderArray<int>    partGenStat(tree_reader, "MCParticles.generatorStatus");
@@ -299,8 +300,8 @@ void demp_analysis(const std::string& config_name)
  
     x = false, y = false, z = false;
  
-    std::string weight_name = weight_map[0].first; // accessing weights of particles
-    vector<string> weight_value = weight_map[0].second;
+    std::string weight_name = weight_keys[0]; // accessing weights of particles
+    std::vector<std::string> weight_value = weight_values[0];
     weight = std::stod( *(weight_value.begin()) );
 
     
