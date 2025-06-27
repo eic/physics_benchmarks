@@ -84,9 +84,9 @@ int diffractive_vm(const std::string& config_name)
 
   TTreeReaderArray<int> mc_genStatus_array = {tree_reader, "MCParticles.generatorStatus"};
   // MC particle pz array for each MC particle
-  TTreeReaderArray<float>  mc_px_array   = {tree_reader, "MCParticles.momentum.x"};
-  TTreeReaderArray<float>  mc_py_array   = {tree_reader, "MCParticles.momentum.y"};
-  TTreeReaderArray<float>  mc_pz_array   = {tree_reader, "MCParticles.momentum.z"};
+  TTreeReaderArray<double> mc_px_array   = {tree_reader, "MCParticles.momentum.x"};
+  TTreeReaderArray<double> mc_py_array   = {tree_reader, "MCParticles.momentum.y"};
+  TTreeReaderArray<double> mc_pz_array   = {tree_reader, "MCParticles.momentum.z"};
   TTreeReaderArray<double> mc_mass_array = {tree_reader, "MCParticles.mass"};
   TTreeReaderArray<int>    mc_pdg_array  = {tree_reader, "MCParticles.PDG"};
 
