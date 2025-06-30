@@ -83,11 +83,11 @@ void demp_analysis(const std::string& config_name)
   TTreeReaderArray<float> trackCharge(tree_reader,"ReconstructedChargedParticles.charge");
 
   // ZDC Neutrons
-  TTreeReaderArray<float> neutEng(tree_reader, "ReconstructedFarForwardZDCNeutrons.energy");
-  TTreeReaderArray<float> neutMomX(tree_reader, "ReconstructedFarForwardZDCNeutrons.momentum.x");
-  TTreeReaderArray<float> neutMomY(tree_reader, "ReconstructedFarForwardZDCNeutrons.momentum.y");
-  TTreeReaderArray<float> neutMomZ(tree_reader, "ReconstructedFarForwardZDCNeutrons.momentum.z");
-  TTreeReaderArray<unsigned int> neutClus(tree_reader, "ReconstructedFarForwardZDCNeutrons.clusters_end");
+  TTreeReaderArray<float> neutEng(tree_reader, "ReconstructedFarForwardZDCNeutrals.energy");
+  TTreeReaderArray<float> neutMomX(tree_reader, "ReconstructedFarForwardZDCNeutrals.momentum.x");
+  TTreeReaderArray<float> neutMomY(tree_reader, "ReconstructedFarForwardZDCNeutrals.momentum.y");
+  TTreeReaderArray<float> neutMomZ(tree_reader, "ReconstructedFarForwardZDCNeutrals.momentum.z");
+  TTreeReaderArray<unsigned int> neutClus(tree_reader, "ReconstructedFarForwardZDCNeutrals.clusters_end");
 
   // ZDC SiPM-on-tile HCal
   TTreeReaderArray<float> neutPosX_hcal(tree_reader, "HcalFarForwardZDCClusters.position.x");
