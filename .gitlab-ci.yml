@@ -59,6 +59,10 @@ stages:
                "context":"eicweb/physics_benchmarks ('"${BENCHMARKS_TAG}"', '"$DETECTOR_CONFIG"')"
               }' ;
       fi
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
 
 benchmarks:physics:pending:
   stage: status-pending
@@ -90,6 +94,10 @@ common:setup:
     - ["common:setup"]
   before_script:
     - source .local/bin/env.sh  
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
 
 .phy_benchmark:
   needs:
@@ -135,6 +143,10 @@ summary:
       - results/*
 #    reports:
 #      junit: ["results/dvcs/report2.xml"]
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
 
 benchmarks:physics:success:
   stage: status-report
