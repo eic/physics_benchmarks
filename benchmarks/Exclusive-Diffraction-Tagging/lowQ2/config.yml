@@ -1,10 +1,18 @@
 lowQ2:simulate:
   stage: simulate
   extends: .phy_benchmark
-  timeout: 3 hours
+  parallel:
+    matrix:
+      - EBEAM: 5
+        PBEAM: 100
+#      - EBEAM: 10
+#        PBEAM: 100
+#      - EBEAM: 18
+#        PBEAM: 275
+  timeout: 5 hours
   script:
     - echo "I will simulate detector response here!"
-    #- snakemake --cache --cores 5 lowQ2_rho_analysis_test
+#    - snakemake --cache --cores 5 results/epic_craterlake_${EBEAM}x${PBEAM}/lowQ2_rho/lowQ2_rho_${EBEAM}x${PBEAM}_1_0001/config.json
   retry:
     max: 2
     when:
@@ -15,4 +23,4 @@ lowQ2:results:
   needs: ["lowQ2:simulate"]
   script:
     - echo "I will collect results here!"
-    #- collect_tests.py Exclusive-Diffraction-Tagging/lowQ2
+#    - collect_tests.py Exclusive-Diffraction-Tagging/lowQ2/results/

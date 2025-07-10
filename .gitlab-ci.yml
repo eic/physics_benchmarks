@@ -119,7 +119,7 @@ include:
   #- local: 'benchmarks/Exclusive-Diffraction-Tagging/diffractive_vm/config.yml'
   #- local: 'benchmarks/Exclusive-Diffraction-Tagging/demp/config.yml'
   #- local: 'benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/config.yml'
-    #- local: 'benchmarks/Exclusive-Diffraction-Tagging/dvmp/config.yml'
+  #- local: 'benchmarks/Exclusive-Diffraction-Tagging/dvmp/config.yml'
   #- local: 'benchmarks/Exclusive-Diffraction-Tagging/dvcs/config.yml'
   #- local: 'benchmarks/Exclusive-Diffraction-Tagging/tcs/config.yml'
   #- local: 'benchmarks/Exclusive-Diffraction-Tagging/u_omega/config.yml'
