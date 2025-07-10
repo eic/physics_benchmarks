@@ -171,7 +171,6 @@ int diffractive_vm(const std::string& config_name)
   TH1D* h_ClusOverHit_REC =
       new TH1D("h_ClusOverHit_REC", ";cluster energy / new cluster energy", 200, 0, 2);
 
-  tree_reader.SetEntriesRange(0, tree->GetEntries());
   while (tree_reader.Next()) {
 
     /*
