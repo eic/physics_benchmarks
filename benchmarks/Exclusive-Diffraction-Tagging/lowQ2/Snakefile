@@ -77,7 +77,8 @@ rule lowQ2_rho_analysis:
         old_bench="benchmarks/Exclusive-Diffraction-Tagging/lowQ2/old_benchmarks/{DETECTOR_CONFIG}_{EBEAM}x{PBEAM}/lowQ2_rho/lowQ2_rho_{EBEAM}x{PBEAM}_{RUN}_{INDEX}/"
     output:
         config="results/{DETECTOR_CONFIG}_{EBEAM}x{PBEAM}/lowQ2_rho/lowQ2_rho_{EBEAM}x{PBEAM}_{RUN}_{INDEX}/config.json",
-        hists=directory("results/{DETECTOR_CONFIG}_{EBEAM}x{PBEAM}/lowQ2_rho/lowQ2_rho_{EBEAM}x{PBEAM}_{RUN}_{INDEX}/"),
+#        hists=directory("results/{DETECTOR_CONFIG}_{EBEAM}x{PBEAM}/lowQ2_rho/lowQ2_rho_{EBEAM}x{PBEAM}_{RUN}_{INDEX}/"),
+	hists=directory("results/Exclusive-Diffraction-Tagging/lowQ2/lowQ2_rho_${EBEAM}x${PBEAM}_1_0001/"),
     wildcard_constraints:
         EBEAM=r"\d+",
         PBEAM=r"\d+",

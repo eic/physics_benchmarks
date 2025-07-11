@@ -12,7 +12,7 @@ lowQ2:simulate:
   timeout: 5 hours
   script:
     - echo "I will simulate detector response here!"
-    - snakemake --cache --cores 5 results/epic_craterlake_${EBEAM}x${PBEAM}/lowQ2_rho/lowQ2_rho_${EBEAM}x${PBEAM}_1_0001/config.json
+    - snakemake --cache --cores 5 results/Exclusive-Diffraction-Tagging/lowQ2/lowQ2_rho_${EBEAM}x${PBEAM}_1_0001/config.json
   retry:
     max: 2
     when:
@@ -23,4 +23,7 @@ lowQ2:results:
   needs: ["lowQ2:simulate"]
   script:
     - echo "I will collect results here!"
+    #Tests results are expected to have the following file name and directory
+    #structure:
+    #results/<BENCHMARK_NAME>/**/<SOME_NAME>.json
     - collect_tests.py Exclusive-Diffraction-Tagging/lowQ2
