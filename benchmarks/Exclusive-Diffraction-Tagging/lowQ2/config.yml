@@ -12,7 +12,7 @@ lowQ2:simulate:
   timeout: 5 hours
   script:
     - echo "I will simulate detector response here!"
-#    - snakemake --cache --cores 5 results/epic_craterlake_${EBEAM}x${PBEAM}/lowQ2_rho/lowQ2_rho_${EBEAM}x${PBEAM}_1_0001/config.json
+    - snakemake --cache --cores 5 results/epic_craterlake_${EBEAM}x${PBEAM}/lowQ2_rho/lowQ2_rho_${EBEAM}x${PBEAM}_1_0001/config.json
   retry:
     max: 2
     when:
