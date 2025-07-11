@@ -23,4 +23,4 @@ lowQ2:results:
   needs: ["lowQ2:simulate"]
   script:
     - echo "I will collect results here!"
-#    - collect_tests.py Exclusive-Diffraction-Tagging/lowQ2/results/
+    - collect_tests.py Exclusive-Diffraction-Tagging/lowQ2
