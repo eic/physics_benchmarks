@@ -90,7 +90,7 @@ echo "DETECTOR    = ${DETECTOR}"
 ### Step 1. Run the simulation (geant4)
 if [[ -n "${DO_SIM}" || -n "${DO_ALL}" ]] ; then
   ## run geant4 simulations
-  ddsim --runType batch \
+  npsim --runType batch \
     --part.minimalKineticEnergy 1000*GeV  \
     --filter.tracker edep0 \
     -v ERROR \
@@ -99,7 +99,7 @@ if [[ -n "${DO_SIM}" || -n "${DO_ALL}" ]] ; then
     --inputFiles "${JUGGLER_MC_FILE}" \
     --outputFile  ${JUGGLER_SIM_FILE}
   if [[ "$?" -ne "0" ]] ; then
-    echo "ERROR running ddsim"
+    echo "ERROR running npsim"
     exit 1
   fi
 fi

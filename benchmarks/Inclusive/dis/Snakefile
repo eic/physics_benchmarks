@@ -26,7 +26,7 @@ rule dis_sim:
     cache: True
     shell:
         """
-ddsim \
+npsim \
   --runType batch \
   --part.minimalKineticEnergy 1000*GeV  \
   --filter.tracker edep0 \

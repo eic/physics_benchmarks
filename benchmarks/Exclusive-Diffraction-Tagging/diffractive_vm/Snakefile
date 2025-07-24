@@ -27,7 +27,7 @@ rule diffractive_vm_sim:
         N_EVENTS=100
     shell:
         """
-ddsim \
+npsim \
   --runType batch \
   --part.minimalKineticEnergy 100*GeV  \
   --filter.tracker edep0 \
