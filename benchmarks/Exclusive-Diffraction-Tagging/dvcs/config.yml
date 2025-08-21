@@ -7,8 +7,6 @@ dvcs:compile:
 dvcs:simulate:
   stage: simulate
   extends: .phy_benchmark
-  tags:
-    - phy
   needs: ["dvcs:compile"]
   script:
     #- bash benchmarks/Exclusive-Diffraction-Tagging/dvcs/dvcs.sh --all

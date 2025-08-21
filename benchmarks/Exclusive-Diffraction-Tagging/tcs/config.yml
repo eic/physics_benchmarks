@@ -7,8 +7,6 @@ tcs:compile:
 tcs:simulate:
   stage: simulate
   extends: .phy_benchmark
-  tags:
-    - phy
   needs: ["tcs:compile"]
   parallel:
     matrix:
