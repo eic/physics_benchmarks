@@ -31,7 +31,7 @@ rule demp_sim:
         INDEX=r"\d+",
     shell:
         """
-ddsim \
+npsim \
   --runType batch \
   --part.minimalKineticEnergy 100*GeV  \
   --filter.tracker edep0 \

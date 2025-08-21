@@ -4,7 +4,7 @@ source strict-mode.sh
 ## =============================================================================
 ## Run the Diffractive VMP benchmarks in 5 steps:
 ## 1. Parse the command line and setup environment
-## 2. Detector simulation through ddsim
+## 2. Detector simulation through npsim
 ## 3. Digitization and reconstruction through Juggler
 ## 4. Root-based Physics analyses
 ## 5. Finalize
@@ -59,7 +59,7 @@ ls -lrth
 ls -lrth input
 echo ${TMP_PATH}
 ls -lrth ${TMP_PATH}
-ddsim --runType batch \
+npsim --runType batch \
       --part.minimalKineticEnergy 100*GeV  \
       --filter.tracker edep0 \
       -v WARNING \
@@ -68,7 +68,7 @@ ddsim --runType batch \
       --inputFiles ${GEN_FILE} \
       --outputFile ${SIM_FILE}
 if [ "$?" -ne "0" ] ; then
-  echo "ERROR running ddsim"
+  echo "ERROR running npsim"
   exit 1
 fi
 
