@@ -106,10 +106,12 @@ echo "DETECTOR    = ${DETECTOR}"
 ## - DETECTOR:       the detector package we want to use for this benchmark
 ## - DETECTOR_PATH:          full path to the detector definitions
 
+set -x
+
 ### Step 1. Run the simulation (geant4)
 if [[ -n "${DO_SIM}" || -n "${DO_ALL}" ]] ; then
   ## run geant4 simulations
-  ddsim --runType batch \
+  command time -v ddsim --runType batch \
     --part.minimalKineticEnergy 1000*GeV  \
     --filter.tracker edep0 \
     -v ERROR \
