@@ -7,8 +7,6 @@ u_omega:compile:
 u_omega:simulate:
   stage: simulate
   extends: .phy_benchmark
-  tags:
-    - phy
   needs: ["u_omega:compile"]
   script:
     #- bash benchmarks/Exclusive-Diffraction-Tagging/u_omega/u_omega.sh --all

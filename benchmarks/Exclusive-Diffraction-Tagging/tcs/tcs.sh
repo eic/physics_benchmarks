@@ -89,7 +89,7 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 # assuming something like .local/bin/env.sh has already been sourced.
 print_env.sh
 
-FILE_NAME_TAG="tcs"
+FILE_NAME_TAG="tcs_${EBEAM}x${PBEAM}m_${TAG}"
 XROOTD_BASEURL="root://dtn-eic.jlab.org//volatile/eic/EPIC"
 INPUT_FILE="EVGEN/EXCLUSIVE/TCS_ABCONV/${EBEAM}x${PBEAM}/hel_minus/TCS_gen_ab_hiAcc_${EBEAM}x${PBEAM}m_${TAG}.hepmc3.tree.root"
 
