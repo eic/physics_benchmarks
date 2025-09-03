@@ -2,6 +2,7 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -80,6 +81,7 @@ int diffractive_vm(const std::string& config_name)
 
   auto tree = new TChain("events");
   tree->Add(rec_file.c_str());
+  tree->LoadTree(0);
   TTreeReader tree_reader(tree); // !the tree reader
 
   TTreeReaderArray<int> mc_genStatus_array = {tree_reader, "MCParticles.generatorStatus"};
@@ -186,9 +188,9 @@ int diffractive_vm(const std::string& config_name)
 
     // MC level
     TLorentzVector scatMC(0, 0, 0, 0);
-    int            mc_elect_index = -1;
+    std::optional<std::size_t> mc_elect_index = std::nullopt;
     double         maxPt          = -99.;
-    for (int imc = 0; imc < mc_px_array.GetSize(); imc++) {
+    for (std::size_t imc = 0; imc < mc_px_array.GetSize(); imc++) {
       TVector3 mctrk(mc_px_array[imc], mc_py_array[imc], mc_pz_array[imc]);
       if (mc_genStatus_array[imc] == 4) { // 4 is Sartre.
         if (mc_pdg_array[imc] == 11)
@@ -241,7 +243,7 @@ int diffractive_vm(const std::string& config_name)
     double maxEnergy = -99.;
     double xpos      = -999.;
     double ypos      = -999.;
-    for (int iclus = 0; iclus < em_energy_array.GetSize(); iclus++) {
+    for (std::size_t iclus = 0; iclus < em_energy_array.GetSize(); iclus++) {
       if (em_energy_array[iclus] > maxEnergy) {
         maxEnergy = em_energy_array[iclus];
         xpos      = em_x_array[iclus];
@@ -263,8 +265,8 @@ int diffractive_vm(const std::string& config_name)
     h_emHits_position_REC->Fill(xClus, yClus); // self clustering position
 
     // association of rec level scat' e
-    int rec_elect_index = -1;
-    for (int i = 0; i < sim_id.GetSize(); i++) {
+    std::optional<std::size_t> rec_elect_index = std::nullopt;
+    for (std::size_t i = 0; i < sim_id.GetSize(); i++) {
       if (sim_id[i] == mc_elect_index) {
         // find the rec_id
         rec_elect_index = rec_id[i];
@@ -282,7 +284,7 @@ int diffractive_vm(const std::string& config_name)
 
     double maxP = -1.;
     // track loop
-    for (int itrk = 0; itrk < reco_pz_array.GetSize(); itrk++) {
+    for (std::size_t itrk = 0; itrk < reco_pz_array.GetSize(); itrk++) {
       TVector3 trk(reco_px_array[itrk], reco_py_array[itrk], reco_pz_array[itrk]);
       if (rec_elect_index != -1 && itrk == rec_elect_index) {
         scatMCmatchREC.SetVectM(trk, MASS_ELECTRON); // Reserved to calculate t.
@@ -301,7 +303,7 @@ int diffractive_vm(const std::string& config_name)
       }
     }
     // loop over track again;
-    for (int itrk = 0; itrk < reco_pz_array.GetSize(); itrk++) {
+    for (std::size_t itrk = 0; itrk < reco_pz_array.GetSize(); itrk++) {
       TVector3 trk(reco_px_array[itrk], reco_py_array[itrk], reco_pz_array[itrk]);
       particle.SetVectM(trk, MASS_PION); // assume pions;
       if (itrk != rec_elect_index) {
