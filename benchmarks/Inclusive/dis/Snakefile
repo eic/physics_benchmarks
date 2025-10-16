@@ -114,20 +114,3 @@ rule dis_analysis_kinematics_correlations:
 mkdir {output.results_path}
 python benchmarks/Inclusive/dis/analysis/kinematics_correlations.py --rec_file "{input.data}" --config dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}_{wildcards.DETECTOR_CONFIG} --results_path {output.results_path} --nevents {params.N_EVENTS}
 """
-
-
-rule dis_analysis_truth_reconstruction:
-    input:
-        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.0000.eicrecon.edm4eic.root",
-    output:
-        results_path=directory("results/{DETECTOR_CONFIG}/dis/{EBEAM}on{PBEAM}/minQ2={MINQ2}/truth_reconstruction"),
-    params:
-        N_EVENTS=100
-    wildcard_constraints:
-        EBEAM=r"\d+",
-        PBEAM=r"\d+",
-        MINQ2=r"\d+",
-    shell: """
-mkdir {output.results_path}
-python benchmarks/Inclusive/dis/analysis/truth_reconstruction.py --rec_file "{input.data}" --config dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}_{wildcards.DETECTOR_CONFIG} --results_path $(dirname {output.results_path}) --nevents {params.N_EVENTS}
-"""
