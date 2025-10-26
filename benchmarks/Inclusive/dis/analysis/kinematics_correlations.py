@@ -108,8 +108,8 @@ def Xcorrelation(minq2,method): #minq2 can be 1,10,100, or 1000; method can be '
     filter_boolean = ak.where(T_len > Y_len,
                               ak.count(X_List_Y,axis=-1) >= 1,  # if Truth has more, filter by method presence
                               ak.count(X_List_T,axis=-1) >= 1)  # else filter by Truth presence
-    X_List_T_F = Q2_List_T[filter_boolean] #filtered Truth x values
-    X_List_Y_F = Q2_List_Y[filter_boolean] #filtered method x values
+    X_List_T_F = X_List_T[filter_boolean] #filtered Truth x values
+    X_List_Y_F = X_List_Y[filter_boolean] #filtered method x values
     
     T_Xs = np.array(ak.flatten(X_List_T_F)) #Truth Bjorken-x values, mapped along x axis
     Y_Xs = np.array(ak.flatten(X_List_Y_F)) #method Bjorken-x values, mapped along y axis
