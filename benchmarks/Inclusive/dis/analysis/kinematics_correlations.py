@@ -49,14 +49,12 @@ def Q2correlation(minq2,method): #minq2 can be 1,10,100, or 1000; method can be 
     T_len = ak.count(Q2_List_T,axis=0) #total number of events in Truth
     Y_len = ak.count(Q2_List_Y,axis=0) #total number of events in method
 
-    if T_len > Y_len: #if total number of events for Truth is greater
-        Y_boolean = ak.count(Q2_List_Y,axis=-1) >= 1 #boolean to filter ak.Arrays wrt single events in method 
-        Q2_List_T_F = Q2_List_T[Y_boolean] #filtered Truth Q2 values
-        Q2_List_Y_F = Q2_List_Y[Y_boolean] #filtered method Q2 values
-    else: #if total number of events for method is greater
-        T_boolean = ak.count(Q2_List_T,axis=-1) >= 1 #boolean to filter ak.Arrays wrt single events in Truth
-        Q2_List_T_F = Q2_List_T[T_boolean] #filtered Truth Q2 values
-        Q2_List_Y_F = Q2_List_Y[T_boolean] #filtered method Q2 values
+    # Filter based on which dataset has fewer events                                                                                                                                             ╎│
+    filter_boolean = ak.where(T_len > Y_len,                                                                                                                                                     ╎│
+                              ak.count(Q2_List_Y,axis=-1) >= 1,  # if Truth has more, filter by method presence                                                                                 ╎│
+                              ak.count(Q2_List_T,axis=-1) >= 1)  # else filter by Truth presence                                                                                                ╎│
+    Q2_List_T_F = Q2_List_T[filter_boolean] #filtered Truth Q2 values                                                                                                                            ╎│
+    Q2_List_Y_F = Q2_List_Y[filter_boolean] #filtered method Q2 values
     
     T_Q2s = np.array(ak.flatten(Q2_List_T_F)) #Truth Q2 values, mapped along x axis
     Y_Q2s = np.array(ak.flatten(Q2_List_Y_F)) #method Q2 values, mapped along y axis
