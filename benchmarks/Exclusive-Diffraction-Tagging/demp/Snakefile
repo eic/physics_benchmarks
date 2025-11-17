@@ -21,14 +21,18 @@ mv {input} {output}
 rule demp_sim:
     input:
         warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
+        geometry_lib=find_epic_libraries(),
     output:
         "sim/{DETECTOR_CONFIG}/demp_{EBEAM}x{PBEAM}_{INDEX}.edm4hep.root",
     params:
-        N_EVENTS=100
+        N_EVENTS=100,
+        DD4HEP_HASH=get_spack_package_hash("dd4hep"),
+        NPSIM_HASH=get_spack_package_hash("npsim"),
     wildcard_constraints:
         EBEAM=r"\d+",
         PBEAM=r"\d+",
         INDEX=r"\d+",
+    cache: True
     shell:
         """
 npsim \
@@ -48,10 +52,13 @@ rule demp_reco:
         "sim/{DETECTOR_CONFIG}/demp_{EBEAM}x{PBEAM}_{INDEX}.edm4hep.root",
     output:
         "reco/{DETECTOR_CONFIG}/demp_{EBEAM}x{PBEAM}_{INDEX}.edm4eic.root",
+    params:
+        EICRECON_HASH=get_spack_package_hash("eicrecon"),
     wildcard_constraints:
         EBEAM=r"\d+",
         PBEAM=r"\d+",
         INDEX=r"\d+",
+    cache: True
     shell:
         """
 DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file={output}
