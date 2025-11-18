@@ -9,6 +9,7 @@ rule dis_compile:
 rule dis_sim:
     input:
         warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
+        geometry_lib=find_epic_libraries(),
     output:
         "sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.{INDEX}.edm4hep.root",
     wildcard_constraints:

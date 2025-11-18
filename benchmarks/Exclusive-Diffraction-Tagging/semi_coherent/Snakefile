@@ -25,6 +25,7 @@ rule semi_coherent_sim:
     input:
         hepmcfile="benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered_ab.hepmc.hepmc",
         warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
+        geometry_lib=find_epic_libraries(),
     output:
         "sim_output/semi_coherent/{DETECTOR_CONFIG}_semi_coherent.edm4hep.root",
     log:
