@@ -21,10 +21,14 @@ mv {input} {output}
 rule diffractive_vm_sim:
     input:
         warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
+        geometry_lib=find_epic_libraries(),
     output:
         "sim/{DETECTOR_CONFIG}/sartre_{PARTICLE}_{INDEX}.edm4hep.root",
     params:
-        N_EVENTS=100
+        N_EVENTS=100,
+        DD4HEP_HASH=get_spack_package_hash("dd4hep"),
+        NPSIM_HASH=get_spack_package_hash("npsim"),
+    cache: True
     shell:
         """
 npsim \
@@ -45,6 +49,9 @@ rule diffractive_vm_reco_eicrecon:
         "sim/{DETECTOR_CONFIG}/{file}.edm4hep.root",
     output:
         "reco/{DETECTOR_CONFIG}/{file}_eicrecon.edm4eic.root",
+    params:
+        EICRECON_HASH=get_spack_package_hash("eicrecon"),
+    cache: True
     shell:
         """
 DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file={output}

@@ -10,6 +10,9 @@ workflow:
   name: '$PIPELINE_NAME'
 
 default:
+  id_tokens:
+    CI_JOB_JWT:
+      aud: ${CI_SERVER_PROTOCOL}://${CI_SERVER_HOST}
   before_script:
     - source .local/bin/env.sh
   tags:

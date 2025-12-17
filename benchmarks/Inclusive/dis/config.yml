@@ -24,8 +24,7 @@ dis:simulate:
     - |
       snakemake $SNAKEMAKE_FLAGS --cores 1 \
         results/epic_craterlake/dis/${EBEAM}on${PBEAM}/minQ2=${MINQ2}/dis_${EBEAM}x${PBEAM}_minQ2=${MINQ2}dis_electrons.json \
-        results/epic_craterlake/dis/${EBEAM}on${PBEAM}/minQ2=${MINQ2}/kinematics_correlations/ \
-        results/epic_craterlake/dis/${EBEAM}on${PBEAM}/minQ2=${MINQ2}/truth_reconstruction/
+        results/epic_craterlake/dis/${EBEAM}on${PBEAM}/minQ2=${MINQ2}/kinematics_correlations/
   retry:
     max: 2
     when:
