@@ -19,8 +19,18 @@ diffractive_vm:simulate:
     when:
       - runner_system_failure
 
+bench:diffractive_vm_campaign:
+  stage: simulate
+  extends: .phy_benchmark
+  script:
+    - snakemake --cache --cores 1 diffractive_vm_run_over_campaigns
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+
 diffractive_vm:results:
   stage: collect
-  needs: ["diffractive_vm:simulate"]
+  needs: ["diffractive_vm:simulate", "bench:diffractive_vm_campaign"]
   script:
     - collect_tests.py Exclusive-Diffraction-Tagging/diffractive_vm
