@@ -119,24 +119,26 @@ common:setup:
       - runner_system_failure
 
 include:
-  - local: 'benchmarks/Exclusive-Diffraction-Tagging/diffractive_vm/config.yml'
-  - local: 'benchmarks/Exclusive-Diffraction-Tagging/demp/config.yml'
-  - local: 'benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/config.yml'
-    #- local: 'benchmarks/Exclusive-Diffraction-Tagging/dvmp/config.yml'
-  - local: 'benchmarks/Exclusive-Diffraction-Tagging/dvcs/config.yml'
-  - local: 'benchmarks/Exclusive-Diffraction-Tagging/tcs/config.yml'
-  - local: 'benchmarks/Exclusive-Diffraction-Tagging/u_omega/config.yml'
-  - local: 'benchmarks/Inclusive/dis/config.yml'
+  #- local: 'benchmarks/Exclusive-Diffraction-Tagging/diffractive_vm/config.yml'
+  #- local: 'benchmarks/Exclusive-Diffraction-Tagging/demp/config.yml'
+  #- local: 'benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/config.yml'
+  #- local: 'benchmarks/Exclusive-Diffraction-Tagging/dvmp/config.yml'
+  #- local: 'benchmarks/Exclusive-Diffraction-Tagging/dvcs/config.yml'
+  #- local: 'benchmarks/Exclusive-Diffraction-Tagging/tcs/config.yml'
+  #- local: 'benchmarks/Exclusive-Diffraction-Tagging/u_omega/config.yml'
+  - local: 'benchmarks/Exclusive-Diffraction-Tagging/lowQ2/config.yml'
+  #- local: 'benchmarks/Inclusive/dis/config.yml'
 
 summary:
   stage: finish
   needs:
-    - "diffractive_vm:results"
-    - "demp:results"
-    - "dis:results"
-    - "dvcs:results"
-    - "tcs:results"
-    - "u_omega:results"
+    #- "diffractive_vm:results"
+    #- "demp:results"
+    #- "dis:results"
+    #- "dvcs:results"
+    #- "tcs:results"
+    #- "u_omega:results"
+    - "lowQ2:results"
   script:
     - collect_benchmarks.py
     - find results -print | sort | tee summary.txt

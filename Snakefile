@@ -71,8 +71,9 @@ ddsim \
   --enableGun
 """
 
-include: "benchmarks/Exclusive-Diffraction-Tagging/demp/Snakefile"
-include: "benchmarks/Exclusive-Diffraction-Tagging/diffractive_vm/Snakefile"
-include: "benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/Snakefile"
-include: "benchmarks/Jets-HF/jets/Snakefile"
-include: "benchmarks/Inclusive/dis/Snakefile"
+#include: "benchmarks/Exclusive-Diffraction-Tagging/demp/Snakefile"
+#include: "benchmarks/Exclusive-Diffraction-Tagging/diffractive_vm/Snakefile"
+#include: "benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/Snakefile"
+#include: "benchmarks/Jets-HF/jets/Snakefile"
+#include: "benchmarks/Inclusive/dis/Snakefile"
+include: "benchmarks/Exclusive-Diffraction-Tagging/lowQ2/Snakefile"

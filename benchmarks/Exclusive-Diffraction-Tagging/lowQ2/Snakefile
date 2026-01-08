@@ -1,0 +1,200 @@
+
+import os
+####################################################################
+#Process the simulated files based on the user-defined campaign
+####################################################################
+# e.g. /volatile/eic/EPIC/RECO/25.03.1/epic_craterlake/SIDIS/pythia6-eic/1.0.0/10x100/q2_0to1/pythia_ep_noradcor_10x100_q2_0.000000001_1.0_run9.ab.0647.eicrecon.edm4eic.root
+####################################################################
+
+rule lowQ2_campaign_reco_get:
+    input:
+        lambda wildcards: f"EPIC/RECO/{wildcards.RELEASE_TAG}/{wildcards.DETECTOR_CONFIG}/SIDIS/pythia6-eic/1.0.0/{wildcards.EBEAM}x{wildcards.PBEAM}/q2_0to1/pythia_ep_noradcor_{wildcards.EBEAM}x{wildcards.PBEAM}_q2_0.000000001_1.0_run{wildcards.RUN}.ab.{wildcards.INDEX}.eicrecon.edm4eic.root",
+    output:
+        temp("reco/{DETECTOR_CONFIG}/campaign_{RELEASE_TAG}_lowQ2_{EBEAM}x{PBEAM}_{RUN}_{INDEX}.edm4eic.root"),
+    shell:
+        """
+mv {input} {output}
+"""
+
+####################################################################
+#Process the afterburned files through the simulations
+####################################################################
+# e.g. /volatile/eic/EPIC/EVGEN/SIDIS/pythia6-eic/1.0.0/10x100/q2_0to1/pythia_ep_noradcor_10x100_q2_0.000000001_1.0_run1.ab.hepmc3.tree.root
+# note to run locally need source /opt/detector/epic-main/bin/thisepic.sh
+####################################################################
+
+rule lowQ2_rho_sim:
+    input:
+        warmup="warmup/{DETECTOR_CONFIG}_{EBEAM}x{PBEAM}.edm4hep.root",
+    output:
+        "sim/{DETECTOR_CONFIG}_{EBEAM}x{PBEAM}/lowQ2_rho_{EBEAM}x{PBEAM}_{RUN}_{INDEX}.edm4hep.root",
+    params:
+        N_EVENTS=1000
+    wildcard_constraints:
+        EBEAM=r"\d+",
+        PBEAM=r"\d+",
+        INDEX=r"\d+",
+        RUN=r"\d+",
+    shell:
+        """
+ddsim \
+  --runType batch \
+  --part.minimalKineticEnergy 100*GeV  \
+  --filter.tracker edep0 \
+  -v WARNING \
+  --numberOfEvents {params.N_EVENTS} \
+  --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}_{wildcards.EBEAM}x{wildcards.PBEAM}.xml \
+  --inputFiles benchmarks/Exclusive-Diffraction-Tagging/lowQ2/small_data_files/AB_lowQ2_rho_{wildcards.EBEAM}x{wildcards.PBEAM}_{wildcards.RUN}.hepmc \
+  --outputFile {output}
+"""
+
+####################################################################
+#Process the files produced in the previous step through eicrecon
+####################################################################
+rule lowQ2_rho_reco:
+    input:
+        "sim/{DETECTOR_CONFIG}_{EBEAM}x{PBEAM}/lowQ2_rho_{EBEAM}x{PBEAM}_{RUN}_{INDEX}.edm4hep.root",
+    output:
+        "reco/{DETECTOR_CONFIG}_{EBEAM}x{PBEAM}/lowQ2_rho_{EBEAM}x{PBEAM}_{RUN}_{INDEX}.edm4eic.root",
+    wildcard_constraints:
+        EBEAM=r"\d+",
+        PBEAM=r"\d+",
+        INDEX=r"\d+",
+        RUN=r"\d+",
+    shell:
+        """
+DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG}_{wildcards.EBEAM}x{wildcards.PBEAM} eicrecon {input} -Ppodio:output_file={output}
+"""
+
+####################################################################
+#Process the files (either from the campaign or eicrecon) through the analysis script
+####################################################################
+
+rule lowQ2_rho_analysis:
+    input:
+        script="benchmarks/Exclusive-Diffraction-Tagging/lowQ2/analysis/ePICExcTagg2Pi.C",
+        data="reco/{DETECTOR_CONFIG}_{EBEAM}x{PBEAM}/lowQ2_rho_{EBEAM}x{PBEAM}_{RUN}_{INDEX}.edm4eic.root",
+        old_bench="benchmarks/Exclusive-Diffraction-Tagging/lowQ2/old_benchmarks/{DETECTOR_CONFIG}_{EBEAM}x{PBEAM}/lowQ2_rho/lowQ2_rho_{EBEAM}x{PBEAM}_{RUN}_{INDEX}/"
+    output:
+        config="results/{DETECTOR_CONFIG}_{EBEAM}x{PBEAM}/lowQ2_rho/lowQ2_rho_{EBEAM}x{PBEAM}_{RUN}_{INDEX}/config.json",
+        hists=directory("results/{DETECTOR_CONFIG}_{EBEAM}x{PBEAM}/lowQ2_rho/lowQ2_rho_{EBEAM}x{PBEAM}_{RUN}_{INDEX}/"),
+    wildcard_constraints:
+        EBEAM=r"\d+",
+        PBEAM=r"\d+",
+        INDEX=r"\d+",
+        RUN=r"\d+",
+    shell:
+        """
+cat > {output.config} <<EOF
+{{
+  "campaign": "pull_test",
+  "rec_file": "{input.data}",
+  "detector": "{wildcards.DETECTOR_CONFIG}",
+  "ebeam": "{wildcards.EBEAM}",
+  "pbeam": "{wildcards.PBEAM}",
+  "output_dir": "{output.hists}"
+}}
+EOF
+#let ROOT know about the RAD code
+export ROOT_INCLUDE_PATH="$ROOT_INCLUDE_PATH:benchmarks/Exclusive-Diffraction-Tagging/lowQ2/analysis/:benchmarks/Exclusive-Diffraction-Tagging/lowQ2/analysis/include"
+#copy old benchmark file to test new data against
+#note EICrecon version: v1.26.0-24-ga2fe042f
+# 10th July 2025
+cp {input.old_bench}/*.json  {output.hists}/.
+#run the new analysis
+root -l -b -q '{input.script}("{output.config}")'
+"""
+
+#rule lowQ2_campaign_analysis:
+#    input:
+#       #script="benchmarks/Exclusive-Diffraction-Tagging/lowQ2/analysis/ePICPythia.C",
+#        script="rad_test/ePICPythia.C",
+#        data="reco/{DETECTOR_CONFIG}/campaign_{RELEASE_TAG}_lowQ2_{EBEAM}x{PBEAM}_{RUN}_{INDEX}.edm4eic.root",
+#	#include="rad_test/include",
+#	#include="benchmarks/Exclusive-Diffraction-Tagging/lowQ2/analysis/include",
+#    output:
+#        config="results/{DETECTOR_CONFIG}/lowQ2/lowQ2_{RELEASE_TAG}_{EBEAM}x{PBEAM}_{RUN}_{INDEX}/config.json",
+#        hists=directory("results/{DETECTOR_CONFIG}/lowQ2/lowQ2_{RELEASE_TAG}_{EBEAM}x{PBEAM}_{RUN}_{INDEX}/"),
+#    wildcard_constraints:
+#        EBEAM=r"\d+",
+#        PBEAM=r"\d+",
+#        INDEX=r"\d+",
+#        RUN=r"\d+",
+#    shell:
+#        """
+#cat > {output.config} <<EOF
+#{{
+#  "campaign": "testing",
+#  "rec_file": "{input.data}",
+#  "detector": "{wildcards.DETECTOR_CONFIG}",
+#  "ebeam": "{wildcards.EBEAM}",
+#  "pbeam": "{wildcards.PBEAM}",
+#  "output_dir": "{output.hists}"
+#}}
+#EOF
+#export ROOT_INCLUDE_PATH={input.include}
+#root -l -b -q '{input.script}("{output.config}")'
+#"""
+
+
+
+####################################################################
+# Some quick test commands
+####################################################################
+
+## Get specific file
+#rule lowQ2_get_test:
+#    input:
+#        "reco/epic_craterlake/campaign_25.03.1_lowQ2_10x100_1_0001.edm4eic.root",
+#    message:
+#        "See output in {input[0]}"
+#    shell:
+#        """
+#"""
+
+rule lowQ2_rho_sim_test:
+    input:
+        "sim/epic_craterlake_10x100/lowQ2_rho_10x100_1_0001.edm4hep.root",
+    message:
+        "See simulated file at {input[0]}"
+    shell:
+        """
+"""
+#       "reco/{DETECTOR_CONFIG}/lowQ2_{EBEAM}x{PBEAM}_{RUN}_{INDEX}.edm4eic.root",
+ 
+
+rule lowQ2_rho_analysis_test_10x100:
+    input:
+        "results/epic_craterlake_10x100/lowQ2_rho/lowQ2_rho_10x100_1_0001/config.json",
+    message:
+        "See results file near {input[0]}"
+    shell:
+        """
+"""
+rule lowQ2_rho_analysis_test_5x100:
+    input:
+        "results/epic_craterlake_5x100/lowQ2_rho/lowQ2_rho_5x100_1_0001/config.json",
+    message:
+        "See results file near {input[0]}"
+    shell:
+        """
+"""
+rule lowQ2_rho_analysis_test_18x275:
+    input:
+        "results/epic_craterlake_18x275/lowQ2_rho/lowQ2_rho_18x275_1_0001/config.json",
+    message:
+        "See results file near {input[0]}"
+    shell:
+        """
+"""
+
+
+## Reconstruct specific file
+#rule lowQ2_reco_test:
+#    input:#
+#	"sim/epic_craterlake/lowQ2_10x100_1_0001.edm4eic.root"
+#    message:
+#        "See reconstructed file at {input[0]}"
+#    shell:
+#        """
+#"""
