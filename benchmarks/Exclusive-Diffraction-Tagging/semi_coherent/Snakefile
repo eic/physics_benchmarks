@@ -18,7 +18,10 @@ rule semi_coherent_afterburner:
         "benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered_ab.hepmc.hepmc",
     shell:
         """
-abconv {input} -p 2 --output benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered_ab.hepmc
+abconv {input} \
+  --preset 2 \
+  --out-format hepmc3 \
+  --output benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered_ab.hepmc
 """
     
 rule semi_coherent_sim:
