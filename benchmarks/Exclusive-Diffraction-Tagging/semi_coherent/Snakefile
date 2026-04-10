@@ -15,15 +15,18 @@ rule semi_coherent_afterburner:
     input:
         "benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered.hepmc",
     output:
-        "benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered_ab.hepmc.hepmc",
+        "benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered_ab.hepmc",
     shell:
         """
-abconv {input} -p 2 --output benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered_ab.hepmc
+abconv {input} \
+  --preset 2 \
+  --out-format hepmc3 \
+  --output benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered_ab
 """
     
 rule semi_coherent_sim:
     input:
-        hepmcfile="benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered_ab.hepmc.hepmc",
+        hepmcfile="benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/filtered_ab.hepmc",
         warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
         geometry_lib=find_epic_libraries(),
     output:
