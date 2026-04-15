@@ -5,6 +5,8 @@ variables:
   DETECTOR: epic
   DETECTOR_CONFIG: epic_craterlake
   SNAKEMAKE_FLAGS: '--cache'
+  GITHUB_BASE_REF: ''
+  GITHUB_BASE_SHA: ''
 
 workflow:
   name: '$PIPELINE_NAME'
@@ -43,6 +45,8 @@ stages:
   - simulate
   - collect
   - finish
+  - upload
+  - compare
   - status-report
 
 .status:
@@ -150,6 +154,70 @@ summary:
     max: 2
     when:
       - runner_system_failure
+
+upload:physics:
+  stage: upload
+  image: docker.io/rucio/rucio-clients:latest
+  needs:
+    - "summary"
+  rules:
+    - when: on_success
+  variables:
+    RUCIO_ACCOUNT: eicprod
+  before_script:
+    - echo "${RUCIO_CONFIG}" | base64 -d > /opt/rucio/etc/rucio.cfg
+  script:
+    - |
+      if [ -n "${GITHUB_PR}" ]; then
+        DID_PREFIX="benchmarks/physics_benchmarks/pr/${GITHUB_PR}/${GITHUB_SHA}"
+      else
+        SHA="${GITHUB_SHA:-${CI_COMMIT_SHA}}"
+        DID_PREFIX="benchmarks/physics_benchmarks/baseline/${CI_COMMIT_REF_NAME}/${SHA}"
+      fi
+    - |
+      find results -name "*.root" | while read f; do
+        RELPATH="${f#results/}"
+        rucio upload --rse EIC-XRD --scope epic --name "${DID_PREFIX}/${RELPATH}" "$f"
+      done
+    - |
+      if [ -z "${GITHUB_PR}" ]; then
+        SHA="${GITHUB_SHA:-${CI_COMMIT_SHA}}"
+        LATEST="epic:benchmarks/physics_benchmarks/baseline/${CI_COMMIT_REF_NAME}/latest"
+        rucio add-dataset "${LATEST}" 2>/dev/null || true
+        find results -name "*.root" | while read f; do
+          RELPATH="${f#results/}"
+          rucio detach "${LATEST}" "epic:${DID_PREFIX}/${RELPATH}" 2>/dev/null || true
+          rucio attach "${LATEST}" "epic:${DID_PREFIX}/${RELPATH}"
+        done
+      fi
+  allow_failure: true
+
+compare:physics:
+  stage: compare
+  needs:
+    - "upload:physics"
+  rules:
+    - if: '$GITHUB_PR != ""'
+  variables:
+    RUCIO_ACCOUNT: eicprod
+  image: docker.io/rucio/rucio-clients:latest
+  before_script:
+    - echo "${RUCIO_CONFIG}" | base64 -d > /opt/rucio/etc/rucio.cfg
+    - pip install --quiet epic-capybara
+  script:
+    - |
+      BASELINE_DID="epic:benchmarks/physics_benchmarks/baseline/${GITHUB_BASE_REF}/latest"
+      rucio download "${BASELINE_DID}" --dir baseline/
+    - |
+      DASHBOARD_URL=$(capybara bara results/ baseline/ 2>&1 | tail -1 || true)
+      DASHBOARD_URL=$(cate capybara-reports/ 2>&1 | tail -1 || true)
+      capybara comment \
+        --owner "${GITHUB_REPOSITORY%/*}" \
+        --repo "${GITHUB_REPOSITORY#*/}" \
+        --pr "${GITHUB_PR}" \
+        --url "${DASHBOARD_URL}" \
+        --title "Physics Benchmark Comparison (PR #${GITHUB_PR})"
+  allow_failure: true
 
 benchmarks:physics:success:
   stage: status-report
