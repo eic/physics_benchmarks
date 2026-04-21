@@ -1,0 +1,916 @@
+/**
+ * Classes to generate histograms for benchmarking tests
+ *
+ */
+
+#pragma once
+#include "ePICReaction.h"
+#include "benchmark_against.h"
+#include <TCanvas.h>
+#include <TF1.h>
+#include <TSystem.h>
+#include <TDatabasePDG.h>
+#include <TLatex.h>  // Added for TLatex
+#include <TPad.h>    // Added for TPad
+#include <TAxis.h>   // Added for TAxis (for GetXaxis/GetYaxis)
+#include <TString.h> // Added for TString and Form()
+#include <TH1D.h>    // Explicitly included TH1D
+#include <TStyle.h>  // Explicitly included TStyle for gStyle access (good practice)
+
+#include <string>
+#include <vector>
+#include <utility>   // For std::pair
+#include <algorithm> // For std::replace
+#include <iostream>  // For cout
+
+std::string formatParticleListForLatex(const std::string& particleName);
+
+/**
+ * @brief Class to handle collection of histograms for a specific type (e.g., "rec_", "tru_", "res_").
+ */
+class ReactionHists{
+
+public:
+    /**
+     * @brief Constructor for ReactionHists.
+     * @param name A prefix name for the histograms (e.g., "rec_").
+     */
+    ReactionHists(const std::string& name):_name{name}{}
+
+    /**
+     * @brief Struct to hold details of a 1D histogram.
+     */
+    struct H1D{
+        /**
+         * @brief Constructor for H1D.
+         * @param vn Variable name.
+         * @param hist Histogram model.
+         */
+        H1D(const std::string& vn,ROOT::RDF::TH1DModel hist):
+            var_name{vn},model{hist} {};
+
+        std::string var_name;
+        ROOT::RDF::TH1DModel model;
+        ROOT::RDF::RResultPtr<TH1D> result;
+    };
+
+    /**
+     * @brief Get a histogram result by its full name (including prefix).
+     * @param hname The histogram name.
+     * @return RResultPtr to the TH1D.
+     */
+    ROOT::RDF::RResultPtr<TH1D> Get(const std::string& hname){
+        auto thisname = _name+hname;
+        // Using [] operator on vector after find_if might throw if not found.
+        // It's safer to check if iterator is end()
+        auto it = std::find_if(hist1Ds.begin(), hist1Ds.end(), [&thisname](const H1D& obj) {return obj.var_name == thisname;} );
+        if (it != hist1Ds.end()) {
+            return it->result;
+        } else {
+            std::cerr << "Error: Histogram " << thisname << " not found in ReactionHists." << std::endl;
+            return ROOT::RDF::RResultPtr<TH1D>(); // Return empty RResultPtr
+        }
+    }
+
+    /**
+     * @brief Get an H1D struct by its index.
+     * @param i The index of the histogram.
+     * @return Reference to the H1D struct.
+     */
+    H1D& Get(uint i){
+        if(i>=hist1Ds.size()){
+            std::cerr<<"ReactionHists::Get out of range "<<i<<" "<<hist1Ds.size()<<std::endl;
+            // Potentially throw an exception or handle more robustly in real code
+        }
+        return hist1Ds[i];
+    }
+    
+    /**
+     * @brief Declare histograms with the RDataFrame.
+     * @param df The current RDataFrame node.
+     * @return The RDataFrame node after histogram declaration.
+     */
+    ROOT::RDF::RNode  Declare(ROOT::RDF::RNode df){
+        for(auto& h : hist1Ds){
+            h.result = df.Histo1D( h.model, h.var_name );
+        }
+        return df;
+    }
+
+    /**
+     * @brief Draw all histograms in this collection on individual canvases.
+     * @param title An additional title to prepend to the canvas name.
+     */
+    void Draw(const std::string& title){
+        for(auto& h:hist1Ds){
+            auto can = new TCanvas((_name+title+h.var_name).data(),(_name+title+h.var_name).data());
+            h.result->DrawCopy();
+        }
+    }
+
+    /**
+     * @brief Add a histogram to the collection.
+     * @param vname The variable name.
+     * @param model The histogram definition model.
+     */
+    void AddHist(const std::string& vname,ROOT::RDF::TH1DModel model){
+        hist1Ds.push_back({_name+vname,model});
+    }
+    
+    std::vector<H1D> hist1Ds;
+
+private:
+    std::string _name; // Prefix name for histograms
+};
+
+/**
+ * @brief Class to handle benchmark variables and their plotting.
+ * This class orchestrates the creation of histograms, their processing (efficiency, resolution),
+ * plotting on canvases with custom layouts, and benchmark testing.
+ */
+class ReactionBenchmarks{
+
+public:
+    /**
+     * @brief Constructor for ReactionBenchmarks.
+     * Initializes the benchmark name and histogram collections.
+     * @param name A base name for the benchmark set.
+     * @param meson Vector of meson PDG codes (for string representation).
+     * @param baryon Vector of baryon PDG codes (for string representation).
+     */
+    ReactionBenchmarks(std::string name,std::vector<int> meson,std::vector<int> baryon)
+    : _name(" " + name + " " + VectorToString("Meson",meson) + VectorToString("Baryon",baryon)),
+      _recHists("rec_"), // Initialize member ReactionHists with prefixes
+      _resHists("res_"),
+      _truHists("tru_"),
+      _outdir("./") // Default output directory
+    {
+        // std::cout<<"ReactionBenchmarks : "<<_name<<std::endl;
+    }
+
+    /**
+     * @brief Connects this benchmark to an ePICReaction, defines variables,
+     * declares histograms with RDataFrame, and applies an optional reconstruction cut.
+     * @param epic The ePICReaction object.
+     * @param rec_cut Optional reconstruction cut string to apply.
+     */
+    void Declare(rad::config::ePICReaction& epic,const std::string rec_cut={}){
+        DefineVarElements(epic); // Define derived variables if any
+
+        _truHists.Declare(epic.CurrFrame());
+        if(!rec_cut.empty()) epic.Filter(rec_cut.data(),"rec_cut");
+        _recHists.Declare(epic.CurrFrame());
+
+        for(auto &var:_varNames){
+            // Ensure resolution column exists, if not, create it
+            if(!rad::config::ColumnExists(std::string("res_")+var,epic.CurrFrame())){
+                rad::reaction::util::Resolution(&epic,var);
+            }
+        }
+        _resHists.Declare(epic.CurrFrame());
+    }
+
+    /**
+     * @brief Finalizes the benchmark process: creates benchmark tests,
+     * draws all plots, calculates efficiency, and writes results to a JSON file.
+     * @param arrangement A vector of pairs, where each pair defines the (columns, rows)
+     * arrangement for the pads within each canvas set.
+     */
+    void Finalise(std::vector<std::pair<uint,uint>> arrangement={{1,1}}){
+        auto benchfile = CreateBenchmarks();
+
+        common_bench::test_against bench_tests(benchfile,1.2); // 1.2 is the tolerance factor
+        
+        DrawAll(arrangement); // Calls the refactored plotting method
+        
+        std::cout << _name << " efficiency = " << Efficiency() << std::endl;
+
+        // Test all resolutions
+        auto N = _varNames.size();
+        for(uint itest=0;itest<N;++itest){
+            // Use the histogram's name for the benchmark test
+            bench_tests.add_lt_test(_resHists.hist1Ds[itest].model.GetHistogram()->GetName(),_resolutions[itest]);
+        }
+        // Test integrated efficiency
+        bench_tests.add_gt_test("eff",Efficiency());
+
+        // Create output directory if it doesn't exist
+        gSystem->Exec(Form("mkdir -p %s",GetOutDir().data())); // -p creates parent directories if needed
+        bench_tests.write_tests(GetOutDir()+benchfile);
+    }
+
+    /**
+     * @brief Determines the efficiency from the Q2 histograms.
+     * @return The calculated efficiency (reconstructed entries / truth entries).
+     */
+    double Efficiency(){
+        ROOT::RDF::RResultPtr<TH1D> truQ2_ptr = _truHists.Get("Q2");
+        ROOT::RDF::RResultPtr<TH1D> recQ2_ptr = _recHists.Get("Q2");
+
+	if (!truQ2_ptr || !recQ2_ptr ) {
+	  std::cerr << "Error: Q2 histogram not found or not computed for efficiency calculation." << std::endl;
+	  return 0.0;
+        }
+	
+        double total = truQ2_ptr->GetEntries(); // -> operator works on RResultPtr
+        return (total == 0) ? 0 : recQ2_ptr->GetEntries()/total;
+    }
+    
+    /**
+     * @brief Converts a vector of PDG codes to a human-readable string.
+     * @param ptype String indicating particle type (e.g., "Meson", "Baryon").
+     * @param parts Vector of integer PDG codes.
+     * @return A formatted string like "Meson{Pi+, K0}".
+     */
+    std::string VectorToString(const std::string& ptype,const std::vector<int>& parts) const{
+        if(parts.empty()) return "{}";
+        
+        std::string toString ="{";
+        // Ensure TDatabasePDG is initialized before use
+        TDatabasePDG::Instance();
+        for(const auto& p : parts){
+            if (TDatabasePDG::Instance()->GetParticle(p)) {
+	      auto name = TDatabasePDG::Instance()->GetParticle(p)->GetName();
+                toString += name;
+            } else {
+                 toString += "UnknownPDG(" + std::to_string(p) + ")";
+            }
+            toString += ",";
+        }
+        toString.pop_back(); // Remove last comma
+        toString += '}';
+	toString = formatParticleListForLatex(toString);
+  
+        return  ptype + toString;
+    }
+
+    /**
+     * @brief Adds a variable for benchmarking.
+     * This variable's truth and reconstructed values must be precalculated in the ePIC reaction.
+     * @param name The base name of the variable (without "tru_", "rec_", "res_" prefixes).
+     * @param model The histogram definition model for the variable.
+     */
+  void AddVar(const std::string& name,ROOT::RDF::TH1DModel model, std::vector<double> resBins={}){
+        _varNames.push_back(name); // Store base name
+
+        _recHists.AddHist(name,model); // Store in reconstructed histograms
+        _truHists.AddHist(name,model); // Store in truth histograms
+
+        // Create a resolution histogram model based on the variable's range
+        auto hist = model.GetHistogram();
+        auto range = hist->GetXaxis()->GetXmax()-hist->GetXaxis()->GetXmin();
+        // Use unique name for resolution hist model to avoid clashes in the ReactionHists class
+	if(resBins.empty()==true){
+	  auto resmodel = ROOT::RDF::TH1DModel(TString(hist->GetName())+"_res", hist->GetTitle(), 200,-range*0.05,range*0.05);
+	  _resHists.AddHist(name,resmodel); // Store in resolution histograms
+	}
+	else{
+	  auto resmodel = ROOT::RDF::TH1DModel(TString(hist->GetName())+"_res", hist->GetTitle(), static_cast<int>(resBins[0]),resBins[1],resBins[2]);
+	  _resHists.AddHist(name,resmodel); // Store in resolution histograms
+	}
+    }
+
+    /**
+     * @brief Adds a specific element of a vector variable for benchmarking.
+     * This allows benchmarking individual elements of vector quantities.
+     * @param element The index string for the element (e.g., "0", "1").
+     * @param name The base name of the vector variable.
+     * @param model The histogram definition model for this element.
+     */
+    void AddVarElement(const std::string& element,const std::string& name,ROOT::RDF::TH1DModel model, std::vector<double> resBins={}){
+        // Create unique name for this specific element of the variable
+        auto elementOfVar = element+"_"+name;
+        _varElements.push_back(std::make_pair(elementOfVar,Form("%s[%s]", name.data(),element.data() )));
+        _varNames.push_back(elementOfVar); // Add to the list of variables to process
+
+        _recHists.AddHist(elementOfVar,model);
+        _truHists.AddHist(elementOfVar,model);
+
+        // Create resolution histogram model for this element
+        auto hist = model.GetHistogram();
+        auto range = hist->GetXaxis()->GetXmax()-hist->GetXaxis()->GetXmin();
+        // Use unique name for resolution hist model
+	
+ 	if(resBins.empty()==true){
+	  auto resmodel = ROOT::RDF::TH1DModel(TString(hist->GetName())+"_res_el"+element, hist->GetTitle(), 100,-range*0.1,range*0.1);
+	  _resHists.AddHist(elementOfVar,resmodel);
+	}
+	else{
+	  auto resmodel = ROOT::RDF::TH1DModel(TString(hist->GetName())+"_res_el"+element, hist->GetTitle(), static_cast<int>(resBins[0]),resBins[1],resBins[2]);
+	  _resHists.AddHist(elementOfVar,resmodel);
+	}
+    }
+    
+    /**
+     * @brief Orchestrates drawing of all histograms across multiple canvases.
+     * Creates sets of three canvases (distributions, efficiencies, resolutions).
+     * Each canvas gets a top title pad and a grid of sub-pads as specified by arrangement.
+     * Loops through variables, drawing truth/reco, efficiency, and resolution plots.
+     * @param arrangement A vector of pairs, where each pair defines the (columns, rows)
+     * arrangement for the pads within each canvas.
+     */
+    void DrawAll(std::vector<std::pair<uint,uint>> arrangement={{1,1}}){
+        auto N = _varNames.size();
+        UInt_t Ndone = 0; // Counter for processed variables
+
+        while(Ndone < N){
+            for(const auto& ican : arrangement){ // Loop over different canvas grid arrangements
+
+                // 1. Create the three canvases for this set (distribution, efficiency, resolution)
+                // Canvas names are made unique using Ndone counter
+                TString canvasNamePrefix = TString(_name) + Form("%d", Ndone);
+                // Providing explicit size for consistent canvas dimensions
+                auto can = new TCanvas(canvasNamePrefix.Data(), _name.data(), 1600, 1200);
+                auto canEff = new TCanvas((TString("Eff_") + canvasNamePrefix).Data(), (TString("Eff_") + _name).Data(), 1600, 1200);
+                auto canRes = new TCanvas((TString("Res_") + canvasNamePrefix).Data(), (TString("Res_") + _name).Data(), 1600, 1200);
+
+                // 2. Add the top text pad to EACH canvas using the private helper method
+                drawTopTextPad(can, "Main Distributions", _name + " Truth (Blue) vs Reconstructed (Red)");
+                drawTopTextPad(canEff, "Efficiencies", _name + " Reconstructed / Truth");
+                drawTopTextPad(canRes, "Resolutions", _name + " Fit to (Reco - Truth)");
+
+                // 3. Create and divide the main grid pads for EACH canvas using the private helper method
+                // Note: ROOT's Divide method takes (columns, rows) as arguments
+                TPad* canGridPad = createAndDivideGridPad(can, ican.first, ican.second); // ican.first = columns, ican.second = rows
+                TPad* canEffGridPad = createAndDivideGridPad(canEff, ican.first, ican.second);
+                TPad* canResGridPad = createAndDivideGridPad(canRes, ican.first, ican.second);
+
+                uint npads = ican.first * ican.second; // Total number of sub-pads in the grid
+
+                // 4. Loop through the sub-pads and draw content for each variable
+                for(uint ipad = 1; ipad <= npads; ++ipad){
+                    if(Ndone >= N) break; // Break if all variables have been drawn
+
+                    // Draw on the main distribution canvas's current sub-pad
+                    canGridPad->cd(ipad);
+                    // Get the actual TH1* from RResultPtr.Get()
+                    drawDistributionPlot(static_cast<TPad*>(gPad), (_truHists.Get(Ndone).result.GetPtr()), (_recHists.Get(Ndone).result.GetPtr()));
+
+                    // Draw on the efficiency canvas's current sub-pad
+                    canEffGridPad->cd(ipad);
+                    drawEfficiencyPlot(static_cast<TPad*>(gPad), _truHists.Get(Ndone).result.GetPtr(), _recHists.Get(Ndone).result.GetPtr());
+
+                    // Draw on the resolution canvas's current sub-pad
+                    canResGridPad->cd(ipad);
+                    // Pass _resolutions directly as a member to be filled by drawResolutionPlot
+                    drawResolutionPlot(static_cast<TPad*>(gPad), _resHists.Get(Ndone).result.GetPtr());
+
+                    Ndone++; // Increment counter for processed variables
+                } // End inner loop for sub-pads
+
+                // 5. Save all three canvases for the current set using the private helper method
+                TString baseSaveName = TString(GetOutDir()) + canvasNamePrefix;
+                // Convert to std::string for string manipulation functions
+                std::string s_baseSaveName = baseSaveName.Data();
+                // Sanitize filename characters from original code
+                std::replace( s_baseSaveName.begin(), s_baseSaveName.end(), '{', '_');
+                std::replace( s_baseSaveName.begin(), s_baseSaveName.end(), '}', '_');
+                std::replace( s_baseSaveName.begin(), s_baseSaveName.end(), '+', 'p');
+                std::replace( s_baseSaveName.begin(), s_baseSaveName.end(), '-', 'm');
+                std::replace( s_baseSaveName.begin(), s_baseSaveName.end(), ' ','_' );
+                std::replace( s_baseSaveName.begin(), s_baseSaveName.end(), ',','_' );
+                
+                saveCanvas(can, s_baseSaveName, "");
+                saveCanvas(canEff, s_baseSaveName, "_eff");
+                saveCanvas(canRes, s_baseSaveName, "_res");
+
+                // Clean up canvases for the current set to free memory.
+                // Comment these lines out if you want the canvases to remain open for interactive viewing.
+                delete can;
+                delete canEff;
+                delete canRes;
+
+            } // End outer loop for arrangement (set of 3 canvases)
+        } // End while loop (all variables processed)
+    }
+
+    /**
+     * @brief Clones histograms and variable definitions from another ReactionBenchmarks object.
+     * This allows recreating the benchmark configuration with different filters if needed.
+     * @param other The ReactionBenchmarks object to clone from.
+     */
+    void CloneHists(const ReactionBenchmarks& other){
+        _recHists = other._recHists;
+        _resHists = other._resHists;
+        _truHists = other._truHists;
+        _varNames = other._varNames;
+        _varElements = other._varElements;
+        SetOutDir(other.GetOutDir());
+    }
+
+    /**
+     * @brief Gets the current output directory.
+     * @return The output directory string.
+     */
+    const std::string GetOutDir()const {return _outdir;}
+
+    /**
+     * @brief Sets the output directory for saving plots and benchmark files.
+     * @param dir The new output directory path.
+     */
+    void  SetOutDir(const std::string& dir) {_outdir = dir;}
+    
+private:
+    std::string _name; // Base name for this benchmark instance and plot titles
+    
+    // Collections of histograms for truth, reconstructed, and resolution plots
+    ReactionHists _recHists;
+    ReactionHists _resHists;
+    ReactionHists _truHists;
+    
+    std::vector<std::string> _varNames; // List of variable names being benchmarked
+    // Stores pairs of (element-specific variable name, definition string for RDataFrame)
+    std::vector<std::pair<std::string,std::string>> _varElements; 
+    
+    std::vector<double> _resolutions; // Stores resolution sigma values from fits
+
+    std::string _outdir; // Output directory path
+
+    /**
+     * @brief Private Helper: Defines new RDataFrame columns for vector elements if they don't exist.
+     * @param epic The ePICReaction object.
+     */
+    void DefineVarElements(rad::config::ePICReaction& epic){
+        for(const auto& el:_varElements){
+            // Check if truth column already exists to avoid re-definition
+            if(rad::config::ColumnExists(std::string("tru_")+el.first,epic.CurrFrame())) continue;
+            std::cout<<"DefineVarElements  "<<el.first<<" "<<el.second<<std::endl;
+            // Define truth, reconstructed, and resolution columns for the element
+            epic.Define(std::string("tru_")+el.first,std::string("tru_")+el.second);
+            epic.Define(std::string("rec_")+el.first,std::string("rec_")+el.second);
+            epic.Define(std::string("res_")+el.first,std::string("res_")+el.second);
+        }
+    }
+    
+    /**
+     * @brief Private Helper: Sets up a common_bench Test template for a variable.
+     * @param model The histogram model used for naming and titling the test.
+     * @param quantity The type of quantity being benchmarked (e.g., "Resolution").
+     * @param target The target value for the benchmark test as a string.
+     * @return A configured common_bench::Test object.
+     */
+    common_bench::Test CreateBenchmarkTemplate(const ROOT::RDF::TH1DModel& model, const std::string& quantity, const std::string& target="0."){
+        common_bench::Test test{{
+            {"name", std::string(model.GetHistogram()->GetName())},
+            {"title", std::string(model.GetHistogram()->GetTitle())},
+            {"description", quantity + " benchmark for "+model.GetHistogram()->GetTitle()},
+            {"quantity", quantity},
+            {"target", target }}};
+        
+        // Initialize the test with a default "fail" value (used if target is not met)
+        test.fail(std::strtod(target.data(), nullptr));
+
+        return test;
+    }
+    
+    /**
+     * @brief Private Helper: Sets up a common_bench Test for overall efficiency.
+     * @return A configured common_bench::Test object for efficiency.
+     */
+    common_bench::Test CreateBenchmarkEfficiency(){
+        common_bench::Test test{{
+            {"name", "eff"},
+            {"title", "integrated efficiency"},
+            {"description", _name+" reaction efficiency"}, // Uses class's _name for description
+            {"quantity", "Efficiency"},
+            {"target", "0" }}};
+        
+        test.fail(0.); // Initialize with a default fail value
+
+        return test;
+    }
+
+    /**
+     * @brief Private Helper: Creates the benchmark test object and manages the JSON output file.
+     * If a benchmark file of the same name exists, it will be used for comparison;
+     * otherwise, a new template file with default large test values is created.
+     * @return The filename of the created or existing benchmark JSON file.
+     */
+    std::string CreateBenchmarks(){
+      //auto filename =  _outdir+"/benchmark.json";
+        auto filename =  _outdir+_name+"_benchmarks.json";
+        
+        // Sanitize filename for various characters
+        std::replace( filename.begin(), filename.end(), '{', '_');
+        std::replace( filename.begin(), filename.end(), '}', '_');
+        std::replace( filename.begin(), filename.end(), '+', 'p');
+        std::replace( filename.begin(), filename.end(), '-', 'm');
+        std::replace( filename.begin(), filename.end(), ' ','_' );
+        std::replace( filename.begin(), filename.end(), ',','_' );
+        std::replace( filename.begin(), filename.end(), '#','_' );
+	filename.erase(std::remove(filename.begin(), filename.end(), '#'), filename.end());
+
+        if (common_bench::does_file_exist(filename)){
+            std::cout << "Using existing benchmarks JSON: " << filename << std::endl;
+            return filename;
+        }
+        std::cout << "Creating new benchmarks JSON: " << filename << std::endl;
+        
+        std::vector<common_bench::Test> tests;
+        for(const auto& h1d : _resHists.hist1Ds){
+            // Create a template test for resolution with a very large target initially
+            tests.push_back(CreateBenchmarkTemplate(h1d.model,"Resolution","1000000000000."));
+        }
+        
+        // Add a test for overall efficiency
+        tests.push_back(CreateBenchmarkEfficiency());
+        
+        common_bench::write_test(tests,filename);
+        return filename;
+    }
+
+
+    // --- Private Helper Methods for Drawing ---
+    // These methods were extracted and modified to operate as class members.
+
+    /**
+     * @brief Helper: Draws a dedicated TPad at the top of the canvas for text, and adds TLatex.
+     * This method is a private member of ReactionBenchmarks.
+     * @param canvas The canvas to add the top pad to.
+     * @param mainText The main line of text to display.
+     * @param subText An optional second line of smaller text.
+     */
+    void drawTopTextPad(TCanvas* canvas, const std::string& mainText, const std::string& subText) {
+        canvas->cd(); // Ensure we are on the main canvas before creating the pad
+        // Use canvas name in topPad name to ensure uniqueness across multiple canvases
+        TPad* topPad = new TPad(TString(canvas->GetName()) + "_topPad", "topPad", 0.0, 0.92, 1.0, 1.0);
+        topPad->SetFillStyle(0);      // Make background transparent
+        topPad->SetBorderSize(0);     // Remove border
+        topPad->SetBottomMargin(0.0); // No internal margins for text pad
+        topPad->SetTopMargin(0.0);    // No internal margins for text pad
+
+        
+        topPad->Draw();
+        topPad->cd(); // Activate the top pad for drawing
+
+        TLatex* latex = new TLatex();
+        latex->SetNDC(); // Use Normalized Device Coordinates (0 to 1 for x and y of the CURRENT PAD)
+        latex->SetTextFont(62); // Bold Helvetica for the main text
+        latex->SetTextSize(0.4); // Relative to pad height (e.g., 0.4 of the 0.15 height topPad = 0.06 of canvas height)
+	
+       latex->DrawLatex(0.02, 0.7, mainText.c_str()); // X=2% from left, Y=70% from bottom of topPad
+
+       if (!subText.empty()) {
+            latex->SetTextFont(42); // Regular font
+            latex->SetTextSize(0.25); // Smaller size
+            latex->DrawLatex(0.02, 0.3, subText.c_str()); // X=2% from left, Y=30% from bottom of topPad
+        }
+        
+        topPad->Update(); // Flush drawing commands for this pad
+	//        topPad->Add(latex); // Make the pad own the latex object for proper cleanup
+    }
+
+    /**
+     * @brief Helper: Creates a TPad for the grid of plots and divides it.
+     * This method is a private member of ReactionBenchmarks.
+     * @param canvas The parent canvas where the grid pad will reside.
+     * @param numCols Number of columns for the grid division.
+     * @param numRows Number of rows for the grid division.
+     * @return A pointer to the newly created grid TPad.
+     */
+    TPad* createAndDivideGridPad(TCanvas* canvas, UInt_t numCols, UInt_t numRows) {
+        canvas->cd(); // Return to main canvas before creating the grid pad
+        // Use canvas name in gridPad name to ensure uniqueness
+        TPad* gridPad = new TPad(TString(canvas->GetName()) + "_gridPad", "gridPad", 0.0, 0.0, 1.0, 0.92); // Occupies 0% to 85% of canvas height
+        gridPad->SetFillStyle(0);
+        gridPad->SetBorderSize(0);
+        gridPad->SetBottomMargin(0.0); // These internal margins will be managed by sub-pads or gStyle
+        gridPad->SetTopMargin(0.0);
+        gridPad->Draw();
+        gridPad->cd(); // Activate the grid pad for dividing
+        gridPad->Divide(numCols, numRows); // ROOT Divide uses (columns, rows)
+        return gridPad;
+    }
+
+    /**
+     * @brief Helper: Draws truth and reconstructed histograms on a given pad.
+     * This method is a private member of ReactionBenchmarks.
+     * @param pad The TPad to draw on (assumed to be a sub-pad of a grid).
+     * @param truHist The truth histogram (TH1* obtained from RResultPtr.Get()).
+     * @param recHist The reconstructed histogram (TH1* obtained from RResultPtr.Get()).
+     */
+    void drawDistributionPlot(TPad* pad, TH1* truHist, TH1* recHist) {
+        pad->cd(); // Activate the specific sub-pad
+        if (!truHist || !recHist) {
+            std::cerr << "Warning: Null histogram passed to drawDistributionPlot for pad " << pad->GetName() << "." << std::endl;
+            return;
+        }
+
+        pad->SetLogy(); // Set logy for this specific sub-pad as per original code
+
+        // Draw truth histogram
+        TH1* ht = static_cast<TH1*>(truHist->DrawCopy()); // DrawCopy to keep original pristine
+        ht->SetLineColor(kBlue);
+        // Use the original histogram's title as the X-axis title
+        if (ht->GetTitle() && std::string(ht->GetTitle()) != "") { // Check if title exists and is not empty
+            // If the title contains axis titles (e.g. "Main;Xaxis;Yaxis"), split it.
+            // Assuming the first part is main title and 2nd is X-axis title.
+            TString fullTitle = ht->GetTitle();
+            TObjArray* titles = fullTitle.Tokenize(";");
+            if (titles && titles->GetEntriesFast() > 1) {
+                ht->GetXaxis()->SetTitle(static_cast<TObjString*>(titles->At(1))->GetString());
+            } else {
+                ht->GetXaxis()->SetTitle(ht->GetTitle()); // Fallback to full title if no separator
+            }
+            delete titles; // Clean up TObjArray
+        }
+        ht->SetTitle(""); // Hide main hist title for this plot
+
+        // Draw reconstructed histogram
+        TH1* hr = static_cast<TH1*>(recHist->DrawCopy("same"));
+        hr->SetLineColor(kRed);
+        
+        // Adjust Y-axis range
+        if (ht->GetMaximum() < hr->GetMaximum()){
+            ht->GetYaxis()->SetRangeUser(1E-1, hr->GetMaximum() * 1.05);
+        }
+        ht->SetMinimum(1E-1); // Set minimum for log scale for better visualization
+
+        pad->Modified();
+        pad->Update();
+    }
+
+    /**
+     * @brief Helper: Calculates and draws efficiency plot on a given pad.
+     * This method is a private member of ReactionBenchmarks.
+     * @param pad The TPad to draw on.
+     * @param truHist The truth histogram (denominator).
+     * @param recHist The reconstructed histogram (numerator).
+     */
+    void drawEfficiencyPlot(TPad* pad, TH1* truHist, TH1* recHist) {
+        pad->cd();
+        if (!truHist || !recHist) {
+            std::cerr << "Warning: Null histogram passed to drawEfficiencyPlot for pad " << pad->GetName() << "." << std::endl;
+            return;
+        }
+
+        // Create a local copy of recHist for division, cast to TH1D for Divide method
+        TH1D heff = *dynamic_cast<TH1D*>(recHist);
+        heff.Divide(dynamic_cast<TH1D*>(truHist));
+        
+        heff.GetYaxis()->SetRangeUser(0, 1.2); // Common range for efficiency plots
+        heff.GetYaxis()->SetTitle("Efficiency");
+        // Use the original truth histogram's title as the X-axis title for efficiency
+        if (truHist->GetTitle() && std::string(truHist->GetTitle()) != "") {
+             TString fullTitle = truHist->GetTitle();
+             TObjArray* titles = fullTitle.Tokenize(";");
+             if (titles && titles->GetEntriesFast() > 1) {
+                 heff.GetXaxis()->SetTitle(static_cast<TObjString*>(titles->At(1))->GetString());
+             } else {
+                 heff.GetXaxis()->SetTitle(truHist->GetTitle());
+             }
+             delete titles;
+        }
+        heff.SetTitle(""); // Hide main title for efficiency plot
+        heff.SetLineColor(kBlack);
+        heff.DrawCopy(); // Draw a copy to avoid scope issues with 'heff'
+
+        pad->Modified();
+        pad->Update();
+    }
+
+    /**
+     * @brief Helper: Draws resolution plot, performs Gaussian fit, and stores the sigma.
+     * This method is a private member of ReactionBenchmarks.
+     * @param pad The TPad to draw on.
+     * @param resHist The resolution histogram.
+     */
+    void drawResolutionPlot(TPad* pad, TH1* resHist) { // _resolutions is now a class member
+        pad->cd();
+        if (!resHist) {
+            std::cerr << "Warning: Null histogram passed to drawResolutionPlot for pad " << pad->GetName() << "." << std::endl;
+            return;
+        }
+
+        // Draw a copy of the resolution histogram
+        TH1* hres = static_cast<TH1*>(resHist->DrawCopy());
+        hres->GetYaxis()->SetTitle("Counts");
+        // Use the original resolution histogram's title as the X-axis title
+        if (hres->GetTitle() && std::string(hres->GetTitle()) != "") {
+            TString fullTitle = hres->GetTitle();
+            TObjArray* titles = fullTitle.Tokenize(";");
+            if (titles && titles->GetEntriesFast() > 1) {
+                hres->GetXaxis()->SetTitle(static_cast<TObjString*>(titles->At(1))->GetString());
+            } else {
+                hres->GetXaxis()->SetTitle(hres->GetTitle());
+            }
+            delete titles;
+        }
+        hres->SetTitle(""); // Hide main title
+        hres->SetLineColor(kBlack); // Set line color for resolution histogram
+
+        // Define and fit Gaussian function
+        TF1 fitGaus("fitGaus", "gausn(0)", -5 * hres->GetRMS(), 5 * hres->GetRMS());
+        fitGaus.SetParameters(hres->Integral()*10, 0, hres->GetRMS()/2);
+        fitGaus.SetParLimits(2, 0, 2 * hres->GetRMS()); // Limit sigma parameter
+        fitGaus.SetParLimits(1, (hres->GetMean() - hres->GetRMS()), hres->GetMean() + hres->GetRMS()); // Limit sigma parameter
+	TFitResultPtr fitResult = hres->Fit(&fitGaus, "SWMRQ"); // "W": weighted, "M": migrate, "Q": quiet
+	//	cout<<"fitResult "<<fitResult.Get()<<" "<<fitResult->Status()<<endl;
+        // Store the fitted sigma (parameter 2) in the class member vector _resolutions
+        _resolutions.push_back(fitGaus.GetParameter(2));
+
+
+	//add results to pad
+	double sigma = 0.0;
+	TLatex* latex_fit_info = new TLatex(); // Create TLatex object for fit info
+	latex_fit_info->SetNDC(); // Use Normalized Device Coordinates
+	latex_fit_info->SetTextFont(62); // Helvetica font
+	latex_fit_info->SetTextSize(0.04); // Adjust size as needed, relative to pad height
+
+	// Position for text (top right corner of the pad)
+	double x_pos = 0.96;       // 95% from left edge of pad
+	double y_start_pos = 0.94; // Starting Y position from bottom edge of pad (top of pad)
+	double line_height = 0.05; // Vertical spacing between lines
+
+	// Check fit status
+	if ((fitResult.Get())) { // Status 0 means successful convergence
+	  sigma = fitGaus.GetParameter(2);
+	  double mean = fitGaus.GetParameter(1);
+	  double sigmaErr = fitGaus.GetParError(2);
+	  double meanErr = fitGaus.GetParError(1);
+
+	  fitGaus.SetLineColor(kRed); // Make fit line red
+	  fitGaus.SetLineStyle(1);    // Solid line for successful fit
+	  fitGaus.Draw("SAME");       // Draw the fitted function on top of histogram
+
+	  latex_fit_info->SetTextColor(kBlack); // Black color for successful fit info
+	  latex_fit_info->SetTextAlign(31);    // Right-aligned (3), bottom-aligned (1)
+
+	  // Print Mean (#mu for mu symbol, #pm for +/- symbol)
+	  latex_fit_info->DrawLatex(x_pos, y_start_pos, TString::Format("#mu = %.3g #pm %.2g", mean, meanErr));
+	  // Print Sigma
+	  latex_fit_info->DrawLatex(x_pos, y_start_pos - line_height, TString::Format("#sigma = %.3g #pm %.2g", sigma, sigmaErr));
+
+	} else {
+	  std::cerr << "Warning: Fit for histogram " << hres->GetName() << " failed or did not converge " << " Storing 0.0 for resolution." << std::endl;
+        
+	  fitGaus.SetLineColor(kRed+1); // Indicate failed fit with a different color (orange-red)
+	  fitGaus.SetLineStyle(2);     // Dashed line for failed fit
+	  fitGaus.Draw("SAME");        // Draw the failed fit attempt
+
+	  latex_fit_info->SetTextColor(kRed); // Red color for fit status message
+	  latex_fit_info->SetTextAlign(31);   // Right-aligned, bottom-aligned
+	  latex_fit_info->DrawLatex(x_pos, y_start_pos, "Fit Failed");
+	}
+
+        pad->Modified();
+        pad->Update();
+    }
+
+  /**
+   * @brief Helper: Saves a canvas to PNG and PDF, handling filename sanitization.
+     * This method is a private member of ReactionBenchmarks.
+     * @param canvas The canvas to save.
+     * @param baseNamePrefix The base part of the filename (e.g., directory + canvas name).
+     * @param suffix Optional suffix to add before the extension (e.g., "_eff", "_res").
+     */
+    void saveCanvas(TCanvas* canvas, const std::string& baseNamePrefix, const std::string& suffix) {
+        if (!canvas) {
+            std::cerr << "Warning: Null canvas passed to saveCanvas." << std::endl;
+            return;
+        }
+
+        canvas->Modified();
+        canvas->Update(); // Ensure all drawing is flushed before printing
+
+        TString fullFileName = TString(baseNamePrefix) + suffix;
+	fullFileName.ReplaceAll("#","");
+        canvas->Print(fullFileName + ".png");
+        canvas->Print(fullFileName + ".pdf"); // Always prefer PDF for quality
+    }
+};
+
+/**
+ * @brief Converts a particle name string to TLatex format, adding '#' for Greek letters.
+ * (Included for completeness, typically from a previous response/definition)
+ */
+std::string formatParticleNameForLatex(const std::string& particleName) {
+    if (particleName.empty()) {
+        return "";
+    }
+
+    static const std::vector<std::pair<std::string, std::string>> greekPrefixMap = {
+        {"lambda", "#Lambda"},
+        {"sigma", "#Sigma"},
+        {"omega", "#Omega"},
+        {"xi", "#Xi"},
+        {"delta", "#Delta"},
+        {"gamma", "#gamma"},
+        {"eta", "#eta"},
+        {"phi", "#phi"},
+        {"pi", "#pi"},
+        {"rho", "#rho"},
+        {"tau", "#tau"},
+        {"mu", "#mu"},
+        {"nu", "#nu"},
+        {"beta", "#beta"},
+        {"alpha", "#alpha"},
+        {"epsilon", "#epsilon"},
+        {"zeta", "#zeta"},
+        {"theta", "#theta"},
+        {"iota", "#iota"},
+        {"kappa", "#kappa"},
+        {"omicron", "#omicron"},
+        {"varpi", "#varpi"},
+        {"varrho", "#varrho"},
+        {"varsigma", "#varsigma"},
+        {"varphi", "#varphi"},
+        {"chi", "#chi"},
+        {"psi", "#psi"},
+        {"up", "#Upsilon"},
+        {"j/psi", "J/#psi"}, // Special case for J/psi
+    };
+
+    std::string lowerParticleName = particleName;
+    std::transform(lowerParticleName.begin(), lowerParticleName.end(), lowerParticleName.begin(),
+                   [](unsigned char c){ return std::tolower(c); });
+
+    for (const auto& entry : greekPrefixMap) {
+        const std::string& lowerPrefix = entry.first;
+        const std::string& latexSymbol = entry.second;
+
+        if (lowerParticleName.rfind(lowerPrefix, 0) == 0) {
+            return latexSymbol + particleName.substr(lowerPrefix.length());
+        }
+    }
+    return particleName;
+}
+
+// --- Helper function to split a string by a delimiter ---
+/**
+ * @brief Splits a string by a given delimiter and trims whitespace from tokens.
+ * @param s The input string.
+ * @param delimiter The character to split by.
+ * @return A vector of strings (tokens).
+ */
+std::vector<std::string> splitAndTrimString(const std::string& s, char delimiter) {
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(s);
+    while (std::getline(tokenStream, token, delimiter)) {
+        // Trim leading whitespace
+        token.erase(0, token.find_first_not_of(" \t\n\r\f\v"));
+        // Trim trailing whitespace
+        token.erase(token.find_last_not_of(" \t\n\r\f\v") + 1);
+        if (!token.empty()) { // Only add non-empty tokens after trimming
+            tokens.push_back(token);
+        }
+    }
+    return tokens;
+}
+
+// --- New function to format the list string ---
+/**
+ * @brief Formats a comma-separated list of particle names within curly braces for TLatex.
+ * Applies formatParticleNameForLatex to each item in the list.
+ *
+ * Examples:
+ * "{pi+,pi-}" -> "{#pi+,#pi-}"
+ * "{K+,rho0}" -> "{K+,#rho0}"
+ * "{e-,gamma}" -> "{e-,#gamma}"
+ * "{}" -> "{}"
+ *
+ * @param particleListString The input string containing a comma-separated list in braces.
+ * @return The formatted string suitable for TLatex.
+ */
+std::string formatParticleListForLatex(const std::string& particleListString) {
+    if (particleListString.empty()) {
+        return "";
+    }
+
+    // Check if the string starts and ends with curly braces
+    if (particleListString.length() < 2 || particleListString.front() != '{' || particleListString.back() != '}') {
+        // If not in expected format, return as is or throw an error depending on desired behavior
+        std::cerr << "Warning: Particle list string '" << particleListString << "' is not in expected '{item1,item2}' format." << std::endl;
+        return particleListString;
+    }
+
+    // Extract the content inside the braces
+    std::string innerContent = particleListString.substr(1, particleListString.length() - 2);
+
+    // If the inner content is empty, return "{}"
+    if (innerContent.empty()) {
+        return "{}";
+    }
+
+    // Split the inner content by comma
+    std::vector<std::string> particleNames = splitAndTrimString(innerContent, ',');
+
+    // Format each individual particle name
+    std::vector<std::string> formattedNames;
+    for (const auto& name : particleNames) {
+        formattedNames.push_back(formatParticleNameForLatex(name));
+    }
+
+    // Join the formatted names back with commas
+    std::string result = "{";
+    for (size_t i = 0; i < formattedNames.size(); ++i) {
+        result += formattedNames[i];
+        if (i < formattedNames.size() - 1) {
+            result += ",";
+        }
+    }
+    result += "}";
+
+    return result;
+}
