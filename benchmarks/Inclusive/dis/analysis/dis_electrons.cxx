@@ -1,6 +1,5 @@
 #include "common_bench/benchmark.h"
 #include "common_bench/mt.h"
-#include "common_bench/util.h"
 #include "common_bench/plot.h"
 
 #include <cmath>
