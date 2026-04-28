@@ -2,7 +2,6 @@
 #include "common_bench/plot.h"
 
 #include "common_bench/benchmark.h"
-#include "common_bench/mt.h"
 #include "common_bench/util.h"
 
 #include "ROOT/RDataFrame.hxx"
@@ -73,7 +72,7 @@ int vm_mass(const std::string& config_name)
        {"target", ".2"}}};      //these 2 need to be consistent 
   double width_target = 0.2;    //going to find a way to use the same variable
   // Run this in multi-threaded mode if desired
-  ROOT::EnableImplicitMT(kNumThreads);
+  ROOT::EnableImplicitMT();
 
   // The particles we are looking for. E.g. J/psi decaying into e+e-
   const double vm_mass    = common_bench::get_pdg_mass(vm_name);
