@@ -79,12 +79,12 @@ common:setup:
   before_script:
     - |
       if [[ -z "${COMMON_BENCH_VERSION}" ]] ; then
-        export COMMON_BENCH_VERSION="master" 
+        export COMMON_BENCH_VERSION="main" 
       fi
       echo "COMMON_BENCH_VERSION = ${COMMON_BENCH_VERSION}" 
       echo "COMMON_BENCH_VERSION=${COMMON_BENCH_VERSION}" >> .env
   script:
-    - git clone -b "${COMMON_BENCH_VERSION}" https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git .local
+    - git clone -b "${COMMON_BENCH_VERSION}" https://github.com/eic/common_bench.git .local 
     - source .local/bin/env.sh
     - mkdir_local_data_link sim_output
     - mkdir_local_data_link datasets

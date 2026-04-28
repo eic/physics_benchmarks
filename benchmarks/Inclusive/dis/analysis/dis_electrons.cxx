@@ -1,6 +1,4 @@
 #include "common_bench/benchmark.h"
-#include "common_bench/mt.h"
-#include "common_bench/util.h"
 #include "common_bench/plot.h"
 
 #include <cmath>
@@ -58,7 +56,7 @@ int dis_electrons(const std::string& config_name)
        {"target", "0.1"}}};
 
   // Run this in multi-threaded mode if desired
-  ROOT::EnableImplicitMT(kNumThreads);
+  ROOT::EnableImplicitMT();
   ROOT::RDataFrame d("events", rec_file);
 
   std::string esigma_Q2_col_name, esigma_x_col_name;
