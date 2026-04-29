@@ -1,0 +1,204 @@
+{
+    "tests": [
+        {
+            "description": "Resolution benchmark for Q2",
+            "name": "Q2_res",
+            "quantity": "Resolution",
+            "result": "pass",
+            "target": "1500000000000",
+            "title": "Q2",
+            "value": 2.4502200132265757e-05,
+            "weight": 1.0
+        },
+        {
+            "description": "Resolution benchmark for W",
+            "name": "W_res",
+            "quantity": "Resolution",
+            "result": "pass",
+            "target": "1500000000000",
+            "title": "W",
+            "value": 0.46045386511861947,
+            "weight": 1.0
+        },
+        {
+            "description": "Resolution benchmark for Whad",
+            "name": "Whad_res",
+            "quantity": "Resolution",
+            "result": "pass",
+            "target": "1500000000000",
+            "title": "Whad",
+            "value": 0.4604538651185645,
+            "weight": 1.0
+        },
+        {
+            "description": "Resolution benchmark for Missing mass squared exclusive",
+            "name": "MissMass2_res",
+            "quantity": "Resolution",
+            "result": "pass",
+            "target": "1500000000000",
+            "title": "Missing mass squared exclusive",
+            "value": 3.1781013237294477e-12,
+            "weight": 1.0
+        },
+        {
+            "description": "Resolution benchmark for Missing mass squared from meson",
+            "name": "MissMassMeson2_res",
+            "quantity": "Resolution",
+            "result": "pass",
+            "target": "1500000000000",
+            "title": "Missing mass squared from meson",
+            "value": 168.4820236322473,
+            "weight": 1.0
+        },
+        {
+            "description": "Resolution benchmark for Missing mass squared from baryon",
+            "name": "MissMassBaryon2_res",
+            "quantity": "Resolution",
+            "result": "pass",
+            "target": "1500000000000",
+            "title": "Missing mass squared from baryon",
+            "value": 0.02448559219390842,
+            "weight": 1.0
+        },
+        {
+            "description": "Resolution benchmark for M(meson) [GeV]",
+            "name": "MesonMass_res",
+            "quantity": "Resolution",
+            "result": "pass",
+            "target": "1500000000000",
+            "title": "M(meson) [GeV]",
+            "value": 0.014689275814575672,
+            "weight": 1.0
+        },
+        {
+            "description": "Resolution benchmark for M(baryon) [GeV]",
+            "name": "BaryonMass_res",
+            "quantity": "Resolution",
+            "result": "pass",
+            "target": "1500000000000",
+            "title": "M(baryon) [GeV]",
+            "value": 15.443262804173589,
+            "weight": 1.0
+        },
+        {
+            "description": "Resolution benchmark for -t(top) [GeV^{2}]",
+            "name": "tt_res",
+            "quantity": "Resolution",
+            "result": "pass",
+            "target": "1500000000000",
+            "title": "-t(top) [GeV^{2}]",
+            "value": 0.03707650934735217,
+            "weight": 1.0
+        },
+        {
+            "description": "Resolution benchmark for -t(bottom) [GeV^{2}]",
+            "name": "tb_res",
+            "quantity": "Resolution",
+            "result": "pass",
+            "target": "1500000000000",
+            "title": "-t(bottom) [GeV^{2}]",
+            "value": 0.03708719139893219,
+            "weight": 1.0
+        },
+        {
+            "description": "Resolution benchmark for cos(#theta_{CM})",
+            "name": "cthCM_res",
+            "quantity": "Resolution",
+            "result": "pass",
+            "target": "1500000000000",
+            "title": "cos(#theta_{CM})",
+            "value": 2.2526470165454614e-06,
+            "weight": 1.0
+        },
+        {
+            "description": "Resolution benchmark for #phi_{CM})",
+            "name": "phCM_res",
+            "quantity": "Resolution",
+            "result": "pass",
+            "target": "1500000000000",
+            "title": "#phi_{CM})",
+            "value": 0.41252390267620226,
+            "weight": 1.0
+        },
+        {
+            "description": "Resolution benchmark for Missing momentum from meson",
+            "name": "MissPMeson_res",
+            "quantity": "Resolution",
+            "result": "pass",
+            "target": "0.22975366176272372",
+            "title": "Missing momentum from meson",
+            "value": 0.153169107038513,
+            "weight": 1.0
+        },
+        {
+            "description": "Resolution benchmark for Missing transvers momentum from meson",
+            "name": "MissPtMeson_res",
+            "quantity": "Resolution",
+            "result": "pass",
+            "target": "1500000000000",
+            "title": "Missing transvers momentum from meson",
+            "value": 0.014983781548087695,
+            "weight": 1.0
+        },
+        {
+            "description": "Resolution benchmark for Missing longitudinal momentum from meson",
+            "name": "MissPMeson_res",
+            "quantity": "Resolution",
+            "result": "fail",
+            "target": "1000000000000.",
+            "title": "Missing longitudinal momentum from meson",
+            "value": 1000000000000.0,
+            "weight": 1.0
+        },
+        {
+            "description": "Resolution benchmark for Missing theta from meson",
+            "name": "MissThetaMeson_res",
+            "quantity": "Resolution",
+            "result": "pass",
+            "target": "1500000000000",
+            "title": "Missing theta from meson",
+            "value": 4.694932209748778e-05,
+            "weight": 1.0
+        },
+        {
+            "description": "Resolution benchmark for Scattered Electron momentum",
+            "name": "epmag_res_elscat_ele",
+            "quantity": "Resolution",
+            "result": "pass",
+            "target": "1500000000000",
+            "title": "Scattered Electron momentum",
+            "value": 0.003958059523078159,
+            "weight": 1.0
+        },
+        {
+            "description": "Resolution benchmark for Scattered Electron #theta",
+            "name": "etheta_res_elscat_ele",
+            "quantity": "Resolution",
+            "result": "pass",
+            "target": "1500000000000",
+            "title": "Scattered Electron #theta",
+            "value": 0.0002869561627744076,
+            "weight": 1.0
+        },
+        {
+            "description": "Resolution benchmark for Scattered Electron #phi",
+            "name": "ephi_res_elscat_ele",
+            "quantity": "Resolution",
+            "result": "pass",
+            "target": "1500000000000",
+            "title": "Scattered Electron #phi",
+            "value": 0.23540421396511177,
+            "weight": 1.0
+        },
+        {
+            "description": " ExcTagger Meson{#pi+,#pi-}{} reaction efficiency",
+            "name": "eff",
+            "quantity": "Efficiency",
+            "result": "pass",
+            "target": "0",
+            "title": "integrated efficiency",
+            "value": 0.35152838427947597,
+            "weight": 1.0
+        }
+    ]
+}
