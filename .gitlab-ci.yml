@@ -84,8 +84,9 @@ common:setup:
       echo "COMMON_BENCH_VERSION = ${COMMON_BENCH_VERSION}" 
       echo "COMMON_BENCH_VERSION=${COMMON_BENCH_VERSION}" >> .env
   script:
-    - git clone -b "${COMMON_BENCH_VERSION}" https://github.com/eic/common_bench.git setup 
-    - source setup/bin/env.sh && ./setup/bin/install_common.sh
+    - git clone --depth 1 -b "${COMMON_BENCH_VERSION}" https://github.com/eic/common_bench.git .local
+    - rm -rf .local/.git
+    - source .local/bin/env.sh
     - mkdir_local_data_link sim_output
     - mkdir_local_data_link datasets
     - mkdir -p results
