@@ -90,7 +90,6 @@ common:setup:
     - mkdir_local_data_link datasets
     - mkdir -p results
     - mkdir -p config
-    - print_env.sh
 
 .compile_benchmark:
   needs:
