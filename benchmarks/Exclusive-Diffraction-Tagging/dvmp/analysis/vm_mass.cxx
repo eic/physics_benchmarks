@@ -4,6 +4,8 @@
 #include "common_bench/benchmark.h"
 #include "common_bench/util.h"
 
+#include "edm4eic/analysis_utils.h"
+
 #include "ROOT/RDataFrame.hxx"
 #include <cmath>
 #include <fstream>
@@ -17,6 +19,7 @@
 
 #include "edm4eic/ReconstructedParticleCollection.h"
 #include "edm4eic/ReconstructedParticleData.h"
+#include "edm4hep/MCParticleCollection.h"
 
 // Run VM invariant-mass-based benchmarks on an input reconstruction file for
 // a desired vector meson (e.g. jpsi) and a desired decay particle (e.g. muon)
@@ -95,9 +98,13 @@ int vm_mass(const std::string& config_name)
 
   // common_bench::PrintGeant4(MCParticles);
   // Define analysis flow
-  auto d_im = d.Define("p_rec", common_bench::momenta_RC, {"ReconstructedParticles"})       //using dummy rc
+  auto d_im = d.Define("p_rec",
+                  [](const std::vector<edm4eic::ReconstructedParticleData>& p) { return edm4eic::momenta(p); },
+                  {"ReconstructedParticles"})       //using dummy rc
                   .Define("N", "p_rec.size()")
-                  .Define("p_sim", common_bench::momenta_from_simulation, {"MCParticles"})
+                  .Define("p_sim",
+                  [](const std::vector<edm4hep::MCParticleData>& p) { return edm4eic::momenta(p); },
+                  {"MCParticles"})
                   .Define("decay_pair_rec", find_decay_pair, {"p_rec"})
                   .Define("decay_pair_sim", find_decay_pair, {"p_sim"})
                   .Define("p_vm_rec", "decay_pair_rec.first + decay_pair_rec.second")
