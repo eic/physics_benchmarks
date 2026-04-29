@@ -77,29 +77,12 @@ fi
 ## =============================================================================
 ## Step 3: Run digitization & reconstruction
 echo "Running the digitization and reconstruction"
-## FIXME Need to figure out how to pass file name to juggler from the commandline
-## the tracker_reconstruction.py options file uses the following environment
-## variables:
-## - JUGGLER_SIM_FILE:    input detector simulation
-## - JUGGLER_REC_FILE:    output reconstructed data
-## - JUGGLER_N_EVENTS:    number of events to process (part of global environment)
-## - DETECTOR:    detector package (part of global environment)
 export JUGGLER_SIM_FILE=${SIM_FILE}
 export JUGGLER_REC_FILE=${REC_FILE}
-if [ ${RECO} == "eicrecon" ] ; then
-  eicrecon ${JUGGLER_SIM_FILE} -Ppodio:output_file=${JUGGLER_REC_FILE}
-  if [[ "$?" -ne "0" ]] ; then
-    echo "ERROR running eicrecon"
-    exit 1
-  fi
-fi
-
-if [[ ${RECO} == "juggler" ]] ; then
-  gaudirun.py options/reconstruction.py || [ $? -eq 4 ]
-  if [ "$?" -ne "0" ] ; then
-    echo "ERROR running juggler"
-    exit 1
-  fi
+eicrecon ${JUGGLER_SIM_FILE} -Ppodio:output_file=${JUGGLER_REC_FILE}
+if [[ "$?" -ne "0" ]] ; then
+  echo "ERROR running eicrecon"
+  exit 1
 fi
 ## =============================================================================
 ## Step 4: Analysis
