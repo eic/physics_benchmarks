@@ -1,72 +1,15 @@
 #!/bin/bash
 source strict-mode.sh
 
+source benchmarks/Exclusive-Diffraction-Tagging/options.sh
+
 function print_the_help {
-  echo "USAGE: ${0} [--rec] [--sim] [--analysis] [--all] "
-  echo "    The default options are to run all steps (sim,rec,analysis) "
-  echo "OPTIONS: "
-  echo "  --data-init     download the input event data"
-  echo "  --sim,-s        Runs the Geant4 simulation"
-  echo "  --rec,-r        Run the reconstruction"
-  echo "  --analysis,-a   Run the analysis scripts"
-  echo "  --all           (default) Do all steps. Argument is included so usage can convey intent."
-  exit 
+  echo "USAGE: ${0} [--sim] [--rec] [--analysis] [--all]"
+  print_step_options_help
+  exit
 }
 
-DO_ALL=1
-DATA_INIT=
-DO_SIM=
-DO_REC=
-DO_ANALYSIS=
-
-POSITIONAL=()
-while [[ $# -gt 0 ]]
-do
-  key="$1"
-
-  case $key in
-    -h|--help)
-      shift # past argument
-      print_the_help
-      ;;
-    --all)
-      DO_ALL=2
-      if [[ ! "${DO_REC}${DO_SIM}${DO_ANALYSIS}" -eq "" ]] ; then
-        echo "Error: cannot use --all with other arguments." 1>&2
-        print_the_help
-        exit 1
-      fi
-      shift # past value
-      ;;
-    -s|--sim)
-      DO_SIM=1
-      DO_ALL=
-      shift # past value
-      ;;
-    --data-init)
-      DATA_INIT=1
-      DO_ALL=
-      shift # past value
-      ;;
-    -r|--rec)
-      DO_REC=1
-      DO_ALL=
-      shift # past value
-      ;;
-    -a|--analysis)
-      DO_ANALYSIS=1
-      DO_ALL=
-      shift # past value
-      ;;
-    *)    # unknown option
-      #POSITIONAL+=("$1") # save it in an array for later
-      echo "unknown option $1"
-      print_the_help
-      shift # past argument
-      ;;
-  esac
-done
-set -- "${POSITIONAL[@]}" # restore positional parameters
+parse_step_options "$@"
 
 # assuming something like .local/bin/env.sh has already been sourced.
 print_env.sh

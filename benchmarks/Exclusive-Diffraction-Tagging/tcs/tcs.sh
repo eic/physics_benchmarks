@@ -1,16 +1,15 @@
 #!/bin/bash
 source strict-mode.sh
+source benchmarks/Exclusive-Diffraction-Tagging/options.sh
 
 function print_the_help {
-  echo "USAGE: ${0} [--rec] [--sim] [--analysis] [--all] "
-  echo "    The default options are to run all steps (sim,rec,analysis) "
-  echo "OPTIONS: "
-  echo "  --data-init     download the input event data"
-  echo "  --sim,-s        Runs the Geant4 simulation"
-  echo "  --rec,-r        Run the reconstruction"
-  echo "  --analysis,-a   Run the analysis scripts"
-  echo "  --all           (default) Do all steps. Argument is included so usage can convey intent."
-  exit 
+  echo "USAGE: ${0} --ebeam E --pbeam P --tag T [--sim] [--rec] [--analysis] [--all]"
+  echo "SCRIPT OPTIONS:"
+  echo "  --ebeam E       Electron beam energy"
+  echo "  --pbeam P       Ion beam energy"
+  echo "  --tag T         Event file tag"
+  print_step_options_help
+  exit
 }
 
 DO_ALL=1
@@ -22,69 +21,60 @@ EBEAM=
 PBEAM=
 TAG=
 
-POSITIONAL=()
-while [[ $# -gt 0 ]]
-do
+while [[ $# -gt 0 ]]; do
   key="$1"
-
   case $key in
     -h|--help)
-      shift # past argument
       print_the_help
       ;;
     --all)
-      DO_ALL=2
-      if [[ ! "${DO_REC}${DO_SIM}${DO_ANALYSIS}" -eq "" ]] ; then
-        echo "Error: cannot use --all with other arguments." 1>&2
+      DO_ALL=1
+      if [[ -n "${DO_REC}${DO_SIM}${DO_ANALYSIS}" ]]; then
+        echo "Error: cannot use --all with other step arguments." 1>&2
         print_the_help
         exit 1
       fi
-      shift # past value
+      shift
       ;;
     --tag)
-      shift # past argument
-      TAG=$1
-      shift # past value
+      TAG="$2"
+      shift; shift
       ;;
     --pbeam)
-      shift # past argument
-      PBEAM=$1
-      shift # past value
+      PBEAM="$2"
+      shift; shift
       ;;
     --ebeam)
-      shift # past argument
-      EBEAM=$1
-      shift # past value
+      EBEAM="$2"
+      shift; shift
       ;;
     -s|--sim)
       DO_SIM=1
       DO_ALL=
-      shift # past value
+      shift
       ;;
     --data-init)
       DATA_INIT=1
       DO_ALL=
-      shift # past value
+      shift
       ;;
     -r|--rec)
       DO_REC=1
       DO_ALL=
-      shift # past value
+      shift
       ;;
     -a|--analysis)
       DO_ANALYSIS=1
       DO_ALL=
-      shift # past value
+      shift
       ;;
-    *)    # unknown option
-      #POSITIONAL+=("$1") # save it in an array for later
-      echo "unknown option $1"
+    *)
+      echo "unknown option '$1'" 1>&2
       print_the_help
-      shift # past argument
+      exit 1
       ;;
   esac
 done
-set -- "${POSITIONAL[@]}" # restore positional parameters
 
 # assuming something like .local/bin/env.sh has already been sourced.
 print_env.sh

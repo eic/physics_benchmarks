@@ -20,16 +20,83 @@ echo "Running the DVMP benchmarks"
 ## =============================================================================
 ## Step 1: Setup the environment variables
 ##
-## First parse the command line flags.
+## Parse the command line flags.
 ## This sets the following environment variables:
 ## - CONFIG:   The specific generator configuration
 ## - EBEAM:    The electron beam energy
 ## - PBEAM:    The ion beam energy
 ## - DECAY:    The decay particle for the generator
 ## - LEADING:  Leading particle of interest (J/psi)
-export REQUIRE_DECAY=1
-export REQUIRE_LEADING=1
-source parse_cmd.sh $@
+
+function print_the_help {
+  echo "USAGE: ${0} --config C --ebeam E --pbeam P --decay D --leading L"
+  echo "REQUIRED OPTIONS:"
+  echo "  --config C    Generator configuration identifier"
+  echo "  --ebeam E     Electron beam energy"
+  echo "  --pbeam P     Ion beam energy"
+  echo "  --decay D     Decay particle (e.g. muon, electron)"
+  echo "  --leading L   Leading particle of interest (e.g. jpsi)"
+  echo "  -h,--help     Print this message"
+  exit
+}
+
+CONFIG=
+EBEAM=
+PBEAM=
+DECAY=
+LEADING=
+
+while [[ $# -gt 0 ]]; do
+  key="$1"
+  case $key in
+    --config)
+      CONFIG="$2"
+      shift; shift
+      ;;
+    --ebeam)
+      EBEAM="$2"
+      shift; shift
+      ;;
+    --pbeam)
+      PBEAM="$2"
+      shift; shift
+      ;;
+    --decay)
+      DECAY="$2"
+      shift; shift
+      ;;
+    --leading)
+      LEADING="$2"
+      shift; shift
+      ;;
+    -h|--help)
+      print_the_help
+      ;;
+    *)
+      echo "ERROR: unknown option '$1'"
+      print_the_help
+      ;;
+  esac
+done
+
+if [[ -z "${CONFIG}" ]]; then
+  echo "ERROR: --config is required"
+  print_the_help
+elif [[ -z "${EBEAM}" ]]; then
+  echo "ERROR: --ebeam is required"
+  print_the_help
+elif [[ -z "${PBEAM}" ]]; then
+  echo "ERROR: --pbeam is required"
+  print_the_help
+elif [[ -z "${DECAY}" ]]; then
+  echo "ERROR: --decay is required"
+  print_the_help
+elif [[ -z "${LEADING}" ]]; then
+  echo "ERROR: --leading is required"
+  print_the_help
+fi
+
+export CONFIG EBEAM PBEAM DECAY LEADING
 
 ## We also need the following benchmark-specific variables:
 ##
