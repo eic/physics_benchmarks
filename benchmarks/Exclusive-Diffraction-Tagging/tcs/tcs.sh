@@ -7,7 +7,7 @@ function print_the_help {
   echo "OPTIONS: "
   echo "  --data-init     download the input event data"
   echo "  --sim,-s        Runs the Geant4 simulation"
-  echo "  --rec,-r        Run the juggler reconstruction"
+  echo "  --rec,-r        Run the reconstruction"
   echo "  --analysis,-a   Run the analysis scripts"
   echo "  --all           (default) Do all steps. Argument is included so usage can convey intent."
   exit 
@@ -126,20 +126,10 @@ fi
 ### Step 2. Run the reconstruction (eicrecon)
 export PBEAM
 if [[ -n "${DO_REC}" || -n "${DO_ALL}" ]] ; then
-  if [ ${RECO} == "eicrecon" ] ; then
-    eicrecon ${JUGGLER_SIM_FILE} -Ppodio:output_file=${JUGGLER_REC_FILE}
-    if [[ "$?" -ne "0" ]] ; then
-      echo "ERROR running eicrecon"
-      exit 1
-    fi
-  fi
-
-  if [[ ${RECO} == "juggler" ]] ; then
-    gaudirun.py options/reconstruction.py || [ $? -eq 4 ]
-    if [ "$?" -ne "0" ] ; then
-      echo "ERROR running juggler"
-      exit 1
-    fi
+  eicrecon ${JUGGLER_SIM_FILE} -Ppodio:output_file=${JUGGLER_REC_FILE}
+  if [[ "$?" -ne "0" ]] ; then
+    echo "ERROR running eicrecon"
+    exit 1
   fi
 
   root_filesize=$(stat --format=%s "${JUGGLER_REC_FILE}")
