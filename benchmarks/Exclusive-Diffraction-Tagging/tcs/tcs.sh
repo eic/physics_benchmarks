@@ -77,7 +77,6 @@ while [[ $# -gt 0 ]]; do
 done
 
 # assuming something like .local/bin/env.sh has already been sourced.
-print_env.sh
 
 FILE_NAME_TAG="tcs_${EBEAM}x${PBEAM}m_${TAG}"
 XROOTD_BASEURL="root://dtn-eic.jlab.org//volatile/eic/EPIC"
