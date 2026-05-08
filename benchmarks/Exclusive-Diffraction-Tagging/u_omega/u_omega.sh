@@ -12,7 +12,6 @@ function print_the_help {
 parse_step_options "$@"
 
 # assuming something like .local/bin/env.sh has already been sourced.
-print_env.sh
 
 FILE_NAME_TAG="u_omega"
 XROOTD_BASEURL="root://dtn-eic.jlab.org//volatile/eic/EPIC"
