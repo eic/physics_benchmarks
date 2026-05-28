@@ -69,17 +69,13 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   // Reco Jets
   TTreeReaderArray<int> recoType = {tree_reader, "ReconstructedChargedJets.type"};
   TTreeReaderArray<float> recoNRG = {tree_reader, "ReconstructedChargedJets.energy"};
-  TTreeReaderArray<int> recoPDG = {tree_reader, "ReconstructedChargedJets.PDG"};
   TTreeReaderArray<float> recoMomX = {tree_reader, "ReconstructedChargedJets.momentum.x"};
   TTreeReaderArray<float> recoMomY = {tree_reader, "ReconstructedChargedJets.momentum.y"};
   TTreeReaderArray<float> recoMomZ = {tree_reader, "ReconstructedChargedJets.momentum.z"};
-  TTreeReaderArray<float> recoM = {tree_reader, "ReconstructedChargedJets.mass"};
-  TTreeReaderArray<unsigned int> partsBegin = {tree_reader, "ReconstructedChargedJets.particles_begin"};
-  TTreeReaderArray<unsigned int> partsEnd = {tree_reader, "ReconstructedChargedJets.particles_end"};
+  TTreeReaderArray<unsigned int> recoCstsBegin = {tree_reader, "ReconstructedChargedJets.constituents_begin"};
+  TTreeReaderArray<unsigned int> recoCstsEnd = {tree_reader, "ReconstructedChargedJets.constituents_end"};
 
-  TTreeReaderArray<int> recoClustIndex = {tree_reader, "_ReconstructedChargedJets_clusters.index"};
-  TTreeReaderArray<int> recoTrackIndex = {tree_reader, "_ReconstructedChargedJets_tracks.index"};
-  TTreeReaderArray<int> recoPartIndex = {tree_reader, "_ReconstructedChargedJets_particles.index"};
+  TTreeReaderArray<int> recoCstIndex = {tree_reader, "_ReconstructedChargedJets_constituents.index"};
 
   // Reconstructed Particles
   TTreeReaderArray<float> recoPartMomX = {tree_reader, "ReconstructedChargedParticles.momentum.x"};
@@ -96,15 +92,13 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   // Generated Jets
   TTreeReaderArray<int> genType = {tree_reader, "GeneratedChargedJets.type"};
   TTreeReaderArray<float> genNRG = {tree_reader, "GeneratedChargedJets.energy"};
-  TTreeReaderArray<int> genPDG = {tree_reader, "GeneratedChargedJets.PDG"};
   TTreeReaderArray<float> genMomX = {tree_reader, "GeneratedChargedJets.momentum.x"};
   TTreeReaderArray<float> genMomY = {tree_reader, "GeneratedChargedJets.momentum.y"};
   TTreeReaderArray<float> genMomZ = {tree_reader, "GeneratedChargedJets.momentum.z"};
-  TTreeReaderArray<float> genM = {tree_reader, "GeneratedChargedJets.mass"};
-  TTreeReaderArray<unsigned int> genPartsBegin = {tree_reader, "GeneratedChargedJets.particles_begin"};
-  TTreeReaderArray<unsigned int> genPartsEnd = {tree_reader, "GeneratedChargedJets.particles_end"};
+  TTreeReaderArray<unsigned int> genCstsBegin = {tree_reader, "GeneratedChargedJets.constituents_begin"};
+  TTreeReaderArray<unsigned int> genCstsEnd = {tree_reader, "GeneratedChargedJets.constituents_end"};
   
-  TTreeReaderArray<int> genPartIndex = {tree_reader, "_GeneratedChargedJets_particles.index"};
+  TTreeReaderArray<int> genPartIndex = {tree_reader, "_GeneratedChargedJets_constituents.index"};
   //TTreeReaderArray<int> genChargedIndex = {tree_reader, "GeneratedChargedParticles_objIdx.index"};
   
   // MC
@@ -234,11 +228,11 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 
 	// Find Jets with Electrons
 	bool noElectron = true;
-	for(unsigned int m=partsBegin[i]; m<partsEnd[i]; m++) // Loop over jet constituents
+	for(unsigned int m=recoCstsBegin[i]; m<recoCstsEnd[i]; m++) // Loop over jet constituents
 	  {
 	    int elecIndex = -1;
 	    double elecIndexWeight = -1.0;
-	    int chargePartIndex = recoPartIndex[m]; // ReconstructedChargedParticle Index for m'th Jet Component
+	    int chargePartIndex = recoCstIndex[m]; // ReconstructedChargedParticle Index for m'th Jet Component
 	    for(unsigned int n=0; n<recoPartAssocRec.GetSize(); n++) // Loop Over All ReconstructedChargedParticleAssociations
 	      {
 		if(recoPartAssocRec[n] == chargePartIndex) // Select Entry Matching the ReconstructedChargedParticle Index
@@ -257,14 +251,14 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	
 	if(ECut)
 	  {
-	    for(unsigned int j=partsBegin[i]; j<partsEnd[i]; j++)
+	    for(unsigned int j=recoCstsBegin[i]; j<recoCstsEnd[i]; j++)
 	      {
-		// partsbegin and partsEnd specify the entries from _ReconstructedChargedJets_particles.index that make up the jet
+		// recoCstsBegin and recoCstsEnd specify the entries from _ReconstructedChargedJets_particles.index that make up the jet
 		// _ReconstructedChargedJets_particles.index stores the ReconstructedChargedParticles index of the jet constituent
-		double mX = recoPartMomX[recoPartIndex[j]];
-		double mY = recoPartMomY[recoPartIndex[j]];
-		double mZ = recoPartMomZ[recoPartIndex[j]];
-		double mM = recoPartM[recoPartIndex[j]];
+		double mX = recoPartMomX[recoCstIndex[j]];
+		double mY = recoPartMomY[recoCstIndex[j]];
+		double mZ = recoPartMomZ[recoCstIndex[j]];
+		double mM = recoPartM[recoCstIndex[j]];
 		//double tmpE = TMath::Sqrt(mX*mX + mY*mY + mZ*mZ + mM*mM);
 		
 		TVector3 partMom(mX,mY,mZ);
@@ -283,13 +277,13 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 		  }
 
 		// Pairwise Distance Between Constituents
-		if(j<(partsEnd[i]-1))
+		if(j<(recoCstsEnd[i]-1))
 		  {
-		    for(unsigned int k=j+1; k<partsEnd[i]; k++)
+		    for(unsigned int k=j+1; k<recoCstsEnd[i]; k++)
 		      {
-			double mXB = recoPartMomX[recoPartIndex[k]];
-			double mYB = recoPartMomY[recoPartIndex[k]];
-			double mZB = recoPartMomZ[recoPartIndex[k]];
+			double mXB = recoPartMomX[recoCstIndex[k]];
+			double mYB = recoPartMomY[recoCstIndex[k]];
+			double mZB = recoPartMomZ[recoCstIndex[k]];
 
 			TVector3 partMomB(mXB,mYB,mZB);
 
@@ -301,8 +295,8 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 		      }
 		  }
 	      }
-	    numRecoChargedJetPartsHist->Fill(partsEnd[i] - partsBegin[i]);
-	    if(noElectron) numRecoChargedJetPartsNoElecHist->Fill(partsEnd[i] - partsBegin[i]);
+	    numRecoChargedJetPartsHist->Fill(recoCstsEnd[i] - recoCstsBegin[i]);
+	    if(noElectron) numRecoChargedJetPartsNoElecHist->Fill(recoCstsEnd[i] - recoCstsBegin[i]);
 	  }
 
 	// No Electrons
@@ -345,7 +339,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 
 	// Find Jets with Electrons
 	bool noElectron = true;
-	for(unsigned int m=genPartsBegin[i]; m<genPartsEnd[i]; m++)
+	for(unsigned int m=genCstsBegin[i]; m<genCstsEnd[i]; m++)
 	  {
 	    if(pdg[genPartIndex[m]] == 11)
 	      noElectron = false;
@@ -353,10 +347,10 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 
 	if(ECut)
 	  {
-	    for(unsigned int j=genPartsBegin[i]; j<genPartsEnd[i]; j++)
+	    for(unsigned int j=genCstsBegin[i]; j<genCstsEnd[i]; j++)
 	      {
-		// partsbegin and partsEnd specify the entries from _ReconstructedChargedJets_particles.index that make up the jet
-		// _ReconstructedChargedJets_particles.index stores the ReconstructedChargedParticles index of the jet constituent
+		// genCstsBegin and genCstsEnd specify the entries from _GeneratedChargedJets_particles.index that make up the jet
+		// _GeneratedChargedJets_particles.index stores the GeneratedChargedParticles index of the jet constituent
 		double mX = mcMomX[genPartIndex[j]];
 		double mY = mcMomY[genPartIndex[j]];
 		double mZ = mcMomZ[genPartIndex[j]];
@@ -379,9 +373,9 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 		  }
 
 		// Pairwise Distance Between Constituents
-		if(j<(genPartsEnd[i]-1))
+		if(j<(genCstsEnd[i]-1))
 		  {
-		    for(unsigned int k=j+1; k<genPartsEnd[i]; k++)
+		    for(unsigned int k=j+1; k<genCstsEnd[i]; k++)
 		      {
 			double mXB = mcMomX[genPartIndex[k]];
 			double mYB = mcMomY[genPartIndex[k]];
@@ -397,8 +391,8 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 		      }
 		  }
 	      }
-	    numGenChargedJetPartsHist->Fill(genPartsEnd[i] - genPartsBegin[i]);
-	    if(noElectron) numGenChargedJetPartsNoElecHist->Fill(genPartsEnd[i] - genPartsBegin[i]);
+	    numGenChargedJetPartsHist->Fill(genCstsEnd[i] - genCstsBegin[i]);
+	    if(noElectron) numGenChargedJetPartsNoElecHist->Fill(genCstsEnd[i] - genCstsBegin[i]);
 	  }
 
 	// No Electrons
@@ -432,7 +426,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	// Don't Look at Electron Jets
 	bool hasElectron = false;
 	// Find Jets with Electrons
-	for(unsigned int m=genPartsBegin[i]; m<genPartsEnd[i]; m++)
+	for(unsigned int m=genCstsBegin[i]; m<genCstsEnd[i]; m++)
 	  {
 	    if(pdg[genPartIndex[m]] == 11)
 	      hasElectron = true;
@@ -507,24 +501,24 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 		
 		// Check for Duplicate Tracks
 		bool noDuplicate = true;
-		for(unsigned int j=partsBegin[minIndex]; j<partsEnd[minIndex]; j++)
+		for(unsigned int j=recoCstsBegin[minIndex]; j<recoCstsEnd[minIndex]; j++)
 		  {
-		    double mX = recoPartMomX[recoPartIndex[j]];
-		    double mY = recoPartMomY[recoPartIndex[j]];
-		    double mZ = recoPartMomZ[recoPartIndex[j]];
-		    double mM = recoPartM[recoPartIndex[j]];
+		    double mX = recoPartMomX[recoCstIndex[j]];
+		    double mY = recoPartMomY[recoCstIndex[j]];
+		    double mZ = recoPartMomZ[recoCstIndex[j]];
+		    double mM = recoPartM[recoCstIndex[j]];
 		    double tmpE = TMath::Sqrt(mX*mX + mY*mY + mZ*mZ + mM*mM);
 		    
 		    TVector3 partMom(mX,mY,mZ);
 		    
 		    // Pairwise Distance Between Constituents
-		    if(j<(partsEnd[minIndex]-1))
+		    if(j<(recoCstsEnd[minIndex]-1))
 		      {
-			for(unsigned int k=j+1; k<partsEnd[minIndex]; k++)
+			for(unsigned int k=j+1; k<recoCstsEnd[minIndex]; k++)
 			  {
-			    double mXB = recoPartMomX[recoPartIndex[k]];
-			    double mYB = recoPartMomY[recoPartIndex[k]];
-			    double mZB = recoPartMomZ[recoPartIndex[k]];
+			    double mXB = recoPartMomX[recoCstIndex[k]];
+			    double mYB = recoPartMomY[recoCstIndex[k]];
+			    double mZB = recoPartMomZ[recoCstIndex[k]];
 			    
 			    TVector3 partMomB(mXB,mYB,mZB);
 			    
