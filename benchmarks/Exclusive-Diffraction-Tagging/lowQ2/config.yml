@@ -1,0 +1,33 @@
+lowQ2:simulate:
+  stage: simulate
+  extends: .phy_benchmark
+  parallel:
+    matrix:
+      - EBEAM: 5
+        PBEAM: 100
+#      - EBEAM: 10
+#        PBEAM: 100
+#      - EBEAM: 18
+#        PBEAM: 275
+  timeout: 5 hours
+  script:
+    - echo "I will simulate detector response here!"
+    - snakemake --cache --cores 5 results/epic_craterlake_${EBEAM}x${PBEAM}/lowQ2_rho/lowQ2_rho_${EBEAM}x${PBEAM}_1_0001/config.json
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+
+lowQ2:results:
+  stage: collect
+  needs: ["lowQ2:simulate"]
+  parallel:
+    matrix:
+      - EBEAM: 5
+        PBEAM: 100
+  script:
+    - echo "I will collect results here!"
+    #Tests results are expected to have the following file name and directory
+    #structure:
+    #results/<BENCHMARK_NAME>/**/<SOME_NAME>.json
+    - collect_tests.py results/epic_craterlake_${EBEAM}x${PBEAM}/lowQ2_rho/lowQ2_rho_${EBEAM}x${PBEAM}_1_0001/
