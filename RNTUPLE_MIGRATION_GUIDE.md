@@ -457,6 +457,80 @@ auto df_filtered = df.Filter("ReconstructedChargedJets.energy.size() > 0")
 
 This approach requires minimal code changes but may have different performance characteristics.
 
+## Migration Considerations and Limitations
+
+### Multiple File Processing (TChain Replacement)
+
+**Limitation:** RNTuple does not have a direct equivalent to TChain for processing multiple files transparently.
+
+**Solutions:**
+
+1. **Sequential Processing** (simplest for benchmarks):
+```cpp
+for (const auto& filename : input_files) {
+    auto ntuple = RNTupleReader::Open("events", filename);
+    // Process each file
+}
+```
+
+2. **RDataFrame with Multiple Files** (recommended for analysis):
+```cpp
+ROOT::RDataFrame df("events", {"file1.rnt.root", "file2.rnt.root", "file3.rnt.root"});
+// Declarative analysis works across all files
+```
+
+3. **Format-Agnostic Wrapper** (for mixed TTree/RNTuple workflows):
+Create a wrapper class that detects file format and uses TChain for TTree or sequential RNTupleReader for RNTuple.
+
+### Backwards Compatibility Strategy
+
+**Challenge:** Analyzing old TTree data alongside new RNTuple data requires either:
+- Two versions of analysis code, or
+- Format-agnostic code using RDataFrame
+
+**Recommendations:**
+
+1. **For Controlled Environments (Benchmarks)**:
+   - Each campaign uses one format consistently
+   - Cross-campaign comparisons can regenerate old data in RNTuple format if needed
+   - This migration approach is suitable
+
+2. **For General Analysis (Ongoing Studies)**:
+   - Use RDataFrame which handles both formats transparently
+   - Or maintain a thin abstraction layer that dispatches to TTreeReader or RNTupleReader based on file format
+
+3. **Hybrid Approach**:
+   - Store format detection logic in a utility function
+   - Branch analysis code based on detected format
+   - Example:
+```cpp
+bool isRNTuple(const std::string& filename) {
+    return filename.find(".rnt.root") != std::string::npos ||
+           filename.find(".rntuple.root") != std::string::npos;
+}
+```
+
+### Python Support
+
+**Status:** ROOT's Python bindings (PyROOT) support RNTuple starting with ROOT 6.28+.
+
+**Usage:**
+```python
+import ROOT
+
+# Open RNTuple file
+ntuple = ROOT.RNTupleReader.Open("events", "output.rnt.root")
+
+# Access data
+for entry in ntuple:
+    energy_view = ntuple.GetView[float]("ReconstructedChargedJets.energy")
+    # Process data
+```
+
+**Note:** Python analysis may have different ergonomics than C++. For production Python analysis, consider:
+- Using RDataFrame Python interface for declarative analysis
+- uproot library (check RNTuple support status in your uproot version)
+
 ## References
 
 - [ROOT RNTuple Documentation](https://root.cern/doc/master/md_tree_ntuple_v7_doc_README.html)
