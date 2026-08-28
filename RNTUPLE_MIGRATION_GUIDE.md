@@ -485,7 +485,7 @@ int analyze(const std::string& rec_file) {
 - ✅ Uses podio's official API for EDM4hep/EDM4eic data
 - ✅ No manual view creation or error handling needed
 - ✅ Cleaner initialization code
-- ✅ Enables parallelization with `ROOT::EnableImplicitMT()`
+- ✅ Can be parallelized with `ROOT::EnableImplicitMT()` (ensure side effects like manual `TH1::Fill` are made thread-safe, e.g. via `ForeachSlot` + per-slot histograms)
 - ✅ Perfect for complex analysis with nested constituent loops
 
 **When to use `.Foreach()` vs pure declarative style:**
