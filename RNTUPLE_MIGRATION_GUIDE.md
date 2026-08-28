@@ -89,10 +89,12 @@ TTreeReader tree_reader(mychain);
 #### RNTuple Approach (New)
 
 ```cpp
-using ROOT::Experimental::RNTupleReader;
+using ROOT::RNTupleReader;
 
 auto ntuple = RNTupleReader::Open("events", rec_file);
 ```
+
+**Note:** In ROOT 6.40+, RNTuple is in the `ROOT::` namespace (not `ROOT::Experimental::`). Use `ROOT::RNTupleReader` for production code.
 
 **Note:** RNTuple does not support chaining multiple files like TChain. If you need to process multiple files, you must:
 1. Process them sequentially in a loop, or
@@ -287,7 +289,7 @@ while (tree_reader.Next()) {
 auto viewField = ntuple->GetView<float>("Collection.field");
 for (auto entryId : *ntuple) {
     auto field_vec = viewField(entryId);
-    float value = field_vec[index];
+    float value = field_vec.at(index);  // Use .at() for safety and ROOT compatibility
 }
 ```
 
@@ -455,12 +457,12 @@ If you encounter issues during migration:
 When migrating a benchmark:
 
 - [ ] Update eicrecon command with `-Ppodio:output_backend=rntuple`
-- [ ] Update file extensions to `.edm4eic.rntuple.root`
+- [ ] Update file extensions to `.edm4eic.rnt.root`
 - [ ] Replace `TChain`/`TTreeReader` includes with `RNTupleReader`
 - [ ] Convert file opening to `RNTupleReader::Open()`
 - [ ] Replace all `TTreeReaderArray` with `GetView<T>()`
 - [ ] Update event loop from `while (reader.Next())` to `for (auto entryId : *ntuple)`
-- [ ] Update array access from `field[i]` to `view(entryId)[i]`
+- [ ] Update array access from `field[i]` to `view(entryId).at(i)`
 - [ ] Move view creation outside event loop for performance
 - [ ] Test compilation
 - [ ] Verify output produces expected results
