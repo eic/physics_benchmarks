@@ -32,21 +32,21 @@ To enable RNTuple output from eicrecon, use the podio backend configuration:
 eicrecon input.edm4hep.root -Ppodio:output_file=output.edm4eic.root
 
 # New RNTuple format
-eicrecon input.edm4hep.root -Ppodio:output_file=output.edm4eic.root -Ppodio:output_backend=rntuple
+eicrecon input.edm4hep.root -Ppodio:output_file=output.edm4eic.rnt.root -Ppodio:output_backend=rntuple
 ```
 
-**Note:** The file extension remains `.root` even for RNTuple format. The internal structure is what changes.
+**Note:** Use `.rnt.root` extension for RNTuple files to distinguish them from TTree `.root` files.
 
 ### File Naming Convention
 
-To distinguish RNTuple files from TTree files, we recommend:
+To distinguish RNTuple files from TTree files, use `.rnt.root` extension:
 
 ```
 # TTree format
 pythia8NCDIS_10x100_minQ2=1.edm4eic.root
 
-# RNTuple format (add .rntuple before .root)
-pythia8NCDIS_10x100_minQ2=1.edm4eic.rntuple.root
+# RNTuple format
+pythia8NCDIS_10x100_minQ2=1.edm4eic.rnt.root
 ```
 
 ## Analysis Code Migration
@@ -251,7 +251,7 @@ rule my_reco_eicrecon:
     input:
         "sim_output/{DETECTOR_CONFIG}/input.edm4hep.root",
     output:
-        "sim_output/{DETECTOR_CONFIG}/output.edm4eic.rntuple.root",
+        "sim_output/{DETECTOR_CONFIG}/output.edm4eic.rnt.root",
     shell:
         """
         DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon {input} \\
@@ -269,7 +269,7 @@ Update all file references throughout the Snakefile:
 data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_10x100.edm4eic.root",
 
 # After
-data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_10x100.edm4eic.rntuple.root",
+data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_10x100.edm4eic.rnt.root",
 ```
 
 ## Common Migration Patterns
