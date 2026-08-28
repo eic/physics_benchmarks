@@ -166,17 +166,9 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 
 
   // Process events using RDataFrame
+  // Note: This uses single-threaded execution. For thread-safe multi-threaded 
+  // processing, switch to ForeachSlot with ROOT::TThreadedObject<TH1D>.
   std::atomic<int> NEVENTS{0};
-  
-  // Collection names we need
-  std::vector<std::string> collections = {
-    "ReconstructedChargedJets",
-    "ReconstructedChargedParticles", 
-    "ReconstructedChargedParticleLinks",
-    "GeneratedChargedJets",
-    "GeneratedParticles",
-    "MCParticles"
-  };
 
   fmt::print(" - Processing events with RDataFrame...\n");
   
@@ -1541,8 +1533,6 @@ legend->Draw();
 
   if(PRINT) c43->Print((results_path+"/matchedJetScaleResolutionSummary.png").c_str()); // Matched jet JER/JES summary
     delete c43;
-
-  // ntuple is automatically cleaned up by unique_ptr
 
   return 0;
 }

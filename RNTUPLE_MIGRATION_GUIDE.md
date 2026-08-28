@@ -230,7 +230,7 @@ int analyze(const std::string& rec_file) {
 #include <ROOT/RNTupleReader.hxx>
 
 int analyze(const std::string& rec_file) {
-    using ROOT::Experimental::RNTupleReader;
+    using ROOT::RNTupleReader;  // ROOT 6.40+: use ROOT:: not ROOT::Experimental::
     
     auto ntuple = RNTupleReader::Open("events", rec_file);
     
