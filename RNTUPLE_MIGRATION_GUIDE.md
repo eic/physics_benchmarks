@@ -92,6 +92,10 @@ TTreeReader tree_reader(mychain);
 using ROOT::RNTupleReader;
 
 auto ntuple = RNTupleReader::Open("events", rec_file);
+if (!ntuple) {
+  fmt::print(stderr, "ERROR: Failed to open RNTuple from file\n");
+  return 1;
+}
 ```
 
 **Note:** In ROOT 6.40+, RNTuple is in the `ROOT::` namespace (not `ROOT::Experimental::`). Use `ROOT::RNTupleReader` for production code.
@@ -99,6 +103,23 @@ auto ntuple = RNTupleReader::Open("events", rec_file);
 **Note:** RNTuple does not support chaining multiple files like TChain. If you need to process multiple files, you must:
 1. Process them sequentially in a loop, or
 2. Use RDataFrame which can handle multiple RNTuple files
+
+### Error Handling
+
+**Critical:** Unlike TTree which silently continues with missing branches, RNTuple throws exceptions for missing fields. Always wrap view creation in try-catch:
+
+```cpp
+try {
+  auto viewRecoNRG = ntuple->GetView<float>("ReconstructedChargedJets.energy");
+  auto viewRecoMomX = ntuple->GetView<float>("ReconstructedChargedJets.momentum.x");
+  // ... more views
+} catch (const std::exception& e) {
+  fmt::print(stderr, "ERROR: Missing required field: {}\n", e.what());
+  return 1;
+}
+```
+
+This ensures your analysis fails fast if required collections are missing, rather than producing incorrect results silently.
 
 ### Reading Fields
 
@@ -459,7 +480,8 @@ When migrating a benchmark:
 - [ ] Update eicrecon command with `-Ppodio:output_backend=rntuple`
 - [ ] Update file extensions to `.edm4eic.rnt.root`
 - [ ] Replace `TChain`/`TTreeReader` includes with `RNTupleReader`
-- [ ] Convert file opening to `RNTupleReader::Open()`
+- [ ] Convert file opening to `RNTupleReader::Open()` with null check
+- [ ] Add try-catch around all `GetView<T>()` calls for error handling
 - [ ] Replace all `TTreeReaderArray` with `GetView<T>()`
 - [ ] Update event loop from `while (reader.Next())` to `for (auto entryId : *ntuple)`
 - [ ] Update array access from `field[i]` to `view(entryId).at(i)`

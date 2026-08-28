@@ -50,6 +50,10 @@ int jets(const std::string& config_name)
   // Input - Open RNTuple
   using ROOT::RNTupleReader;
   auto ntuple = RNTupleReader::Open("events", rec_file);
+  if (!ntuple) {
+    fmt::print(stderr, "ERROR: Failed to open RNTuple 'events' from file: {}\n", rec_file);
+    return 1;
+  }
 
   const int seabornRed = TColor::GetColor(213, 94, 0);
 
@@ -66,6 +70,8 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   // Set Delta R Cut
   float DELTARCUT = 0.05;
 
+  // Wrap view creation in try-catch to catch missing fields
+  try {
   // Reco Jets
   auto viewRecoType = ntuple->GetView<int>("ReconstructedChargedJets.type");
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
@@ -139,6 +145,13 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   auto viewMcMomZPart = ntuple->GetView<double>("MCParticles.momentum.z");
   auto viewMcMPart = ntuple->GetView<double>("MCParticles.mass");
   auto viewPdgMCPart = ntuple->GetView<int>("MCParticles.PDG");
+
+  } catch (const std::exception& e) {
+    fmt::print(stderr, "ERROR: Failed to get RNTuple view - missing or invalid field: {}\n", e.what());
+    fmt::print(stderr, "This usually means the input file is missing required collections.\n");
+    fmt::print(stderr, "Ensure eicrecon was run with -Ppodio:output_backend=rntuple\n");
+    return 1;
+  }
 
   // Define Histograms
   TH1D *counter = new TH1D("counter","",10,0.,10.);
