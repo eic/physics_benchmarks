@@ -1,9 +1,9 @@
 # Jets-HF benchmark
-# Note: The analysis uses podio::CreateDataFrame which works with both TTree and RNTuple formats.
+# Note: The analysis uses podio::CreateDataFrame (works with both TTree and RNTuple),
+# but this Snakefile currently expects `.edm4eic.rnt.root` inputs in the rules below.
 # For RNTuple files (recommended), generate with:
-#   eicrecon input.edm4hep.root -Ppodio:output_file=output.rnt.root -Ppodio:output_backend=rntuple
-# For TTree files (legacy), use default:
-#   eicrecon input.edm4hep.root -Ppodio:output_file=output.root
+#   eicrecon input.edm4hep.root -Ppodio:output_file=output.edm4eic.rnt.root -Ppodio:output_backend=rntuple
+# For TTree files (legacy), update the `data=` patterns below to `.edm4eic.root`.
 
 rule jets_compile:
     input:
