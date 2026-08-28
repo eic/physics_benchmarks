@@ -97,9 +97,9 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   TTreeReaderArray<int> recoPartPDG = {tree_reader, "ReconstructedChargedParticles.PDG"};
   TTreeReaderArray<float> recoPartNRG = {tree_reader, "ReconstructedChargedParticles.energy"};
 
-  TTreeReaderArray<unsigned int> recoPartAssocRec = {tree_reader, "ReconstructedChargedParticleAssociations.recID"}; // Reco <-> MCParticle
-  TTreeReaderArray<unsigned int> recoPartAssocSim = {tree_reader, "ReconstructedChargedParticleAssociations.simID"};
-  TTreeReaderArray<float> recoPartAssocWeight = {tree_reader, "ReconstructedChargedParticleAssociations.weight"};
+  TTreeReaderArray<unsigned int> recoPartAssocRec = {tree_reader, "ReconstructedChargedParticleLinks.from"}; // Reco <-> MCParticle
+  TTreeReaderArray<unsigned int> recoPartAssocSim = {tree_reader, "ReconstructedChargedParticleLinks.to"};
+  TTreeReaderArray<float> recoPartAssocWeight = {tree_reader, "ReconstructedChargedParticleLinks.weight"};
 
   // Generated Jets
   TTreeReaderArray<int> genType = {tree_reader, "GeneratedChargedJets.type"};
@@ -280,7 +280,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	    int elecIndex = -1;
 	    double elecIndexWeight = -1.0;
 	    int chargePartIndex = recoCstIndex[m]; // ReconstructedChargedParticle Index for m'th Jet Component
-	    for(unsigned int n=0; n<recoPartAssocRec.GetSize(); n++) // Loop Over All ReconstructedChargedParticleAssociations
+	    for(unsigned int n=0; n<recoPartAssocRec.GetSize(); n++) // Loop Over All ReconstructedChargedParticleLinks
 	      {
 		if(recoPartAssocRec[n] == chargePartIndex) // Select Entry Matching the ReconstructedChargedParticle Index
 		  {

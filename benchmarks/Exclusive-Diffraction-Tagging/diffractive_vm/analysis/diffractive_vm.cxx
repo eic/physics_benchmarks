@@ -100,11 +100,6 @@ int diffractive_vm(const std::string& config_name)
   TTreeReaderArray<float> emhits_y_array      = {tree_reader, "EcalEndcapNRecHits.position.y"};
   TTreeReaderArray<float> emhits_energy_array = {tree_reader, "EcalEndcapNRecHits.energy"};
 
-  TTreeReaderArray<unsigned int> em_rec_id_array = {tree_reader,
-                                                    "EcalEndcapNClusterAssociations.recID"};
-  TTreeReaderArray<unsigned int> em_sim_id_array = {tree_reader,
-                                                    "EcalEndcapNClusterAssociations.simID"};
-
   // Reconstructed particles pz array for each reconstructed particle
   TTreeReaderArray<float> reco_px_array = {tree_reader, "ReconstructedChargedParticles.momentum.x"};
   TTreeReaderArray<float> reco_py_array = {tree_reader, "ReconstructedChargedParticles.momentum.y"};
@@ -112,9 +107,9 @@ int diffractive_vm(const std::string& config_name)
   TTreeReaderArray<float> reco_charge_array = {tree_reader, "ReconstructedChargedParticles.charge"};
 
   TTreeReaderArray<unsigned int> rec_id = {tree_reader,
-                                           "ReconstructedChargedParticleAssociations.recID"};
+                                           "ReconstructedChargedParticleLinks.from"};
   TTreeReaderArray<unsigned int> sim_id = {tree_reader,
-                                           "ReconstructedChargedParticleAssociations.simID"};
+                                           "ReconstructedChargedParticleLinks.to"};
 
   std::string output_name_dir = fmt::format("{}.root", output_prefix);
   cout << "Output file = " << output_name_dir << endl;
