@@ -40,6 +40,9 @@ __pycache__/
 calorimeters/test/
 *.d
 *.pcm
+*_ACLiC_dict*.h
+*_ACLiC_linkdef.h
+*_ACLiC_map.in
 
 # input/output files
 input
