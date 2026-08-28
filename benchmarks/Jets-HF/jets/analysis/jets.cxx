@@ -176,26 +176,17 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   
   // Use Foreach to process each event with the existing analysis logic
   df.Foreach([&](
+    const ROOT::VecOps::RVec<int>& recoType,
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-    const ROOT::VecOps::RVec<int>& recoType,
     const ROOT::VecOps::RVec<float>& recoArea,
-    const ROOT::VecOps::RVec<float>& recoNRG,
-    const ROOT::VecOps::RVec<float>& recoMomX,
-    const ROOT::VecOps::RVec<float>& recoMomY,
-    const ROOT::VecOps::RVec<float>& recoMomZ,
-    const ROOT::VecOps::RVec<unsigned int>& recoCstsBegin,
-    const ROOT::VecOps::RVec<unsigned int>& recoCstsEnd,
-    const ROOT::VecOps::RVec<int>& recoCstIndex,
-#else
-    const ROOT::VecOps::RVec<int>& recoType,
-    const ROOT::VecOps::RVec<float>& recoNRG,
-    const ROOT::VecOps::RVec<float>& recoMomX,
-    const ROOT::VecOps::RVec<float>& recoMomY,
-    const ROOT::VecOps::RVec<float>& recoMomZ,
-    const ROOT::VecOps::RVec<unsigned int>& recoCstsBegin,
-    const ROOT::VecOps::RVec<unsigned int>& recoCstsEnd,
-    const ROOT::VecOps::RVec<int>& recoCstIndex,
 #endif
+    const ROOT::VecOps::RVec<float>& recoNRG,
+    const ROOT::VecOps::RVec<float>& recoMomX,
+    const ROOT::VecOps::RVec<float>& recoMomY,
+    const ROOT::VecOps::RVec<float>& recoMomZ,
+    const ROOT::VecOps::RVec<unsigned int>& recoCstsBegin,
+    const ROOT::VecOps::RVec<unsigned int>& recoCstsEnd,
+    const ROOT::VecOps::RVec<int>& recoCstIndex,
     const ROOT::VecOps::RVec<float>& recoPartMomX,
     const ROOT::VecOps::RVec<float>& recoPartMomY,
     const ROOT::VecOps::RVec<float>& recoPartMomZ,
@@ -205,26 +196,17 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
     const ROOT::VecOps::RVec<unsigned int>& recoPartAssocRec,
     const ROOT::VecOps::RVec<unsigned int>& recoPartAssocSim,
     const ROOT::VecOps::RVec<float>& recoPartAssocWeight,
+    const ROOT::VecOps::RVec<int>& genType,
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-    const ROOT::VecOps::RVec<int>& genType,
     const ROOT::VecOps::RVec<float>& genArea,
-    const ROOT::VecOps::RVec<float>& genNRG,
-    const ROOT::VecOps::RVec<float>& genMomX,
-    const ROOT::VecOps::RVec<float>& genMomY,
-    const ROOT::VecOps::RVec<float>& genMomZ,
-    const ROOT::VecOps::RVec<unsigned int>& genCstsBegin,
-    const ROOT::VecOps::RVec<unsigned int>& genCstsEnd,
-    const ROOT::VecOps::RVec<int>& genPartIndex,
-#else
-    const ROOT::VecOps::RVec<int>& genType,
-    const ROOT::VecOps::RVec<float>& genNRG,
-    const ROOT::VecOps::RVec<float>& genMomX,
-    const ROOT::VecOps::RVec<float>& genMomY,
-    const ROOT::VecOps::RVec<float>& genMomZ,
-    const ROOT::VecOps::RVec<unsigned int>& genCstsBegin,
-    const ROOT::VecOps::RVec<unsigned int>& genCstsEnd,
-    const ROOT::VecOps::RVec<int>& genPartIndex,
 #endif
+    const ROOT::VecOps::RVec<float>& genNRG,
+    const ROOT::VecOps::RVec<float>& genMomX,
+    const ROOT::VecOps::RVec<float>& genMomY,
+    const ROOT::VecOps::RVec<float>& genMomZ,
+    const ROOT::VecOps::RVec<unsigned int>& genCstsBegin,
+    const ROOT::VecOps::RVec<unsigned int>& genCstsEnd,
+    const ROOT::VecOps::RVec<int>& genPartIndex,
     const ROOT::VecOps::RVec<float>& mcMomX,
     const ROOT::VecOps::RVec<float>& mcMomY,
     const ROOT::VecOps::RVec<float>& mcMomZ,
@@ -606,22 +588,19 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
       }
 
   }, {
-#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
     "ReconstructedChargedJets.type",
+#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
     "ReconstructedChargedJets.area",
+#endif
     "ReconstructedChargedJets.energy",
     "ReconstructedChargedJets.momentum.x",
     "ReconstructedChargedJets.momentum.y",
     "ReconstructedChargedJets.momentum.z",
+#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
     "ReconstructedChargedJets.constituents_begin",
     "ReconstructedChargedJets.constituents_end",
     "_ReconstructedChargedJets_constituents.index",
 #else
-    "ReconstructedChargedJets.type",
-    "ReconstructedChargedJets.energy",
-    "ReconstructedChargedJets.momentum.x",
-    "ReconstructedChargedJets.momentum.y",
-    "ReconstructedChargedJets.momentum.z",
     "ReconstructedChargedJets.particles_begin",
     "ReconstructedChargedJets.particles_end",
     "_ReconstructedChargedJets_particles.index",
@@ -635,22 +614,19 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
     "ReconstructedChargedParticleLinks.from",
     "ReconstructedChargedParticleLinks.to",
     "ReconstructedChargedParticleLinks.weight",
-#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
     "GeneratedChargedJets.type",
+#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
     "GeneratedChargedJets.area",
+#endif
     "GeneratedChargedJets.energy",
     "GeneratedChargedJets.momentum.x",
     "GeneratedChargedJets.momentum.y",
     "GeneratedChargedJets.momentum.z",
+#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
     "GeneratedChargedJets.constituents_begin",
     "GeneratedChargedJets.constituents_end",
     "_GeneratedChargedJets_constituents.index",
 #else
-    "GeneratedChargedJets.type",
-    "GeneratedChargedJets.energy",
-    "GeneratedChargedJets.momentum.x",
-    "GeneratedChargedJets.momentum.y",
-    "GeneratedChargedJets.momentum.z",
     "GeneratedChargedJets.particles_begin",
     "GeneratedChargedJets.particles_end",
     "_GeneratedChargedJets_particles.index",
