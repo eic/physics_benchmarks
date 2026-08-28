@@ -44,6 +44,15 @@ calorimeters/test/
 *_ACLiC_linkdef.h
 *_ACLiC_map.in
 
+# ROOT ACLiC compilation artifacts
+*_ACLiC_*
+
+# Backup files
+*.backup
+
+# Log files
+*.log
+
 # input/output files
 input
 results
