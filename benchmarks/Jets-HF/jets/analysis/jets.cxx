@@ -1,15 +1,13 @@
 #include <edm4eic/EDM4eicVersion.h>
 #include <TCanvas.h>
-#include <TChain.h>
-#include <TColor.h>
-#include <TF1.h>
 #include <TFile.h>
 #include <TGraph.h>
 #include <TH1D.h>
 #include <TH2D.h>
+#include <TColor.h>
 #include <TStyle.h>
-#include <TTreeReader.h>
-#include <TTreeReaderArray.h>
+#include <TF1.h>
+#include <ROOT/RNTupleReader.hxx>
 #include <TLegend.h>
 #include <TVector3.h>
 
@@ -19,6 +17,7 @@
 #include "fmt/core.h"
 
 #include "nlohmann/json.hpp"
+#include <fstream>
 
 // Jet Benchmarks
 // Author: B. Page (bpage@bnl.gov)
@@ -50,9 +49,9 @@ int jets(const std::string& config_name)
 
   const bool PRINT = true;
 
-  // Input
-  TChain *mychain = new TChain("events");
-  mychain->Add(rec_file.c_str());
+  // Input - Open RNTuple
+  using ROOT::RNTupleReader;
+  auto ntuple = RNTupleReader::Open("events", rec_file);
 
   const int seabornRed = TColor::GetColor(213, 94, 0);
 
@@ -65,85 +64,83 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   // Output
   //TFile *ofile = TFile::Open("test_24-05-0.hist.root","RECREATE");
 
-  // TTreeReader
-  TTreeReader tree_reader(mychain);
-
+  // RNTuple Views - Get views for all fields once before the event loop
   // Set Delta R Cut
   float DELTARCUT = 0.05;
 
   // Reco Jets
-  TTreeReaderArray<unsigned int> recoType = {tree_reader, "ReconstructedChargedJets.type"};
+  auto viewRecoType = ntuple->GetView<int>("ReconstructedChargedJets.type");
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-  TTreeReaderArray<float> recoArea = {tree_reader, "ReconstructedChargedJets.area"};
+  auto viewRecoArea = ntuple->GetView<float>("ReconstructedChargedJets.area");
 #endif
-  TTreeReaderArray<float> recoNRG = {tree_reader, "ReconstructedChargedJets.energy"};
-  TTreeReaderArray<float> recoMomX = {tree_reader, "ReconstructedChargedJets.momentum.x"};
-  TTreeReaderArray<float> recoMomY = {tree_reader, "ReconstructedChargedJets.momentum.y"};
-  TTreeReaderArray<float> recoMomZ = {tree_reader, "ReconstructedChargedJets.momentum.z"};
+  auto viewRecoNRG = ntuple->GetView<float>("ReconstructedChargedJets.energy");
+  auto viewRecoMomX = ntuple->GetView<float>("ReconstructedChargedJets.momentum.x");
+  auto viewRecoMomY = ntuple->GetView<float>("ReconstructedChargedJets.momentum.y");
+  auto viewRecoMomZ = ntuple->GetView<float>("ReconstructedChargedJets.momentum.z");
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-  TTreeReaderArray<unsigned int> recoCstsBegin = {tree_reader, "ReconstructedChargedJets.constituents_begin"};
-  TTreeReaderArray<unsigned int> recoCstsEnd = {tree_reader, "ReconstructedChargedJets.constituents_end"};
+  auto viewRecoCstsBegin = ntuple->GetView<unsigned int>("ReconstructedChargedJets.constituents_begin");
+  auto viewRecoCstsEnd = ntuple->GetView<unsigned int>("ReconstructedChargedJets.constituents_end");
 #else
-  TTreeReaderArray<unsigned int> recoCstsBegin = {tree_reader, "ReconstructedChargedJets.particles_begin"};
-  TTreeReaderArray<unsigned int> recoCstsEnd = {tree_reader, "ReconstructedChargedJets.particles_end"};
+  auto viewRecoCstsBegin = ntuple->GetView<unsigned int>("ReconstructedChargedJets.particles_begin");
+  auto viewRecoCstsEnd = ntuple->GetView<unsigned int>("ReconstructedChargedJets.particles_end");
 #endif
 
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-  TTreeReaderArray<int> recoCstIndex = {tree_reader, "_ReconstructedChargedJets_constituents.index"};
+  auto viewRecoCstIndex = ntuple->GetView<int>("_ReconstructedChargedJets_constituents.index");
 #else
-  TTreeReaderArray<int> recoCstIndex = {tree_reader, "_ReconstructedChargedJets_particles.index"};
+  auto viewRecoCstIndex = ntuple->GetView<int>("_ReconstructedChargedJets_particles.index");
 #endif
 
   // Reconstructed Particles
-  TTreeReaderArray<float> recoPartMomX = {tree_reader, "ReconstructedChargedParticles.momentum.x"};
-  TTreeReaderArray<float> recoPartMomY = {tree_reader, "ReconstructedChargedParticles.momentum.y"};
-  TTreeReaderArray<float> recoPartMomZ = {tree_reader, "ReconstructedChargedParticles.momentum.z"};
-  TTreeReaderArray<float> recoPartM = {tree_reader, "ReconstructedChargedParticles.mass"};
-  TTreeReaderArray<int> recoPartPDG = {tree_reader, "ReconstructedChargedParticles.PDG"};
-  TTreeReaderArray<float> recoPartNRG = {tree_reader, "ReconstructedChargedParticles.energy"};
+  auto viewRecoPartMomX = ntuple->GetView<float>("ReconstructedChargedParticles.momentum.x");
+  auto viewRecoPartMomY = ntuple->GetView<float>("ReconstructedChargedParticles.momentum.y");
+  auto viewRecoPartMomZ = ntuple->GetView<float>("ReconstructedChargedParticles.momentum.z");
+  auto viewRecoPartM = ntuple->GetView<float>("ReconstructedChargedParticles.mass");
+  auto viewRecoPartPDG = ntuple->GetView<int>("ReconstructedChargedParticles.PDG");
+  auto viewRecoPartNRG = ntuple->GetView<float>("ReconstructedChargedParticles.energy");
 
-  TTreeReaderArray<unsigned int> recoPartAssocRec = {tree_reader, "_ReconstructedChargedParticleLinks_from.index"}; // Reco <-> MCParticle
-  TTreeReaderArray<unsigned int> recoPartAssocSim = {tree_reader, "_ReconstructedChargedParticleLinks_to.index"};
-  TTreeReaderArray<float> recoPartAssocWeight = {tree_reader, "ReconstructedChargedParticleLinks.weight"};
+  auto viewRecoPartAssocRec = ntuple->GetView<unsigned int>("ReconstructedChargedParticleLinks.from"); // Reco <-> MCParticle
+  auto viewRecoPartAssocSim = ntuple->GetView<unsigned int>("ReconstructedChargedParticleLinks.to");
+  auto viewRecoPartAssocWeight = ntuple->GetView<float>("ReconstructedChargedParticleLinks.weight");
 
   // Generated Jets
-  TTreeReaderArray<unsigned int> genType = {tree_reader, "GeneratedChargedJets.type"};
+  auto viewGenType = ntuple->GetView<int>("GeneratedChargedJets.type");
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-  TTreeReaderArray<float> genArea = {tree_reader, "GeneratedChargedJets.area"};
+  auto viewGenArea = ntuple->GetView<float>("GeneratedChargedJets.area");
 #endif
-  TTreeReaderArray<float> genNRG = {tree_reader, "GeneratedChargedJets.energy"};
-  TTreeReaderArray<float> genMomX = {tree_reader, "GeneratedChargedJets.momentum.x"};
-  TTreeReaderArray<float> genMomY = {tree_reader, "GeneratedChargedJets.momentum.y"};
-  TTreeReaderArray<float> genMomZ = {tree_reader, "GeneratedChargedJets.momentum.z"};
+  auto viewGenNRG = ntuple->GetView<float>("GeneratedChargedJets.energy");
+  auto viewGenMomX = ntuple->GetView<float>("GeneratedChargedJets.momentum.x");
+  auto viewGenMomY = ntuple->GetView<float>("GeneratedChargedJets.momentum.y");
+  auto viewGenMomZ = ntuple->GetView<float>("GeneratedChargedJets.momentum.z");
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-  TTreeReaderArray<unsigned int> genCstsBegin = {tree_reader, "GeneratedChargedJets.constituents_begin"};
-  TTreeReaderArray<unsigned int> genCstsEnd = {tree_reader, "GeneratedChargedJets.constituents_end"};
+  auto viewGenCstsBegin = ntuple->GetView<unsigned int>("GeneratedChargedJets.constituents_begin");
+  auto viewGenCstsEnd = ntuple->GetView<unsigned int>("GeneratedChargedJets.constituents_end");
 #else
-  TTreeReaderArray<unsigned int> genCstsBegin = {tree_reader, "GeneratedChargedJets.particles_begin"};
-  TTreeReaderArray<unsigned int> genCstsEnd = {tree_reader, "GeneratedChargedJets.particles_end"};
+  auto viewGenCstsBegin = ntuple->GetView<unsigned int>("GeneratedChargedJets.particles_begin");
+  auto viewGenCstsEnd = ntuple->GetView<unsigned int>("GeneratedChargedJets.particles_end");
 #endif
 
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-  TTreeReaderArray<int> genPartIndex = {tree_reader, "_GeneratedChargedJets_constituents.index"};
+  auto viewGenPartIndex = ntuple->GetView<int>("_GeneratedChargedJets_constituents.index");
 #else
-  TTreeReaderArray<int> genPartIndex = {tree_reader, "_GeneratedChargedJets_particles.index"};
+  auto viewGenPartIndex = ntuple->GetView<int>("_GeneratedChargedJets_particles.index");
 #endif
-  //TTreeReaderArray<int> genChargedIndex = {tree_reader, "GeneratedChargedParticles_objIdx.index"};
+  //auto viewGenChargedIndex = ntuple->GetView<int>("GeneratedChargedParticles_objIdx.index");
   
   // MC
-  //TTreeReaderArray<int> mcGenStat = {tree_reader, "MCParticles.generatorStatus"};
-  TTreeReaderArray<float> mcMomX = {tree_reader, "GeneratedParticles.momentum.x"};
-  TTreeReaderArray<float> mcMomY = {tree_reader, "GeneratedParticles.momentum.y"};
-  TTreeReaderArray<float> mcMomZ = {tree_reader, "GeneratedParticles.momentum.z"};
-  TTreeReaderArray<float> mcM = {tree_reader, "GeneratedParticles.mass"};
-  TTreeReaderArray<int> pdg = {tree_reader, "GeneratedParticles.PDG"};
+  //auto viewMcGenStat = ntuple->GetView<int>("MCParticles.generatorStatus");
+  auto viewMcMomX = ntuple->GetView<float>("GeneratedParticles.momentum.x");
+  auto viewMcMomY = ntuple->GetView<float>("GeneratedParticles.momentum.y");
+  auto viewMcMomZ = ntuple->GetView<float>("GeneratedParticles.momentum.z");
+  auto viewMcM = ntuple->GetView<float>("GeneratedParticles.mass");
+  auto viewPdg = ntuple->GetView<int>("GeneratedParticles.PDG");
 
-  TTreeReaderArray<int> mcGenStat = {tree_reader, "MCParticles.generatorStatus"};
-  TTreeReaderArray<double> mcMomXPart = {tree_reader, "MCParticles.momentum.x"};
-  TTreeReaderArray<double> mcMomYPart = {tree_reader, "MCParticles.momentum.y"};
-  TTreeReaderArray<double> mcMomZPart = {tree_reader, "MCParticles.momentum.z"};
-  TTreeReaderArray<double> mcMPart = {tree_reader, "MCParticles.mass"};
-  TTreeReaderArray<int> pdgMCPart = {tree_reader, "MCParticles.PDG"};
+  auto viewMcGenStat = ntuple->GetView<int>("MCParticles.generatorStatus");
+  auto viewMcMomXPart = ntuple->GetView<double>("MCParticles.momentum.x");
+  auto viewMcMomYPart = ntuple->GetView<double>("MCParticles.momentum.y");
+  auto viewMcMomZPart = ntuple->GetView<double>("MCParticles.momentum.z");
+  auto viewMcMPart = ntuple->GetView<double>("MCParticles.mass");
+  auto viewPdgMCPart = ntuple->GetView<int>("MCParticles.PDG");
 
   // Define Histograms
   TH1D *counter = new TH1D("counter","",10,0.,10.);
@@ -244,18 +241,65 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 
   // Loop Through Events
   int NEVENTS = 0;
-  while(tree_reader.Next()) {
+  for (auto entryId : *ntuple) {
 
     if(NEVENTS%10000 == 0) cout << "Events Processed: " << NEVENTS << endl;
 
     counter->Fill(0);
+
+    // Get field data for this event (access views for current entry)
+    auto recoType = viewRecoType(entryId);
+#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
+    auto recoArea = viewRecoArea(entryId);
+#endif
+    auto recoNRG = viewRecoNRG(entryId);
+    auto recoMomX = viewRecoMomX(entryId);
+    auto recoMomY = viewRecoMomY(entryId);
+    auto recoMomZ = viewRecoMomZ(entryId);
+    auto recoCstsBegin = viewRecoCstsBegin(entryId);
+    auto recoCstsEnd = viewRecoCstsEnd(entryId);
+    auto recoCstIndex = viewRecoCstIndex(entryId);
+
+    auto recoPartMomX = viewRecoPartMomX(entryId);
+    auto recoPartMomY = viewRecoPartMomY(entryId);
+    auto recoPartMomZ = viewRecoPartMomZ(entryId);
+    auto recoPartM = viewRecoPartM(entryId);
+    auto recoPartPDG = viewRecoPartPDG(entryId);
+    auto recoPartNRG = viewRecoPartNRG(entryId);
+    auto recoPartAssocRec = viewRecoPartAssocRec(entryId);
+    auto recoPartAssocSim = viewRecoPartAssocSim(entryId);
+    auto recoPartAssocWeight = viewRecoPartAssocWeight(entryId);
+
+    auto genType = viewGenType(entryId);
+#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
+    auto genArea = viewGenArea(entryId);
+#endif
+    auto genNRG = viewGenNRG(entryId);
+    auto genMomX = viewGenMomX(entryId);
+    auto genMomY = viewGenMomY(entryId);
+    auto genMomZ = viewGenMomZ(entryId);
+    auto genCstsBegin = viewGenCstsBegin(entryId);
+    auto genCstsEnd = viewGenCstsEnd(entryId);
+    auto genPartIndex = viewGenPartIndex(entryId);
+
+    auto mcMomX = viewMcMomX(entryId);
+    auto mcMomY = viewMcMomY(entryId);
+    auto mcMomZ = viewMcMomZ(entryId);
+    auto mcM = viewMcM(entryId);
+    auto pdg = viewPdg(entryId);
+    auto mcGenStat = viewMcGenStat(entryId);
+    auto mcMomXPart = viewMcMomXPart(entryId);
+    auto mcMomYPart = viewMcMomYPart(entryId);
+    auto mcMomZPart = viewMcMomZPart(entryId);
+    auto mcMPart = viewMcMPart(entryId);
+    auto pdgMCPart = viewPdgMCPart(entryId);
 
     //////////////////////////////////////////////////////////////////////////
     //////////////////////  Analyze Reconstructed Jets  //////////////////////
     //////////////////////////////////////////////////////////////////////////
     int numRecoChargedJets = 0;
     int numRecoChargedJetsNoElec = 0;
-    for(unsigned int i=0; i<recoType.GetSize(); i++)
+    for(size_t i=0; i<recoType.size(); i++)
       {
 	TVector3 jetMom(recoMomX[i],recoMomY[i],recoMomZ[i]);
 
@@ -284,8 +328,8 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	  {
 	    int elecIndex = -1;
 	    double elecIndexWeight = -1.0;
-	    unsigned int chargePartIndex = recoCstIndex[m]; // ReconstructedChargedParticle Index for m'th Jet Component
-	    for(unsigned int n=0; n<recoPartAssocRec.GetSize(); n++) // Loop Over All ReconstructedChargedParticleLinks
+	    int chargePartIndex = recoCstIndex[m]; // ReconstructedChargedParticle Index for m'th Jet Component
+	    for(size_t n=0; n<recoPartAssocRec.size(); n++) // Loop Over All ReconstructedChargedParticleLinks
 	      {
 		if(recoPartAssocRec[n] == chargePartIndex) // Select Entry Matching the ReconstructedChargedParticle Index
 		  {
@@ -374,7 +418,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
     //////////////////////////////////////////////////////////////////////////
     int numGenChargedJets = 0;
     int numGenChargedJetsNoElec = 0;
-    for(unsigned int i=0; i<genType.GetSize(); i++)
+    for(size_t i=0; i<genType.size(); i++)
       {
 	TVector3 jetMom(genMomX[i],genMomY[i],genMomZ[i]);
 
@@ -477,7 +521,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
     //////////////////////////////////////////////////////////////////////////
     /////////////////////////////  Matched Jets  /////////////////////////////
     //////////////////////////////////////////////////////////////////////////
-    for(unsigned int i=0; i<genType.GetSize(); i++)
+    for(size_t i=0; i<genType.size(); i++)
       {
 	TVector3 jetMom(genMomX[i],genMomY[i],genMomZ[i]);
 
@@ -500,7 +544,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	// Find Matching Reconstructed Jet
 	double minDeltaR = 999.;
 	int minIndex = -1;
-	for(unsigned int j=0; j<recoType.GetSize(); j++)
+	for(size_t j=0; j<recoType.size(); j++)
 	  {
 	    TVector3 recoMom(recoMomX[j],recoMomY[j],recoMomZ[j]);
 
@@ -521,7 +565,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	if(minIndex > -1)
 	  {
 	    TVector3 recoMatchMom(recoMomX[minIndex],recoMomY[minIndex],recoMomZ[minIndex]);
-	    for(unsigned int j=0; j<genType.GetSize(); j++)
+	    for(size_t j=0; j<genType.size(); j++)
 	      {
 		TVector3 genMom(genMomX[j],genMomY[j],genMomZ[j]);
 		
@@ -1482,7 +1526,7 @@ legend->Draw();
   if(PRINT) c43->Print((results_path+"/matchedJetScaleResolutionSummary.png").c_str()); // Matched jet JER/JES summary
     delete c43;
 
-delete mychain;
+  // ntuple is automatically cleaned up by unique_ptr
 
   return 0;
 }
