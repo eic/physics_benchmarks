@@ -445,7 +445,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	bool noElectron = true;
 	for(unsigned int m=genCstsBegin.at(i); m<genCstsEnd.at(i); m++)
 	  {
-	    if(pdg[genPartIndex[m]] == 11)
+	    if(pdg.at(genPartIndex.at(m)) == 11)
 	      noElectron = false;
 	  }
 
@@ -455,10 +455,10 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	      {
 		// genCstsBegin and genCstsEnd specify the entries from _GeneratedChargedJets_particles.index that make up the jet
 		// _GeneratedChargedJets_particles.index stores the GeneratedChargedParticles index of the jet constituent
-		double mX = mcMomX[genPartIndex[j]];
-		double mY = mcMomY[genPartIndex[j]];
-		double mZ = mcMomZ[genPartIndex[j]];
-		double mM = mcM[genPartIndex[j]];
+		double mX = mcMomX.at(genPartIndex.at(j));
+		double mY = mcMomY.at(genPartIndex.at(j));
+		double mZ = mcMomZ.at(genPartIndex.at(j));
+		double mM = mcM.at(genPartIndex.at(j));
 		//double tmpE = TMath::Sqrt(mX*mX + mY*mY + mZ*mZ + mM*mM);
 		
 		TVector3 partMom(mX,mY,mZ);
@@ -481,9 +481,9 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 		  {
 		    for(unsigned int k=j+1; k<genCstsEnd.at(i); k++)
 		      {
-			double mXB = mcMomX[genPartIndex[k]];
-			double mYB = mcMomY[genPartIndex[k]];
-			double mZB = mcMomZ[genPartIndex[k]];
+			double mXB = mcMomX.at(genPartIndex.at(k));
+			double mYB = mcMomY.at(genPartIndex.at(k));
+			double mZB = mcMomZ.at(genPartIndex.at(k));
 
 			TVector3 partMomB(mXB,mYB,mZB);
 
@@ -536,7 +536,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	// Find Jets with Electrons
 	for(unsigned int m=genCstsBegin.at(i); m<genCstsEnd.at(i); m++)
 	  {
-	    if(pdg[genPartIndex[m]] == 11)
+	    if(pdg.at(genPartIndex.at(m)) == 11)
 	      hasElectron = true;
 	  }
 	//if(hasElectron) continue;
