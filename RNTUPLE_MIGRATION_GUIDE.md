@@ -442,12 +442,96 @@ for (const auto& field : ntuple->GetDescriptor().GetFieldRange()) {
 }
 ```
 
-### RDataFrame Alternative
+### podio DataFrame API (Recommended)
 
-If the migration to native RNTupleReader is complex, consider using RDataFrame instead, which works with both TTree and RNTuple:
+**The recommended approach** for EDM4hep/EDM4eic analysis is using podio's DataFrame API, which provides format-agnostic access and handles podio collections natively:
 
 ```cpp
-// Works for both TTree and RNTuple
+#include <podio/DataSource.h>
+#include <ROOT/RDataFrame.hxx>
+
+int analyze(const std::string& rec_file) {
+    // Automatically detects TTree vs RNTuple format
+    auto df = podio::CreateDataFrame(rec_file);
+    
+    // Use standard RDataFrame operations
+    // Collections are accessible with dot notation: "Collection.field"
+    
+    // Example: For complex per-event logic, use Foreach
+    df.Foreach([&histogram1, &histogram2](
+        ROOT::VecOps::RVec<float> jet_energy,
+        ROOT::VecOps::RVec<float> jet_px,
+        ROOT::VecOps::RVec<float> jet_py
+    ) {
+        // Your analysis logic with full control
+        for (size_t i = 0; i < jet_energy.size(); i++) {
+            float energy = jet_energy[i];
+            float pt = sqrt(jet_px[i]*jet_px[i] + jet_py[i]*jet_py[i]);
+            histogram1->Fill(energy);
+            histogram2->Fill(pt);
+        }
+    }, {
+        "ReconstructedChargedJets.energy",
+        "ReconstructedChargedJets.momentum.x",
+        "ReconstructedChargedJets.momentum.y"
+    });
+    
+    return 0;
+}
+```
+
+**Advantages:**
+- ✅ Format-agnostic: Works with `.root` (TTree) and `.rnt.root` (RNTuple) transparently
+- ✅ Uses podio's official API for EDM4hep/EDM4eic data
+- ✅ No manual view creation or error handling needed
+- ✅ Cleaner initialization code
+- ✅ Enables parallelization with `ROOT::EnableImplicitMT()`
+- ✅ Perfect for complex analysis with nested constituent loops
+
+**When to use `.Foreach()` vs pure declarative style:**
+- Use `.Foreach()` for complex per-event logic (constituent loops, jet matching, multi-histogram filling)
+- Use `.Define()` and `.Filter()` for simple transformations and cuts
+- See `benchmarks/Jets-HF/jets/analysis/jets.cxx` for a complete real-world example
+
+**Migration from RNTupleReader to podio::CreateDataFrame:**
+
+```cpp
+// Before (RNTupleReader)
+#include <ROOT/RNTupleReader.hxx>
+
+auto ntuple = RNTupleReader::Open("events", rec_file);
+auto viewEnergy = ntuple->GetView<float>("ReconstructedChargedJets.energy");
+auto viewMomX = ntuple->GetView<float>("ReconstructedChargedJets.momentum.x");
+
+for (auto entryId : *ntuple) {
+    auto energy = viewEnergy(entryId);
+    auto momx = viewMomX(entryId);
+    // ... process
+}
+
+// After (podio::CreateDataFrame)
+#include <podio/DataSource.h>
+#include <ROOT/RDataFrame.hxx>
+
+auto df = podio::CreateDataFrame(rec_file);
+
+df.Foreach([&histograms](
+    ROOT::VecOps::RVec<float> energy,
+    ROOT::VecOps::RVec<float> momx
+) {
+    // Same processing logic
+}, {
+    "ReconstructedChargedJets.energy",
+    "ReconstructedChargedJets.momentum.x"
+});
+```
+
+### Plain RDataFrame Alternative
+
+If podio DataFrame is not available, you can use plain RDataFrame which also works with both TTree and RNTuple:
+
+```cpp
+// Works for both TTree and RNTuple (but less podio-aware)
 ROOT::RDataFrame df("events", rec_file);
 
 auto df_filtered = df.Filter("ReconstructedChargedJets.energy.size() > 0")
