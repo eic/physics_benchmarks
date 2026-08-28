@@ -16,9 +16,11 @@
 #include "fmt/core.h"
 
 #include "nlohmann/json.hpp"
-#include <fstream>
-#include <vector>
+#include <atomic>
 #include <cmath>
+#include <fstream>
+#include <string>
+#include <vector>
 
 // Jet Benchmarks
 // Author: B. Page (bpage@bnl.gov)
