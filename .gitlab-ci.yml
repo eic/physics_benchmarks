@@ -127,7 +127,8 @@ include:
   - local: 'benchmarks/Exclusive-Diffraction-Tagging/tcs/config.yml'
   - local: 'benchmarks/Exclusive-Diffraction-Tagging/u_omega/config.yml'
   - local: 'benchmarks/Inclusive/dis/config.yml'
-
+  - local: 'benchmarks/Jets-HF/jets/config.yml'
+ 
 summary:
   stage: finish
   needs:
@@ -135,6 +136,7 @@ summary:
     - "demp:results"
     - "dis:results"
     - "dvcs:results"
+    - "jets:results"
     - "tcs:results"
     - "u_omega:results"
   script:
