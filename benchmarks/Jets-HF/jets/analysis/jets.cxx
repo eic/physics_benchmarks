@@ -7,15 +7,18 @@
 #include <TColor.h>
 #include <TStyle.h>
 #include <TF1.h>
-#include <ROOT/RNTupleReader.hxx>
 #include <TLegend.h>
 #include <TVector3.h>
+#include <ROOT/RDataFrame.hxx>
+#include <podio/DataSource.h>
 
 #include "fmt/color.h"
 #include "fmt/core.h"
 
 #include "nlohmann/json.hpp"
 #include <fstream>
+#include <vector>
+#include <cmath>
 
 // Jet Benchmarks
 // Author: B. Page (bpage@bnl.gov)
@@ -47,13 +50,9 @@ int jets(const std::string& config_name)
 
   const bool PRINT = true;
 
-  // Input - Open RNTuple
-  using ROOT::RNTupleReader;
-  auto ntuple = RNTupleReader::Open("events", rec_file);
-  if (!ntuple) {
-    fmt::print(stderr, "ERROR: Failed to open RNTuple 'events' from file: {}\n", rec_file);
-    return 1;
-  }
+  // Input - Create RDataFrame using podio
+  fmt::print(" - Creating RDataFrame from file...\n");
+  auto df = podio::CreateDataFrame(rec_file);
 
   const int seabornRed = TColor::GetColor(213, 94, 0);
 
@@ -66,92 +65,8 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   // Output
   //TFile *ofile = TFile::Open("test_24-05-0.hist.root","RECREATE");
 
-  // RNTuple Views - Get views for all fields once before the event loop
   // Set Delta R Cut
   float DELTARCUT = 0.05;
-
-  // Wrap view creation in try-catch to catch missing fields
-  try {
-  // Reco Jets
-  auto viewRecoType = ntuple->GetView<int>("ReconstructedChargedJets.type");
-#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-  auto viewRecoArea = ntuple->GetView<float>("ReconstructedChargedJets.area");
-#endif
-  auto viewRecoNRG = ntuple->GetView<float>("ReconstructedChargedJets.energy");
-  auto viewRecoMomX = ntuple->GetView<float>("ReconstructedChargedJets.momentum.x");
-  auto viewRecoMomY = ntuple->GetView<float>("ReconstructedChargedJets.momentum.y");
-  auto viewRecoMomZ = ntuple->GetView<float>("ReconstructedChargedJets.momentum.z");
-#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-  auto viewRecoCstsBegin = ntuple->GetView<unsigned int>("ReconstructedChargedJets.constituents_begin");
-  auto viewRecoCstsEnd = ntuple->GetView<unsigned int>("ReconstructedChargedJets.constituents_end");
-#else
-  auto viewRecoCstsBegin = ntuple->GetView<unsigned int>("ReconstructedChargedJets.particles_begin");
-  auto viewRecoCstsEnd = ntuple->GetView<unsigned int>("ReconstructedChargedJets.particles_end");
-#endif
-
-#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-  auto viewRecoCstIndex = ntuple->GetView<int>("_ReconstructedChargedJets_constituents.index");
-#else
-  auto viewRecoCstIndex = ntuple->GetView<int>("_ReconstructedChargedJets_particles.index");
-#endif
-
-  // Reconstructed Particles
-  auto viewRecoPartMomX = ntuple->GetView<float>("ReconstructedChargedParticles.momentum.x");
-  auto viewRecoPartMomY = ntuple->GetView<float>("ReconstructedChargedParticles.momentum.y");
-  auto viewRecoPartMomZ = ntuple->GetView<float>("ReconstructedChargedParticles.momentum.z");
-  auto viewRecoPartM = ntuple->GetView<float>("ReconstructedChargedParticles.mass");
-  auto viewRecoPartPDG = ntuple->GetView<int>("ReconstructedChargedParticles.PDG");
-  auto viewRecoPartNRG = ntuple->GetView<float>("ReconstructedChargedParticles.energy");
-
-  auto viewRecoPartAssocRec = ntuple->GetView<unsigned int>("ReconstructedChargedParticleLinks.from"); // Reco <-> MCParticle
-  auto viewRecoPartAssocSim = ntuple->GetView<unsigned int>("ReconstructedChargedParticleLinks.to");
-  auto viewRecoPartAssocWeight = ntuple->GetView<float>("ReconstructedChargedParticleLinks.weight");
-
-  // Generated Jets
-  auto viewGenType = ntuple->GetView<int>("GeneratedChargedJets.type");
-#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-  auto viewGenArea = ntuple->GetView<float>("GeneratedChargedJets.area");
-#endif
-  auto viewGenNRG = ntuple->GetView<float>("GeneratedChargedJets.energy");
-  auto viewGenMomX = ntuple->GetView<float>("GeneratedChargedJets.momentum.x");
-  auto viewGenMomY = ntuple->GetView<float>("GeneratedChargedJets.momentum.y");
-  auto viewGenMomZ = ntuple->GetView<float>("GeneratedChargedJets.momentum.z");
-#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-  auto viewGenCstsBegin = ntuple->GetView<unsigned int>("GeneratedChargedJets.constituents_begin");
-  auto viewGenCstsEnd = ntuple->GetView<unsigned int>("GeneratedChargedJets.constituents_end");
-#else
-  auto viewGenCstsBegin = ntuple->GetView<unsigned int>("GeneratedChargedJets.particles_begin");
-  auto viewGenCstsEnd = ntuple->GetView<unsigned int>("GeneratedChargedJets.particles_end");
-#endif
-
-#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-  auto viewGenPartIndex = ntuple->GetView<int>("_GeneratedChargedJets_constituents.index");
-#else
-  auto viewGenPartIndex = ntuple->GetView<int>("_GeneratedChargedJets_particles.index");
-#endif
-  //auto viewGenChargedIndex = ntuple->GetView<int>("GeneratedChargedParticles_objIdx.index");
-  
-  // MC
-  //auto viewMcGenStat = ntuple->GetView<int>("MCParticles.generatorStatus");
-  auto viewMcMomX = ntuple->GetView<float>("GeneratedParticles.momentum.x");
-  auto viewMcMomY = ntuple->GetView<float>("GeneratedParticles.momentum.y");
-  auto viewMcMomZ = ntuple->GetView<float>("GeneratedParticles.momentum.z");
-  auto viewMcM = ntuple->GetView<float>("GeneratedParticles.mass");
-  auto viewPdg = ntuple->GetView<int>("GeneratedParticles.PDG");
-
-  auto viewMcGenStat = ntuple->GetView<int>("MCParticles.generatorStatus");
-  auto viewMcMomXPart = ntuple->GetView<double>("MCParticles.momentum.x");
-  auto viewMcMomYPart = ntuple->GetView<double>("MCParticles.momentum.y");
-  auto viewMcMomZPart = ntuple->GetView<double>("MCParticles.momentum.z");
-  auto viewMcMPart = ntuple->GetView<double>("MCParticles.mass");
-  auto viewPdgMCPart = ntuple->GetView<int>("MCParticles.PDG");
-
-  } catch (const std::exception& e) {
-    fmt::print(stderr, "ERROR: Failed to get RNTuple view - missing or invalid field: {}\n", e.what());
-    fmt::print(stderr, "This usually means the input file is missing required collections.\n");
-    fmt::print(stderr, "Ensure eicrecon was run with -Ppodio:output_backend=rntuple\n");
-    return 1;
-  }
 
   // Define Histograms
   TH1D *counter = new TH1D("counter","",10,0.,10.);
@@ -250,60 +165,88 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   TH2D *jetResVsEPosEtaNoDupHist = new TH2D("jetResVsEPosEtaNoDup","",20,0.,100.,10000,-10.,10.);
 
 
-  // Loop Through Events
-  int NEVENTS = 0;
-  for (auto entryId : *ntuple) {
+  // Process events using RDataFrame
+  std::atomic<int> NEVENTS{0};
+  
+  // Collection names we need
+  std::vector<std::string> collections = {
+    "ReconstructedChargedJets",
+    "ReconstructedChargedParticles", 
+    "ReconstructedChargedParticleLinks",
+    "GeneratedChargedJets",
+    "GeneratedParticles",
+    "MCParticles"
+  };
 
-    if(NEVENTS%10000 == 0) cout << "Events Processed: " << NEVENTS << endl;
+  fmt::print(" - Processing events with RDataFrame...\n");
+  
+  // Use Foreach to process each event with the existing analysis logic
+  df.Foreach([&](
+#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
+    ROOT::VecOps::RVec<int> recoType,
+    ROOT::VecOps::RVec<float> recoArea,
+    ROOT::VecOps::RVec<float> recoNRG,
+    ROOT::VecOps::RVec<float> recoMomX,
+    ROOT::VecOps::RVec<float> recoMomY,
+    ROOT::VecOps::RVec<float> recoMomZ,
+    ROOT::VecOps::RVec<unsigned int> recoCstsBegin,
+    ROOT::VecOps::RVec<unsigned int> recoCstsEnd,
+    ROOT::VecOps::RVec<int> recoCstIndex,
+#else
+    ROOT::VecOps::RVec<int> recoType,
+    ROOT::VecOps::RVec<float> recoNRG,
+    ROOT::VecOps::RVec<float> recoMomX,
+    ROOT::VecOps::RVec<float> recoMomY,
+    ROOT::VecOps::RVec<float> recoMomZ,
+    ROOT::VecOps::RVec<unsigned int> recoCstsBegin,
+    ROOT::VecOps::RVec<unsigned int> recoCstsEnd,
+    ROOT::VecOps::RVec<int> recoCstIndex,
+#endif
+    ROOT::VecOps::RVec<float> recoPartMomX,
+    ROOT::VecOps::RVec<float> recoPartMomY,
+    ROOT::VecOps::RVec<float> recoPartMomZ,
+    ROOT::VecOps::RVec<float> recoPartM,
+    ROOT::VecOps::RVec<int> recoPartPDG,
+    ROOT::VecOps::RVec<float> recoPartNRG,
+    ROOT::VecOps::RVec<unsigned int> recoPartAssocRec,
+    ROOT::VecOps::RVec<unsigned int> recoPartAssocSim,
+    ROOT::VecOps::RVec<float> recoPartAssocWeight,
+#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
+    ROOT::VecOps::RVec<int> genType,
+    ROOT::VecOps::RVec<float> genArea,
+    ROOT::VecOps::RVec<float> genNRG,
+    ROOT::VecOps::RVec<float> genMomX,
+    ROOT::VecOps::RVec<float> genMomY,
+    ROOT::VecOps::RVec<float> genMomZ,
+    ROOT::VecOps::RVec<unsigned int> genCstsBegin,
+    ROOT::VecOps::RVec<unsigned int> genCstsEnd,
+    ROOT::VecOps::RVec<int> genPartIndex,
+#else
+    ROOT::VecOps::RVec<int> genType,
+    ROOT::VecOps::RVec<float> genNRG,
+    ROOT::VecOps::RVec<float> genMomX,
+    ROOT::VecOps::RVec<float> genMomY,
+    ROOT::VecOps::RVec<float> genMomZ,
+    ROOT::VecOps::RVec<unsigned int> genCstsBegin,
+    ROOT::VecOps::RVec<unsigned int> genCstsEnd,
+    ROOT::VecOps::RVec<int> genPartIndex,
+#endif
+    ROOT::VecOps::RVec<float> mcMomX,
+    ROOT::VecOps::RVec<float> mcMomY,
+    ROOT::VecOps::RVec<float> mcMomZ,
+    ROOT::VecOps::RVec<float> mcM,
+    ROOT::VecOps::RVec<int> pdg,
+    ROOT::VecOps::RVec<int> mcGenStat,
+    ROOT::VecOps::RVec<double> mcMomXPart,
+    ROOT::VecOps::RVec<double> mcMomYPart,
+    ROOT::VecOps::RVec<double> mcMomZPart,
+    ROOT::VecOps::RVec<double> mcMPart,
+    ROOT::VecOps::RVec<int> pdgMCPart
+  ) {
+    int nevt = NEVENTS.fetch_add(1);
+    if(nevt % 10000 == 0) std::cout << "Events Processed: " << nevt << std::endl;
 
     counter->Fill(0);
-
-    // Get field data for this event (access views for current entry)
-    auto recoType = viewRecoType(entryId);
-#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-    auto recoArea = viewRecoArea(entryId);
-#endif
-    auto recoNRG = viewRecoNRG(entryId);
-    auto recoMomX = viewRecoMomX(entryId);
-    auto recoMomY = viewRecoMomY(entryId);
-    auto recoMomZ = viewRecoMomZ(entryId);
-    auto recoCstsBegin = viewRecoCstsBegin(entryId);
-    auto recoCstsEnd = viewRecoCstsEnd(entryId);
-    auto recoCstIndex = viewRecoCstIndex(entryId);
-
-    auto recoPartMomX = viewRecoPartMomX(entryId);
-    auto recoPartMomY = viewRecoPartMomY(entryId);
-    auto recoPartMomZ = viewRecoPartMomZ(entryId);
-    auto recoPartM = viewRecoPartM(entryId);
-    auto recoPartPDG = viewRecoPartPDG(entryId);
-    auto recoPartNRG = viewRecoPartNRG(entryId);
-    auto recoPartAssocRec = viewRecoPartAssocRec(entryId);
-    auto recoPartAssocSim = viewRecoPartAssocSim(entryId);
-    auto recoPartAssocWeight = viewRecoPartAssocWeight(entryId);
-
-    auto genType = viewGenType(entryId);
-#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-    auto genArea = viewGenArea(entryId);
-#endif
-    auto genNRG = viewGenNRG(entryId);
-    auto genMomX = viewGenMomX(entryId);
-    auto genMomY = viewGenMomY(entryId);
-    auto genMomZ = viewGenMomZ(entryId);
-    auto genCstsBegin = viewGenCstsBegin(entryId);
-    auto genCstsEnd = viewGenCstsEnd(entryId);
-    auto genPartIndex = viewGenPartIndex(entryId);
-
-    auto mcMomX = viewMcMomX(entryId);
-    auto mcMomY = viewMcMomY(entryId);
-    auto mcMomZ = viewMcMomZ(entryId);
-    auto mcM = viewMcM(entryId);
-    auto pdg = viewPdg(entryId);
-    auto mcGenStat = viewMcGenStat(entryId);
-    auto mcMomXPart = viewMcMomXPart(entryId);
-    auto mcMomYPart = viewMcMomYPart(entryId);
-    auto mcMomZPart = viewMcMomZPart(entryId);
-    auto mcMPart = viewMcMPart(entryId);
-    auto pdgMCPart = viewPdgMCPart(entryId);
 
     //////////////////////////////////////////////////////////////////////////
     //////////////////////  Analyze Reconstructed Jets  //////////////////////
@@ -668,8 +611,70 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	  }
       }
 
-    NEVENTS++;
-  }
+  }, {
+#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
+    "ReconstructedChargedJets.type",
+    "ReconstructedChargedJets.area",
+    "ReconstructedChargedJets.energy",
+    "ReconstructedChargedJets.momentum.x",
+    "ReconstructedChargedJets.momentum.y",
+    "ReconstructedChargedJets.momentum.z",
+    "ReconstructedChargedJets.constituents_begin",
+    "ReconstructedChargedJets.constituents_end",
+    "_ReconstructedChargedJets_constituents.index",
+#else
+    "ReconstructedChargedJets.type",
+    "ReconstructedChargedJets.energy",
+    "ReconstructedChargedJets.momentum.x",
+    "ReconstructedChargedJets.momentum.y",
+    "ReconstructedChargedJets.momentum.z",
+    "ReconstructedChargedJets.particles_begin",
+    "ReconstructedChargedJets.particles_end",
+    "_ReconstructedChargedJets_particles.index",
+#endif
+    "ReconstructedChargedParticles.momentum.x",
+    "ReconstructedChargedParticles.momentum.y",
+    "ReconstructedChargedParticles.momentum.z",
+    "ReconstructedChargedParticles.mass",
+    "ReconstructedChargedParticles.PDG",
+    "ReconstructedChargedParticles.energy",
+    "ReconstructedChargedParticleLinks.from",
+    "ReconstructedChargedParticleLinks.to",
+    "ReconstructedChargedParticleLinks.weight",
+#if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
+    "GeneratedChargedJets.type",
+    "GeneratedChargedJets.area",
+    "GeneratedChargedJets.energy",
+    "GeneratedChargedJets.momentum.x",
+    "GeneratedChargedJets.momentum.y",
+    "GeneratedChargedJets.momentum.z",
+    "GeneratedChargedJets.constituents_begin",
+    "GeneratedChargedJets.constituents_end",
+    "_GeneratedChargedJets_constituents.index",
+#else
+    "GeneratedChargedJets.type",
+    "GeneratedChargedJets.energy",
+    "GeneratedChargedJets.momentum.x",
+    "GeneratedChargedJets.momentum.y",
+    "GeneratedChargedJets.momentum.z",
+    "GeneratedChargedJets.particles_begin",
+    "GeneratedChargedJets.particles_end",
+    "_GeneratedChargedJets_particles.index",
+#endif
+    "GeneratedParticles.momentum.x",
+    "GeneratedParticles.momentum.y",
+    "GeneratedParticles.momentum.z",
+    "GeneratedParticles.mass",
+    "GeneratedParticles.PDG",
+    "MCParticles.generatorStatus",
+    "MCParticles.momentum.x",
+    "MCParticles.momentum.y",
+    "MCParticles.momentum.z",
+    "MCParticles.mass",
+    "MCParticles.PDG"
+  });
+
+  fmt::print(" - RDataFrame processing complete!\n");
 
   
   gStyle->SetOptStat(0);
