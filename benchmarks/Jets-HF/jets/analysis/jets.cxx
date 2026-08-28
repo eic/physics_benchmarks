@@ -301,7 +301,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
     int numRecoChargedJetsNoElec = 0;
     for(size_t i=0; i<recoType.size(); i++)
       {
-	TVector3 jetMom(recoMomX[i],recoMomY[i],recoMomZ[i]);
+	TVector3 jetMom(recoMomX.at(i),recoMomY.at(i),recoMomZ.at(i));
 
 	counter->Fill(3);
 
@@ -309,52 +309,52 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	if(TMath::Abs(jetMom.PseudoRapidity()) > 2.5) continue;
 
 	// Place a minimum energy condition for several plots
-	bool ECut = recoNRG[i] > 5.0;
+	bool ECut = recoNRG.at(i) > 5.0;
 
 	if(ECut) numRecoChargedJets++; 
 
-	recoChargedJetEHist->Fill(recoNRG[i]);
+	recoChargedJetEHist->Fill(recoNRG.at(i));
 	if(ECut) recoChargedJetEtaECutHist->Fill(jetMom.PseudoRapidity());
-	recoChargedJetEvsEtaHist->Fill(jetMom.PseudoRapidity(),recoNRG[i]);
+	recoChargedJetEvsEtaHist->Fill(jetMom.PseudoRapidity(),recoNRG.at(i));
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-        if(ECut) recoChargedJetAreaECutHist->Fill(recoArea[i]);
-        recoChargedJetEvsAreaHist->Fill(recoArea[i],recoNRG[i]);
+        if(ECut) recoChargedJetAreaECutHist->Fill(recoArea.at(i));
+        recoChargedJetEvsAreaHist->Fill(recoArea.at(i),recoNRG.at(i));
 #endif
 	if(ECut) recoChargedJetPhiVsEtaECutHist->Fill(jetMom.PseudoRapidity(),jetMom.Phi());
 
 	// Find Jets with Electrons
 	bool noElectron = true;
-	for(unsigned int m=recoCstsBegin[i]; m<recoCstsEnd[i]; m++) // Loop over jet constituents
+	for(unsigned int m=recoCstsBegin.at(i); m<recoCstsEnd.at(i); m++) // Loop over jet constituents
 	  {
 	    int elecIndex = -1;
 	    double elecIndexWeight = -1.0;
-	    int chargePartIndex = recoCstIndex[m]; // ReconstructedChargedParticle Index for m'th Jet Component
+	    int chargePartIndex = recoCstIndex.at(m); // ReconstructedChargedParticle Index for m'th Jet Component
 	    for(size_t n=0; n<recoPartAssocRec.size(); n++) // Loop Over All ReconstructedChargedParticleLinks
 	      {
-		if(recoPartAssocRec[n] == chargePartIndex) // Select Entry Matching the ReconstructedChargedParticle Index
+		if(recoPartAssocRec.at(n) == chargePartIndex) // Select Entry Matching the ReconstructedChargedParticle Index
 		  {
-		    if(recoPartAssocWeight[n] > elecIndexWeight) // Find Particle with Greatest Weight = Contributed Most Hits to Track
+		    if(recoPartAssocWeight.at(n) > elecIndexWeight) // Find Particle with Greatest Weight = Contributed Most Hits to Track
 		      {
-			elecIndex = recoPartAssocSim[n]; // Get Index of MCParticle Associated with ReconstructedChargedParticle
-			elecIndexWeight = recoPartAssocWeight[n];
+			elecIndex = recoPartAssocSim.at(n); // Get Index of MCParticle Associated with ReconstructedChargedParticle
+			elecIndexWeight = recoPartAssocWeight.at(n);
 		      }
 		  }
 	      }
 	    
-	    if(elecIndex >= 0 && pdgMCPart[elecIndex] == 11) // Test if Matched Particle is an Electron
+	    if(elecIndex >= 0 && pdgMCPart.at(elecIndex) == 11) // Test if Matched Particle is an Electron
 	      noElectron = false;
 	  }
 	
 	if(ECut)
 	  {
-	    for(unsigned int j=recoCstsBegin[i]; j<recoCstsEnd[i]; j++)
+	    for(unsigned int j=recoCstsBegin.at(i); j<recoCstsEnd.at(i); j++)
 	      {
 		// recoCstsBegin and recoCstsEnd specify the entries from _ReconstructedChargedJets_particles.index that make up the jet
 		// _ReconstructedChargedJets_particles.index stores the ReconstructedChargedParticles index of the jet constituent
-		double mX = recoPartMomX[recoCstIndex[j]];
-		double mY = recoPartMomY[recoCstIndex[j]];
-		double mZ = recoPartMomZ[recoCstIndex[j]];
-		double mM = recoPartM[recoCstIndex[j]];
+		double mX = recoPartMomX.at(recoCstIndex.at(j));
+		double mY = recoPartMomY.at(recoCstIndex.at(j));
+		double mZ = recoPartMomZ.at(recoCstIndex.at(j));
+		double mM = recoPartM.at(recoCstIndex.at(j));
 		//double tmpE = TMath::Sqrt(mX*mX + mY*mY + mZ*mZ + mM*mM);
 		
 		TVector3 partMom(mX,mY,mZ);
@@ -373,13 +373,13 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 		  }
 
 		// Pairwise Distance Between Constituents
-		if(j<(recoCstsEnd[i]-1))
+		if(j<(recoCstsEnd.at(i)-1))
 		  {
-		    for(unsigned int k=j+1; k<recoCstsEnd[i]; k++)
+		    for(unsigned int k=j+1; k<recoCstsEnd.at(i); k++)
 		      {
-			double mXB = recoPartMomX[recoCstIndex[k]];
-			double mYB = recoPartMomY[recoCstIndex[k]];
-			double mZB = recoPartMomZ[recoCstIndex[k]];
+			double mXB = recoPartMomX.at(recoCstIndex.at(k));
+			double mYB = recoPartMomY.at(recoCstIndex.at(k));
+			double mZB = recoPartMomZ.at(recoCstIndex.at(k));
 
 			TVector3 partMomB(mXB,mYB,mZB);
 
@@ -391,19 +391,19 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 		      }
 		  }
 	      }
-	    numRecoChargedJetPartsHist->Fill(recoCstsEnd[i] - recoCstsBegin[i]);
-	    if(noElectron) numRecoChargedJetPartsNoElecHist->Fill(recoCstsEnd[i] - recoCstsBegin[i]);
+	    numRecoChargedJetPartsHist->Fill(recoCstsEnd.at(i) - recoCstsBegin.at(i));
+	    if(noElectron) numRecoChargedJetPartsNoElecHist->Fill(recoCstsEnd.at(i) - recoCstsBegin.at(i));
 	  }
 
 	// No Electrons
 	if(noElectron)
 	  {
-	    recoChargedJetENoElecHist->Fill(recoNRG[i]);
+	    recoChargedJetENoElecHist->Fill(recoNRG.at(i));
 	    if(ECut) recoChargedJetEtaECutNoElecHist->Fill(jetMom.PseudoRapidity());
-	    recoChargedJetEvsEtaNoElecHist->Fill(jetMom.PseudoRapidity(),recoNRG[i]);
+	    recoChargedJetEvsEtaNoElecHist->Fill(jetMom.PseudoRapidity(),recoNRG.at(i));
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-            if(ECut) recoChargedJetAreaECutNoElecHist->Fill(recoArea[i]);
-            recoChargedJetEvsAreaNoElecHist->Fill(recoArea[i],recoNRG[i]);
+            if(ECut) recoChargedJetAreaECutNoElecHist->Fill(recoArea.at(i));
+            recoChargedJetEvsAreaNoElecHist->Fill(recoArea.at(i),recoNRG.at(i));
 #endif
 	    if(ECut) recoChargedJetPhiVsEtaECutNoElecHist->Fill(jetMom.PseudoRapidity(),jetMom.Phi());
 
@@ -420,7 +420,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
     int numGenChargedJetsNoElec = 0;
     for(size_t i=0; i<genType.size(); i++)
       {
-	TVector3 jetMom(genMomX[i],genMomY[i],genMomZ[i]);
+	TVector3 jetMom(genMomX.at(i),genMomY.at(i),genMomZ.at(i));
 
 	counter->Fill(4);
 
@@ -428,22 +428,22 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	if(TMath::Abs(jetMom.PseudoRapidity()) > 2.5) continue;
 
 	// Place a minimum energy condition for several plots
-	bool ECut = genNRG[i] > 5.0;
+	bool ECut = genNRG.at(i) > 5.0;
 
 	if(ECut) numGenChargedJets++; 
 
-	genChargedJetEHist->Fill(genNRG[i]);
+	genChargedJetEHist->Fill(genNRG.at(i));
 	if(ECut) genChargedJetEtaECutHist->Fill(jetMom.PseudoRapidity());
-	genChargedJetEvsEtaHist->Fill(jetMom.PseudoRapidity(),genNRG[i]);
+	genChargedJetEvsEtaHist->Fill(jetMom.PseudoRapidity(),genNRG.at(i));
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-        if(ECut) genChargedJetAreaECutHist->Fill(genArea[i]);
-        genChargedJetEvsAreaHist->Fill(genArea[i],genNRG[i]);
+        if(ECut) genChargedJetAreaECutHist->Fill(genArea.at(i));
+        genChargedJetEvsAreaHist->Fill(genArea.at(i),genNRG.at(i));
 #endif
 	if(ECut) genChargedJetPhiVsEtaECutHist->Fill(jetMom.PseudoRapidity(),jetMom.Phi());
 
 	// Find Jets with Electrons
 	bool noElectron = true;
-	for(unsigned int m=genCstsBegin[i]; m<genCstsEnd[i]; m++)
+	for(unsigned int m=genCstsBegin.at(i); m<genCstsEnd.at(i); m++)
 	  {
 	    if(pdg[genPartIndex[m]] == 11)
 	      noElectron = false;
@@ -451,7 +451,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 
 	if(ECut)
 	  {
-	    for(unsigned int j=genCstsBegin[i]; j<genCstsEnd[i]; j++)
+	    for(unsigned int j=genCstsBegin.at(i); j<genCstsEnd.at(i); j++)
 	      {
 		// genCstsBegin and genCstsEnd specify the entries from _GeneratedChargedJets_particles.index that make up the jet
 		// _GeneratedChargedJets_particles.index stores the GeneratedChargedParticles index of the jet constituent
@@ -477,9 +477,9 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 		  }
 
 		// Pairwise Distance Between Constituents
-		if(j<(genCstsEnd[i]-1))
+		if(j<(genCstsEnd.at(i)-1))
 		  {
-		    for(unsigned int k=j+1; k<genCstsEnd[i]; k++)
+		    for(unsigned int k=j+1; k<genCstsEnd.at(i); k++)
 		      {
 			double mXB = mcMomX[genPartIndex[k]];
 			double mYB = mcMomY[genPartIndex[k]];
@@ -495,19 +495,19 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 		      }
 		  }
 	      }
-	    numGenChargedJetPartsHist->Fill(genCstsEnd[i] - genCstsBegin[i]);
-	    if(noElectron) numGenChargedJetPartsNoElecHist->Fill(genCstsEnd[i] - genCstsBegin[i]);
+	    numGenChargedJetPartsHist->Fill(genCstsEnd.at(i) - genCstsBegin.at(i));
+	    if(noElectron) numGenChargedJetPartsNoElecHist->Fill(genCstsEnd.at(i) - genCstsBegin.at(i));
 	  }
 
 	// No Electrons
 	if(noElectron)
 	  {
-	    genChargedJetENoElecHist->Fill(genNRG[i]);
+	    genChargedJetENoElecHist->Fill(genNRG.at(i));
 	    if(ECut) genChargedJetEtaECutNoElecHist->Fill(jetMom.PseudoRapidity());
-	    genChargedJetEvsEtaNoElecHist->Fill(jetMom.PseudoRapidity(),genNRG[i]);
+	    genChargedJetEvsEtaNoElecHist->Fill(jetMom.PseudoRapidity(),genNRG.at(i));
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-            if(ECut) genChargedJetAreaECutNoElecHist->Fill(genArea[i]);
-            genChargedJetEvsAreaHist->Fill(genArea[i],genNRG[i]);
+            if(ECut) genChargedJetAreaECutNoElecHist->Fill(genArea.at(i));
+            genChargedJetEvsAreaHist->Fill(genArea.at(i),genNRG.at(i));
 #endif
 	    if(ECut) genChargedJetPhiVsEtaECutNoElecHist->Fill(jetMom.PseudoRapidity(),jetMom.Phi());
 
@@ -523,18 +523,18 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
     //////////////////////////////////////////////////////////////////////////
     for(size_t i=0; i<genType.size(); i++)
       {
-	TVector3 jetMom(genMomX[i],genMomY[i],genMomZ[i]);
+	TVector3 jetMom(genMomX.at(i),genMomY.at(i),genMomZ.at(i));
 
 	// Place eta cut to avoid edges of tracking acceptance
 	//if(TMath::Abs(jetMom.PseudoRapidity()) > 2.5) continue;
 
 	// Place a minimum energy condition
-	//if(genNRG[i] < 5.0) continue;
+	//if(genNRG.at(i) < 5.0) continue;
 	
 	// Don't Look at Electron Jets
 	bool hasElectron = false;
 	// Find Jets with Electrons
-	for(unsigned int m=genCstsBegin[i]; m<genCstsEnd[i]; m++)
+	for(unsigned int m=genCstsBegin.at(i); m<genCstsEnd.at(i); m++)
 	  {
 	    if(pdg[genPartIndex[m]] == 11)
 	      hasElectron = true;
@@ -546,7 +546,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	int minIndex = -1;
 	for(size_t j=0; j<recoType.size(); j++)
 	  {
-	    TVector3 recoMom(recoMomX[j],recoMomY[j],recoMomZ[j]);
+	    TVector3 recoMom(recoMomX.at(j),recoMomY.at(j),recoMomZ.at(j));
 
 	    double dEta = jetMom.PseudoRapidity() - recoMom.PseudoRapidity();
 	    double dPhi = TVector2::Phi_mpi_pi(jetMom.Phi() - recoMom.Phi());
@@ -564,10 +564,10 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	double minIndexBack = -1;
 	if(minIndex > -1)
 	  {
-	    TVector3 recoMatchMom(recoMomX[minIndex],recoMomY[minIndex],recoMomZ[minIndex]);
+	    TVector3 recoMatchMom(recoMomX.at(minIndex),recoMomY.at(minIndex),recoMomZ.at(minIndex));
 	    for(size_t j=0; j<genType.size(); j++)
 	      {
-		TVector3 genMom(genMomX[j],genMomY[j],genMomZ[j]);
+		TVector3 genMom(genMomX.at(j),genMomY.at(j),genMomZ.at(j));
 		
 		double dEta = recoMatchMom.PseudoRapidity() - genMom.PseudoRapidity();
 		double dPhi = TVector2::Phi_mpi_pi(recoMatchMom.Phi() - genMom.Phi());
@@ -582,54 +582,54 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	  }
 
 	// Look at Best Match
-	if(genNRG[i] > 5.0 && TMath::Abs(jetMom.PseudoRapidity()) < 2.5 && minIndex > -1 && !hasElectron) matchJetDeltaRHist->Fill(minDeltaR);
-	if(genNRG[i] > 5.0 && TMath::Abs(jetMom.PseudoRapidity()) < 2.5 && minIndex > -1) matchJetDeltaRBackHist->Fill(minDeltaR);
-	if(minIndex > -1 && genNRG[i] > 5.0 && TMath::Abs(jetMom.PseudoRapidity()) < 2.5 && !hasElectron)
+	if(genNRG.at(i) > 5.0 && TMath::Abs(jetMom.PseudoRapidity()) < 2.5 && minIndex > -1 && !hasElectron) matchJetDeltaRHist->Fill(minDeltaR);
+	if(genNRG.at(i) > 5.0 && TMath::Abs(jetMom.PseudoRapidity()) < 2.5 && minIndex > -1) matchJetDeltaRBackHist->Fill(minDeltaR);
+	if(minIndex > -1 && genNRG.at(i) > 5.0 && TMath::Abs(jetMom.PseudoRapidity()) < 2.5 && !hasElectron)
 	  {
-	    TVector3 recoMatchMom(recoMomX[minIndex],recoMomY[minIndex],recoMomZ[minIndex]);
+	    TVector3 recoMatchMom(recoMomX.at(minIndex),recoMomY.at(minIndex),recoMomZ.at(minIndex));
 
-	    recoVsGenChargedJetENoDRHist->Fill(genNRG[i],recoNRG[minIndex]);
+	    recoVsGenChargedJetENoDRHist->Fill(genNRG.at(i),recoNRG.at(minIndex));
 
 	    if(minDeltaR < DELTARCUT)
 	      {
 		recoVsGenChargedJetEtaHist->Fill(jetMom.PseudoRapidity(),recoMatchMom.PseudoRapidity());
 		recoVsGenChargedJetPhiHist->Fill(jetMom.Phi(),recoMatchMom.Phi());
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-                recoVsGenChargedJetAreaHist->Fill(genArea[i],recoArea[minIndex]);
+                recoVsGenChargedJetAreaHist->Fill(genArea.at(i),recoArea.at(minIndex));
 #endif
-		recoVsGenChargedJetEHist->Fill(genNRG[i],recoNRG[minIndex]);
+		recoVsGenChargedJetEHist->Fill(genNRG.at(i),recoNRG.at(minIndex));
 		
-		double jetERes = (recoNRG[minIndex] - genNRG[i])/genNRG[i];
+		double jetERes = (recoNRG.at(minIndex) - genNRG.at(i))/genNRG.at(i);
 		
 		jetResVsEtaHist->Fill(jetMom.PseudoRapidity(),jetERes);
-		jetResVsEHist->Fill(genNRG[i],jetERes);
+		jetResVsEHist->Fill(genNRG.at(i),jetERes);
 		if(jetMom.PseudoRapidity() > -2.5 && jetMom.PseudoRapidity() < -1.0)
-		  jetResVsENegEtaHist->Fill(genNRG[i],jetERes);
+		  jetResVsENegEtaHist->Fill(genNRG.at(i),jetERes);
 		if(jetMom.PseudoRapidity() > -1.0 && jetMom.PseudoRapidity() < 1.0)
-		  jetResVsEMidEtaHist->Fill(genNRG[i],jetERes);
+		  jetResVsEMidEtaHist->Fill(genNRG.at(i),jetERes);
 		if(jetMom.PseudoRapidity() > 1.0 && jetMom.PseudoRapidity() < 2.5)
-		  jetResVsEPosEtaHist->Fill(genNRG[i],jetERes);
+		  jetResVsEPosEtaHist->Fill(genNRG.at(i),jetERes);
 		
 		// Check for Duplicate Tracks
 		bool noDuplicate = true;
-		for(unsigned int j=recoCstsBegin[minIndex]; j<recoCstsEnd[minIndex]; j++)
+		for(unsigned int j=recoCstsBegin.at(minIndex); j<recoCstsEnd.at(minIndex); j++)
 		  {
-		    double mX = recoPartMomX[recoCstIndex[j]];
-		    double mY = recoPartMomY[recoCstIndex[j]];
-		    double mZ = recoPartMomZ[recoCstIndex[j]];
-		    double mM = recoPartM[recoCstIndex[j]];
+		    double mX = recoPartMomX.at(recoCstIndex.at(j));
+		    double mY = recoPartMomY.at(recoCstIndex.at(j));
+		    double mZ = recoPartMomZ.at(recoCstIndex.at(j));
+		    double mM = recoPartM.at(recoCstIndex.at(j));
 		    double tmpE = TMath::Sqrt(mX*mX + mY*mY + mZ*mZ + mM*mM);
 		    
 		    TVector3 partMom(mX,mY,mZ);
 		    
 		    // Pairwise Distance Between Constituents
-		    if(j<(recoCstsEnd[minIndex]-1))
+		    if(j<(recoCstsEnd.at(minIndex)-1))
 		      {
-			for(unsigned int k=j+1; k<recoCstsEnd[minIndex]; k++)
+			for(unsigned int k=j+1; k<recoCstsEnd.at(minIndex); k++)
 			  {
-			    double mXB = recoPartMomX[recoCstIndex[k]];
-			    double mYB = recoPartMomY[recoCstIndex[k]];
-			    double mZB = recoPartMomZ[recoCstIndex[k]];
+			    double mXB = recoPartMomX.at(recoCstIndex.at(k));
+			    double mYB = recoPartMomY.at(recoCstIndex.at(k));
+			    double mZB = recoPartMomZ.at(recoCstIndex.at(k));
 			    
 			    TVector3 partMomB(mXB,mYB,mZB);
 			    
@@ -644,14 +644,14 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 
 		if(noDuplicate)
 		  {
-		    recoVsGenChargedJetENoDupHist->Fill(genNRG[i],recoNRG[minIndex]);
+		    recoVsGenChargedJetENoDupHist->Fill(genNRG.at(i),recoNRG.at(minIndex));
 
 		    if(jetMom.PseudoRapidity() > -2.5 && jetMom.PseudoRapidity() < -1.0)
-		      jetResVsENegEtaNoDupHist->Fill(genNRG[i],jetERes);
+		      jetResVsENegEtaNoDupHist->Fill(genNRG.at(i),jetERes);
 		    if(jetMom.PseudoRapidity() > -1.0 && jetMom.PseudoRapidity() < 1.0)
-		      jetResVsEMidEtaNoDupHist->Fill(genNRG[i],jetERes);
+		      jetResVsEMidEtaNoDupHist->Fill(genNRG.at(i),jetERes);
 		    if(jetMom.PseudoRapidity() > 1.0 && jetMom.PseudoRapidity() < 2.5)
-		      jetResVsEPosEtaNoDupHist->Fill(genNRG[i],jetERes);
+		      jetResVsEPosEtaNoDupHist->Fill(genNRG.at(i),jetERes);
 		  }
 	      }
 	  }
