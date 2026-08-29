@@ -152,8 +152,8 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   TH1D *recoChargedJetEHist = new TH1D("recoChargedJetE","",300,0.,300.);
   TH1D *recoChargedJetEtaECutHist = new TH1D("recoChargedJetEtaECut","",60,-3.,3.);
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-  TH1D *recoChargedJetAreaECutHist = new TH1D("recoChargedJetAreaECut",250,0.,5.);
-  TH2D *recoChargedJetEvsAreaHist = new TH2D("recoChargedJetEvsArea",""250,0.,5.,300,0.,300.);
+  TH1D *recoChargedJetAreaECutHist = new TH1D("recoChargedJetAreaECut","",250,0.,5.);
+  TH2D *recoChargedJetEvsAreaHist = new TH2D("recoChargedJetEvsArea","",250,0.,5.,300,0.,300.);
 #endif
   TH2D *recoChargedJetEvsEtaHist = new TH2D("recoChargedJetEvsEta","",60,-3.,3.,300,0.,300.);
   TH2D *recoChargedJetPhiVsEtaECutHist = new TH2D("recoChargedJetPhiVsEtaECut","",60,-3.,3.,100,-TMath::Pi(),TMath::Pi());
@@ -162,8 +162,8 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   TH1D *recoChargedJetENoElecHist = new TH1D("recoChargedJetENoElec","",300,0.,300.);
   TH1D *recoChargedJetEtaECutNoElecHist = new TH1D("recoChargedJetEtaECutNoElec","",60,-3.,3.);
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-  TH1D *recoChargedJetAreaECutNoElecHist = new TH1D("recoHargedJetAreaECutNoElec","",250,0.,5.);
-  TH2D *recoChargedJetEvsAreaNoElecHist = new TH2D("recoChargedJetEvsAreaNoElec",250,0.,5.,300,0.,300.);
+  TH1D *recoChargedJetAreaECutNoElecHist = new TH1D("recoChargedJetAreaECutNoElec","",250,0.,5.);
+  TH2D *recoChargedJetEvsAreaNoElecHist = new TH2D("recoChargedJetEvsAreaNoElec","",250,0.,5.,300,0.,300.);
 #endif
   TH2D *recoChargedJetEvsEtaNoElecHist = new TH2D("recoChargedJetEvsEtaNoElec","",60,-3.,3.,300,0.,300.);
   TH2D *recoChargedJetPhiVsEtaECutNoElecHist = new TH2D("recoChargedJetPhiVsEtaECutNoElec","",60,-3.,3.,100,-TMath::Pi(),TMath::Pi());
@@ -188,7 +188,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   TH1D *genChargedJetEtaECutHist = new TH1D("genChargedJetEtaECut","",60,-3.,3.);
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
   TH1D *genChargedJetAreaECutHist = new TH1D("genChargedJetAreaECut","",250,0.,5.);
-  TH2D *genChargedJetEvsAreaHist = new TH2D("genChargedJetEvsAreaHist",250,0.,5.,300,0.,300.);
+  TH2D *genChargedJetEvsAreaHist = new TH2D("genChargedJetEvsAreaHist","",250,0.,5.,300,0.,300.);
 #endif
   TH2D *genChargedJetEvsEtaHist = new TH2D("genChargedJetEvsEta","",60,-3.,3.,300,0.,300.);
   TH2D *genChargedJetPhiVsEtaECutHist = new TH2D("genChargedJetPhiVsEtaECut","",60,-3.,3.,100,-TMath::Pi(),TMath::Pi());
