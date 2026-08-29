@@ -280,30 +280,24 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 
 	// Find Jets with Electrons
 	bool noElectron = true;
-	// NOTE: Since ReconstructedChargedParticleLinks branches are not available in the current data format,
-	// electron identification is disabled. All jets will be analyzed with noElectron=true in the "NoElec" histograms.
 	for(unsigned int m=recoCstsBegin[i]; m<recoCstsEnd[i]; m++) // Loop over jet constituents
 	  {
-	    // NOTE: These variables are kept as placeholders for when ReconstructedChargedParticleLinks branches become available.
-	    // Currently unused since the linking loop is commented out (branches not available in current data format).
 	    int elecIndex = -1;
 	    double elecIndexWeight = -1.0;
 	    int chargePartIndex = recoCstIndex[m]; // ReconstructedChargedParticle Index for m'th Jet Component
+	    for(unsigned int n=0; n<recoPartAssocRec.GetSize(); n++) // Loop Over All ReconstructedChargedParticleLinks
+	      {
+		if(recoPartAssocRec[n] == chargePartIndex) // Select Entry Matching the ReconstructedChargedParticle Index
+		  {
+		    if(recoPartAssocWeight[n] > elecIndexWeight) // Find Particle with Greatest Weight = Contributed Most Hits to Track
+		      {
+			elecIndex = recoPartAssocSim[n]; // Get Index of MCParticle Associated with ReconstructedChargedParticle
+			elecIndexWeight = recoPartAssocWeight[n];
+		      }
+		  }
+	      }
 	    
-	    // NOTE: ReconstructedChargedParticleLinks branches are not available in the current data format
-	    // for(unsigned int n=0; n<recoPartAssocRec.GetSize(); n++) // Loop Over All ReconstructedChargedParticleLinks
-	    //   {
-	    // 	if(recoPartAssocRec[n] == chargePartIndex) // Select Entry Matching the ReconstructedChargedParticle Index
-	    // 	  {
-	    // 	    if(recoPartAssocWeight[n] > elecIndexWeight) // Find Particle with Greatest Weight = Contributed Most Hits to Track
-	    // 	      {
-	    // 		elecIndex = recoPartAssocSim[n]; // Get Index of MCParticle Associated with ReconstructedChargedParticle
-	    // 		elecIndexWeight = recoPartAssocWeight[n];
-	    // 	      }
-	    // 	  }
-	    //   }
-	    
-	    if(elecIndex >= 0 && pdgMCPart[elecIndex] == 11) // Test if Matched Particle is an Electron
+	    if(pdgMCPart[elecIndex] == 11) // Test if Matched Particle is an Electron
 	      noElectron = false;
 	  }
 	
