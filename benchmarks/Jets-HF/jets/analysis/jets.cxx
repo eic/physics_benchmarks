@@ -300,7 +300,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	    // 	  }
 	    //   }
 	    
-	    if(pdgMCPart[elecIndex] == 11) // Test if Matched Particle is an Electron
+	    if(elecIndex >= 0 && pdgMCPart[elecIndex] == 11) // Test if Matched Particle is an Electron
 	      noElectron = false;
 	  }
 	
