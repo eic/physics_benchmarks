@@ -2,10 +2,12 @@
 #include <TCanvas.h>
 #include <TChain.h>
 #include <TColor.h>
+#include <TF1.h>
 #include <TFile.h>
 #include <TGraph.h>
 #include <TH1D.h>
 #include <TH2D.h>
+#include <TStyle.h>
 #include <TTreeReader.h>
 #include <TTreeReaderArray.h>
 #include <TLegend.h>
