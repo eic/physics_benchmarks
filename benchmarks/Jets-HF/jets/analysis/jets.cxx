@@ -285,6 +285,8 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	// electron identification is disabled. All jets will be analyzed with noElectron=true in the "NoElec" histograms.
 	for(unsigned int m=recoCstsBegin[i]; m<recoCstsEnd[i]; m++) // Loop over jet constituents
 	  {
+	    // NOTE: These variables are kept as placeholders for when ReconstructedChargedParticleLinks branches become available.
+	    // Currently unused since the linking loop is commented out (branches not available in current data format).
 	    int elecIndex = -1;
 	    double elecIndexWeight = -1.0;
 	    int chargePartIndex = recoCstIndex[m]; // ReconstructedChargedParticle Index for m'th Jet Component
