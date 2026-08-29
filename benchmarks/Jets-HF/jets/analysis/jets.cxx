@@ -102,10 +102,9 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   TTreeReaderArray<int> recoPartPDG = {tree_reader, "ReconstructedChargedParticles.PDG"};
   TTreeReaderArray<float> recoPartNRG = {tree_reader, "ReconstructedChargedParticles.energy"};
 
-  // NOTE: ReconstructedChargedParticleLinks branches are not available in the current data format
-  // TTreeReaderArray<unsigned int> recoPartAssocRec = {tree_reader, "ReconstructedChargedParticleLinks.from"}; // Reco <-> MCParticle
-  // TTreeReaderArray<unsigned int> recoPartAssocSim = {tree_reader, "ReconstructedChargedParticleLinks.to"};
-  // TTreeReaderArray<float> recoPartAssocWeight = {tree_reader, "ReconstructedChargedParticleLinks.weight"};
+  TTreeReaderArray<unsigned int> recoPartAssocRec = {tree_reader, "ReconstructedChargedParticleLinks.from"}; // Reco <-> MCParticle
+  TTreeReaderArray<unsigned int> recoPartAssocSim = {tree_reader, "ReconstructedChargedParticleLinks.to"};
+  TTreeReaderArray<float> recoPartAssocWeight = {tree_reader, "ReconstructedChargedParticleLinks.weight"};
 
   // Generated Jets
   TTreeReaderArray<unsigned int> genType = {tree_reader, "GeneratedChargedJets.type"};
