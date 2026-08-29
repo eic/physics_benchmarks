@@ -128,7 +128,7 @@ include:
   - local: 'benchmarks/Exclusive-Diffraction-Tagging/u_omega/config.yml'
   - local: 'benchmarks/Inclusive/dis/config.yml'
   - local: 'benchmarks/Jets-HF/jets/config.yml'
- 
+
 summary:
   stage: finish
   needs:

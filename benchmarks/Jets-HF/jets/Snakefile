@@ -13,13 +13,13 @@ cat > {output.config} <<EOF
 {{
   "rec_file": "{input.data}",
   "detector": "{wildcards.DETECTOR_CONFIG}",
-  "output_prefix": "$(dirname "{output.config}")/dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}",
+  "output_prefix": "$(dirname "{output.config}")/jets_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}",
   "results_path": "$(dirname "{output.config}")",
   "ebeam": {wildcards.EBEAM},
   "pbeam": {wildcards.PBEAM},
   "minq2": {wildcards.MINQ2},
-  "plot_tag": "dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}",
-  "test_tag": "dis_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}"
+  "plot_tag": "jets_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}",
+  "test_tag": "jets_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}"
 }}
 EOF
 """
