@@ -281,6 +281,8 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 
 	// Find Jets with Electrons
 	bool noElectron = true;
+	// NOTE: Since ReconstructedChargedParticleLinks branches are not available in the current data format,
+	// electron identification is disabled. All jets will be analyzed with noElectron=true in the "NoElec" histograms.
 	for(unsigned int m=recoCstsBegin[i]; m<recoCstsEnd[i]; m++) // Loop over jet constituents
 	  {
 	    int elecIndex = -1;
