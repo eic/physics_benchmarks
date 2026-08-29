@@ -1,6 +1,7 @@
 #include <edm4eic/EDM4eicVersion.h>
 #include <TCanvas.h>
 #include <TChain.h>
+#include <TColor.h>
 #include <TFile.h>
 #include <TGraph.h>
 #include <TH1D.h>
@@ -9,6 +10,8 @@
 #include <TTreeReaderArray.h>
 #include <TLegend.h>
 #include <TVector3.h>
+
+#include <fstream>
 
 #include "fmt/color.h"
 #include "fmt/core.h"
