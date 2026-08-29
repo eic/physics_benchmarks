@@ -72,7 +72,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   float DELTARCUT = 0.05;
 
   // Reco Jets
-  TTreeReaderArray<int> recoType = {tree_reader, "ReconstructedChargedJets.type"};
+  TTreeReaderArray<unsigned int> recoType = {tree_reader, "ReconstructedChargedJets.type"};
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
   TTreeReaderArray<float> recoArea = {tree_reader, "ReconstructedChargedJets.area"};
 #endif
@@ -102,12 +102,13 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   TTreeReaderArray<int> recoPartPDG = {tree_reader, "ReconstructedChargedParticles.PDG"};
   TTreeReaderArray<float> recoPartNRG = {tree_reader, "ReconstructedChargedParticles.energy"};
 
-  TTreeReaderArray<unsigned int> recoPartAssocRec = {tree_reader, "ReconstructedChargedParticleLinks.from"}; // Reco <-> MCParticle
-  TTreeReaderArray<unsigned int> recoPartAssocSim = {tree_reader, "ReconstructedChargedParticleLinks.to"};
-  TTreeReaderArray<float> recoPartAssocWeight = {tree_reader, "ReconstructedChargedParticleLinks.weight"};
+  // NOTE: ReconstructedChargedParticleLinks branches are not available in the current data format
+  // TTreeReaderArray<unsigned int> recoPartAssocRec = {tree_reader, "ReconstructedChargedParticleLinks.from"}; // Reco <-> MCParticle
+  // TTreeReaderArray<unsigned int> recoPartAssocSim = {tree_reader, "ReconstructedChargedParticleLinks.to"};
+  // TTreeReaderArray<float> recoPartAssocWeight = {tree_reader, "ReconstructedChargedParticleLinks.weight"};
 
   // Generated Jets
-  TTreeReaderArray<int> genType = {tree_reader, "GeneratedChargedJets.type"};
+  TTreeReaderArray<unsigned int> genType = {tree_reader, "GeneratedChargedJets.type"};
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
   TTreeReaderArray<float> genArea = {tree_reader, "GeneratedChargedJets.area"};
 #endif
@@ -285,17 +286,19 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	    int elecIndex = -1;
 	    double elecIndexWeight = -1.0;
 	    int chargePartIndex = recoCstIndex[m]; // ReconstructedChargedParticle Index for m'th Jet Component
-	    for(unsigned int n=0; n<recoPartAssocRec.GetSize(); n++) // Loop Over All ReconstructedChargedParticleLinks
-	      {
-		if(recoPartAssocRec[n] == chargePartIndex) // Select Entry Matching the ReconstructedChargedParticle Index
-		  {
-		    if(recoPartAssocWeight[n] > elecIndexWeight) // Find Particle with Greatest Weight = Contributed Most Hits to Track
-		      {
-			elecIndex = recoPartAssocSim[n]; // Get Index of MCParticle Associated with ReconstructedChargedParticle
-			elecIndexWeight = recoPartAssocWeight[n];
-		      }
-		  }
-	      }
+	    
+	    // NOTE: ReconstructedChargedParticleLinks branches are not available in the current data format
+	    // for(unsigned int n=0; n<recoPartAssocRec.GetSize(); n++) // Loop Over All ReconstructedChargedParticleLinks
+	    //   {
+	    // 	if(recoPartAssocRec[n] == chargePartIndex) // Select Entry Matching the ReconstructedChargedParticle Index
+	    // 	  {
+	    // 	    if(recoPartAssocWeight[n] > elecIndexWeight) // Find Particle with Greatest Weight = Contributed Most Hits to Track
+	    // 	      {
+	    // 		elecIndex = recoPartAssocSim[n]; // Get Index of MCParticle Associated with ReconstructedChargedParticle
+	    // 		elecIndexWeight = recoPartAssocWeight[n];
+	    // 	      }
+	    // 	  }
+	    //   }
 	    
 	    if(pdgMCPart[elecIndex] == 11) // Test if Matched Particle is an Electron
 	      noElectron = false;
