@@ -41,8 +41,8 @@ lager -r {params.RNG_SEED} \
 
 # Move output to input directory
 for ext in hepmc json log root ; do
-  if [ -f tmp/*.gen-{wildcards.CONFIG}_{wildcards.DECAY}_{params.N_EVENTS}.*.$${{ext}} ]; then
-    mv tmp/*.gen-{wildcards.CONFIG}_{wildcards.DECAY}_{params.N_EVENTS}.*.$${{ext}} input/gen-{wildcards.CONFIG}_{wildcards.DECAY}_{params.N_EVENTS}.$${{ext}}
+  if [ -f tmp/*.gen-{wildcards.CONFIG}_{wildcards.DECAY}_{params.N_EVENTS}.*.${{ext}} ]; then
+    mv tmp/*.gen-{wildcards.CONFIG}_{wildcards.DECAY}_{params.N_EVENTS}.*.${{ext}} input/gen-{wildcards.CONFIG}_{wildcards.DECAY}_{params.N_EVENTS}.${{ext}}
   fi
 done
 """
