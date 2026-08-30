@@ -1,0 +1,6 @@
+{
+  "name": "Jets in DIS",
+  "title": "Jets Benchmark",
+    "description": "Benchmark for assessing jet reconstruction",
+  "target": "0.8"
+}

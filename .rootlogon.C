@@ -1,6 +1,8 @@
 {
-  // Ensure fmt is loaded
-  R__LOAD_LIBRARY(libfmt);
+  // Ensure fmt is loaded (skip if not available)
+  if (gSystem->Load("libfmt") < 0) {
+    // Library not found, but try to continue anyway
+  }
   //
   // top-level include-dir
   gROOT->ProcessLine(".include include");

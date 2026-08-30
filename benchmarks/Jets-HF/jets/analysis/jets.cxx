@@ -1,14 +1,19 @@
 #include <edm4eic/EDM4eicVersion.h>
 #include <TCanvas.h>
 #include <TChain.h>
+#include <TColor.h>
+#include <TF1.h>
 #include <TFile.h>
 #include <TGraph.h>
 #include <TH1D.h>
 #include <TH2D.h>
+#include <TStyle.h>
 #include <TTreeReader.h>
 #include <TTreeReaderArray.h>
 #include <TLegend.h>
 #include <TVector3.h>
+
+#include <fstream>
 
 #include "fmt/color.h"
 #include "fmt/core.h"
@@ -67,7 +72,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   float DELTARCUT = 0.05;
 
   // Reco Jets
-  TTreeReaderArray<int> recoType = {tree_reader, "ReconstructedChargedJets.type"};
+  TTreeReaderArray<unsigned int> recoType = {tree_reader, "ReconstructedChargedJets.type"};
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
   TTreeReaderArray<float> recoArea = {tree_reader, "ReconstructedChargedJets.area"};
 #endif
@@ -97,12 +102,12 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   TTreeReaderArray<int> recoPartPDG = {tree_reader, "ReconstructedChargedParticles.PDG"};
   TTreeReaderArray<float> recoPartNRG = {tree_reader, "ReconstructedChargedParticles.energy"};
 
-  TTreeReaderArray<unsigned int> recoPartAssocRec = {tree_reader, "ReconstructedChargedParticleLinks.from"}; // Reco <-> MCParticle
-  TTreeReaderArray<unsigned int> recoPartAssocSim = {tree_reader, "ReconstructedChargedParticleLinks.to"};
+  TTreeReaderArray<unsigned int> recoPartAssocRec = {tree_reader, "_ReconstructedChargedParticleLinks_from.index"}; // Reco <-> MCParticle
+  TTreeReaderArray<unsigned int> recoPartAssocSim = {tree_reader, "_ReconstructedChargedParticleLinks_to.index"};
   TTreeReaderArray<float> recoPartAssocWeight = {tree_reader, "ReconstructedChargedParticleLinks.weight"};
 
   // Generated Jets
-  TTreeReaderArray<int> genType = {tree_reader, "GeneratedChargedJets.type"};
+  TTreeReaderArray<unsigned int> genType = {tree_reader, "GeneratedChargedJets.type"};
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
   TTreeReaderArray<float> genArea = {tree_reader, "GeneratedChargedJets.area"};
 #endif
@@ -149,8 +154,8 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   TH1D *recoChargedJetEHist = new TH1D("recoChargedJetE","",300,0.,300.);
   TH1D *recoChargedJetEtaECutHist = new TH1D("recoChargedJetEtaECut","",60,-3.,3.);
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-  TH1D *recoChargedJetAreaECutHist = new TH1D("recoChargedJetAreaECut",250,0.,5.);
-  TH2D *recoChargedJetEvsAreaHist = new TH2D("recoChargedJetEvsArea",""250,0.,5.,300,0.,300.);
+  TH1D *recoChargedJetAreaECutHist = new TH1D("recoChargedJetAreaECut","",250,0.,5.);
+  TH2D *recoChargedJetEvsAreaHist = new TH2D("recoChargedJetEvsArea","",250,0.,5.,300,0.,300.);
 #endif
   TH2D *recoChargedJetEvsEtaHist = new TH2D("recoChargedJetEvsEta","",60,-3.,3.,300,0.,300.);
   TH2D *recoChargedJetPhiVsEtaECutHist = new TH2D("recoChargedJetPhiVsEtaECut","",60,-3.,3.,100,-TMath::Pi(),TMath::Pi());
@@ -159,8 +164,8 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   TH1D *recoChargedJetENoElecHist = new TH1D("recoChargedJetENoElec","",300,0.,300.);
   TH1D *recoChargedJetEtaECutNoElecHist = new TH1D("recoChargedJetEtaECutNoElec","",60,-3.,3.);
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
-  TH1D *recoChargedJetAreaECutNoElecHist = new TH1D("recoHargedJetAreaECutNoElec","",250,0.,5.);
-  TH2D *recoChargedJetEvsAreaNoElecHist = new TH2D("recoChargedJetEvsAreaNoElec",250,0.,5.,300,0.,300.);
+  TH1D *recoChargedJetAreaECutNoElecHist = new TH1D("recoChargedJetAreaECutNoElec","",250,0.,5.);
+  TH2D *recoChargedJetEvsAreaNoElecHist = new TH2D("recoChargedJetEvsAreaNoElec","",250,0.,5.,300,0.,300.);
 #endif
   TH2D *recoChargedJetEvsEtaNoElecHist = new TH2D("recoChargedJetEvsEtaNoElec","",60,-3.,3.,300,0.,300.);
   TH2D *recoChargedJetPhiVsEtaECutNoElecHist = new TH2D("recoChargedJetPhiVsEtaECutNoElec","",60,-3.,3.,100,-TMath::Pi(),TMath::Pi());
@@ -185,7 +190,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   TH1D *genChargedJetEtaECutHist = new TH1D("genChargedJetEtaECut","",60,-3.,3.);
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
   TH1D *genChargedJetAreaECutHist = new TH1D("genChargedJetAreaECut","",250,0.,5.);
-  TH2D *genChargedJetEvsAreaHist = new TH2D("genChargedJetEvsAreaHist",250,0.,5.,300,0.,300.);
+  TH2D *genChargedJetEvsAreaHist = new TH2D("genChargedJetEvsAreaHist","",250,0.,5.,300,0.,300.);
 #endif
   TH2D *genChargedJetEvsEtaHist = new TH2D("genChargedJetEvsEta","",60,-3.,3.,300,0.,300.);
   TH2D *genChargedJetPhiVsEtaECutHist = new TH2D("genChargedJetPhiVsEtaECut","",60,-3.,3.,100,-TMath::Pi(),TMath::Pi());
@@ -279,7 +284,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 	  {
 	    int elecIndex = -1;
 	    double elecIndexWeight = -1.0;
-	    int chargePartIndex = recoCstIndex[m]; // ReconstructedChargedParticle Index for m'th Jet Component
+	    unsigned int chargePartIndex = recoCstIndex[m]; // ReconstructedChargedParticle Index for m'th Jet Component
 	    for(unsigned int n=0; n<recoPartAssocRec.GetSize(); n++) // Loop Over All ReconstructedChargedParticleLinks
 	      {
 		if(recoPartAssocRec[n] == chargePartIndex) // Select Entry Matching the ReconstructedChargedParticle Index
@@ -292,7 +297,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
 		  }
 	      }
 	    
-	    if(pdgMCPart[elecIndex] == 11) // Test if Matched Particle is an Electron
+	    if(elecIndex >= 0 && pdgMCPart[elecIndex] == 11) // Test if Matched Particle is an Electron
 	      noElectron = false;
 	  }
 	
