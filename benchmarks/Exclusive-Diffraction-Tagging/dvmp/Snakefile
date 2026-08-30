@@ -1,0 +1,201 @@
+import os
+
+# Compile the analysis scripts
+rule dvmp_compile:
+    input:
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/dvmp/analysis/vm_mass_cxx.so",
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/dvmp/analysis/vm_invar_cxx.so",
+
+# Generation rule (uses lager event generator)
+rule dvmp_gen:
+    output:
+        hepmc="input/gen-{CONFIG}_{DECAY}_{N_EVENTS}.hepmc",
+        config=temp("tmp/gen-{CONFIG}_{DECAY}_{N_EVENTS}.json"),
+    params:
+        N_EVENTS=lambda wildcards: int(wildcards.N_EVENTS),
+        RNG_SEED=os.getenv("JUGGLER_RNG_SEED", 1),
+        EBEAM=lambda wildcards: 10,  # Default for 10x100
+        PBEAM=lambda wildcards: 100,
+        BRANCHING=lambda wildcards: "0.05961" if wildcards.DECAY == "muon" else "0.05971",
+        DECAY_PID=lambda wildcards: "13" if wildcards.DECAY == "muon" else "11",
+    wildcard_constraints:
+        CONFIG=r"[a-z_]+",
+        DECAY=r"(muon|electron)",
+        N_EVENTS=r"\d+",
+    shell:
+        """
+# Create generator configuration
+mkdir -p tmp input
+sed "s/@TAG@/gen-{wildcards.CONFIG}_{wildcards.DECAY}_{params.N_EVENTS}/" \
+  benchmarks/Exclusive-Diffraction-Tagging/dvmp/generator/{wildcards.CONFIG}.json.in | \
+  sed "s/@EBEAM@/{params.EBEAM}/" | \
+  sed "s/@PBEAM@/{params.PBEAM}/" | \
+  sed "s/@DECAY_LEPTON@/{params.DECAY_PID}/" | \
+  sed "s/@BRANCHING@/{params.BRANCHING}/" > {output.config}
+
+# Run the generator
+lager -r {params.RNG_SEED} \
+      -c {output.config} \
+      -e {params.N_EVENTS} \
+      -o tmp
+
+# Move output to input directory
+for ext in hepmc json log root ; do
+  if [ -f tmp/*.gen-{wildcards.CONFIG}_{wildcards.DECAY}_{params.N_EVENTS}.*.$${{ext}} ]; then
+    mv tmp/*.gen-{wildcards.CONFIG}_{wildcards.DECAY}_{params.N_EVENTS}.*.$${{ext}} input/gen-{wildcards.CONFIG}_{wildcards.DECAY}_{params.N_EVENTS}.$${{ext}}
+  fi
+done
+"""
+
+# Simulation rule
+rule dvmp_sim:
+    input:
+        warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
+        geometry_lib=find_epic_libraries(),
+        gen_file="input/gen-{CONFIG}_{DECAY}_{N_EVENTS}.hepmc",
+    output:
+        "sim/{DETECTOR_CONFIG}/sim-{CONFIG}_{DECAY}_{N_EVENTS}.edm4hep.root",
+    params:
+        N_EVENTS=lambda wildcards: int(wildcards.N_EVENTS),
+        DD4HEP_HASH=get_spack_package_hash("dd4hep"),
+        NPSIM_HASH=get_spack_package_hash("npsim"),
+    wildcard_constraints:
+        CONFIG=r"[a-z_]+",
+        DECAY=r"(muon|electron)",
+        N_EVENTS=r"\d+",
+    cache: True
+    shell:
+        """
+npsim \
+  --runType batch \
+  --part.minimalKineticEnergy 100*GeV  \
+  --filter.tracker edep0 \
+  -v WARNING \
+  --numberOfEvents {params.N_EVENTS} \
+  --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
+  --inputFiles {input.gen_file} \
+  --outputFile {output}
+"""
+
+# Reconstruction rule
+rule dvmp_reco:
+    input:
+        "sim/{DETECTOR_CONFIG}/sim-{CONFIG}_{DECAY}_{N_EVENTS}.edm4hep.root",
+    output:
+        "reco/{DETECTOR_CONFIG}/rec-{CONFIG}_{DECAY}_{N_EVENTS}.edm4eic.root",
+    params:
+        EICRECON_HASH=get_spack_package_hash("eicrecon"),
+    wildcard_constraints:
+        CONFIG=r"[a-z_]+",
+        DECAY=r"(muon|electron)",
+        N_EVENTS=r"\d+",
+    cache: True
+    shell:
+        """
+DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file={output}
+"""
+
+# Analysis rule for vm_mass
+rule dvmp_analysis_vm_mass:
+    input:
+        script="benchmarks/Exclusive-Diffraction-Tagging/dvmp/analysis/vm_mass.cxx",
+        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/dvmp/analysis/vm_mass_cxx.so",
+        data="reco/{DETECTOR_CONFIG}/rec-{CONFIG}_{DECAY}_{N_EVENTS}.edm4eic.root",
+    output:
+        config="results/{DETECTOR_CONFIG}/dvmp/{CONFIG}_{DECAY}_{N_EVENTS}/vm_mass_config.json",
+        done="results/{DETECTOR_CONFIG}/dvmp/{CONFIG}_{DECAY}_{N_EVENTS}/vm_mass_done.txt",
+    params:
+        EBEAM=10,
+        PBEAM=100,
+        LEADING="jpsi",
+    wildcard_constraints:
+        CONFIG=r"[a-z_]+",
+        DECAY=r"(muon|electron)",
+        N_EVENTS=r"\d+",
+    shell:
+        """
+mkdir -p results/{wildcards.DETECTOR_CONFIG}/dvmp/{wildcards.CONFIG}_{wildcards.DECAY}_{wildcards.N_EVENTS}
+cat > {output.config} <<EOF
+{{
+  "rec_file": "{input.data}",
+  "vm_name": "{params.LEADING}",
+  "decay": "{wildcards.DECAY}",
+  "detector": "{wildcards.DETECTOR_CONFIG}",
+  "output_prefix": "results/{wildcards.DETECTOR_CONFIG}/dvmp/{wildcards.CONFIG}_{wildcards.DECAY}_{wildcards.N_EVENTS}/{wildcards.CONFIG}_{wildcards.DECAY}",
+  "test_tag": "{params.LEADING}_{wildcards.DECAY}_{params.EBEAM}x{params.PBEAM}"
+}}
+EOF
+root -l -b -q '{input.script}+("{output.config}")'
+touch {output.done}
+"""
+
+# Analysis rule for vm_invar
+rule dvmp_analysis_vm_invar:
+    input:
+        script="benchmarks/Exclusive-Diffraction-Tagging/dvmp/analysis/vm_invar.cxx",
+        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/dvmp/analysis/vm_invar_cxx.so",
+        data="reco/{DETECTOR_CONFIG}/rec-{CONFIG}_{DECAY}_{N_EVENTS}.edm4eic.root",
+    output:
+        config="results/{DETECTOR_CONFIG}/dvmp/{CONFIG}_{DECAY}_{N_EVENTS}/vm_invar_config.json",
+        done="results/{DETECTOR_CONFIG}/dvmp/{CONFIG}_{DECAY}_{N_EVENTS}/vm_invar_done.txt",
+    params:
+        EBEAM=10,
+        PBEAM=100,
+        LEADING="jpsi",
+    wildcard_constraints:
+        CONFIG=r"[a-z_]+",
+        DECAY=r"(muon|electron)",
+        N_EVENTS=r"\d+",
+    shell:
+        """
+mkdir -p results/{wildcards.DETECTOR_CONFIG}/dvmp/{wildcards.CONFIG}_{wildcards.DECAY}_{wildcards.N_EVENTS}
+cat > {output.config} <<EOF
+{{
+  "rec_file": "{input.data}",
+  "vm_name": "{params.LEADING}",
+  "decay": "{wildcards.DECAY}",
+  "detector": "{wildcards.DETECTOR_CONFIG}",
+  "output_prefix": "results/{wildcards.DETECTOR_CONFIG}/dvmp/{wildcards.CONFIG}_{wildcards.DECAY}_{wildcards.N_EVENTS}/{wildcards.CONFIG}_{wildcards.DECAY}",
+  "test_tag": "{params.LEADING}_{wildcards.DECAY}_{params.EBEAM}x{params.PBEAM}"
+}}
+EOF
+root -l -b -q '{input.script}+("{output.config}")'
+touch {output.done}
+"""
+
+# Aggregate both analysis outputs
+rule dvmp_analysis_complete:
+    input:
+        "results/{DETECTOR_CONFIG}/dvmp/{CONFIG}_{DECAY}_{N_EVENTS}/vm_mass_done.txt",
+        "results/{DETECTOR_CONFIG}/dvmp/{CONFIG}_{DECAY}_{N_EVENTS}/vm_invar_done.txt",
+    output:
+        "results/{DETECTOR_CONFIG}/dvmp/{CONFIG}_{DECAY}_{N_EVENTS}/analysis_done.txt",
+    shell:
+        """
+touch {output}
+"""
+
+# Top-level rule to run generation for a specific config
+rule dvmp_gen_config:
+    input:
+        "input/gen-{CONFIG}_muon_{N_EVENTS}.hepmc",
+        "input/gen-{CONFIG}_electron_{N_EVENTS}.hepmc",
+    message:
+        "Generation complete for {wildcards.CONFIG}"
+
+# Top-level rule to run everything for a specific config
+rule dvmp_run_config:
+    input:
+        "results/{DETECTOR_CONFIG}/dvmp/{CONFIG}_muon_{N_EVENTS}/analysis_done.txt",
+        "results/{DETECTOR_CONFIG}/dvmp/{CONFIG}_electron_{N_EVENTS}/analysis_done.txt",
+    message:
+        "DVMP benchmark complete for {wildcards.CONFIG}. See output in results/{wildcards.DETECTOR_CONFIG}/dvmp/"
+
+# Default run for local execution (jpsi_barrel with default event count from env)
+rule dvmp_run_locally:
+    input:
+        expand("results/{{DETECTOR_CONFIG}}/dvmp/jpsi_barrel_{decay}_{n_events}/analysis_done.txt",
+               decay=["muon", "electron"],
+               n_events=[os.getenv("JUGGLER_N_EVENTS", "100")]),
+    message:
+        "DVMP benchmark complete. See output in results/{DETECTOR_CONFIG}/dvmp/"

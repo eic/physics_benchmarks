@@ -2,7 +2,7 @@ tcs:compile:
   stage: compile
   extends: .compile_benchmark
   script:
-    - compile_analyses.py Exclusive-Diffraction-Tagging/tcs
+    - snakemake --cores 1 tcs_compile
 
 tcs:simulate:
   stage: simulate
@@ -19,12 +19,16 @@ tcs:simulate:
       - EBEAM: 18
         PBEAM: 275
         TAG: s800
+  timeout: 2 hours
   script:
-    #- bash benchmarks/Exclusive-Diffraction-Tagging/tcs/tcs.sh --all --ebeam ${EBEAM} --pbeam ${PBEAM} --tag ${TAG}
-    - bash benchmarks/Exclusive-Diffraction-Tagging/tcs/tcs.sh --data-init --sim --rec --ebeam ${EBEAM} --pbeam ${PBEAM} --tag ${TAG}
+    - snakemake $SNAKEMAKE_FLAGS --cores 1 results/${DETECTOR_CONFIG}/tcs/tcs_${EBEAM}x${PBEAM}m_${TAG}_analysis_done.txt
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
 
 tcs:results:
   stage: collect
   needs: ["tcs:simulate"]
   script:
-    - ls -lrth
+    - collect_tests.py Exclusive-Diffraction-Tagging/tcs
