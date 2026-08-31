@@ -9,7 +9,7 @@ rule diffractive_vm_compile:
 
 rule diffractive_vm_campaign_reco_get:
     input:
-        lambda wildcards: f"EPIC/RECO/{wildcards.RELEASE_TAG}/{wildcards.DETECTOR_CONFIG}/EXCLUSIVE/DIFFRACTIVE_{wildcards.PARTICLE.upper()}_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_{wildcards.PARTICLE}_ab_eAu_1.0{wildcards.INDEX}.eicrecon.tree.edm4eic.root",
+        lambda wildcards: f"EPIC/RECO/{wildcards.RELEASE_TAG}/{wildcards.DETECTOR_CONFIG}/EXCLUSIVE/DIFFRACTIVE_{wildcards.PARTICLE.upper()}_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_{wildcards.PARTICLE}_ab_eAu_1.0{wildcards.INDEX}.eicrecon.edm4eic.root",
     output:
         temp("reco/{DETECTOR_CONFIG}/campaign_{RELEASE_TAG}_sartre_{PARTICLE}_{INDEX}.edm4eic.root"),
     shell:
@@ -145,8 +145,7 @@ root -l -b -q '{input.script}+("{input.config}")'
 
 rule diffractive_vm_run_over_campaigns:
     input:
-        "results/epic_craterlake/diffractive_vm/campaign_24.03.1_sartre_phi_combined_9/plots_benchmark-phi-dsigmadt.pdf",
-        "results/epic_craterlake/diffractive_vm/campaign_24.08.1_sartre_phi_combined_9/plots_benchmark-phi-dsigmadt.pdf",
+        "results/epic_craterlake/diffractive_vm/campaign_25.05.0_sartre_phi_combined_9/plots_benchmark-phi-dsigmadt.pdf",
     message:
         "See output in {input[0]}"
 
