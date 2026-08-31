@@ -57,7 +57,7 @@ rule dvcs_analysis:
         """
 mkdir -p results/{wildcards.DETECTOR_CONFIG}/dvcs
 cd results/{wildcards.DETECTOR_CONFIG}/dvcs
-root -l -b -q '{input.script}+("../../../{input.data}")'
+root -l -b -q '../../../{input.script}+("../../../{input.data}")'
 touch ../../../{output}
 """
 

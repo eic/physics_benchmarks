@@ -68,7 +68,7 @@ rule tcs_analysis:
         """
 mkdir -p results/{wildcards.DETECTOR_CONFIG}/tcs
 cd results/{wildcards.DETECTOR_CONFIG}/tcs
-root -l -b -q '{input.script}+("../../../{input.data}")'
+root -l -b -q '../../../{input.script}+("../../../{input.data}")'
 touch ../../../{output}
 """
 

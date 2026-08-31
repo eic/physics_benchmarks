@@ -57,7 +57,7 @@ rule u_omega_analysis:
         """
 mkdir -p results/{wildcards.DETECTOR_CONFIG}/u_omega
 cd results/{wildcards.DETECTOR_CONFIG}/u_omega
-root -l -b -q '{input.script}+("../../../{input.data}")'
+root -l -b -q '../../../{input.script}+("../../../{input.data}")'
 touch ../../../{output}
 """
 
