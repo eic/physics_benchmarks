@@ -52,29 +52,36 @@ rule tcs_reco:
 DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file={output}
 """
 
-# Analysis rule
+# Analysis rule - runs from repo root, script writes to results/tcs/
 rule tcs_analysis:
     input:
         script="benchmarks/Exclusive-Diffraction-Tagging/tcs/analysis/tcs_tests.cxx",
         script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/tcs/analysis/tcs_tests_cxx.so",
         data="reco/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}.edm4eic.root",
     output:
-        "results/{DETECTOR_CONFIG}/tcs/tcs_{EBEAM}x{PBEAM}m_{TAG}_analysis_done.txt",
+        "results/tcs/Q2.png",
+        "results/tcs/Q2.pdf",
+        "results/tcs/n_parts.png",
+        "results/tcs/n_parts.pdf",
+        "results/tcs/ff.png",
+        "results/tcs/ff.pdf",
+        "results/tcs/ff_theta.png",
+        "results/tcs/ff_theta.pdf",
     wildcard_constraints:
         EBEAM=r"\d+",
         PBEAM=r"\d+",
         TAG=r"s\d+",
     shell:
         """
-mkdir -p results/{wildcards.DETECTOR_CONFIG}/tcs
-cd results/{wildcards.DETECTOR_CONFIG}/tcs
-root -l -b -q '../../../{input.script}+("../../../{input.data}")'
-touch ../../../{output}
+mkdir -p results/tcs
+root -l -b -q '{input.script}+("{input.data}")'
 """
 
 # Helper rule to run a specific configuration
 rule tcs_run_config:
     input:
-        "results/{DETECTOR_CONFIG}/tcs/tcs_{EBEAM}x{PBEAM}m_{TAG}_analysis_done.txt",
+        expand("results/tcs/{plot}.{ext}", 
+               plot=["Q2", "n_parts", "ff", "ff_theta"], 
+               ext=["png", "pdf"]),
     message:
-        "TCS benchmark complete for {wildcards.EBEAM}x{wildcards.PBEAM} {wildcards.TAG}. See output in results/{wildcards.DETECTOR_CONFIG}/tcs/"
+        "TCS benchmark complete. See output in results/tcs/"

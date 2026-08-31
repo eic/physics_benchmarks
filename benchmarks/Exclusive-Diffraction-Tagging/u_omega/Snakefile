@@ -45,25 +45,26 @@ rule u_omega_reco:
 DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file={output}
 """
 
-# Analysis rule
+# Analysis rule - runs from repo root, script writes to results/u_omega/
 rule u_omega_analysis:
     input:
         script="benchmarks/Exclusive-Diffraction-Tagging/u_omega/analysis/demo.cxx",
         script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/u_omega/analysis/demo_cxx.so",
         data="reco/{DETECTOR_CONFIG}/u_omega.edm4eic.root",
     output:
-        "results/{DETECTOR_CONFIG}/u_omega/u_omega_analysis_done.txt",
+        "results/u_omega/Q2.png",
+        "results/u_omega/Q2.pdf",
+        "results/u_omega/n_parts.png",
+        "results/u_omega/n_parts.pdf",
     shell:
         """
-mkdir -p results/{wildcards.DETECTOR_CONFIG}/u_omega
-cd results/{wildcards.DETECTOR_CONFIG}/u_omega
-root -l -b -q '../../../{input.script}+("../../../{input.data}")'
-touch ../../../{output}
+mkdir -p results/u_omega
+root -l -b -q '{input.script}+("{input.data}")'
 """
 
 # Top-level rule to run everything
 rule u_omega_run_locally:
     input:
-        "results/" + os.environ["DETECTOR_CONFIG"] + "/u_omega/u_omega_analysis_done.txt",
+        expand("results/u_omega/{plot}.{ext}", plot=["Q2", "n_parts"], ext=["png", "pdf"]),
     message:
-        "u_omega benchmark complete. See output in results/{DETECTOR_CONFIG}/u_omega/"
+        "u_omega benchmark complete. See output in results/u_omega/"

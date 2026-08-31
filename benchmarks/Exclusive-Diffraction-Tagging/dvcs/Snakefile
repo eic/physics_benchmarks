@@ -45,25 +45,26 @@ rule dvcs_reco:
 DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file={output}
 """
 
-# Analysis rule
+# Analysis rule - runs from repo root, script writes to results/dvcs/
 rule dvcs_analysis:
     input:
         script="benchmarks/Exclusive-Diffraction-Tagging/dvcs/analysis/dvcs_tests.cxx",
         script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/dvcs/analysis/dvcs_tests_cxx.so",
         data="reco/{DETECTOR_CONFIG}/dvcs.edm4eic.root",
     output:
-        "results/{DETECTOR_CONFIG}/dvcs/dvcs_analysis_done.txt",
+        "results/dvcs/Q2.png",
+        "results/dvcs/Q2.pdf",
+        "results/dvcs/n_parts.png",
+        "results/dvcs/n_parts.pdf",
     shell:
         """
-mkdir -p results/{wildcards.DETECTOR_CONFIG}/dvcs
-cd results/{wildcards.DETECTOR_CONFIG}/dvcs
-root -l -b -q '../../../{input.script}+("../../../{input.data}")'
-touch ../../../{output}
+mkdir -p results/dvcs
+root -l -b -q '{input.script}+("{input.data}")'
 """
 
 # Top-level rule to run everything
 rule dvcs_run_locally:
     input:
-        "results/" + os.environ["DETECTOR_CONFIG"] + "/dvcs/dvcs_analysis_done.txt",
+        expand("results/dvcs/{plot}.{ext}", plot=["Q2", "n_parts"], ext=["png", "pdf"]),
     message:
-        "DVCS benchmark complete. See output in results/{DETECTOR_CONFIG}/dvcs/"
+        "DVCS benchmark complete. See output in results/dvcs/"
