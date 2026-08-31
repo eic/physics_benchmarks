@@ -1,0 +1,90 @@
+import os
+
+rule eid_dis_compile_macro:
+    input:
+        "benchmarks/Inclusive/eid_dis/analysis/run_eidana.C",
+    output:
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/Inclusive/eid_dis/analysis/run_eidana_C.d",
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/Inclusive/eid_dis/analysis/run_eidana_C.so",
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/Inclusive/eid_dis/analysis/run_eidana_C_ACLiC_dict_rdict.pcm",
+    shell:
+        """
+root -l -b -q -e '.L {input}+'
+"""
+
+# Compile entry point
+rule eid_dis_compile:
+    input:
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/Inclusive/eid_dis/analysis/run_eidana_C.so",
+
+
+checkpoint eid_dis_sim_list:
+    output:
+        "listing/eid_dis/{CAMPAIGN}/epic_craterlake/{BEAM}/{Q2_RANGE}.lst",
+    params:
+        search_path=lambda wildcards: f"RECO/{wildcards.CAMPAIGN}/epic_craterlake/DIS/pythia8.316-1.0/NC/noRad/ep/{wildcards.BEAM}/{wildcards.Q2_RANGE}/",
+    wildcard_constraints:
+        CAMPAIGN=r"[\d.]+",
+        BEAM=r"\d+x\d+",
+        Q2_RANGE=r"q2_\w+",
+    shell:
+        r"""
+xrdfs root://epicxrd1.sdcc.bnl.gov:1095/ ls /eic/EPIC/{params.search_path} \
+  | grep '\.eicrecon\.edm4eic\.root$' \
+  | sed 's|.*/||; s|\.eicrecon\.edm4eic\.root$||' \
+  | sort \
+  > {output}
+if [ ! -s {output} ]; then
+  echo "Empty file listing for /eic/EPIC/{params.search_path}"
+  exit 1
+fi
+"""
+
+
+def _eid_dis_stems(wildcards):
+    listing = checkpoints.eid_dis_sim_list.get(
+        CAMPAIGN=wildcards.CAMPAIGN,
+        BEAM=wildcards.BEAM,
+        Q2_RANGE=wildcards.Q2_RANGE,
+    ).output[0]
+    with open(listing) as f:
+        return [line.strip() for line in f if line.strip()]
+
+
+rule eid_dis_analysis:
+    input:
+        script="benchmarks/Inclusive/eid_dis/analysis/run_eidana.C",
+        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Inclusive/eid_dis/analysis/run_eidana_C.so",
+        listing="listing/eid_dis/{CAMPAIGN}/epic_craterlake/{BEAM}/{Q2_RANGE}.lst",
+    output:
+        hists="results/{DETECTOR_CONFIG}/eid_dis/campaign_{CAMPAIGN}/{BEAM}/{Q2_RANGE}/combined_{NFILES}/hists.root",
+        plots="results/{DETECTOR_CONFIG}/eid_dis/campaign_{CAMPAIGN}/{BEAM}/{Q2_RANGE}/combined_{NFILES}/plots.pdf",
+    wildcard_constraints:
+        CAMPAIGN=r"[\d.]+",
+        BEAM=r"\d+x\d+",
+        Q2_RANGE=r"q2_\w+",
+        NFILES=r"\d+",
+    params:
+        EBEAM=lambda wildcards: wildcards.BEAM.split("x")[0],
+        PBEAM=lambda wildcards: wildcards.BEAM.split("x")[1],
+    shell:
+        r"""
+mkdir -p $(dirname {output.hists})
+head -{wildcards.NFILES} {input.listing} > {output.hists}.lst
+root -l -b -q '{input.script}+("{output.hists}.lst", "{output.hists}", {params.EBEAM}, {params.PBEAM}, "{wildcards.CAMPAIGN}", "{wildcards.BEAM}", "{wildcards.Q2_RANGE}")'
+rm {output.hists}.lst
+# Extract canvases from ROOT file into a multi-page PDF
+root -l -b -q -e '
+TFile f("{output.hists}");
+TIter next(f.GetListOfKeys()); TKey* key; bool first = true; TCanvas* last = nullptr;
+while ((key = (TKey*)next())) {{
+  TObject* obj = key->ReadObj();
+  if (!obj->IsA()->InheritsFrom(TCanvas::Class())) continue;
+  TCanvas* c = (TCanvas*)obj;
+  if (first) {{ c->Print("{output.plots}("); first = false; }} else c->Print("{output.plots}");
+  last = c;
+}}
+if (last) last->Print("{output.plots})");
+f.Close();
+'
+"""
