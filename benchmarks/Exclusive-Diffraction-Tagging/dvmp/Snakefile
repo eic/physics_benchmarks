@@ -24,14 +24,14 @@ rule dvmp_gen:
         N_EVENTS=r"\d+",
     shell:
         """
-# Create generator configuration
+# Create generator configuration from template
 mkdir -p tmp input
-sed "s/@TAG@/gen-{wildcards.CONFIG}_{wildcards.DECAY}_{params.N_EVENTS}/" \
-  benchmarks/Exclusive-Diffraction-Tagging/dvmp/generator/{wildcards.CONFIG}.json.in | \
-  sed "s/@EBEAM@/{params.EBEAM}/" | \
-  sed "s/@PBEAM@/{params.PBEAM}/" | \
-  sed "s/@DECAY_LEPTON@/{params.DECAY_PID}/" | \
-  sed "s/@BRANCHING@/{params.BRANCHING}/" > {output.config}
+sed -e "s/@TAG@/gen-{wildcards.CONFIG}_{wildcards.DECAY}_{params.N_EVENTS}/" \
+    -e "s/@EBEAM@/{params.EBEAM}/" \
+    -e "s/@PBEAM@/{params.PBEAM}/" \
+    -e "s/@DECAY_LEPTON@/{params.DECAY_PID}/" \
+    -e "s/@BRANCHING@/{params.BRANCHING}/" \
+    benchmarks/Exclusive-Diffraction-Tagging/dvmp/generator/{wildcards.CONFIG}.json.in > {output.config}
 
 # Run the generator
 lager -r {params.RNG_SEED} \
