@@ -59,29 +59,22 @@ rule tcs_analysis:
         script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/tcs/analysis/tcs_tests_cxx.so",
         data="reco/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}.edm4eic.root",
     output:
-        "results/tcs/Q2.png",
-        "results/tcs/Q2.pdf",
-        "results/tcs/n_parts.png",
-        "results/tcs/n_parts.pdf",
-        "results/tcs/ff.png",
-        "results/tcs/ff.pdf",
-        "results/tcs/ff_theta.png",
-        "results/tcs/ff_theta.pdf",
+        "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/Q2.png",
+        "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/Q2.pdf",
+        "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/n_parts.png",
+        "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/n_parts.pdf",
+        "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/ff.png",
+        "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/ff.pdf",
+        "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/ff_theta.png",
+        "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/ff_theta.pdf",
     wildcard_constraints:
         EBEAM=r"\d+",
         PBEAM=r"\d+",
         TAG=r"s\d+",
     shell:
         """
-mkdir -p results/tcs
+mkdir -p results/{wildcards.DETECTOR_CONFIG}/tcs_{wildcards.EBEAM}x{wildcards.PBEAM}m_{wildcards.TAG}
 root -l -b -q '{input.script}+("{input.data}")'
+# Copy plots to detector-specific directory since script outputs to results/tcs/
+mv results/tcs/*.png results/tcs/*.pdf results/{wildcards.DETECTOR_CONFIG}/tcs_{wildcards.EBEAM}x{wildcards.PBEAM}m_{wildcards.TAG}/ 2>/dev/null || true
 """
-
-# Helper rule to run a specific configuration
-rule tcs_run_config:
-    input:
-        expand("results/tcs/{plot}.{ext}", 
-               plot=["Q2", "n_parts", "ff", "ff_theta"], 
-               ext=["png", "pdf"]),
-    message:
-        "TCS benchmark complete. See output in results/tcs/"

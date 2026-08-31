@@ -21,7 +21,7 @@ tcs:simulate:
         TAG: s800
   timeout: 2 hours
   script:
-    - snakemake $SNAKEMAKE_FLAGS --cores 1 results/${DETECTOR_CONFIG}/tcs/tcs_${EBEAM}x${PBEAM}m_${TAG}_analysis_done.txt
+    - snakemake $SNAKEMAKE_FLAGS --cores 1 results/${DETECTOR_CONFIG}/tcs_${EBEAM}x${PBEAM}m_${TAG}/Q2.png
   retry:
     max: 2
     when:

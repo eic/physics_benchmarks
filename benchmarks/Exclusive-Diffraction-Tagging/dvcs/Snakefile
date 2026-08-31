@@ -52,19 +52,24 @@ rule dvcs_analysis:
         script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/dvcs/analysis/dvcs_tests_cxx.so",
         data="reco/{DETECTOR_CONFIG}/dvcs.edm4eic.root",
     output:
-        "results/dvcs/Q2.png",
-        "results/dvcs/Q2.pdf",
-        "results/dvcs/n_parts.png",
-        "results/dvcs/n_parts.pdf",
+        "results/{DETECTOR_CONFIG}/dvcs/Q2.png",
+        "results/{DETECTOR_CONFIG}/dvcs/Q2.pdf",
+        "results/{DETECTOR_CONFIG}/dvcs/n_parts.png",
+        "results/{DETECTOR_CONFIG}/dvcs/n_parts.pdf",
     shell:
         """
-mkdir -p results/dvcs
+mkdir -p results/{wildcards.DETECTOR_CONFIG}/dvcs
 root -l -b -q '{input.script}+("{input.data}")'
+# Copy plots to detector-specific directory since script outputs to results/dvcs/
+mv results/dvcs/*.png results/dvcs/*.pdf results/{wildcards.DETECTOR_CONFIG}/dvcs/ 2>/dev/null || true
 """
 
 # Top-level rule to run everything
 rule dvcs_run_locally:
     input:
-        expand("results/dvcs/{plot}.{ext}", plot=["Q2", "n_parts"], ext=["png", "pdf"]),
+        expand("results/{DETECTOR_CONFIG}/dvcs/{plot}.{ext}",
+               DETECTOR_CONFIG=[os.getenv("DETECTOR_CONFIG", "epic")],
+               plot=["Q2", "n_parts"],
+               ext=["png", "pdf"]),
     message:
         "DVCS benchmark complete. See output in results/dvcs/"
