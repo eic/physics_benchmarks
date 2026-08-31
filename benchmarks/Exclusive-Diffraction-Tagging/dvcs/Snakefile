@@ -58,10 +58,10 @@ rule dvcs_analysis:
         "results/{DETECTOR_CONFIG}/dvcs/n_parts.pdf",
     shell:
         """
-mkdir -p results/{wildcards.DETECTOR_CONFIG}/dvcs
+mkdir -p results/dvcs results/{wildcards.DETECTOR_CONFIG}/dvcs
 root -l -b -q '{input.script}+("{input.data}")'
-# Copy plots to detector-specific directory since script outputs to results/dvcs/
-mv results/dvcs/*.png results/dvcs/*.pdf results/{wildcards.DETECTOR_CONFIG}/dvcs/ 2>/dev/null || true
+# Move plots to detector-specific directory since script outputs to results/dvcs/
+mv results/dvcs/*.png results/dvcs/*.pdf results/{wildcards.DETECTOR_CONFIG}/dvcs/
 """
 
 # Top-level rule to run everything

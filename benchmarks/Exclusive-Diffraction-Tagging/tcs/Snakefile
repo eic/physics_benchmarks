@@ -73,8 +73,8 @@ rule tcs_analysis:
         TAG=r"s\d+",
     shell:
         """
-mkdir -p results/{wildcards.DETECTOR_CONFIG}/tcs_{wildcards.EBEAM}x{wildcards.PBEAM}m_{wildcards.TAG}
+mkdir -p results/tcs results/{wildcards.DETECTOR_CONFIG}/tcs_{wildcards.EBEAM}x{wildcards.PBEAM}m_{wildcards.TAG}
 root -l -b -q '{input.script}+("{input.data}")'
-# Copy plots to detector-specific directory since script outputs to results/tcs/
-mv results/tcs/*.png results/tcs/*.pdf results/{wildcards.DETECTOR_CONFIG}/tcs_{wildcards.EBEAM}x{wildcards.PBEAM}m_{wildcards.TAG}/ 2>/dev/null || true
+# Move plots to detector-specific directory since script outputs to results/tcs/
+mv results/tcs/*.png results/tcs/*.pdf results/{wildcards.DETECTOR_CONFIG}/tcs_{wildcards.EBEAM}x{wildcards.PBEAM}m_{wildcards.TAG}/
 """

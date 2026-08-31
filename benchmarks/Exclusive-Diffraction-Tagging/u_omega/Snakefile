@@ -58,10 +58,10 @@ rule u_omega_analysis:
         "results/{DETECTOR_CONFIG}/u_omega/n_parts.pdf",
     shell:
         """
-mkdir -p results/{wildcards.DETECTOR_CONFIG}/u_omega
+mkdir -p results/u_omega results/{wildcards.DETECTOR_CONFIG}/u_omega
 root -l -b -q '{input.script}+("{input.data}")'
-# Copy plots to detector-specific directory since script outputs to results/u_omega/
-mv results/u_omega/*.png results/u_omega/*.pdf results/{wildcards.DETECTOR_CONFIG}/u_omega/ 2>/dev/null || true
+# Move plots to detector-specific directory since script outputs to results/u_omega/
+mv results/u_omega/*.png results/u_omega/*.pdf results/{wildcards.DETECTOR_CONFIG}/u_omega/
 """
 
 # Top-level rule to run everything
