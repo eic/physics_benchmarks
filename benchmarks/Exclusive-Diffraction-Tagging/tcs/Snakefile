@@ -53,28 +53,33 @@ DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file
 """
 
 # Analysis rule - runs from repo root, script writes to results/tcs/
-rule tcs_analysis:
-    input:
-        script="benchmarks/Exclusive-Diffraction-Tagging/tcs/analysis/tcs_tests.cxx",
-        script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/tcs/analysis/tcs_tests_cxx.so",
-        data="reco/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}.edm4eic.root",
-    output:
-        "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/Q2.png",
-        "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/Q2.pdf",
-        "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/n_parts.png",
-        "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/n_parts.pdf",
-        "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/ff.png",
-        "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/ff.pdf",
-        "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/ff_theta.png",
-        "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/ff_theta.pdf",
-    wildcard_constraints:
-        EBEAM=r"\d+",
-        PBEAM=r"\d+",
-        TAG=r"s\d+",
-    shell:
-        """
-mkdir -p results/tcs results/{wildcards.DETECTOR_CONFIG}/tcs_{wildcards.EBEAM}x{wildcards.PBEAM}m_{wildcards.TAG}
-root -l -b -q '{input.script}+("{input.data}")'
-# Move plots to detector-specific directory since script outputs to results/tcs/
-mv results/tcs/*.png results/tcs/*.pdf results/{wildcards.DETECTOR_CONFIG}/tcs_{wildcards.EBEAM}x{wildcards.PBEAM}m_{wildcards.TAG}/
-"""
+# TCS analysis is currently disabled because the analysis code accesses
+# "ReconstructedFFParticles" collection which no longer exists in the
+# reconstruction output. The analysis code needs to be updated before
+# this rule can be enabled.
+#
+# rule tcs_analysis:
+#     input:
+#         script="benchmarks/Exclusive-Diffraction-Tagging/tcs/analysis/tcs_tests.cxx",
+#         script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/tcs/analysis/tcs_tests_cxx.so",
+#         data="reco/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}.edm4eic.root",
+#     output:
+#         "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/Q2.png",
+#         "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/Q2.pdf",
+#         "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/n_parts.png",
+#         "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/n_parts.pdf",
+#         "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/ff.png",
+#         "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/ff.pdf",
+#         "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/ff_theta.png",
+#         "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/ff_theta.pdf",
+#     wildcard_constraints:
+#         EBEAM=r"\d+",
+#         PBEAM=r"\d+",
+#         TAG=r"s\d+",
+#     shell:
+#         """
+# mkdir -p results/tcs results/{wildcards.DETECTOR_CONFIG}/tcs_{wildcards.EBEAM}x{wildcards.PBEAM}m_{wildcards.TAG}
+# root -l -b -q '{input.script}+("{input.data}")'
+# # Move plots to detector-specific directory since script outputs to results/tcs/
+# mv results/tcs/*.png results/tcs/*.pdf results/{wildcards.DETECTOR_CONFIG}/tcs_{wildcards.EBEAM}x{wildcards.PBEAM}m_{wildcards.TAG}/
+# """
