@@ -149,10 +149,10 @@ for (auto entryId : *ntuple) {
     // For vector/array fields, you get a RVec-like object
     auto energy_vec = viewRecoNRG(entryId);
     auto momx_vec = viewRecoMomX(entryId);
-    
+
     for (size_t i = 0; i < energy_vec.size(); i++) {
-        float energy = energy_vec[i];
-        float px = momx_vec[i];
+        float energy = energy_vec.at(i);  // Use .at() for ROOT compatibility
+        float px = momx_vec.at(i);
         // ... process data
     }
 }
@@ -240,10 +240,10 @@ int analyze(const std::string& rec_file) {
     for (auto entryId : *ntuple) {
         auto energy_vec = viewRecoNRG(entryId);
         auto momz_vec = viewRecoMomZ(entryId);
-        
+
         for (size_t i = 0; i < energy_vec.size(); i++) {
-            float energy = energy_vec[i];
-            float pz = momz_vec[i];
+            float energy = energy_vec.at(i);  // Use .at() for ROOT compatibility
+            float pz = momz_vec.at(i);
             // Process jet...
         }
     }
@@ -465,8 +465,8 @@ int analyze(const std::string& rec_file) {
     ) {
         // Your analysis logic with full control
         for (size_t i = 0; i < jet_energy.size(); i++) {
-            float energy = jet_energy[i];
-            float pt = sqrt(jet_px[i]*jet_px[i] + jet_py[i]*jet_py[i]);
+            float energy = jet_energy.at(i);
+            float pt = sqrt(jet_px.at(i)*jet_px.at(i) + jet_py.at(i)*jet_py.at(i));
             histogram1->Fill(energy);
             histogram2->Fill(pt);
         }
