@@ -5,9 +5,63 @@
 #   eicrecon input.edm4hep.root -Ppodio:output_file=output.edm4eic.rnt.root -Ppodio:output_backend=rntuple
 # For TTree files (legacy), update the `data=` patterns below to `.edm4eic.root`.
 
+import shutil
+
+
 rule jets_compile:
     input:
         ROOT_BUILD_DIR_PREFIX + "benchmarks/Jets-HF/jets/analysis/jets_cxx.so",
+
+
+rule jets_sim:
+    input:
+        warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
+        geometry_lib=find_epic_libraries(),
+    output:
+        "sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.{INDEX}.edm4hep.root",
+    wildcard_constraints:
+        INDEX=r"\d{4}",
+    params:
+        N_EVENTS=100,
+        SEED=lambda wildcards: "1" + wildcards.INDEX,
+        EBEAM=lambda wildcards: wildcards.EBEAM,
+        PBEAM=lambda wildcards: wildcards.PBEAM,
+        MINQ2=lambda wildcards: wildcards.MINQ2,
+        DETECTOR_PATH=os.environ["DETECTOR_PATH"],
+        DETECTOR_CONFIG=lambda wildcards: wildcards.DETECTOR_CONFIG,
+        DD4HEP_HASH=get_spack_package_hash("dd4hep"),
+        NPSIM_HASH=get_spack_package_hash("npsim"),
+    cache: True
+    shell:
+        """
+npsim \
+  --runType batch \
+  --part.minimalKineticEnergy 1000*GeV  \
+  --filter.tracker edep0 \
+  -v WARNING \
+  --numberOfEvents {params.N_EVENTS} \
+  --compactFile $DETECTOR_PATH/{params.DETECTOR_CONFIG}.xml \
+  --random.seed {params.SEED} \
+  --inputFiles root://dtn-eic.jlab.org//volatile/eic/EPIC/EVGEN/DIS/NC/{params.EBEAM}x{params.PBEAM}/minQ2={params.MINQ2}/pythia8NCDIS_{params.EBEAM}x{params.PBEAM}_minQ2={params.MINQ2}_beamEffects_xAngle=-0.025_hiDiv_vtxfix_1.hepmc3.tree.root \
+  --outputFile {output}
+"""
+
+
+rule jets_reco_eicrecon:
+    # This rule produces RNTuple format output (.edm4eic.rnt.root)
+    # Analysis scripts (jets.cxx) work with both TTree and RNTuple formats
+    input:
+        "sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.{INDEX}.edm4hep.root",
+    output:
+        "sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.{INDEX}.eicrecon.edm4eic.rnt.root",
+    params:
+        DETECTOR_CONFIG=lambda wildcards: wildcards.DETECTOR_CONFIG,
+        EICRECON_HASH=get_spack_package_hash("eicrecon"),
+    cache: True
+    shell:
+        """
+DETECTOR_CONFIG={params.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file={output} -Ppodio:output_backend=rntuple
+"""
 
 
 rule jets_generate_config:
