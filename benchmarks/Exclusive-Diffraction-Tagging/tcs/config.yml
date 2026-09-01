@@ -2,8 +2,11 @@ tcs:compile:
   stage: compile
   extends: .compile_benchmark
   script:
-    - compile_analyses.py Exclusive-Diffraction-Tagging/tcs
+    - snakemake --cores 1 tcs_compile
 
+# TCS runs sim and reco with caching, but analysis is disabled because the
+# analysis code accesses "ReconstructedFFParticles" collection which no longer
+# exists. The reco output files are still produced and cached.
 tcs:simulate:
   stage: simulate
   extends: .phy_benchmark
@@ -19,12 +22,16 @@ tcs:simulate:
       - EBEAM: 18
         PBEAM: 275
         TAG: s800
+  timeout: 2 hours
   script:
-    #- bash benchmarks/Exclusive-Diffraction-Tagging/tcs/tcs.sh --all --ebeam ${EBEAM} --pbeam ${PBEAM} --tag ${TAG}
-    - bash benchmarks/Exclusive-Diffraction-Tagging/tcs/tcs.sh --data-init --sim --rec --ebeam ${EBEAM} --pbeam ${PBEAM} --tag ${TAG}
+    - snakemake $SNAKEMAKE_FLAGS --cores 1 reco/${DETECTOR_CONFIG}/tcs_${EBEAM}x${PBEAM}m_${TAG}.edm4eic.root
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
 
 tcs:results:
   stage: collect
   needs: ["tcs:simulate"]
   script:
-    - ls -lrth
+    - echo "TCS analysis disabled - see Snakefile for details"

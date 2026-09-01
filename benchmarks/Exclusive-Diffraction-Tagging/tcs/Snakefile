@@ -1,0 +1,85 @@
+import os
+
+# Compile the analysis scripts
+rule tcs_compile:
+    input:
+        ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/tcs/analysis/tcs_tests_cxx.so",
+
+# Simulation rule with parameterization
+rule tcs_sim:
+    input:
+        warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
+        geometry_lib=find_epic_libraries(),
+    output:
+        "sim/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}.edm4hep.root",
+    params:
+        N_EVENTS=os.getenv("JUGGLER_N_EVENTS", 100),
+        DD4HEP_HASH=get_spack_package_hash("dd4hep"),
+        NPSIM_HASH=get_spack_package_hash("npsim"),
+    wildcard_constraints:
+        EBEAM=r"\d+",
+        PBEAM=r"\d+",
+        TAG=r"s\d+",
+    cache: True
+    shell:
+        """
+npsim \
+  --runType batch \
+  --part.minimalKineticEnergy 1000*GeV  \
+  --filter.tracker edep0 \
+  -v ERROR \
+  --numberOfEvents {params.N_EVENTS} \
+  --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
+  --inputFiles root://dtn-eic.jlab.org//volatile/eic/EPIC/EVGEN/EXCLUSIVE/TCS_ABCONV/{wildcards.EBEAM}x{wildcards.PBEAM}/hel_minus/TCS_gen_ab_hiAcc_{wildcards.EBEAM}x{wildcards.PBEAM}m_{wildcards.TAG}.hepmc3.tree.root \
+  --outputFile {output}
+"""
+
+# Reconstruction rule
+rule tcs_reco:
+    input:
+        "sim/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}.edm4hep.root",
+    output:
+        "reco/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}.edm4eic.root",
+    params:
+        EICRECON_HASH=get_spack_package_hash("eicrecon"),
+    wildcard_constraints:
+        EBEAM=r"\d+",
+        PBEAM=r"\d+",
+        TAG=r"s\d+",
+    cache: True
+    shell:
+        """
+DETECTOR_CONFIG={wildcards.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file={output}
+"""
+
+# Analysis rule - runs from repo root, script writes to results/tcs/
+# TCS analysis is currently disabled because the analysis code accesses
+# "ReconstructedFFParticles" collection which no longer exists in the
+# reconstruction output. The analysis code needs to be updated before
+# this rule can be enabled.
+#
+# rule tcs_analysis:
+#     input:
+#         script="benchmarks/Exclusive-Diffraction-Tagging/tcs/analysis/tcs_tests.cxx",
+#         script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/tcs/analysis/tcs_tests_cxx.so",
+#         data="reco/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}.edm4eic.root",
+#     output:
+#         "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/Q2.png",
+#         "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/Q2.pdf",
+#         "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/n_parts.png",
+#         "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/n_parts.pdf",
+#         "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/ff.png",
+#         "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/ff.pdf",
+#         "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/ff_theta.png",
+#         "results/{DETECTOR_CONFIG}/tcs_{EBEAM}x{PBEAM}m_{TAG}/ff_theta.pdf",
+#     wildcard_constraints:
+#         EBEAM=r"\d+",
+#         PBEAM=r"\d+",
+#         TAG=r"s\d+",
+#     shell:
+#         """
+# mkdir -p results/tcs results/{wildcards.DETECTOR_CONFIG}/tcs_{wildcards.EBEAM}x{wildcards.PBEAM}m_{wildcards.TAG}
+# root -l -b -q '{input.script}+("{input.data}")'
+# # Move plots to detector-specific directory since script outputs to results/tcs/
+# mv results/tcs/*.png results/tcs/*.pdf results/{wildcards.DETECTOR_CONFIG}/tcs_{wildcards.EBEAM}x{wildcards.PBEAM}m_{wildcards.TAG}/
+# """

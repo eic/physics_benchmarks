@@ -2,18 +2,22 @@ u_omega:compile:
   stage: compile
   extends: .compile_benchmark
   script:
-    - compile_analyses.py Exclusive-Diffraction-Tagging/u_omega
+    - snakemake --cores 1 u_omega_compile
 
 u_omega:simulate:
   stage: simulate
   extends: .phy_benchmark
   needs: ["u_omega:compile"]
+  timeout: 2 hours
   script:
-    #- bash benchmarks/Exclusive-Diffraction-Tagging/u_omega/u_omega.sh --all
-    - bash benchmarks/Exclusive-Diffraction-Tagging/u_omega/u_omega.sh --data-init --sim --rec
+    - snakemake $SNAKEMAKE_FLAGS --cores 1 u_omega_run_locally
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
 
 u_omega:results:
   stage: collect
   needs: ["u_omega:simulate"]
   script:
-    - ls -lrth
+    - collect_tests.py Exclusive-Diffraction-Tagging/u_omega

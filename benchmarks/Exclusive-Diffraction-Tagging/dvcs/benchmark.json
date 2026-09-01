@@ -1,0 +1,6 @@
+{
+  "name": "DVCS",
+  "title": "DVCS Benchmark",
+  "description": "Benchmark for deeply virtual Compton scattering physics",
+  "target": "0.8"
+}

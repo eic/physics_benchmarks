@@ -24,7 +24,7 @@ jets:simulate:
   timeout: 2 hours
   script:
     - |
-      snakemake --cache --cores 1 \
+      snakemake $SNAKEMAKE_FLAGS --cores 1 \
         results/epic_craterlake/jets/${EBEAM}on${PBEAM}/minQ2=${MINQ2}/
   retry:
     max: 2

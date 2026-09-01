@@ -2,20 +2,22 @@ dvcs:compile:
   stage: compile
   extends: .compile_benchmark
   script:
-    - compile_analyses.py Exclusive-Diffraction-Tagging/dvcs
+    - snakemake --cores 1 dvcs_compile
 
 dvcs:simulate:
   stage: simulate
   extends: .phy_benchmark
   needs: ["dvcs:compile"]
+  timeout: 2 hours
   script:
-    #- bash benchmarks/Exclusive-Diffraction-Tagging/dvcs/dvcs.sh --all
-    - bash benchmarks/Exclusive-Diffraction-Tagging/dvcs/dvcs.sh --data-init --sim --rec
+    - snakemake $SNAKEMAKE_FLAGS --cores 1 dvcs_run_locally
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
 
 dvcs:results:
   stage: collect
   needs: ["dvcs:simulate"]
   script:
-    - ls -lrth
-      #pip install junitparser
-      #- python dvcs/Exclusive-Diffraction-Tagging/scripts/merge_results.py
+    - collect_tests.py Exclusive-Diffraction-Tagging/dvcs
