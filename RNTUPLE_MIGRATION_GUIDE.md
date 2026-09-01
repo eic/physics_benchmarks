@@ -596,7 +596,228 @@ bool isRNTuple(const std::string& filename) {
 
 ### Python Support
 
-**Status:** ROOT's Python bindings (PyROOT) support RNTuple starting with ROOT 6.28+.
+**Status:** Both uproot (5.x) and ROOT's Python bindings (PyROOT) support RNTuple starting with ROOT 6.28+.
+
+## Python Script Migration Patterns
+
+Python analysis scripts can be migrated to work transparently with both TTree and RNTuple formats. The recommended approach is using **uproot 5.x**, which provides automatic format detection and a unified API for both formats.
+
+### Overview of Python Migration Approaches
+
+| Approach | Pros | Cons | Best For |
+|----------|------|------|----------|
+| **uproot 5.x** (Recommended) | ✅ Automatic format detection<br>✅ Pure Python, no ROOT install needed<br>✅ Excellent performance<br>✅ Clean, Pythonic API | ⚠️ Requires uproot >= 4.0 | Most Python analysis scripts |
+| **PyROOT with podio** | ✅ Direct access to podio API<br>✅ Uses same pattern as C++ | ⚠️ Requires ROOT install<br>⚠️ Less Pythonic | Scripts that need C++ ROOT features |
+
+### Format-Agnostic Python with uproot (Recommended)
+
+**Key Insight:** uproot 5.x automatically handles both TTree and RNTuple formats with the same syntax. Podio creates RNTuple files with the same `events` tree/RNTuple name and branch structure as TTree files, so existing uproot code often works without modification.
+
+#### Basic Pattern
+
+```python
+import uproot
+
+# This works transparently with both:
+# - .edm4eic.root (TTree format)
+# - .edm4eic.rnt.root (RNTuple format)
+keys = uproot.concatenate(rec_file + ':events/' + 'CollectionName')
+data_Q2 = keys['CollectionName.Q2']
+data_x = keys['CollectionName.x']
+```
+
+**Why it works:**
+- uproot 5.x detects whether `events` is a TTree or RNTuple automatically
+- Both formats use the same branch/field naming conventions from podio
+- No code changes needed if branch names are consistent
+
+#### Adding Format-Agnostic Comments
+
+To document the format-agnostic capability and help future maintainers:
+
+```python
+# Format-agnostic data loading: uproot 5.x automatically handles both TTree and RNTuple formats
+# Works with:
+#   - .edm4eic.root files (TTree format)
+#   - .edm4eic.rnt.root files (RNTuple format)
+# Both formats created by podio use the same 'events' tree/RNTuple name and branch structure
+keys = uproot.concatenate(rec_file + ':events/' + 'InclusiveKinematicsTruth')
+Truth = [keys['InclusiveKinematicsTruth.Q2'], keys['InclusiveKinematicsTruth.x']]
+```
+
+#### Complete Real-World Example
+
+See `benchmarks/Inclusive/dis/analysis/kinematics_correlations.py` for a complete working example:
+
+```python
+#!/usr/bin/env python
+import uproot as ur
+import awkward as ak
+import numpy as np
+
+# No format detection needed - uproot handles it automatically
+rec_file = "data.edm4eic.root"  # or data.edm4eic.rnt.root
+
+# Load data - works with both TTree and RNTuple
+keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsTruth')
+Truth = [keys['InclusiveKinematicsTruth.Q2'], keys['InclusiveKinematicsTruth.x']]
+
+keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsElectron')
+Electron = [keys['InclusiveKinematicsElectron.Q2'], keys['InclusiveKinematicsElectron.x']]
+
+# Process data with awkward arrays (same code for both formats)
+Q2values_T = Truth[0]
+Xvalues_T = Truth[1]
+T_Q2s = np.array(ak.flatten(Q2values_T))
+T_Xs = np.array(ak.flatten(Xvalues_T))
+```
+
+### Advanced: Explicit Format Detection (Optional)
+
+If you need to handle formats differently or provide informative logging:
+
+```python
+import uproot
+
+def detect_format(filename):
+    """Detect if file contains TTree or RNTuple."""
+    with uproot.open(filename) as file:
+        # Check what 'events' is
+        events = file['events']
+        if 'TTree' in events.classname:
+            return 'TTree'
+        elif 'RNTuple' in events.classname or hasattr(events, 'file'):
+            return 'RNTuple'
+    return 'Unknown'
+
+# Example usage
+rec_file = "data.edm4eic.root"
+format_type = detect_format(rec_file)
+print(f"Detected format: {format_type}")
+
+# Same code works regardless of format
+keys = uproot.concatenate(rec_file + ':events/' + 'Collection')
+```
+
+### Alternative: PyROOT with podio.CreateDataFrame
+
+For scripts that need ROOT features or want to mirror C++ patterns:
+
+```python
+import ROOT
+from podio import CreateDataFrame
+
+# Load file (format-agnostic, just like C++)
+rec_file = "data.edm4eic.root"  # or .rnt.root
+df = CreateDataFrame(rec_file)
+
+# Use RDataFrame operations
+# Define columns
+df = df.Define("Q2_truth", "InclusiveKinematicsTruth.Q2")
+df = df.Define("x_truth", "InclusiveKinematicsTruth.x")
+
+# Convert to numpy for plotting
+Q2_array = df.AsNumpy(["Q2_truth"])["Q2_truth"]
+x_array = df.AsNumpy(["x_truth"])["x_truth"]
+```
+
+**Pros:**
+- Mirrors C++ approach exactly
+- Access to full ROOT ecosystem
+- Type-safe column operations
+
+**Cons:**
+- Requires ROOT installation
+- Less Pythonic than uproot
+- Harder to use with awkward arrays
+
+### Best Practices for Format-Agnostic Python
+
+1. **Use uproot 5.x or later**
+   ```bash
+   pip install 'uproot>=5.0'
+   ```
+
+2. **Don't hardcode format assumptions**
+   ```python
+   # ❌ Bad - assumes TTree
+   tree = file['events']
+   assert isinstance(tree, uproot.TTree)
+   
+   # ✅ Good - works with both
+   events = file['events']
+   data = events.arrays(['branch1', 'branch2'])
+   ```
+
+3. **Rely on consistent naming**
+   - Podio ensures both TTree and RNTuple files have the same branch/field names
+   - Use the same collection and field access patterns for both formats
+
+4. **Add format-agnostic comments**
+   - Document that code works with both formats
+   - List the file extensions supported
+   - Note any assumptions about branch structure
+
+5. **Test with TTree first, RNTuple later**
+   - Existing TTree files are the compatibility baseline
+   - RNTuple files should work with the same code
+   - If RNTuple doesn't work, that's a bug in the migration (not expected with uproot 5.x)
+
+6. **Handle legacy compatibility explicitly**
+   ```python
+   # Handle renamed collections gracefully
+   try:
+       keys = ur.concatenate(rec_file + ':events/' + 'NewCollectionName')
+   except ur.KeyInFileError:
+       # Fallback for older files
+       keys = ur.concatenate(rec_file + ':events/' + 'OldCollectionName')
+   ```
+
+### Migration Checklist for Python Scripts
+
+- [ ] Verify uproot version is >= 5.0 (`import uproot; print(uproot.__version__)`)
+- [ ] Add format-agnostic comment at data loading section
+- [ ] Test script runs without errors (syntax, imports, basic logic)
+- [ ] Verify awkward array operations work (no format-specific assumptions)
+- [ ] Document any collection name fallbacks for legacy compatibility
+- [ ] Note in comments that script works with `.edm4eic.root` and `.edm4eic.rnt.root`
+
+### Troubleshooting Python Migration
+
+#### "KeyInFileError: not found in file"
+
+**Cause:** Branch/field name doesn't exist or collection name changed.
+
+**Solution:**
+```python
+# List available collections
+with uproot.open(rec_file) as file:
+    print(file['events'].keys())  # Works for both TTree and RNTuple
+```
+
+#### "Different array lengths" or shape mismatches
+
+**Cause:** Usually not format-related, but rather different event content.
+
+**Solution:** Verify the input file was created with correct simulation/reconstruction parameters.
+
+#### Performance differences between TTree and RNTuple
+
+**Expected:** RNTuple may be faster for columnar access, especially for large files.
+
+**Action:** No code changes needed. Document observed performance if significant.
+
+### Summary
+
+**For most Python analysis scripts:**
+1. Ensure uproot >= 5.0 is installed
+2. Add a comment documenting format-agnostic capability
+3. Existing code using `uproot.concatenate(file + ':events/' + 'Collection')` should work unchanged
+4. Test with existing TTree files to verify no regressions
+
+**The key insight:** uproot 5.x + podio's consistent naming makes most Python migrations trivial - often just adding documentation rather than changing code.
+
+For a complete working example, see the migration of `benchmarks/Inclusive/dis/analysis/kinematics_correlations.py`.
 
 **Usage:**
 ```python
