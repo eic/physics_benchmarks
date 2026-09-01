@@ -65,7 +65,7 @@ int dis_electrons(const std::string& config_name)
   if (d.HasColumn("InclusiveKinematicsESigma.Q2")) {
     // new style
     esigma_Q2_col_name = "InclusiveKinematicsESigma.Q2";
-    esigma_x_col_name = "InclusiveKinematicsESigma.Q2";
+    esigma_x_col_name = "InclusiveKinematicsESigma.x";
   } else if (d.HasColumn("InclusiveKinematicseSigma.x")) {
     // new style
     esigma_Q2_col_name = "InclusiveKinematicseSigma.Q2";
