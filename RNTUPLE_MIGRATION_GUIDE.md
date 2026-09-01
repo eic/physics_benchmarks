@@ -488,9 +488,14 @@ int analyze(const std::string& rec_file) {
 - ✅ Can be parallelized with `ROOT::EnableImplicitMT()` (ensure side effects like manual `TH1::Fill` are made thread-safe, e.g. via `ForeachSlot` + per-slot histograms)
 - ✅ Perfect for complex analysis with nested constituent loops
 
+**Limitations with RNTuple:**
+- ⚠️ `.Define()` with string expressions may fail when reading RNTuple files due to missing type definitions at JIT compile time
+- ⚠️ Use `.Foreach()` or direct lambda expressions instead for reliable RNTuple support
+- ✅ Works reliably with TTree files
+
 **When to use `.Foreach()` vs pure declarative style:**
 - Use `.Foreach()` for complex per-event logic (constituent loops, jet matching, multi-histogram filling)
-- Use `.Define()` and `.Filter()` for simple transformations and cuts
+- Use `.Define()` and `.Filter()` for simple transformations and cuts (works well with TTree, may require fallback for RNTuple)
 - See `benchmarks/Jets-HF/jets/analysis/jets.cxx` for a complete real-world example
 
 **Migration from RNTupleReader to podio::CreateDataFrame:**
@@ -525,6 +530,54 @@ df.Foreach([&histograms](
     "ReconstructedChargedJets.momentum.x"
 });
 ```
+
+### Direct RDataFrame for RNTuple (Format-Agnostic Alternative)
+
+When working directly with RNTuple files and needing maximum compatibility, use ROOT::RDataFrame directly on the "events" tree without going through podio::CreateDataFrame:
+
+```cpp
+#include <ROOT/RDataFrame.hxx>
+
+int analyze(const std::string& rec_file) {
+    // Works with both TTree and RNTuple by using the "events" tree name
+    ROOT::RDataFrame df("events", rec_file);
+    
+    // All column names are directly accessible
+    auto result = df.Define("Q2_el", "InclusiveKinematicsElectron.Q2")
+                     .Define("x_el", "InclusiveKinematicsElectron.x")
+                     .Histo1D({"h_Q2", "; Q2 (GeV^2); counts", 100, 0, 100}, "Q2_el");
+    
+    return 0;
+}
+```
+
+**Advantages:**
+- ✅ Format-agnostic: Works seamlessly with both `.root` (TTree) and `.rnt.root` (RNTuple)
+- ✅ String expressions in `.Define()` work reliably with both formats
+- ✅ Simpler than podio::CreateDataFrame when type definitions aren't needed
+- ✅ No special includes required (just `ROOT/RDataFrame.hxx`)
+
+**When to use:**
+- When you need simple column access and calculations
+- When you need guaranteed compatibility with both TTree and RNTuple formats
+- When JIT compilation reliability is important
+- See `benchmarks/Inclusive/dis/analysis/dis_electrons.cxx` for a complete real-world example (~800 lines using this pattern)
+
+**Real-World Example:**
+
+Migration of dis_electrons.cxx (DIS inclusive kinematics analysis):
+
+```cpp
+// Before: Used podio::CreateDataFrame (had RNTuple issues)
+auto d = podio::CreateDataFrame(rec_file);
+d.Define("Q2_esigma", esigma_Q2_col_name)  // Failed with RNTuple
+
+// After: Direct ROOT::RDataFrame (works with both formats)
+ROOT::RDataFrame d("events", rec_file);
+d.Define("Q2_esigma", "InclusiveKinematicsESigma.Q2")  // Works!
+```
+
+This pattern is especially useful for benchmarks that need to process both TTree (for backwards compatibility) and RNTuple (for new analyses) with identical code.
 
 ### Plain RDataFrame Alternative
 
