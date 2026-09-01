@@ -152,23 +152,27 @@ def Xcorrelation(minq2,method): #minq2 can be 1,10,100, or 1000; method can be '
 #   - .edm4eic.root files (TTree format)
 #   - .edm4eic.rnt.root files (RNTuple format)
 # Both formats created by podio use the same 'events' tree/RNTuple name and branch structure
-keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsTruth')
-Truth =   [keys['InclusiveKinematicsTruth.Q2'],keys['InclusiveKinematicsTruth.x']]
-keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsElectron')
-Electron =   [keys['InclusiveKinematicsElectron.Q2'], keys['InclusiveKinematicsElectron.x']]
-keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsDA')
-DoubleAngle =  [keys['InclusiveKinematicsDA.Q2'], keys['InclusiveKinematicsDA.x']]
-keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsJB')
-JacquetBlondel =  [keys['InclusiveKinematicsJB.Q2'], keys['InclusiveKinematicsJB.x']]
-keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsSigma')
-Sigma =  [keys['InclusiveKinematicsSigma.Q2'], keys['InclusiveKinematicsSigma.x']]
+file = ur.open(rec_file)
+events = file["events"]
+
+# Use direct array access instead of concatenate() to avoid RNTuple compatibility issues
+Truth =   [events['InclusiveKinematicsTruth.Q2'].array(library="ak"), 
+           events['InclusiveKinematicsTruth.x'].array(library="ak")]
+Electron = [events['InclusiveKinematicsElectron.Q2'].array(library="ak"), 
+            events['InclusiveKinematicsElectron.x'].array(library="ak")]
+DoubleAngle = [events['InclusiveKinematicsDA.Q2'].array(library="ak"), 
+               events['InclusiveKinematicsDA.x'].array(library="ak")]
+JacquetBlondel = [events['InclusiveKinematicsJB.Q2'].array(library="ak"), 
+                  events['InclusiveKinematicsJB.x'].array(library="ak")]
+Sigma = [events['InclusiveKinematicsSigma.Q2'].array(library="ak"), 
+         events['InclusiveKinematicsSigma.x'].array(library="ak")]
 try:
-    keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsESigma')
-    ESigma =  [keys['InclusiveKinematicsESigma.Q2'], keys['InclusiveKinematicsESigma.x']]
+    ESigma = [events['InclusiveKinematicsESigma.Q2'].array(library="ak"), 
+              events['InclusiveKinematicsESigma.x'].array(library="ak")]
 except ur.KeyInFileError:
     # Legacy compatibility
-    keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicseSigma')
-    ESigma =  [keys['InclusiveKinematicseSigma.Q2'], keys['InclusiveKinematicseSigma.x']]
+    ESigma = [events['InclusiveKinematicseSigma.Q2'].array(library="ak"), 
+              events['InclusiveKinematicseSigma.x'].array(library="ak")]
 
 Q2values_T = Truth[0]
 Q2values_E = Electron[0]
