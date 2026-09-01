@@ -41,28 +41,28 @@ npsim \
 
 
 rule dis_reco_eicrecon:
-    # This rule produces TTree format output (.edm4eic.root) by default
+    # This rule produces RNTuple format output (.edm4eic.rnt.root)
     # Analysis scripts (dis_electrons.cxx, kinematics_correlations.py) are format-agnostic
     # and work with both TTree and RNTuple formats:
-    #   - TTree: .edm4eic.root (default, used here)
-    #   - RNTuple: .edm4eic.rnt.root (use -Ppodio:output_backend=rntuple)
+    #   - RNTuple: .edm4eic.rnt.root (default, used here with -Ppodio:output_backend=rntuple)
+    #   - TTree: .edm4eic.root (remove -Ppodio:output_backend=rntuple for legacy format)
     input:
         "sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.{INDEX}.edm4hep.root",
     output:
-        "sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.{INDEX}.eicrecon.edm4eic.root",
+        "sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.{INDEX}.eicrecon.edm4eic.rnt.root",
     params:
         DETECTOR_CONFIG=lambda wildcards: wildcards.DETECTOR_CONFIG,
         EICRECON_HASH=get_spack_package_hash("eicrecon"),
     cache: True
     shell:
         """
-DETECTOR_CONFIG={params.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file={output}
+DETECTOR_CONFIG={params.DETECTOR_CONFIG} eicrecon {input} -Ppodio:output_file={output} -Ppodio:output_backend=rntuple
 """
 
 
 rule dis_generate_config:
     input:
-        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.0000.eicrecon.edm4eic.root",
+        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.0000.eicrecon.edm4eic.rnt.root",
     output:
         config="results/{DETECTOR_CONFIG}/dis/{EBEAM}on{PBEAM}/minQ2={MINQ2}_config.json",
     shell: """
@@ -86,7 +86,7 @@ rule dis_analysis_electrons:
     input:
         script="benchmarks/Inclusive/dis/analysis/dis_electrons.cxx",
         script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Inclusive/dis/analysis/dis_electrons_cxx.so",
-        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.0000.eicrecon.edm4eic.root",
+        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.0000.eicrecon.edm4eic.rnt.root",
         config="results/{DETECTOR_CONFIG}/dis/{EBEAM}on{PBEAM}/minQ2={MINQ2}_config.json",
     output:
         expand("results/{{DETECTOR_CONFIG}}/dis/{{EBEAM}}on{{PBEAM}}/minQ2={{MINQ2}}/{FILENAME}", FILENAME=[
@@ -107,7 +107,7 @@ root -l -b -q '{input.script}+("{input.config}")'
 
 rule dis_analysis_kinematics_correlations:
     input:
-        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.0000.eicrecon.edm4eic.root",
+        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.0000.eicrecon.edm4eic.rnt.root",
     output:
         results_path=directory("results/{DETECTOR_CONFIG}/dis/{EBEAM}on{PBEAM}/minQ2={MINQ2}/kinematics_correlations"),
     params:
