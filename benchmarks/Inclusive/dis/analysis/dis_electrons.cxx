@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ROOT/RDataFrame.hxx"
+#include <podio/DataSource.h>
 #include <TH1D.h>
 #include <TFitResult.h>
 #include <TRandom3.h>
@@ -57,7 +58,8 @@ int dis_electrons(const std::string& config_name)
 
   // Run this in multi-threaded mode if desired
   ROOT::EnableImplicitMT();
-  ROOT::RDataFrame d("events", rec_file);
+  // Use podio::CreateDataFrame for format-agnostic access (works with TTree and RNTuple)
+  auto d = podio::CreateDataFrame(rec_file);
 
   std::string esigma_Q2_col_name, esigma_x_col_name;
   if (d.HasColumn("InclusiveKinematicsESigma.Q2")) {

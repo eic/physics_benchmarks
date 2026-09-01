@@ -147,6 +147,11 @@ def Xcorrelation(minq2,method): #minq2 can be 1,10,100, or 1000; method can be '
 
 
 
+# Format-agnostic data loading: uproot 5.x automatically handles both TTree and RNTuple formats
+# Works with:
+#   - .edm4eic.root files (TTree format)
+#   - .edm4eic.rnt.root files (RNTuple format)
+# Both formats created by podio use the same 'events' tree/RNTuple name and branch structure
 keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsTruth')
 Truth =   [keys['InclusiveKinematicsTruth.Q2'],keys['InclusiveKinematicsTruth.x']]
 keys = ur.concatenate(rec_file + ':events/' + 'InclusiveKinematicsElectron')
