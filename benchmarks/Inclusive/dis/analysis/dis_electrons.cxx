@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "ROOT/RDataFrame.hxx"
-#include <podio/DataSource.h>
 #include <TH1D.h>
 #include <TFitResult.h>
 #include <TRandom3.h>
@@ -58,22 +57,9 @@ int dis_electrons(const std::string& config_name)
 
   // Run this in multi-threaded mode if desired
   ROOT::EnableImplicitMT();
-  // Use podio::CreateDataFrame for format-agnostic access (works with TTree and RNTuple)
-  auto d = podio::CreateDataFrame(rec_file);
-
-  std::string esigma_Q2_col_name, esigma_x_col_name;
-  if (d.HasColumn("InclusiveKinematicsESigma.Q2")) {
-    // new style
-    esigma_Q2_col_name = "InclusiveKinematicsESigma.Q2";
-    esigma_x_col_name = "InclusiveKinematicsESigma.x";
-  } else if (d.HasColumn("InclusiveKinematicseSigma.x")) {
-    // new style
-    esigma_Q2_col_name = "InclusiveKinematicseSigma.Q2";
-    esigma_x_col_name = "InclusiveKinematicseSigma.x";
-  } else {
-    std::cerr << "Can't find InclusiveKinematicsESigma.Q2 column" << std::endl;
-    std::exit(EXIT_FAILURE);
-  }
+  // Use ROOT::RDataFrame directly on the events tree/RNTuple
+  // This works with both TTree (.root) and RNTuple (.rnt.root) formats
+  auto d = ROOT::RDataFrame("events", rec_file);
 
   auto combinatorial_diff_ratio = [] (
       const ROOT::VecOps::RVec<float>& v1,
@@ -95,7 +81,7 @@ int dis_electrons(const std::string& config_name)
              .Define("Q2_jb", "InclusiveKinematicsJB.Q2")
              .Define("Q2_da", "InclusiveKinematicsDA.Q2")
              .Define("Q2_sigma", "InclusiveKinematicsSigma.Q2")
-             .Define("Q2_esigma", esigma_Q2_col_name) // InclusiveKinematicsESigma.Q2
+             .Define("Q2_esigma", "InclusiveKinematicsESigma.Q2")
              .Define("logQ2_sim", "log10(Q2_sim)")
              .Define("logQ2_el", "log10(Q2_el)")
              .Define("logQ2_jb", "log10(Q2_jb)")
@@ -112,7 +98,7 @@ int dis_electrons(const std::string& config_name)
              .Define("x_jb", "InclusiveKinematicsJB.x")
              .Define("x_da", "InclusiveKinematicsDA.x")
              .Define("x_sigma", "InclusiveKinematicsSigma.x")
-             .Define("x_esigma", esigma_x_col_name) // InclusiveKinematicsESigma.x
+             .Define("x_esigma", "InclusiveKinematicsESigma.x")
              .Define("x_el_res", combinatorial_diff_ratio, {"x_sim", "x_el"})
              .Define("x_jb_res", combinatorial_diff_ratio, {"x_sim", "x_jb"})
              .Define("x_da_res", combinatorial_diff_ratio, {"x_sim", "x_da"})
