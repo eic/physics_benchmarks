@@ -73,10 +73,7 @@ ddsim \
 
 include: "benchmarks/Exclusive-Diffraction-Tagging/demp/Snakefile"
 include: "benchmarks/Exclusive-Diffraction-Tagging/diffractive_vm/Snakefile"
-include: "benchmarks/Exclusive-Diffraction-Tagging/dvcs/Snakefile"
 include: "benchmarks/Exclusive-Diffraction-Tagging/dvmp/Snakefile"
 include: "benchmarks/Exclusive-Diffraction-Tagging/semi_coherent/Snakefile"
-include: "benchmarks/Exclusive-Diffraction-Tagging/tcs/Snakefile"
-include: "benchmarks/Exclusive-Diffraction-Tagging/u_omega/Snakefile"
 include: "benchmarks/Jets-HF/jets/Snakefile"
 include: "benchmarks/Inclusive/dis/Snakefile"
