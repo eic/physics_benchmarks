@@ -182,7 +182,7 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
   
   // Use Foreach to process each event with the existing analysis logic
   df.Foreach([&](
-    const ROOT::VecOps::RVec<int>& recoType,
+    const ROOT::VecOps::RVec<unsigned int>& recoType,
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
     const ROOT::VecOps::RVec<float>& recoArea,
 #endif
@@ -199,10 +199,10 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
     const ROOT::VecOps::RVec<float>& recoPartM,
     const ROOT::VecOps::RVec<int>& recoPartPDG,
     const ROOT::VecOps::RVec<float>& recoPartNRG,
-    const ROOT::VecOps::RVec<unsigned int>& recoPartAssocRec,
-    const ROOT::VecOps::RVec<unsigned int>& recoPartAssocSim,
+    const ROOT::VecOps::RVec<int>& recoPartAssocRec,
+    const ROOT::VecOps::RVec<int>& recoPartAssocSim,
     const ROOT::VecOps::RVec<float>& recoPartAssocWeight,
-    const ROOT::VecOps::RVec<int>& genType,
+    const ROOT::VecOps::RVec<unsigned int>& genType,
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
     const ROOT::VecOps::RVec<float>& genArea,
 #endif
