@@ -617,8 +617,8 @@ const int seabornBlue = TColor::GetColor(100, 149, 237);
     "ReconstructedChargedParticles.mass",
     "ReconstructedChargedParticles.PDG",
     "ReconstructedChargedParticles.energy",
-    "ReconstructedChargedParticleLinks.from",
-    "ReconstructedChargedParticleLinks.to",
+    "_ReconstructedChargedParticleLinks_from.index",
+    "_ReconstructedChargedParticleLinks_to.index",
     "ReconstructedChargedParticleLinks.weight",
     "GeneratedChargedJets.type",
 #if EDM4EIC_BUILD_VERSION >= EDM4EIC_VERSION(8,9,0)
