@@ -54,9 +54,13 @@ int jets(const std::string& config_name)
 
   const bool PRINT = true;
 
-  // Input - Create RDataFrame using podio
+  // Input - Create RDataFrame directly from file
+  // Use ROOT::RDataFrame("events", ...) instead of podio::CreateDataFrame()
+  // because podio::CreateDataFrame doesn't provide full type definitions needed
+  // for JIT compilation with RNTuple format. Direct RDataFrame works with both
+  // TTree (.root) and RNTuple (.rnt.root) formats transparently.
   fmt::print(" - Creating RDataFrame from file...\n");
-  auto df = podio::CreateDataFrame(rec_file);
+  auto df = ROOT::RDataFrame("events", rec_file);
 
   const int seabornRed = TColor::GetColor(213, 94, 0);
 
