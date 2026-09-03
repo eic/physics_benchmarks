@@ -62,7 +62,6 @@ export JUGGLER_N_EVENTS=${BENCHMARK_N_EVENTS}
 if [ ! -n "${BENCHMARK_N_THREADS}" ]; then
   export BENCHMARK_N_THREADS=10
 fi
-export JUGGLER_N_THREADS=${BENCHMARK_N_THREADS}
 export ROOT_MAX_THREADS=${BENCHMARK_N_THREADS}
 
 ## Random seed for event generation, should typically not be changed for
