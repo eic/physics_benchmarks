@@ -22,8 +22,6 @@ default:
     paths:
       - .local/detector
       - .local/lib
-      - .local/bin
-      - .local/include
       - .local/share
       - .local/root_build
       - .snakemake/log
