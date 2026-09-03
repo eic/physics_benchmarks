@@ -1,3 +1,13 @@
+# Jets-HF benchmark
+# Note: The analysis uses podio::CreateDataFrame (works with both TTree and RNTuple),
+# but this Snakefile currently expects `.edm4eic.rnt.root` inputs in the rules below.
+# For RNTuple files (recommended), generate with:
+#   eicrecon input.edm4hep.root -Ppodio:output_file=output.edm4eic.rnt.root -Ppodio:output_backend=rntuple
+# For TTree files (legacy), update the `data=` patterns below to `.edm4eic.root`.
+
+import shutil
+
+
 rule jets_compile:
     input:
         ROOT_BUILD_DIR_PREFIX + "benchmarks/Jets-HF/jets/analysis/jets_cxx.so",
@@ -5,7 +15,7 @@ rule jets_compile:
 
 rule jets_generate_config:
     input:
-        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.0000.eicrecon.edm4eic.root",
+        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.0000.eicrecon.edm4eic.rnt.root",
     output:
         config="results/{DETECTOR_CONFIG}/jets/{EBEAM}on{PBEAM}/minQ2={MINQ2}_config.json",
     shell: """
@@ -13,8 +23,8 @@ cat > {output.config} <<EOF
 {{
   "rec_file": "{input.data}",
   "detector": "{wildcards.DETECTOR_CONFIG}",
-  "output_prefix": "$(dirname "{output.config}")/jets_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}",
-  "results_path": "$(dirname "{output.config}")",
+  "output_prefix": "results/{wildcards.DETECTOR_CONFIG}/jets/{wildcards.EBEAM}on{wildcards.PBEAM}/minQ2={wildcards.MINQ2}/jets_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}",
+  "results_path": "results/{wildcards.DETECTOR_CONFIG}/jets/{wildcards.EBEAM}on{wildcards.PBEAM}/minQ2={wildcards.MINQ2}",
   "ebeam": {wildcards.EBEAM},
   "pbeam": {wildcards.PBEAM},
   "minq2": {wildcards.MINQ2},
@@ -29,7 +39,7 @@ rule jets_analysis_jets:
     input:
         script="benchmarks/Jets-HF/jets/analysis/jets.cxx",
         script_compiled=ROOT_BUILD_DIR_PREFIX + "benchmarks/Jets-HF/jets/analysis/jets_cxx.so",
-        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.0000.eicrecon.edm4eic.root",
+        data="sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.0000.eicrecon.edm4eic.rnt.root",
         config="results/{DETECTOR_CONFIG}/jets/{EBEAM}on{PBEAM}/minQ2={MINQ2}_config.json",
     output:
         results_path=directory("results/{DETECTOR_CONFIG}/jets/{EBEAM}on{PBEAM}/minQ2={MINQ2}"),
