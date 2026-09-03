@@ -62,7 +62,6 @@ export JUGGLER_N_EVENTS=${BENCHMARK_N_EVENTS}
 if [ ! -n "${BENCHMARK_N_THREADS}" ]; then
   export BENCHMARK_N_THREADS=10
 fi
-export JUGGLER_N_THREADS=${BENCHMARK_N_THREADS}
 export ROOT_MAX_THREADS=${BENCHMARK_N_THREADS}
 
 ## Random seed for event generation, should typically not be changed for
@@ -115,10 +114,6 @@ _ENV_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 _REPO_ROOT="$(dirname "${_ENV_SCRIPT_DIR}")"
 export PATH=${LOCAL_PREFIX}/bin:${_ENV_SCRIPT_DIR}:${PATH}
 export LD_LIBRARY_PATH=${LOCAL_PREFIX}/lib:${LD_LIBRARY_PATH}
-
-## Include the repo's own include/ dir so '#include "common_bench/..."' resolves
-## regardless of the working directory when ROOT is invoked
-export ROOT_INCLUDE_PATH=${_REPO_ROOT}/include:${LOCAL_PREFIX}/include:${ROOT_INCLUDE_PATH}
 
 # Local field maps
 mkdir -p ${LOCAL_DATA_PATH}/fieldmaps
