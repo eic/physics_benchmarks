@@ -6,7 +6,10 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <nlohmann/json.hpp>
+#include <string_view>
+#include <vector>
 #include <string>
 
 namespace common_bench {
@@ -27,7 +30,7 @@ struct TestDefinitionError : Exception {
  *   - name: unique identifier for this test
  *   - title: Slightly more verbose identifier for this test
  *   - description: Concise description of what is tested
- *   - quantity: What quantity is tested? Unites of value/target
+ *   - quantity: What quantity is tested? Units of value/target
  *   - target: Target value of <quantity> that we want to reach
  *   - value: Actual value of <quantity>
  *   - weight: Weight for this test (this is defaulted to 1.0 if not specified)
@@ -36,7 +39,7 @@ struct TestDefinitionError : Exception {
 struct Test {
   /** Test construction.
    * \note Round braces for the json constructor, as else it will pick the wrong
-   *       initializer-list constructur (it will put everything in an array)
+   *       initializer-list constructor (it will put everything in an array)
    */
   Test(const std::map<std::string, std::string> &definition)
       : json(definition) {
@@ -76,7 +79,7 @@ private:
 /** Write out a collection of tests to a json file.
  *
  */
-void write_test(const std::vector<Test> &data, const std::string &fname) {
+inline void write_test(const std::vector<Test> &data, const std::string &fname) {
   nlohmann::json test;
   for (auto &entry : data) {
     test["tests"].push_back(entry.json);
@@ -88,7 +91,7 @@ void write_test(const std::vector<Test> &data, const std::string &fname) {
 
 /** Write a single test to json file.
  */
-void write_test(const Test &data, const std::string &fname) {
+inline void write_test(const Test &data, const std::string &fname) {
   std::vector<Test> vtd{data};
   write_test(vtd, fname);
 }

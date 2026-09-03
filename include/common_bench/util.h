@@ -8,6 +8,7 @@
 #include <fmt/core.h>
 #include <limits>
 #include <string>
+#include <string_view>
 #include <vector>
 #include "TF1.h"
 #include "TFitResult.h"
@@ -31,10 +32,10 @@ public:
   unknown_particle_error(std::string_view particle)
       : m_particle{particle},
         m_msg(fmt::format("Unknown particle type: {}", m_particle)) {}
-  virtual const char *what() const throw() {
+  const char *what() const noexcept override {
     return m_msg.c_str();
   }
-  virtual const char *type() const throw() { return "unknown_particle_error"; }
+  const char *type() const noexcept { return "unknown_particle_error"; }
 
 private:
   const std::string m_particle;
@@ -102,7 +103,7 @@ momenta_RC(const std::vector<edm4eic::ReconstructedParticleData> &parts) {
 }
 
 /** Get a vector of 4-momenta from the simulation data.
- *  \TODO Add PID selector (maybe using ranges?)
+ *  \todo Add PID selector (maybe using ranges?)
  */
 inline auto
 momenta_from_simulation(const std::vector<edm4hep::MCParticleData> &parts) {

@@ -3,15 +3,16 @@
 
 #include <exception>
 #include <string>
+#include <string_view>
 
 namespace common_bench {
   class Exception : public std::exception {
   public:
     Exception(std::string_view msg, std::string_view type = "exception") : msg_{msg}, type_{type} {}
 
-    virtual const char* what() const throw() { return msg_.c_str(); }
-    virtual const char* type() const throw() { return type_.c_str(); }
-    virtual ~Exception() throw() {}
+    const char* what() const noexcept override { return msg_.c_str(); }
+    const char* type() const noexcept { return type_.c_str(); }
+    ~Exception() override = default;
 
   private:
     std::string msg_;
