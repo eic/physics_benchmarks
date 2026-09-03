@@ -14,9 +14,3 @@ demp:simulate:
     max: 2
     when:
       - runner_system_failure
-
-demp:results:
-  stage: collect
-  needs: ["demp:simulate"]
-  script:
-    - collect_tests.py Exclusive-Diffraction-Tagging/demp

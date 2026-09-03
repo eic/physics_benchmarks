@@ -288,9 +288,6 @@ int vm_mass(const std::string& config_name)
   }
   
 
-  // write out our test data
-  common_bench::write_test(mass_resolution_test, fmt::format("{}mass.json", output_prefix));
-
   // That's all!
   return 0;
 }

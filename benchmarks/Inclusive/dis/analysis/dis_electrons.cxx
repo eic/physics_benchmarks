@@ -789,7 +789,5 @@ int dis_electrons(const std::string& config_name)
     c.Print(fmt::format("{}_x_res_overlays.png", output_prefix).c_str());
   }
 
-  common_bench::write_test({dis_Q2_resolution}, fmt::format("{}dis_electrons.json", output_prefix));
-
   return 0;
 }
