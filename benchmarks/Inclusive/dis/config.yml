@@ -29,9 +29,3 @@ dis:simulate:
     max: 2
     when:
       - runner_system_failure
-
-dis:results:
-  stage: collect
-  needs: ["dis:simulate"]
-  script:
-    - collect_tests.py Inclusive/dis

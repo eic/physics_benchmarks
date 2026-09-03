@@ -97,8 +97,7 @@ rule dis_analysis_electrons:
           "dis_{EBEAM}x{PBEAM}_minQ2={MINQ2}_x_panels.png",
           "dis_{EBEAM}x{PBEAM}_minQ2={MINQ2}_x_overlays.png",
           "dis_{EBEAM}x{PBEAM}_minQ2={MINQ2}_x_res_panels.png",
-          "dis_{EBEAM}x{PBEAM}_minQ2={MINQ2}_x_res_overlays.png",
-          "dis_{EBEAM}x{PBEAM}_minQ2={MINQ2}dis_electrons.json"
+          "dis_{EBEAM}x{PBEAM}_minQ2={MINQ2}_x_res_overlays.png"
         ]),
     shell: """
 root -l -b -q '{input.script}+("{input.config}")'

@@ -238,9 +238,6 @@ int vm_invar(const std::string& config_name)
   // error for the test result
   Q2_resolution_test.error(-1);
 
-  // write out our test data
-  common_bench::write_test(Q2_resolution_test, fmt::format("{}invar.json", output_prefix));
-
   // That's all!
   return 0;
 }
