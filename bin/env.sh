@@ -2,17 +2,12 @@
 
 ## =============================================================================
 ## Global configuration variables for the benchmark scripts
-## The script defines the following environment variables that are meant to
-## be overriden by the Gitlab continuous integration (CI)
 ##
-##  - DETECTOR:                detector package to be used for the benchmark
-##  - DETECTOR_CONFIG:         detector package config to be used for the benchmark
-##  - DETECTOR_VERSION:        detector package to be used for the benchmark
-##  - BENCHMARK_N_EVENTS:      events processed by simulation/reconstruction
-##  - BENCHMARK_N_THREADS:     number of threads/processes to spawn in parallel
-##  - BENCHMARK_RNG_SEED:      random seed for the RNG
+## This script is responsible for CI/local runner infrastructure defaults such as
+## local data storage and PATH setup. Benchmark tuning values live in snakemake.yml
+## and are applied by Snakemake's shell prefix.
 ##
-## It also defines the following additional variables for internally usage
+## It defines the following additional variables for internal usage:
 ##  - LOCAL_PREFIX:           prefix for packages installed during the benchmark
 ##  - LOCAL_DATA_PATH:        local storage for pipeline jobs
 ##  - DETECTOR_PATH:          root path to locally installed detector definition xml files
@@ -22,54 +17,6 @@
 ## =============================================================================
 
 echo "Setting up the Physics Benchmarks environment"
-
-## =============================================================================
-## Default variable definitions, normally these should be set
-## by the CI. In case of local development you may want to change these
-## in case you would like to modify the detector package or
-## number of events to be analyzed during the benchmark
-
-## Detector package to be used during the benchmark process
-## If you didn't define DETECTOR already, you have bigger problesm
-
-if [ ! -n  "${DETECTOR}" ] ; then
-  echo "ERROR: No DETECTOR defined!" 
-  echo "       There is no assumed default detector."
-  echo "       Set the environment variable DETECTOR accordingly."
-  #export DETECTOR="epic"
-fi
-
-# Optional variable, define it or don't use it
-#if [ ! -n  "${DETECTOR_CONFIG}" ] ; then
-#  export DETECTOR_CONFIG="${DETECTOR}_full"
-#fi
-
-# main is the new master
-if [ ! -n  "${DETECTOR_VERSION}" ] ; then 
-  export DETECTOR_VERSION="main"
-fi
-
-## Number of events that will be processed by the reconstruction
-if [ ! -n  "${BENCHMARK_N_EVENTS}" ] ; then 
-  export BENCHMARK_N_EVENTS=100
-fi
-export JUGGLER_N_EVENTS=${BENCHMARK_N_EVENTS}
-
-## Maximum number of threads or processes a single pipeline should use
-## (this is not enforced, but the different pipeline scripts should use
-##  this to guide the number of parallel processes or threads they 
-##  spawn).
-if [ ! -n "${BENCHMARK_N_THREADS}" ]; then
-  export BENCHMARK_N_THREADS=10
-fi
-export ROOT_MAX_THREADS=${BENCHMARK_N_THREADS}
-
-## Random seed for event generation, should typically not be changed for
-## reproductability.
-if [ ! -n "${BENCHMARK_RNG_SEED}" ]; then
-  export BENCHMARK_RNG_SEED=1
-fi
-export JUGGLER_RNG_SEED=${BENCHMARK_RNG_SEED}
 
 ## Location of local data for pass data from job to job within pipeline.
 ## Not saved as artifacts.
@@ -101,7 +48,9 @@ mkdir -p "${LOCAL_PREFIX}"
 export LOCAL_PREFIX=`realpath ${LOCAL_PREFIX}`
 
 ## detector path: root path to locally installed detector definition xml files
-export DETECTOR_PATH="${LOCAL_PREFIX}/share/${DETECTOR}"
+## The detector installation itself is configured by the Snakemake shell prefix
+## using DETECTOR_PREFIX/thisepic.sh.
+export DETECTOR_PATH="${LOCAL_PREFIX}/share/${DETECTOR:-epic}"
 
 ## build dir for ROOT to put its binaries etc.
 export ROOT_BUILD_DIR=$LOCAL_PREFIX/root_build
