@@ -5,32 +5,10 @@ from snakemake.logging import logger
 
 configfile: "snakemake.yml"
 
-# Keep the YAML as the canonical source of benchmark defaults; the fallbacks below
-# preserve local CLI use when the config file is absent or intentionally overridden.
-DETECTOR_PREFIX = config.get("DETECTOR_PREFIX", "/opt/detector/epic-main")
-DETECTOR_CONFIG = config.get("DETECTOR_CONFIG", "epic_craterlake")
-BENCHMARK_N_EVENTS = config.get("BENCHMARK_N_EVENTS", 100)
-BENCHMARK_N_THREADS = config.get("BENCHMARK_N_THREADS", 10)
-BENCHMARK_RNG_SEED = config.get("BENCHMARK_RNG_SEED", 1)
-
-DETECTOR_PREFIX_SHELL = shlex.quote(DETECTOR_PREFIX)
-THIS_EPIC_SHELL = shlex.quote(os.path.join(DETECTOR_PREFIX, "bin", "thisepic.sh"))
-DETECTOR_CONFIG_SHELL = shlex.quote(DETECTOR_CONFIG)
-BENCHMARK_N_EVENTS_SHELL = shlex.quote(str(BENCHMARK_N_EVENTS))
-BENCHMARK_N_THREADS_SHELL = shlex.quote(str(BENCHMARK_N_THREADS))
-BENCHMARK_RNG_SEED_SHELL = shlex.quote(str(BENCHMARK_RNG_SEED))
-
 shell.prefix(
     "set -e; "
-    f"if [ -f {THIS_EPIC_SHELL} ]; then source {THIS_EPIC_SHELL}; fi; "
-    f"export DETECTOR_PREFIX={DETECTOR_PREFIX_SHELL}; "
-    f"export DETECTOR_CONFIG={DETECTOR_CONFIG_SHELL}; "
-    f"export BENCHMARK_N_EVENTS={BENCHMARK_N_EVENTS_SHELL}; "
-    f"export BENCHMARK_N_THREADS={BENCHMARK_N_THREADS_SHELL}; "
-    f"export BENCHMARK_RNG_SEED={BENCHMARK_RNG_SEED_SHELL}; "
-    f"export JUGGLER_N_EVENTS={BENCHMARK_N_EVENTS_SHELL}; "
-    f"export ROOT_MAX_THREADS={BENCHMARK_N_THREADS_SHELL}; "
-    f"export JUGGLER_RNG_SEED={BENCHMARK_RNG_SEED_SHELL}; "
+    f"source {config['DETECTOR_PREFIX']}/bin/thisepic.sh; "
+    f"export ROOT_MAX_THREADS={config['BENCHMARK_N_THREADS']}; "
 )
 
 
@@ -56,7 +34,7 @@ def find_epic_libraries():
     libs = []
     lib = ctypes.util.find_library("epic")
     if lib is not None:
-        libs.append(os.environ["DETECTOR_PATH"] + "/../../lib/" + lib)
+        libs.append(os.environ["DETECTOR_PREFIX"] + "/lib/" + lib)
     return libs
 
 
