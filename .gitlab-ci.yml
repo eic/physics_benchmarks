@@ -2,8 +2,6 @@ image: ${BENCHMARKS_REGISTRY}/${BENCHMARKS_CONTAINER}${BENCHMARKS_SIGIL}${BENCHM
 
 variables:
   RECO: "eicrecon"
-  DETECTOR: epic
-  DETECTOR_CONFIG: epic_craterlake
   SNAKEMAKE_FLAGS: '--cache'
 
 workflow:
@@ -58,7 +56,7 @@ stages:
         -d '{"state":"'"${STATE}"'",
              "target_url":"'"${CI_PIPELINE_URL}"'",
              "description":"'"$(TZ=America/New_York date)"'",
-             "context":"eicweb/physics_benchmarks ('"${BENCHMARKS_TAG}"', '"$DETECTOR_CONFIG"')"
+             "context":"eicweb/physics_benchmarks ('"${BENCHMARKS_TAG}"', '"${DETECTOR_CONFIG:-epic_craterlake}"')"
             }' ;
   retry:
     max: 2
@@ -74,13 +72,12 @@ benchmarks:physics:pending:
 
 common:setup:
   stage: config
+  image: python:3.12-alpine
   before_script: []
   script:
-    - source bin/env.sh
-    - mkdir_local_data_link sim_output
-    - mkdir_local_data_link datasets
-    - mkdir -p results
-    - mkdir -p config
+    # Minimal Alpine shell setup for bin/env.sh and mkdir_local_data_link.
+    - apk add --no-cache bash coreutils
+    - bash -c 'source bin/env.sh; mkdir_local_data_link sim_output; mkdir_local_data_link datasets; mkdir -p results; mkdir -p config'
 
 .compile_benchmark:
   needs:
@@ -97,12 +94,9 @@ common:setup:
     - ["common:setup"]
   before_script:
     - source bin/env.sh
-    - source /opt/detector/epic-main/bin/thisepic.sh
-    - ls -lrtha 
     - ln -s "${LOCAL_DATA_PATH}/sim_output" sim_output
     - ln -s "${LOCAL_DATA_PATH}/datasets/data" data
     - mkdir -p "$SNAKEMAKE_OUTPUT_CACHE"
-    - ls -lrtha
   retry:
     max: 2
     when:

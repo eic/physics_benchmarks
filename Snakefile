@@ -1,11 +1,21 @@
 import functools
 import os
+import shlex
 from snakemake.logging import logger
+
+configfile: "snakemake.yml"
+
+shell.prefix(
+    "set -e; "
+    f"source {config['DETECTOR_PREFIX']}/bin/thisepic.sh; "
+    f"export ROOT_MAX_THREADS={config['BENCHMARK_N_THREADS']}; "
+)
 
 
 @functools.cache
 def get_spack_package_hash(package_name):
     import json
+    import subprocess
     try:
         ver_info = json.loads(subprocess.check_output(["spack", "find", "--json", package_name]))
         return ver_info[0]["hash"]
@@ -24,7 +34,7 @@ def find_epic_libraries():
     libs = []
     lib = ctypes.util.find_library("epic")
     if lib is not None:
-        libs.append(os.environ["DETECTOR_PATH"] + "/../../lib/" + lib)
+        libs.append(config["DETECTOR_PREFIX"] + "/lib/" + lib)
     return libs
 
 
