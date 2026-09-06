@@ -20,10 +20,10 @@ mv {input} {output}
 #Process the afterburned files through the simulations
 rule demp_sim:
     input:
-        warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
+        warmup="warmup/{DETECTOR_CONFIG}.edm4hep.rnt.root",
         geometry_lib=find_epic_libraries(),
     output:
-        "sim/{DETECTOR_CONFIG}/demp_{EBEAM}x{PBEAM}_{INDEX}.edm4hep.root",
+        "sim/{DETECTOR_CONFIG}/demp_{EBEAM}x{PBEAM}_{INDEX}.edm4hep.rnt.root",
     params:
         N_EVENTS=100,
         DD4HEP_HASH=get_spack_package_hash("dd4hep"),
@@ -43,13 +43,14 @@ npsim \
   --numberOfEvents {params.N_EVENTS} \
   --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
   --inputFiles root://dtn-eic.jlab.org//volatile/eic/EPIC/EVGEN/EXCLUSIVE/DEMP/DEMPgen-1.2.0/{wildcards.EBEAM}x{wildcards.PBEAM}/pi+/DEMPgen-1.2.0_{wildcards.EBEAM}x{wildcards.PBEAM}_pi+_{wildcards.INDEX}.hepmc3.tree.root \
+  --outputConfig.useRNTuple true \
   --outputFile {output}
 """
 
 #Process the files produced in the previous step through eicrecon
 rule demp_reco:
     input:
-        "sim/{DETECTOR_CONFIG}/demp_{EBEAM}x{PBEAM}_{INDEX}.edm4hep.root",
+        "sim/{DETECTOR_CONFIG}/demp_{EBEAM}x{PBEAM}_{INDEX}.edm4hep.rnt.root",
     output:
         "reco/{DETECTOR_CONFIG}/demp_{EBEAM}x{PBEAM}_{INDEX}.edm4eic.root",
     params:
@@ -150,4 +151,3 @@ rule demp_run_campaign:
         "results/epic_craterlake/demp/campaign_24.09.0_demp_5x41_combined_5/plots.pdf",
     message:
         "See output in {input[0]}"
-

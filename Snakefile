@@ -60,13 +60,14 @@ xrdcp root://dtn-eic.jlab.org//volatile/eic/{output.filepath} {output.filepath}
 
 rule warmup_run:
     output:
-        "warmup/{DETECTOR_CONFIG}.edm4hep.root",
+        "warmup/{DETECTOR_CONFIG}.edm4hep.rnt.root",
     message: "Ensuring that calibrations/fieldmaps are available for {wildcards.DETECTOR_CONFIG}"
     shell: """
 ddsim \
   --runType batch \
   --numberOfEvents 1 \
   --compactFile "$DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml" \
+  --outputConfig.useRNTuple true \
   --outputFile "{output}" \
   --enableGun
 """
