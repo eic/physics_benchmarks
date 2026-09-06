@@ -30,9 +30,3 @@ jets:simulate:
     max: 2
     when:
       - runner_system_failure
-
-jets:results:
-  stage: collect
-  needs: ["jets:simulate"]
-  script:
-    - collect_tests.py Jets-HF/jets
