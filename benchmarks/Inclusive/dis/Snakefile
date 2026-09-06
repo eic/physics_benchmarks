@@ -8,10 +8,10 @@ rule dis_compile:
 
 rule dis_sim:
     input:
-        warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
+        warmup="warmup/{DETECTOR_CONFIG}.edm4hep.rnt.root",
         geometry_lib=find_epic_libraries(),
     output:
-        "sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.{INDEX}.edm4hep.root",
+        "sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.{INDEX}.edm4hep.rnt.root",
     wildcard_constraints:
         INDEX=r"\d{4}",
     params:
@@ -36,6 +36,7 @@ npsim \
   --compactFile $DETECTOR_PATH/{params.DETECTOR_CONFIG}.xml \
   --random.seed {params.SEED} \
   --inputFiles root://dtn-eic.jlab.org//volatile/eic/EPIC/EVGEN/DIS/NC/{params.EBEAM}x{params.PBEAM}/minQ2={params.MINQ2}/pythia8NCDIS_{params.EBEAM}x{params.PBEAM}_minQ2={params.MINQ2}_beamEffects_xAngle=-0.025_hiDiv_vtxfix_1.hepmc3.tree.root \
+  --outputConfig.useRNTuple true \
   --outputFile {output}
 """
 
@@ -47,7 +48,7 @@ rule dis_reco_eicrecon:
     #   - RNTuple: .edm4eic.rnt.root (default, used here with -Ppodio:output_backend=rntuple)
     #   - TTree: .edm4eic.root (remove -Ppodio:output_backend=rntuple for legacy format)
     input:
-        "sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.{INDEX}.edm4hep.root",
+        "sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.{INDEX}.edm4hep.rnt.root",
     output:
         "sim_output/{DETECTOR_CONFIG}/pythia8NCDIS_{EBEAM}x{PBEAM}_minQ2={MINQ2}_beamEffects_xAngle=-0.025_hiDiv_1.{INDEX}.eicrecon.edm4eic.rnt.root",
     params:

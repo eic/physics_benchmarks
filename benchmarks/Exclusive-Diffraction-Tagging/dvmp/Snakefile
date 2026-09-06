@@ -50,11 +50,11 @@ done
 # Simulation rule
 rule dvmp_sim:
     input:
-        warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
+        warmup="warmup/{DETECTOR_CONFIG}.edm4hep.rnt.root",
         geometry_lib=find_epic_libraries(),
         gen_file="input/gen-{CONFIG}_{DECAY}_{N_EVENTS}.hepmc",
     output:
-        "sim/{DETECTOR_CONFIG}/sim-{CONFIG}_{DECAY}_{N_EVENTS}.edm4hep.root",
+        "sim/{DETECTOR_CONFIG}/sim-{CONFIG}_{DECAY}_{N_EVENTS}.edm4hep.rnt.root",
     params:
         N_EVENTS=lambda wildcards: int(wildcards.N_EVENTS),
         DD4HEP_HASH=get_spack_package_hash("dd4hep"),
@@ -74,13 +74,14 @@ npsim \
   --numberOfEvents {params.N_EVENTS} \
   --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
   --inputFiles {input.gen_file} \
+  --outputConfig.useRNTuple true \
   --outputFile {output}
 """
 
 # Reconstruction rule
 rule dvmp_reco:
     input:
-        "sim/{DETECTOR_CONFIG}/sim-{CONFIG}_{DECAY}_{N_EVENTS}.edm4hep.root",
+        "sim/{DETECTOR_CONFIG}/sim-{CONFIG}_{DECAY}_{N_EVENTS}.edm4hep.rnt.root",
     output:
         "reco/{DETECTOR_CONFIG}/rec-{CONFIG}_{DECAY}_{N_EVENTS}.edm4eic.root",
     params:

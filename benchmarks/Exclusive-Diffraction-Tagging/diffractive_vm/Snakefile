@@ -20,10 +20,10 @@ mv {input} {output}
 
 rule diffractive_vm_sim:
     input:
-        warmup="warmup/{DETECTOR_CONFIG}.edm4hep.root",
+        warmup="warmup/{DETECTOR_CONFIG}.edm4hep.rnt.root",
         geometry_lib=find_epic_libraries(),
     output:
-        "sim/{DETECTOR_CONFIG}/sartre_{PARTICLE}_{INDEX}.edm4hep.root",
+        "sim/{DETECTOR_CONFIG}/sartre_{PARTICLE}_{INDEX}.edm4hep.rnt.root",
     params:
         N_EVENTS=100,
         DD4HEP_HASH=get_spack_package_hash("dd4hep"),
@@ -40,13 +40,14 @@ npsim \
   --numberOfEvents {params.N_EVENTS} \
   --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
   --inputFiles root://dtn-eic.jlab.org//volatile/eic/EPIC/EVGEN/EXCLUSIVE/DIFFRACTIVE_$( echo -n "{wildcards.PARTICLE}" | tr "[:lower:]" "[:upper:]" )_ABCONV/Sartre/Coherent/sartre_bnonsat_Au_{wildcards.PARTICLE}_ab_eAu_1.hepmc3.tree.root \
+  --outputConfig.useRNTuple true \
   --outputFile {output}
 """
 
 
 rule diffractive_vm_reco_eicrecon:
     input:
-        "sim/{DETECTOR_CONFIG}/{file}.edm4hep.root",
+        "sim/{DETECTOR_CONFIG}/{file}.edm4hep.rnt.root",
     output:
         "reco/{DETECTOR_CONFIG}/{file}_eicrecon.edm4eic.root",
     params:
