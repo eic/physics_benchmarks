@@ -1,0 +1,37 @@
+## =============================================================================
+## Snakemake pipeline configuration for the Physics Benchmarks
+##
+## These are the knobs that describe *what* the pipeline computes and against
+## which detector. They belong to the workflow, not to the CI system: running
+##
+##   snakemake --cores 5 demp_run_locally
+##
+## from a plain eic-shell must work without any prior environment setup.
+##
+## Override individual keys on the command line, e.g.
+##
+##   snakemake --config DETECTOR_CONFIG=epic_brycecanyon \
+##                      DETECTOR_PREFIX=/opt/detector/epic-24.10.0
+##
+## CI-only concerns (scratch space for passing data between jobs) live in
+## bin/env.sh instead.
+## =============================================================================
+
+## Detector package, its configuration, and the prefix it is installed under.
+## The geometry XML directory, the geometry library and thisepic.sh are all
+## derived from DETECTOR_PREFIX (share/$DETECTOR, lib/, bin/).
+DETECTOR: epic
+DETECTOR_CONFIG: epic_craterlake
+DETECTOR_PREFIX: /opt/detector/epic-main
+
+## Number of events processed, threads used, and RNG seed. Note that the
+## simulation rules set their own per-benchmark event counts; these are the
+## workflow-wide defaults.
+BENCHMARK_N_EVENTS: 100
+BENCHMARK_N_THREADS: 10
+BENCHMARK_RNG_SEED: 1
+
+## Directory for ROOT to place ACLiC build products, so compiling the analysis
+## macros does not pollute the source tree. Set to an empty value to build
+## in-tree.
+ROOT_BUILD_DIR: .local/root_build

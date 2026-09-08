@@ -1,5 +1,3 @@
-import os
-
 #Compile the analysis and plotting scripts
 rule demp_compile:
     input:
@@ -141,7 +139,7 @@ root -l -b -q '{input.script}+("{input.config}")'
 #Example of invocation
 rule demp_run_locally:
     input:
-        "results/" + os.environ["DETECTOR_CONFIG"] + "/demp/demp_5x41_combined_5/plots.pdf",
+        f"results/{config['DETECTOR_CONFIG']}/demp/demp_5x41_combined_5/plots.pdf",
     message:
         "See output in {input[0]}"
 

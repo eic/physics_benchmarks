@@ -1,4 +1,3 @@
-import os
 import shutil
 
 rule semi_coherent_filter:
@@ -36,7 +35,7 @@ rule semi_coherent_sim:
     params:
         N_EVENTS=1000,
         SEED=1,
-        DETECTOR_PATH=os.environ["DETECTOR_PATH"],
+        DETECTOR_PATH=DETECTOR_PATH,
         DETECTOR_CONFIG=lambda wildcards: wildcards.DETECTOR_CONFIG,
         DD4HEP_HASH=get_spack_package_hash("dd4hep"),
         NPSIM_HASH=get_spack_package_hash("npsim"),
@@ -82,6 +81,6 @@ python {input.scripts}
 
 rule run_all_locally:
     input:
-        "results/" + os.environ["DETECTOR_CONFIG"] + "/semi_coherent/plots.pdf",
+        f"results/{config['DETECTOR_CONFIG']}/semi_coherent/plots.pdf",
     message:
         "See output in {input[0]}"

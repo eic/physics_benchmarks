@@ -1,6 +1,54 @@
+configfile: "snakemake.yml"
+
 import functools
 import os
+import subprocess
 from snakemake.logging import logger
+
+
+## The detector install prefix is the single source of truth: the geometry XML
+## directory, the geometry library and thisepic.sh are all derived from it.
+DETECTOR_PREFIX = config["DETECTOR_PREFIX"]
+DETECTOR_PATH = f"{DETECTOR_PREFIX}/share/{config['DETECTOR']}"
+
+## ROOT mirrors the absolute source path underneath its build directory, so
+## ROOT_BUILD_DIR has to be absolute for the declared outputs to match where
+## ACLiC actually writes. An empty value means build in-tree.
+ROOT_BUILD_DIR = config.get("ROOT_BUILD_DIR") or None
+
+if ROOT_BUILD_DIR is not None:
+    ROOT_BUILD_DIR = os.path.abspath(ROOT_BUILD_DIR)
+    ROOT_BUILD_DIR_PREFIX = f"{ROOT_BUILD_DIR}/{os.getcwd().lstrip('/')}/"
+else:
+    ROOT_BUILD_DIR_PREFIX = ""
+
+
+## Every shell: block gets the detector environment and ROOT settings from the
+## configuration, so the pipeline does not depend on the CI job having set them
+## up. Four things to keep in mind when editing this:
+##  - No curly braces: shell.prefix() runs its argument through snakemake's own
+##    format(), which would interpret them as format fields. That rules out
+##    ${VAR:-} style defaults, hence the ordering below.
+##  - "set -euo pipefail" comes last, not first. Snakemake normally prepends it
+##    to every shell: block, but only while no shell.prefix() is set, so we have
+##    to reinstate it ourselves or silently lose it. It has to come *after* the
+##    environment setup: thisepic.sh reads $LD_LIBRARY_PATH unguarded and the
+##    ROOT_INCLUDE_PATH append reads its own previous value, both of which abort
+##    under "set -u" when unset. The rule body still runs fully strict.
+##  - "." and not "source", and DETECTOR_CONFIG exported explicitly rather than
+##    passed as $1: POSIX "." does not give the sourced script its own
+##    positional parameters, so thisepic.sh would fall back to its "epic"
+##    default and silently override the configured value.
+##  - ";" and not "&&", so that the environment setup does not abort a rule
+##    where thisepic.sh is absent (e.g. the lager image used by dvmp:generate).
+shell.prefix(
+    f". {DETECTOR_PREFIX}/bin/thisepic.sh; "
+    f"export DETECTOR_CONFIG={config['DETECTOR_CONFIG']}; "
+    f"export ROOT_MAX_THREADS={config['BENCHMARK_N_THREADS']}; "
+    f"export ROOT_INCLUDE_PATH={os.path.abspath(workflow.basedir)}/include:$ROOT_INCLUDE_PATH; "
+    + (f"export ROOT_BUILD_DIR={ROOT_BUILD_DIR}; " if ROOT_BUILD_DIR else "")
+    + "set -euo pipefail; "
+)
 
 
 @functools.cache
@@ -24,16 +72,8 @@ def find_epic_libraries():
     libs = []
     lib = ctypes.util.find_library("epic")
     if lib is not None:
-        libs.append(os.environ["DETECTOR_PATH"] + "/../../lib/" + lib)
+        libs.append(f"{DETECTOR_PREFIX}/lib/{lib}")
     return libs
-
-
-ROOT_BUILD_DIR = os.getenv("ROOT_BUILD_DIR", None)
-
-if ROOT_BUILD_DIR is not None:
-    ROOT_BUILD_DIR_PREFIX = f"{ROOT_BUILD_DIR.rstrip('/')}/{os.getcwd().lstrip('/')}/"
-else:
-    ROOT_BUILD_DIR_PREFIX = ""
 
 
 rule compile_analysis:

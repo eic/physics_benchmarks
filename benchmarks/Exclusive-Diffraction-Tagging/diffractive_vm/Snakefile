@@ -1,6 +1,3 @@
-import os
-
-
 rule diffractive_vm_compile:
     input:
         ROOT_BUILD_DIR_PREFIX + "benchmarks/Exclusive-Diffraction-Tagging/diffractive_vm/analysis/diffractive_vm_cxx.so",
@@ -154,6 +151,6 @@ rule diffractive_vm_run_over_campaigns:
 
 rule diffractive_vm_run_locally:
     input:
-        "results/" + os.environ["DETECTOR_CONFIG"] + "/diffractive_vm/sartre_phi_combined_9_eicrecon/plots_benchmark-phi-dsigmadt.pdf",
+        f"results/{config['DETECTOR_CONFIG']}/diffractive_vm/sartre_phi_combined_9_eicrecon/plots_benchmark-phi-dsigmadt.pdf",
     message:
         "See output in {input[0]}"
