@@ -24,6 +24,12 @@ DETECTOR: epic
 DETECTOR_CONFIG: epic_craterlake
 DETECTOR_PREFIX: /opt/detector/epic-main
 
+## The geometry XML directory is derived as DETECTOR_PREFIX/share/DETECTOR and
+## made available to the rules as config["DETECTOR_PATH"]. Uncomment only for a
+## detector installed with a non-standard layout, in which case it takes
+## precedence over DETECTOR_PREFIX for geometry lookups:
+#DETECTOR_PATH: /opt/detector/epic-main/share/epic
+
 ## Number of events processed, threads used, and RNG seed. Note that the
 ## simulation rules set their own per-benchmark event counts; these are the
 ## workflow-wide defaults.
