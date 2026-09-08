@@ -62,3 +62,7 @@ results
 
 # local runtime files
 .local
+.snakemake/
+fieldmaps
+scratch/
+local_data/

@@ -8,7 +8,7 @@ Physics Benchmarks for the EIC
 
 - [`EDM4eic`](https://github.com/eic/EDM4eic) - EIC data model. (See [`ReconstructedParticle`](https://eic.github.io/EDM4eic/classedm4eic_1_1_reconstructed_particle.html) for most needs)
 - [`EICrecon`](https://github.com/eic/EICrecon) reconstruction framework.
-- Benchmark repository common code - [common_bench](https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench)
+- Benchmark repository common code - [`include/common_bench`](include/common_bench)
 - ROOT's [`RDataFrame`](https://root.cern/doc/master/classROOT_1_1RDataFrame.html)
 
 ## Adding new benchmarks
@@ -21,23 +21,36 @@ directory for a basic example. Note currently the reconstruction is far from per
 - Create a script that returns exit status 0 for success.
 - Any non-zero value will be considered failure.
 
-See [common_bench](https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench) for details.
+See [`include/common_bench/benchmark.h`](include/common_bench/benchmark.h) for the
+test and benchmark definitions, and `bin/collect_tests.py` for how results are
+aggregated.
 
 ## Running Locally
 
-### Local development example
-
-Here we setup to use our local build of the `juggler` library.
-
-```
-git clone https://eicweb.phy.anl.gov/EIC/benchmarks/physics_benchmarks.git && cd physics_benchmarks
-git clone https://eicweb.phy.anl.gov/EIC/benchmarks/common_bench.git setup
-source setup/bin/env.sh && ./setup/bin/install_common.sh
-source .local/bin/env.sh && build_detector.sh
-mkdir_local_data_link sim_output
-mkdir -p results config
+The benchmarks are Snakemake workflows, and their configuration lives in
+[`snakemake.yml`](snakemake.yml). No environment setup is needed beyond
+[`eic-shell`](https://github.com/eic/eic-shell) itself:
 
 ```
+git clone https://github.com/eic/physics_benchmarks && cd physics_benchmarks
+eic-shell
+snakemake --cores 1 dis_compile
+snakemake --cores 5 demp_run_locally
+```
+
+Each benchmark provides a `<name>_run_locally` rule as a convenient entry point;
+see `snakemake --list` for everything available.
+
+To run against a different detector or configuration, override the relevant
+configuration key rather than exporting an environment variable:
+
+```
+snakemake --cores 5 --config DETECTOR_CONFIG=epic_brycecanyon demp_run_locally
+snakemake --cores 5 --config DETECTOR_PREFIX=/opt/detector/epic-24.10.0 demp_run_locally
+```
+
+`bin/env.sh` is *not* part of this: it only sets up scratch space for passing
+data between GitLab CI jobs, and is sourced by the CI configuration.
 
 ## Repositories and Workflow
 
