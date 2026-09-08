@@ -11,7 +11,7 @@ dvmp:generate:
   stage: generate
   timeout: 1 hours
   script:
-    - snakemake $SNAKEMAKE_FLAGS --cores 5 input/gen-jpsi_barrel_muon_${JUGGLER_N_EVENTS}.hepmc input/gen-jpsi_barrel_electron_${JUGGLER_N_EVENTS}.hepmc
+    - snakemake $SNAKEMAKE_FLAGS --cores 5 dvmp_generate
 
 dvmp:simulate:
   stage: simulate
@@ -29,4 +29,4 @@ dvmp:results:
   stage: collect
   needs: ["dvmp:simulate"]
   script:
-    - collect_tests.py Exclusive-Diffraction-Tagging/dvmp
+    - bin/collect_tests.py Exclusive-Diffraction-Tagging/dvmp

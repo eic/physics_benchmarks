@@ -25,7 +25,7 @@ jets:simulate:
   script:
     - |
       snakemake $SNAKEMAKE_FLAGS --cores 1 \
-        results/epic_craterlake/jets/${EBEAM}on${PBEAM}/minQ2=${MINQ2}/
+        results/${DETECTOR_CONFIG}/jets/${EBEAM}on${PBEAM}/minQ2=${MINQ2}/
   retry:
     max: 2
     when:
@@ -35,4 +35,4 @@ jets:results:
   stage: collect
   needs: ["jets:simulate"]
   script:
-    - collect_tests.py Jets-HF/jets
+    - bin/collect_tests.py Jets-HF/jets
