@@ -42,8 +42,7 @@ else:
 ##  - ";" and not "&&", so that the environment setup does not abort a rule
 ##    where thisepic.sh is absent (e.g. the lager image used by dvmp:generate).
 shell.prefix(
-    f". {DETECTOR_PREFIX}/bin/thisepic.sh; "
-    f"export DETECTOR_CONFIG={config['DETECTOR_CONFIG']}; "
+    f"source {DETECTOR_PREFIX}/bin/thisepic.sh config['DETECTOR_CONFIG']}; "
     f"export ROOT_MAX_THREADS={config['BENCHMARK_N_THREADS']}; "
     f"export ROOT_INCLUDE_PATH={os.path.abspath(workflow.basedir)}/include:$ROOT_INCLUDE_PATH; "
     + (f"export ROOT_BUILD_DIR={ROOT_BUILD_DIR}; " if ROOT_BUILD_DIR else "")
