@@ -1,9 +1,9 @@
 image: ${BENCHMARKS_REGISTRY}/${BENCHMARKS_CONTAINER}${BENCHMARKS_SIGIL}${BENCHMARKS_TAG}
 
 variables:
-  RECO: "eicrecon"
   DETECTOR: epic
   DETECTOR_CONFIG: epic_craterlake
+  DETECTOR_PREFIX: /opt/detector/epic-main
   SNAKEMAKE_FLAGS: '--cache'
 
 workflow:
@@ -20,9 +20,6 @@ default:
   artifacts:
     expire_in: 3 days
     paths:
-      - .local/detector
-      - .local/lib
-      - .local/share
       - .local/root_build
       - .snakemake/log
       - results
@@ -74,19 +71,17 @@ benchmarks:physics:pending:
 
 common:setup:
   stage: config
+  image: alpine
   before_script: []
   script:
     - source bin/env.sh
-    - mkdir_local_data_link sim_output
-    - mkdir_local_data_link datasets
+    - bin/mkdir_local_data_link sim_output
     - mkdir -p results
     - mkdir -p config
 
 .compile_benchmark:
   needs:
     - ["common:setup"]
-  before_script:
-    - source bin/env.sh
   retry:
     max: 2
     when:
@@ -97,10 +92,9 @@ common:setup:
     - ["common:setup"]
   before_script:
     - source bin/env.sh
-    - source /opt/detector/epic-main/bin/thisepic.sh
+    - source ${DETECTOR_PREFIX}/bin/thisepic.sh
     - ls -lrtha 
     - ln -s "${LOCAL_DATA_PATH}/sim_output" sim_output
-    - ln -s "${LOCAL_DATA_PATH}/datasets/data" data
     - mkdir -p "$SNAKEMAKE_OUTPUT_CACHE"
     - ls -lrtha
   retry:
@@ -124,7 +118,7 @@ summary:
     - "dis:results"
     - "jets:results"
   script:
-    - collect_benchmarks.py
+    - bin/collect_benchmarks.py
     - find results -print | sort | tee summary.txt
   artifacts:
     paths:

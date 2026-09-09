@@ -1,5 +1,3 @@
-import os
-
 # Compile the analysis scripts
 rule dvmp_compile:
     input:
@@ -13,7 +11,7 @@ rule dvmp_gen:
         config=temp("tmp/gen-{CONFIG}_{DECAY}_{N_EVENTS}.json"),
     params:
         N_EVENTS=lambda wildcards: int(wildcards.N_EVENTS),
-        RNG_SEED=os.getenv("JUGGLER_RNG_SEED", 1),
+        RNG_SEED=config["BENCHMARK_RNG_SEED"],
         EBEAM=lambda wildcards: 10,  # Default for 10x100
         PBEAM=lambda wildcards: 100,
         BRANCHING=lambda wildcards: "0.05961" if wildcards.DECAY == "muon" else "0.05971",
@@ -192,11 +190,22 @@ rule dvmp_run_config:
     message:
         "DVMP benchmark complete for {wildcards.CONFIG}. See output in results/{wildcards.DETECTOR_CONFIG}/dvmp/"
 
-# Default run for local execution (jpsi_barrel with default event count from env)
+# Generation-only target, used by the dvmp:generate CI job (which runs in the
+# lager image). CI names the rule; the event count comes from the configuration.
+rule dvmp_generate:
+    input:
+        expand("input/gen-jpsi_barrel_{decay}_{n_events}.hepmc",
+               decay=["muon", "electron"],
+               n_events=[config["BENCHMARK_N_EVENTS"]]),
+    message:
+        "Generation complete. See output in input/"
+
+
+# Default run for local execution (jpsi_barrel with the configured event count)
 rule dvmp_run_locally:
     input:
-        expand("results/{{DETECTOR_CONFIG}}/dvmp/jpsi_barrel_{decay}_{n_events}/analysis_done.txt",
+        expand("results/" + config["DETECTOR_CONFIG"] + "/dvmp/jpsi_barrel_{decay}_{n_events}/analysis_done.txt",
                decay=["muon", "electron"],
-               n_events=[os.getenv("JUGGLER_N_EVENTS", "100")]),
+               n_events=[config["BENCHMARK_N_EVENTS"]]),
     message:
-        "DVMP benchmark complete. See output in results/{DETECTOR_CONFIG}/dvmp/"
+        "DVMP benchmark complete. See output in results/" + config["DETECTOR_CONFIG"] + "/dvmp/"
