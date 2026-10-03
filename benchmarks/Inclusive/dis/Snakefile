@@ -24,21 +24,26 @@ rule dis_sim:
         DETECTOR_CONFIG=lambda wildcards: wildcards.DETECTOR_CONFIG,
         DD4HEP_HASH=get_spack_package_hash("dd4hep"),
         NPSIM_HASH=get_spack_package_hash("npsim"),
-    cache: True
-    shell:
-        """
-npsim \
-  --runType batch \
-  --part.minimalKineticEnergy 1000*GeV  \
-  --filter.tracker edep0 \
-  -v WARNING \
-  --numberOfEvents {params.N_EVENTS} \
-  --compactFile {params.DETECTOR_PATH}/{params.DETECTOR_CONFIG}.xml \
-  --random.seed {params.SEED} \
-  --inputFiles root://dtn2304.jlab.org:8443//jlab-osdf-ro/eic/EPIC/volatile/EVGEN/DIS/NC/{params.EBEAM}x{params.PBEAM}/minQ2={params.MINQ2}/pythia8NCDIS_{params.EBEAM}x{params.PBEAM}_minQ2={params.MINQ2}_beamEffects_xAngle=-0.025_hiDiv_vtxfix_1.hepmc3.tree.root \
-  --outputConfig.useRNTuple true \
-  --outputFile {output}
-"""
+       remote_path=lambda wildcards: epic_fetch_url(
+           f"EPIC/EVGEN/DIS/NC/{wildcards.EBEAM}x{wildcards.PBEAM}/minQ2={wildcards.MINQ2}/"
+           f"pythia8NCDIS_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}_"
+           f"beamEffects_xAngle=-0.025_hiDiv_vtxfix_1.hepmc3.tree.root"
+       ),
+   cache: True
+   shell:
+       """
+   npsim \
+     --runType batch \
+     --part.minimalKineticEnergy 1000*GeV  \
+     --filter.tracker edep0 \
+     -v WARNING \
+     --numberOfEvents {params.N_EVENTS} \
+     --compactFile {params.DETECTOR_PATH}/{params.DETECTOR_CONFIG}.xml \
+     --random.seed {params.SEED} \
+     --inputFiles {params.remote_path} \
+     --outputConfig.useRNTuple true \
+     --outputFile {output}
+   """
 
 
 rule dis_reco_eicrecon:
