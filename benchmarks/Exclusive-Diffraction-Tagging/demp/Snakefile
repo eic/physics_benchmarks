@@ -26,6 +26,10 @@ rule demp_sim:
         N_EVENTS=100,
         DD4HEP_HASH=get_spack_package_hash("dd4hep"),
         NPSIM_HASH=get_spack_package_hash("npsim"),
+        remote_path=lambda wildcards: epic_fetch_url(
+            f"EPIC/EVGEN/EXCLUSIVE/DEMP/DEMPgen-1.2.0/{wildcards.EBEAM}x{wildcards.PBEAM}/"
+            f"pi+/DEMPgen-1.2.0_{wildcards.EBEAM}x{wildcards.PBEAM}_pi+_{wildcards.INDEX}.hepmc3.tree.root"
+        ),
     wildcard_constraints:
         EBEAM=r"\d+",
         PBEAM=r"\d+",
@@ -40,7 +44,7 @@ npsim \
   -v WARNING \
   --numberOfEvents {params.N_EVENTS} \
   --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
-  --inputFiles root://dtn-eic.jlab.org//volatile/eic/EPIC/EVGEN/EXCLUSIVE/DEMP/DEMPgen-1.2.0/{wildcards.EBEAM}x{wildcards.PBEAM}/pi+/DEMPgen-1.2.0_{wildcards.EBEAM}x{wildcards.PBEAM}_pi+_{wildcards.INDEX}.hepmc3.tree.root \
+  --inputFiles {params.remote_path} \
   --outputConfig.useRNTuple true \
   --outputFile {output}
 """

@@ -84,6 +84,12 @@ def find_epic_libraries():
     return libs
 
 
+def epic_fetch_url(path):
+    if not path.startswith("EPIC/"):
+        raise ValueError(f"EPIC fetch path must start with 'EPIC/', got {path!r}")
+    return f"root://dtn2304.jlab.org:8443//jlab-osdf-ro/eic/EPIC/volatile/{path.removeprefix('EPIC/')}"
+
+
 rule compile_analysis:
     input:
         "{path}/{filename}.cxx",
@@ -100,9 +106,11 @@ root -l -b -q -e '.L {input}+'
 rule fetch_epic:
     output:
         filepath="EPIC/{PATH}"
+    params:
+        remote_path=lambda wildcards, output: epic_fetch_url(output.filepath)
     cache: True
     shell: """
-xrdcp root://dtn-eic.jlab.org//volatile/eic/{output.filepath} {output.filepath}
+xrdcp {params.remote_path} {output.filepath}
 """
 
 
