@@ -25,14 +25,14 @@ rule diffractive_vm_sim:
         N_EVENTS=100,
         DD4HEP_HASH=get_spack_package_hash("dd4hep"),
         NPSIM_HASH=get_spack_package_hash("npsim"),
-       remote_path=lambda wildcards: epic_fetch_url(
-           f"EPIC/EVGEN/EXCLUSIVE/DIFFRACTIVE_"
-           f"$( echo -n \"{wildcards.PARTICLE}\" | tr \"[:lower:]\" \"[:upper:]\" )_ABCONV/"
-           f"Sartre/Coherent/sartre_bnonsat_Au_{wildcards.PARTICLE}_ab_eAu_1.hepmc3.tree.root"
-       ),
-   cache: True
-   shell:
-       """
+        remote_path=lambda wildcards: epic_fetch_url(
+            f"EPIC/EVGEN/EXCLUSIVE/DIFFRACTIVE_"
+            f"$( echo -n \"{wildcards.PARTICLE}\" | tr \"[:lower:]\" \"[:upper:]\" )_ABCONV/"
+            f"Sartre/Coherent/sartre_bnonsat_Au_{wildcards.PARTICLE}_ab_eAu_1.hepmc3.tree.root"
+        ),
+    cache: True
+    shell:
+        """
 npsim \
   --runType batch \
   --part.minimalKineticEnergy 100*GeV  \
