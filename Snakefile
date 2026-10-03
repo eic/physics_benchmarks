@@ -102,7 +102,7 @@ rule fetch_epic:
         filepath="EPIC/{PATH}"
     cache: True
     shell: """
-xrdcp root://dtn-eic.jlab.org//volatile/eic/{output.filepath} {output.filepath}
+xrdcp root://dtn2304.jlab.org:8443//jlab-osdf-ro/eic/{output.filepath} {output.filepath}
 """
 
 
