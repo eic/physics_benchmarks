@@ -100,9 +100,11 @@ root -l -b -q -e '.L {input}+'
 rule fetch_epic:
     output:
         filepath="EPIC/{PATH}"
-    cache: True
-    shell: """
-xrdcp root://dtn2304.jlab.org:8443//jlab-osdf-ro/eic/{output.filepath} {output.filepath}
+params:
+    remote_path=lambda wildcards, output: f"root://dtn2304.jlab.org:8443//jlab-osdf-ro/eic/EPIC/volatile/{output.filepath.removeprefix('EPIC/')}"
+cache: True
+shell: """
+xrdcp {params.remote_path} {output.filepath}
 """
 
 
