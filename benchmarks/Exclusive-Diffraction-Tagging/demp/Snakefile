@@ -37,17 +37,17 @@ rule demp_sim:
     cache: True
     shell:
         """
-    npsim \
-      --runType batch \
-      --part.minimalKineticEnergy 100*GeV  \
-      --filter.tracker edep0 \
-      -v WARNING \
-      --numberOfEvents {params.N_EVENTS} \
-      --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
-      --inputFiles {params.remote_path} \
-      --outputConfig.useRNTuple true \
-      --outputFile {output}
-    """
+npsim \
+  --runType batch \
+  --part.minimalKineticEnergy 100*GeV  \
+  --filter.tracker edep0 \
+  -v WARNING \
+  --numberOfEvents {params.N_EVENTS} \
+  --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
+  --inputFiles {params.remote_path} \
+  --outputConfig.useRNTuple true \
+  --outputFile {output}
+"""
 
 #Process the files produced in the previous step through eicrecon
 rule demp_reco:

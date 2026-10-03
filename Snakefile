@@ -110,8 +110,8 @@ rule fetch_epic:
         remote_path=lambda wildcards, output: epic_fetch_url(output.filepath)
     cache: True
     shell: """
-    xrdcp {params.remote_path} {output.filepath}
-    """
+xrdcp {params.remote_path} {output.filepath}
+"""
 
 
 rule warmup_run:

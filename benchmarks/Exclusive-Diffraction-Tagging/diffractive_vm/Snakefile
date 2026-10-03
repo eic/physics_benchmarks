@@ -33,18 +33,18 @@ rule diffractive_vm_sim:
    cache: True
    shell:
        """
-   npsim \
-     --runType batch \
-     --part.minimalKineticEnergy 100*GeV  \
-     --filter.tracker edep0 \
-     -v WARNING \
-     --skipNEvents $( command expr "{wildcards.INDEX}" "*" "{params.N_EVENTS}" ) \
-     --numberOfEvents {params.N_EVENTS} \
-     --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
-     --inputFiles {params.remote_path} \
-     --outputConfig.useRNTuple true \
-     --outputFile {output}
-   """
+npsim \
+  --runType batch \
+  --part.minimalKineticEnergy 100*GeV  \
+  --filter.tracker edep0 \
+  -v WARNING \
+  --skipNEvents $( command expr "{wildcards.INDEX}" "*" "{params.N_EVENTS}" ) \
+  --numberOfEvents {params.N_EVENTS} \
+  --compactFile $DETECTOR_PATH/{wildcards.DETECTOR_CONFIG}.xml \
+  --inputFiles {params.remote_path} \
+  --outputConfig.useRNTuple true \
+  --outputFile {output}
+"""
 
 
 rule diffractive_vm_reco_eicrecon:

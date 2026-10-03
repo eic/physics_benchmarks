@@ -32,18 +32,18 @@ rule dis_sim:
    cache: True
    shell:
        """
-   npsim \
-     --runType batch \
-     --part.minimalKineticEnergy 1000*GeV  \
-     --filter.tracker edep0 \
-     -v WARNING \
-     --numberOfEvents {params.N_EVENTS} \
-     --compactFile {params.DETECTOR_PATH}/{params.DETECTOR_CONFIG}.xml \
-     --random.seed {params.SEED} \
-     --inputFiles {params.remote_path} \
-     --outputConfig.useRNTuple true \
-     --outputFile {output}
-   """
+npsim \
+  --runType batch \
+  --part.minimalKineticEnergy 1000*GeV  \
+  --filter.tracker edep0 \
+  -v WARNING \
+  --numberOfEvents {params.N_EVENTS} \
+  --compactFile {params.DETECTOR_PATH}/{params.DETECTOR_CONFIG}.xml \
+  --random.seed {params.SEED} \
+  --inputFiles {params.remote_path} \
+  --outputConfig.useRNTuple true \
+  --outputFile {output}
+"""
 
 
 rule dis_reco_eicrecon:
