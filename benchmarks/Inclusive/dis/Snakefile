@@ -27,7 +27,7 @@ rule dis_sim:
         remote_path=lambda wildcards: epic_fetch_url(
             f"EPIC/EVGEN/DIS/NC/{wildcards.EBEAM}x{wildcards.PBEAM}/minQ2={wildcards.MINQ2}/"
             f"pythia8NCDIS_{wildcards.EBEAM}x{wildcards.PBEAM}_minQ2={wildcards.MINQ2}_"
-            f"beamEffects_xAngle=-0.025_hiDiv_vtxfix_1.hepmc3.tree.root"
+            f"beamEffects_xAngle=-0.025_hiDiv_1.hepmc3.tree.root"
         ),
     cache: True
     shell:
