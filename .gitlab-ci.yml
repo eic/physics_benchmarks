@@ -96,6 +96,8 @@ common:setup:
     - ls -lrtha 
     - ln -s "${LOCAL_DATA_PATH}/sim_output" sim_output
     - mkdir -p "$SNAKEMAKE_OUTPUT_CACHE"
+    # remove dangling symlinks to garbage-collected cache entries, so snakemake regenerates them
+    - find -L "${LOCAL_DATA_PATH}/sim_output" -type l -print -delete || true
     - ls -lrtha
   retry:
     max: 2
