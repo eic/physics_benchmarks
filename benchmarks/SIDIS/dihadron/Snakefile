@@ -1,0 +1,169 @@
+## Multi-trigger dihadron C(dphi) on campaign RECO (no simulation, no reconstruction).
+##
+## A sample is one directory of campaign RECO files, e.g. RECO/26.07.3/epic_craterlake/
+## SIDIS/pythia6-lhapdf/1.1.0/ep_noradcor/9x130/x_1e-2to1e-1, named here as
+## <sys>_<beams>_x_<range> (ep_9x130_x_1e-2to1e-1). <sys> (ep, eAu, eAg) picks the theory
+## file used for the saturation weight. Three stages, each a target:
+##
+##   map       results/dihadron/<sample>/<mode>/job_<job>.root
+##             from results/dihadron/<sample>/lists/list_<job>.txt (one file URL per line)
+##   merge     results/dihadron/<sample>/<mode>/merged.root       (hadd of every listed job)
+##   finalize  results/dihadron/<sample>/<mode>/plots/            (PNGs, hists.json, tests)
+##
+## <mode> is truth or reco. A production system writes the lists itself; locally,
+## dihadron_run_locally uses the short list shipped in lists/ (job "local").
+## card.yml in this directory describes the same three stages for a production run.
+
+DIHADRON_DIR = "benchmarks/SIDIS/dihadron"
+
+## Analysis settings; override with --config, e.g. --config DIHADRON_TRIG_LOW=3
+config.setdefault("DIHADRON_TRIG_LOW", 2)
+config.setdefault("DIHADRON_TRIG_HIGH", 50)
+config.setdefault("DIHADRON_ASSO_LOW", 1)
+config.setdefault("DIHADRON_ASSO_HIGH", 50)
+config.setdefault("DIHADRON_DO_SUBCUT", False)
+config.setdefault("DIHADRON_CUTDECAY", False)
+config.setdefault("DIHADRON_PID_MODE", 0)
+## Theory correlation functions Cth_{ep,eAu,eAg}.root (about 55 MB each), kept with
+## Git LFS in eic/epic-data (physics_benchmarks/SIDIS/dihadron) and downloaded at a fixed
+## commit; only the files a sample needs are fetched. DIHADRON_CTH_DIR, if set, is a
+## local directory with the same files instead. Either way each file must match its sha256.
+config.setdefault("DIHADRON_CTH_DIR", "")
+config.setdefault("DIHADRON_CTH_URL", "https://github.com/eic/epic-data/raw/da32d8399672b83b10af71d3cefe7dcdd3d8c84c/physics_benchmarks/SIDIS/dihadron")
+DIHADRON_CTH_SHA256 = {
+    "ep": "dc28e3d8bc1ca27722e00c3712602505bfea29ec3cafa4b562d226dba353b754",
+    "eAu": "3a8a158dbea7003c80c285c1650b445ccf4407d9fe3d2dd7a58025e010189d32",
+    "eAg": "d08fec8cec5439a4d7aef5654dbbd2c96388f0bea6d66d36e1d63d4915eaaff1",
+}
+
+DIHADRON_SYSTEMS = ("ep", "eAu", "eAg")
+
+
+def dihadron_sys(sample):
+    sys_ = sample.split("_")[0]
+    if sys_ not in DIHADRON_SYSTEMS:
+        raise ValueError(f"dihadron sample {sample!r} must start with one of {DIHADRON_SYSTEMS}")
+    return sys_
+
+
+def dihadron_bool(key):
+    return "true" if str(config[key]).lower() in ("1", "true", "yes") else "false"
+
+
+rule dihadron_compile:
+    input:
+        ROOT_BUILD_DIR_PREFIX + f"{DIHADRON_DIR}/analysis/ePIC_multikt2_cxx.so",
+
+
+rule dihadron_theory:
+    output:
+        "results/dihadron/theory/Cth_{SYS}.root",
+    wildcard_constraints:
+        SYS="ep|eAu|eAg",
+    params:
+        LOCAL_DIR=config["DIHADRON_CTH_DIR"],
+        URL=lambda wildcards: f"{config['DIHADRON_CTH_URL']}/Cth_{wildcards.SYS}.root",
+        SHA256=lambda wildcards: DIHADRON_CTH_SHA256[wildcards.SYS],
+    shell:
+        """
+if [ -n "{params.LOCAL_DIR}" ]; then
+  cp "{params.LOCAL_DIR}/Cth_{wildcards.SYS}.root" {output}.part
+else
+  curl -sSfL --retry 3 -o {output}.part "{params.URL}"
+fi
+echo "{params.SHA256}  {output}.part" | sha256sum -c -
+mv {output}.part {output}
+"""
+
+
+rule dihadron_local_list:
+    input:
+        f"{DIHADRON_DIR}/lists/{{SAMPLE}}.txt",
+    output:
+        "results/dihadron/{SAMPLE}/lists/list_local.txt",
+    shell:
+        """
+cp {input} {output}
+"""
+
+
+rule dihadron_map:
+    input:
+        script=f"{DIHADRON_DIR}/analysis/ePIC_multikt2.cxx",
+        script_compiled=ROOT_BUILD_DIR_PREFIX + f"{DIHADRON_DIR}/analysis/ePIC_multikt2_cxx.so",
+        files="results/dihadron/{SAMPLE}/lists/list_{JOB}.txt",
+        theory=lambda wildcards: sorted({
+            "results/dihadron/theory/Cth_ep.root",
+            f"results/dihadron/theory/Cth_{dihadron_sys(wildcards.SAMPLE)}.root",
+        }),
+    output:
+        "results/dihadron/{SAMPLE}/{MODE}/job_{JOB}.root",
+    log:
+        "results/dihadron/{SAMPLE}/{MODE}/job_{JOB}.log",
+    wildcard_constraints:
+        MODE="truth|reco",
+        JOB=r"[A-Za-z0-9]+",
+    params:
+        SYS=lambda wildcards: dihadron_sys(wildcards.SAMPLE),
+        USE_RECO=lambda wildcards: "true" if wildcards.MODE == "reco" else "false",
+        DO_SUBCUT=dihadron_bool("DIHADRON_DO_SUBCUT"),
+        CUTDECAY=dihadron_bool("DIHADRON_CUTDECAY"),
+        CUTS=f"{config['DIHADRON_TRIG_LOW']},{config['DIHADRON_TRIG_HIGH']},"
+             f"{config['DIHADRON_ASSO_LOW']},{config['DIHADRON_ASSO_HIGH']}",
+        PID_MODE=config["DIHADRON_PID_MODE"],
+    shell:
+        """
+export CTH_DIR=$(dirname {input.theory[0]})
+TMP={output}.part
+# root -q exits 0 even when the macro returns 1, so check the printed return value
+root -l -b -q '{input.script}+({params.CUTS},"{input.files}","'"$TMP"'","{params.SYS}",{params.DO_SUBCUT},{params.CUTDECAY},{params.USE_RECO},{params.PID_MODE})' 2>&1 | tee {log}
+grep -q '^(int) 0$' {log}
+mv "$TMP" {output}
+"""
+
+
+def dihadron_jobs(wildcards):
+    jobs = glob_wildcards(f"results/dihadron/{wildcards.SAMPLE}/lists/list_{{JOB}}.txt").JOB
+    if not jobs and os.path.exists(f"{DIHADRON_DIR}/lists/{wildcards.SAMPLE}.txt"):
+        jobs = ["local"]  # no production lists: use the list shipped with the benchmark
+    if not jobs:
+        raise ValueError(f"no lists under results/dihadron/{wildcards.SAMPLE}/lists/")
+    return [f"results/dihadron/{wildcards.SAMPLE}/{wildcards.MODE}/job_{job}.root" for job in sorted(jobs)]
+
+
+rule dihadron_merge:
+    input:
+        dihadron_jobs,
+    output:
+        "results/dihadron/{SAMPLE}/{MODE}/merged.root",
+    wildcard_constraints:
+        MODE="truth|reco",
+    shell:
+        """
+hadd -f {output} {input}
+"""
+
+
+rule dihadron_finalize:
+    input:
+        script=f"{DIHADRON_DIR}/analysis/finalize.py",
+        merged="results/dihadron/{SAMPLE}/{MODE}/merged.root",
+    output:
+        plots=directory("results/dihadron/{SAMPLE}/{MODE}/plots"),
+        hists="results/dihadron/{SAMPLE}/{MODE}/hists.json",
+        # where bin/collect_tests.py SIDIS/dihadron looks for test results
+        tests="results/SIDIS/dihadron/dihadron_{SAMPLE}_{MODE}.json",
+    wildcard_constraints:
+        MODE="truth|reco",
+    shell:
+        """
+python3 {input.script} {input.merged} {output.plots} {output.hists} {output.tests} {wildcards.SAMPLE}_{wildcards.MODE}
+"""
+
+
+rule dihadron_run_locally:
+    input:
+        "results/dihadron/ep_9x130_x_1e-2to1e-1/reco/plots",
+        "results/SIDIS/dihadron/dihadron_ep_9x130_x_1e-2to1e-1_reco.json",
+    message:
+        "See output in {input[0]}"

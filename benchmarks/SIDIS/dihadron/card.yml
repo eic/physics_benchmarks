@@ -1,0 +1,59 @@
+# Analysis card for the dihadron benchmark, in cardio's layout (https://github.com/eic/cardio).
+# Read with plain YAML; nothing here imports cardio yet. The card has no commit field:
+# whoever registers it records the repository, the commit and this file's path.
+identifier: "epic:benchmark:SIDIS/dihadron"
+description: >-
+  Multi-trigger dihadron C(dphi) per x_Bj decade on campaign RECO, with the CGC
+  saturation weight Cth_eA/Cth_ep on the gluon-initiated channels.
+input: "dataset.card.yml"        # the input sample's file list, supplied at run time
+location: "."
+
+eic_shell:
+  container: eic_xl
+  version: 26.07.3-stable        # resolved to an image digest when the card is registered
+
+# Settings, with their defaults. A run may override them. A job passes all of them
+# to the stage commands as $PARAMS (K=V words) and each one by name.
+parameters:
+  DIHADRON_TRIG_LOW: 2
+  DIHADRON_TRIG_HIGH: 50
+  DIHADRON_ASSO_LOW: 1
+  DIHADRON_ASSO_HIGH: 50
+  DIHADRON_DO_SUBCUT: false
+  DIHADRON_CUTDECAY: false
+  DIHADRON_PID_MODE: 0
+  MODE: reco                     # truth or reco
+
+# Auxiliary inputs the map stage needs besides the sample: theory files kept with
+# Git LFS in eic/epic-data, at a fixed commit, checked against these sha256.
+auxiliary:
+  - url: https://github.com/eic/epic-data/raw/da32d8399672b83b10af71d3cefe7dcdd3d8c84c/physics_benchmarks/SIDIS/dihadron/Cth_ep.root
+    sha256: dc28e3d8bc1ca27722e00c3712602505bfea29ec3cafa4b562d226dba353b754
+  - url: https://github.com/eic/epic-data/raw/da32d8399672b83b10af71d3cefe7dcdd3d8c84c/physics_benchmarks/SIDIS/dihadron/Cth_eAu.root
+    sha256: 3a8a158dbea7003c80c285c1650b445ccf4407d9fe3d2dd7a58025e010189d32
+  - url: https://github.com/eic/epic-data/raw/da32d8399672b83b10af71d3cefe7dcdd3d8c84c/physics_benchmarks/SIDIS/dihadron/Cth_eAg.root
+    sha256: d08fec8cec5439a4d7aef5654dbbd2c96388f0bea6d66d36e1d63d4915eaaff1
+
+# One job per list of files; about 1.3 h per 100 files at 2 GB, 1 core.
+split:
+  files_per_job: 11
+resources:
+  memory_mb: 2000
+  cores: 1
+
+# The three stages, as Snakemake targets, run in the repository at the pinned commit.
+# A job sets $SAMPLE (the sample's name, e.g. ep_noradcor_9x130_x_1e-2to1e-1), $JOB
+# (map only), $PARAMS and each parameter. Merge and finalize may run only their own
+# rules: their jobs hold the partials, not the data or the compiled macro behind them.
+stages:
+  map:      'snakemake --cores 1 --config $PARAMS -- results/dihadron/$SAMPLE/$MODE/job_$JOB.root'
+  merge:    'snakemake --cores 1 --allowed-rules dihadron_merge --config $PARAMS -- results/dihadron/$SAMPLE/$MODE/merged.root'
+  finalize: 'snakemake --cores 1 --allowed-rules dihadron_finalize --config $PARAMS -- results/dihadron/$SAMPLE/$MODE/plots'
+
+# Where a map job's file list goes and its partial comes out, and where finalize leaves
+# the histogram contents and the plots (*.png), relative to the repository.
+files:
+  list:    "results/dihadron/$SAMPLE/lists/list_$JOB.txt"
+  partial: "results/dihadron/$SAMPLE/$MODE/job_$JOB.root"
+  hists:   "results/dihadron/$SAMPLE/$MODE/hists.json"
+  plots:   "results/dihadron/$SAMPLE/$MODE/plots"

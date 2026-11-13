@@ -112,6 +112,7 @@ include:
     #- local: 'benchmarks/Exclusive-Diffraction-Tagging/dvmp/config.yml'
   - local: 'benchmarks/Inclusive/dis/config.yml'
   - local: 'benchmarks/Jets-HF/jets/config.yml'
+  - local: 'benchmarks/SIDIS/dihadron/config.yml'
 
 summary:
   stage: finish
@@ -120,6 +121,7 @@ summary:
     - "demp:results"
     - "dis:results"
     - "jets:results"
+    - "dihadron:results"
   script:
     - bin/collect_benchmarks.py
     - find results -print | sort | tee summary.txt
