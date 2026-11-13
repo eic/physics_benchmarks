@@ -1,0 +1,26 @@
+# The dihadron benchmark runs on campaign RECO samples. Whole samples are production-scale
+# work and are run by epicprod from card.yml. CI compiles the analysis and runs a smoke
+# test: the nine files of lists/ (26.07.3 ep 9x130, about 42k events) read over XRootD.
+dihadron:compile:
+  stage: compile
+  extends: .compile_benchmark
+  script:
+    - snakemake --cores 1 dihadron_compile
+
+dihadron:smoke:
+  stage: simulate
+  extends: .phy_benchmark
+  needs: ["dihadron:compile"]
+  timeout: 1 hour
+  script:
+    - snakemake $SNAKEMAKE_FLAGS --cores 1 dihadron_run_locally
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+
+dihadron:results:
+  stage: collect
+  needs: ["dihadron:smoke"]
+  script:
+    - bin/collect_tests.py SIDIS/dihadron
