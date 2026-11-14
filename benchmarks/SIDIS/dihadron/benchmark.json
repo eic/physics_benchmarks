@@ -1,0 +1,6 @@
+{
+  "name": "DIHADRON",
+  "title": "Dihadron Correlation Benchmark",
+  "description": "Multi-trigger dihadron C(dphi) on campaign RECO samples, with the CGC saturation weight",
+  "target": "1.0"
+}
