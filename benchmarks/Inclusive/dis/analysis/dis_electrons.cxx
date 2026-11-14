@@ -76,7 +76,15 @@ int dis_electrons(const std::string& config_name)
     return v;
   };
 
-  auto d0 = d.Define("Q2_sim", "InclusiveKinematicsTruth.Q2")
+  // Since EICrecon PR #3101, the truth kinematics are stored in InclusiveKinematicsTruthBare,
+  // and InclusiveKinematicsTruth is a deprecated subset collection (only _objIdx references),
+  // whose data members cannot be accessed directly. Fall back to the old name for older files.
+  const std::string truth_kin = d.HasColumn("InclusiveKinematicsTruthBare")
+                              ? "InclusiveKinematicsTruthBare"
+                              : "InclusiveKinematicsTruth";
+  fmt::print(" - truth kinematics: {}\n", truth_kin);
+
+  auto d0 = d.Define("Q2_sim", truth_kin + ".Q2")
              .Define("Q2_el", "InclusiveKinematicsElectron.Q2")
              .Define("Q2_jb", "InclusiveKinematicsJB.Q2")
              .Define("Q2_da", "InclusiveKinematicsDA.Q2")
@@ -93,7 +101,7 @@ int dis_electrons(const std::string& config_name)
              .Define("Q2_da_res", combinatorial_diff_ratio, {"Q2_sim", "Q2_da"})
              .Define("Q2_sigma_res", combinatorial_diff_ratio, {"Q2_sim", "Q2_sigma"})
              .Define("Q2_esigma_res", combinatorial_diff_ratio, {"Q2_sim", "Q2_esigma"})
-             .Define("x_sim", "InclusiveKinematicsTruth.x")
+             .Define("x_sim", truth_kin + ".x")
              .Define("x_el", "InclusiveKinematicsElectron.x")
              .Define("x_jb", "InclusiveKinematicsJB.x")
              .Define("x_da", "InclusiveKinematicsDA.x")

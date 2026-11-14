@@ -156,8 +156,15 @@ file = ur.open(rec_file)
 events = file["events"]
 
 # Use direct array access instead of concatenate() to avoid RNTuple compatibility issues
-Truth =   [events['InclusiveKinematicsTruth.Q2'].array(library="ak"), 
-           events['InclusiveKinematicsTruth.x'].array(library="ak")]
+try:
+    # Since EICrecon PR #3101, InclusiveKinematicsTruth is a subset collection
+    # referencing InclusiveKinematicsTruthBare (only _objIdx branches)
+    Truth =   [events['InclusiveKinematicsTruthBare.Q2'].array(library="ak"),
+               events['InclusiveKinematicsTruthBare.x'].array(library="ak")]
+except KeyError:
+    # Legacy compatibility (KeyInFileError is a KeyError)
+    Truth =   [events['InclusiveKinematicsTruth.Q2'].array(library="ak"),
+               events['InclusiveKinematicsTruth.x'].array(library="ak")]
 Electron = [events['InclusiveKinematicsElectron.Q2'].array(library="ak"), 
             events['InclusiveKinematicsElectron.x'].array(library="ak")]
 DoubleAngle = [events['InclusiveKinematicsDA.Q2'].array(library="ak"), 
