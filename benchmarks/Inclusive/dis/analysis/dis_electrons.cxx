@@ -79,7 +79,7 @@ int dis_electrons(const std::string& config_name)
   // Since EICrecon PR #3101, the truth kinematics are stored in InclusiveKinematicsTruthBare,
   // and InclusiveKinematicsTruth is a deprecated subset collection (only _objIdx references),
   // whose data members cannot be accessed directly. Fall back to the old name for older files.
-  const std::string truth_kin = d.HasColumn("InclusiveKinematicsTruthBare")
+  const std::string truth_kin = d.HasColumn("InclusiveKinematicsTruthBare.Q2")
                               ? "InclusiveKinematicsTruthBare"
                               : "InclusiveKinematicsTruth";
   fmt::print(" - truth kinematics: {}\n", truth_kin);
