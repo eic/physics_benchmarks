@@ -23,9 +23,9 @@ snakemake --cores 1 dihadron_run_locally
 ```
 
 The theory files `Cth_ep.root`, `Cth_eAu.root`, `Cth_eAg.root` (about 55 MB each) are
-kept with Git LFS in [eic/epic-data](https://github.com/eic/epic-data)
-(`physics_benchmarks/SIDIS/dihadron`). The benchmark downloads the ones a sample needs
-at a fixed commit and checks each sha256. To use a local copy instead, add
+registered in JLab Rucio as the dataset `rahmans:/TEST/ANALYSIS/INPUT/dihadron/theory/v1`
+on EIC-XRD. The benchmark reads the ones a sample needs anonymously over XRootD and
+checks each sha256. To use a local copy instead, add
 `--config DIHADRON_CTH_DIR=/path/to/TH`.
 
 ## Production

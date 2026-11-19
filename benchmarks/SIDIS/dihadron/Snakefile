@@ -24,12 +24,13 @@ config.setdefault("DIHADRON_ASSO_HIGH", 50)
 config.setdefault("DIHADRON_DO_SUBCUT", False)
 config.setdefault("DIHADRON_CUTDECAY", False)
 config.setdefault("DIHADRON_PID_MODE", 0)
-## Theory correlation functions Cth_{ep,eAu,eAg}.root (about 55 MB each), kept with
-## Git LFS in eic/epic-data (physics_benchmarks/SIDIS/dihadron) and downloaded at a fixed
-## commit; only the files a sample needs are fetched. DIHADRON_CTH_DIR, if set, is a
-## local directory with the same files instead. Either way each file must match its sha256.
+## Theory correlation functions Cth_{ep,eAu,eAg}.root (about 55 MB each), registered in
+## JLab Rucio as the dataset rahmans:/TEST/ANALYSIS/INPUT/dihadron/theory/v1 on EIC-XRD
+## and read anonymously over XRootD; only the files a sample needs are fetched.
+## DIHADRON_CTH_DIR, if set, is a local directory with the same files instead. Either way
+## each file must match its sha256.
 config.setdefault("DIHADRON_CTH_DIR", "")
-config.setdefault("DIHADRON_CTH_URL", "https://github.com/eic/epic-data/raw/da32d8399672b83b10af71d3cefe7dcdd3d8c84c/physics_benchmarks/SIDIS/dihadron")
+config.setdefault("DIHADRON_CTH_URL", "root://dtn2304.jlab.org:8443//jlab-osdf-ro/eic/EPIC/cache/TEST/ANALYSIS/INPUT/dihadron/theory/v1")
 DIHADRON_CTH_SHA256 = {
     "ep": "dc28e3d8bc1ca27722e00c3712602505bfea29ec3cafa4b562d226dba353b754",
     "eAu": "3a8a158dbea7003c80c285c1650b445ccf4407d9fe3d2dd7a58025e010189d32",
@@ -69,7 +70,7 @@ rule dihadron_theory:
 if [ -n "{params.LOCAL_DIR}" ]; then
   cp "{params.LOCAL_DIR}/Cth_{wildcards.SYS}.root" {output}.part
 else
-  curl -sSfL --retry 3 -o {output}.part "{params.URL}"
+  xrdcp -f "{params.URL}" {output}.part
 fi
 echo "{params.SHA256}  {output}.part" | sha256sum -c -
 mv {output}.part {output}
