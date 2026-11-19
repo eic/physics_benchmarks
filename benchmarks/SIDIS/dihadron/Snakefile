@@ -25,12 +25,12 @@ config.setdefault("DIHADRON_DO_SUBCUT", False)
 config.setdefault("DIHADRON_CUTDECAY", False)
 config.setdefault("DIHADRON_PID_MODE", 0)
 ## Theory correlation functions Cth_{ep,eAu,eAg}.root (about 55 MB each), registered in
-## JLab Rucio as the dataset rahmans:/TEST/ANALYSIS/INPUT/dihadron/theory/v1 on EIC-XRD
-## and read anonymously over XRootD; only the files a sample needs are fetched.
-## DIHADRON_CTH_DIR, if set, is a local directory with the same files instead. Either way
-## each file must match its sha256.
+## JLab Rucio as the dataset DIHADRON_CTH_DATASET. Each file a sample needs is fetched with
+## `rucio download` (eic-shell's default read-only client config; Rucio picks the replica
+## and checks the catalogue adler32). DIHADRON_CTH_DIR, if set, is a local directory with
+## the same files instead. Either way each file must match its sha256.
 config.setdefault("DIHADRON_CTH_DIR", "")
-config.setdefault("DIHADRON_CTH_URL", "root://dtn2304.jlab.org:8443//jlab-osdf-ro/eic/EPIC/cache/TEST/ANALYSIS/INPUT/dihadron/theory/v1")
+config.setdefault("DIHADRON_CTH_DATASET", "rahmans:/TEST/ANALYSIS/INPUT/dihadron/theory/v1")
 DIHADRON_CTH_SHA256 = {
     "ep": "dc28e3d8bc1ca27722e00c3712602505bfea29ec3cafa4b562d226dba353b754",
     "eAu": "3a8a158dbea7003c80c285c1650b445ccf4407d9fe3d2dd7a58025e010189d32",
@@ -63,14 +63,18 @@ rule dihadron_theory:
         SYS="ep|eAu|eAg",
     params:
         LOCAL_DIR=config["DIHADRON_CTH_DIR"],
-        URL=lambda wildcards: f"{config['DIHADRON_CTH_URL']}/Cth_{wildcards.SYS}.root",
+        DID=lambda wildcards: f"{config['DIHADRON_CTH_DATASET']}/Cth_{wildcards.SYS}.root",
         SHA256=lambda wildcards: DIHADRON_CTH_SHA256[wildcards.SYS],
     shell:
         """
 if [ -n "{params.LOCAL_DIR}" ]; then
   cp "{params.LOCAL_DIR}/Cth_{wildcards.SYS}.root" {output}.part
 else
-  xrdcp -f "{params.URL}" {output}.part
+  rm -rf {output}.d
+  rucio download --no-subdir --dir {output}.d "{params.DID}"
+  # the download keeps the DID name's directories under {output}.d
+  mv "$(find {output}.d -type f -name Cth_{wildcards.SYS}.root)" {output}.part
+  rm -rf {output}.d
 fi
 echo "{params.SHA256}  {output}.part" | sha256sum -c -
 mv {output}.part {output}

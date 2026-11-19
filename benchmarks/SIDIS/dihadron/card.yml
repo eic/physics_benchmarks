@@ -25,8 +25,9 @@ parameters:
   MODE: reco                     # truth or reco
 
 # Auxiliary inputs the map stage needs besides the sample: theory files registered in
-# JLab Rucio (dataset rahmans:/TEST/ANALYSIS/INPUT/dihadron/theory/v1, EIC-XRD), read
-# anonymously over XRootD and checked against these sha256.
+# JLab Rucio (dataset rahmans:/TEST/ANALYSIS/INPUT/dihadron/theory/v1, EIC-XRD), fetched
+# by DID with `rucio download` and checked against these sha256. url is the same file's
+# anonymous XRootD location.
 auxiliary:
   - did: rahmans:/TEST/ANALYSIS/INPUT/dihadron/theory/v1/Cth_ep.root
     url: root://dtn2304.jlab.org:8443//jlab-osdf-ro/eic/EPIC/cache/TEST/ANALYSIS/INPUT/dihadron/theory/v1/Cth_ep.root

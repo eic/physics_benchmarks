@@ -24,9 +24,10 @@ snakemake --cores 1 dihadron_run_locally
 
 The theory files `Cth_ep.root`, `Cth_eAu.root`, `Cth_eAg.root` (about 55 MB each) are
 registered in JLab Rucio as the dataset `rahmans:/TEST/ANALYSIS/INPUT/dihadron/theory/v1`
-on EIC-XRD. The benchmark reads the ones a sample needs anonymously over XRootD and
-checks each sha256. To use a local copy instead, add
-`--config DIHADRON_CTH_DIR=/path/to/TH`.
+on EIC-XRD. The benchmark fetches the ones a sample needs with `rucio download`, using
+eic-shell's default read-only client config (no credentials), and checks each sha256.
+To use another registered version, add `--config DIHADRON_CTH_DATASET=<scope>:<name>`;
+to use a local copy instead, add `--config DIHADRON_CTH_DIR=/path/to/TH`.
 
 ## Production
 
