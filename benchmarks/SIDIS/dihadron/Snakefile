@@ -25,12 +25,12 @@ config.setdefault("DIHADRON_DO_SUBCUT", False)
 config.setdefault("DIHADRON_CUTDECAY", False)
 config.setdefault("DIHADRON_PID_MODE", 0)
 ## Theory correlation functions Cth_{ep,eAu,eAg}.root (about 55 MB each), registered in
-## JLab Rucio as the dataset DIHADRON_CTH_DATASET. Each file a sample needs is fetched with
+## JLab Rucio under the DID prefix DIHADRON_CTH_DATASET. Each file a sample needs is fetched with
 ## `rucio download` (eic-shell's default read-only client config; Rucio picks the replica
 ## and checks the catalogue adler32). DIHADRON_CTH_DIR, if set, is a local directory with
 ## the same files instead. Either way each file must match its sha256.
 config.setdefault("DIHADRON_CTH_DIR", "")
-config.setdefault("DIHADRON_CTH_DATASET", "rahmans:/TEST/ANALYSIS/INPUT/dihadron/theory/v1")
+config.setdefault("DIHADRON_CTH_DATASET", "epic:/TEST/ANALYSIS/INPUT/dihadron/theory/v1")
 DIHADRON_CTH_SHA256 = {
     "ep": "dc28e3d8bc1ca27722e00c3712602505bfea29ec3cafa4b562d226dba353b754",
     "eAu": "3a8a158dbea7003c80c285c1650b445ccf4407d9fe3d2dd7a58025e010189d32",
