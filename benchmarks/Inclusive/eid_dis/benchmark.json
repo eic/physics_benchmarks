@@ -1,0 +1,6 @@
+{
+  "name": "Inclusive/eid_dis",
+  "title": "Electron ID DIS Benchmark",
+  "description": "Electron identification benchmark for DIS using pre-reconstructed ePIC campaign files",
+  "target": "0.8"
+}

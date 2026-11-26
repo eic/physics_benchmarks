@@ -1,0 +1,39 @@
+# Electron ID DIS benchmark using pre-reconstructed files from BNL xrootd.
+# Campaign/beam/q2 are fixed per run; update the variables block to change campaign.
+
+.eid_dis_config:
+  variables:
+    EID_CAMPAIGN: "26.05.0"
+    EID_BEAM: "9x130"
+    EID_Q2_RANGE: "q2_10to100"
+    EID_NFILES: "5"
+    DETECTOR_CONFIG: "epic_craterlake"
+
+eid_dis:compile:
+  stage: compile
+  extends: .compile_benchmark
+  script:
+    - snakemake --cores 1 eid_dis_compile
+
+eid_dis:benchmark:
+  stage: simulate
+  extends:
+    - .phy_benchmark
+    - .eid_dis_config
+  needs: ["eid_dis:compile"]
+  timeout: 2 hours
+  script:
+    - |
+      snakemake $SNAKEMAKE_FLAGS --cores $SLURM_CPUS_PER_TASK \
+        results/${DETECTOR_CONFIG}/eid_dis/campaign_${EID_CAMPAIGN}/${EID_BEAM}/${EID_Q2_RANGE}/combined_${EID_NFILES}/plots.pdf
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+
+eid_dis:results:
+  stage: collect
+  extends: .eid_dis_config
+  needs: ["eid_dis:benchmark"]
+  script:
+    - ls -lrth results/${DETECTOR_CONFIG}/eid_dis/campaign_${EID_CAMPAIGN}/${EID_BEAM}/${EID_Q2_RANGE}/combined_${EID_NFILES}/
